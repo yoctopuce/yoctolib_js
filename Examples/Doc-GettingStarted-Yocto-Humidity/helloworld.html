@@ -1,0 +1,46 @@
+<HTML>
+<HEAD>
+ <TITLE>Hello World</TITLE>
+ <SCRIPT type="text/javascript" src="../../Sources/yocto_api.js"></SCRIPT>
+ <SCRIPT type="text/javascript" src="../../Sources/yocto_humidity.js"></SCRIPT>
+ <SCRIPT language='javascript1.5' type='text/JavaScript'>
+ <!--
+ // Use explicit error handling rather than exceptions
+ yDisableExceptions();
+
+ // Setup the API to use the VirtualHub on local machine
+ if(yRegisterHub('http://127.0.0.1:4444/') != YAPI_SUCCESS) {
+     alert("Cannot contact VirtualHub on 127.0.0.1");
+ }
+
+ function refresh()
+ { 
+     var hum, serial = document.getElementById('serial').value;
+
+     if(serial == '') {
+         // or use any conected module suitable for the demo
+         hum = yFirstHumidity();
+         if(hum) {
+             serial = hum.module().get_serialNumber();
+             document.getElementById('serial').value = serial;
+         }
+     }
+
+     hum = yFindHumidity(serial+".humidity");
+     if (hum.isOnline()) {
+         document.getElementById('msg').value = '';
+         document.getElementById("hum-val").value = hum.get_currentValue();
+     } else {
+         document.getElementById('msg').value = 'Module not connected';         
+     }
+     setTimeout('refresh()',500);
+ }
+ -->
+ </SCRIPT>
+</HEAD>  
+<BODY onload='refresh();'>
+ Module to use:    <input id='serial'>
+ <input id='msg' style='color:red;border:none;' readonly><br>
+ Current humidity: <input id='hum-val' size=2 readonly> %RH<br>
+</BODY>
+</HTML> 

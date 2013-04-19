@@ -1,0 +1,52 @@
+<HTML>
+<HEAD>
+ <TITLE>Hello World</TITLE>
+ <SCRIPT type="text/javascript" src="../../Sources/yocto_api.js"></SCRIPT>
+ <SCRIPT type="text/javascript" src="../../Sources/yocto_colorled.js"></SCRIPT>
+ <SCRIPT language='javascript1.5' type='text/JavaScript'>
+ <!--
+ // Use explicit error handling rather than exceptions
+ yDisableExceptions();
+
+ // Setup the API to use the VirtualHub on local machine
+ if(yRegisterHub('http://127.0.0.1:4444/') != YAPI_SUCCESS) {
+     alert("Cannot contact VirtualHub on 127.0.0.1");
+ }
+
+ var led;
+
+ function refresh()
+ {   var serial = document.getElementById('serial').value;
+     if(serial == '') {
+         // Detect any connected module suitable for the demo
+         led = yFirstColorLed();
+         if(led) {
+             serial = led.module().get_serialNumber();
+             document.getElementById('serial').value = serial;
+         }
+     }
+
+     led = yFindColorLed(serial+".colorLed1");  
+     if(led.isOnline()) {
+         document.getElementById('msg').value = '';
+     } else {
+         document.getElementById('msg').value = 'Module not connected';         
+     }
+     setTimeout('refresh()',500);
+ }
+
+ function setColor(color)
+ {   // Change the color 
+     led.rgbMove(color,1000);  // smooth transition  
+ }
+ -->
+ </SCRIPT>
+</HEAD>  
+<BODY onload='refresh();'>
+ Module to use: <input id='serial'>
+ <input id='msg' style='color:red;border:none;' readonly><br>
+ <a href='javascript:setColor(0xFF0000);'>Red</a><br>
+ <a href='javascript:setColor(0x00FF00);'>Green</a><br>
+ <a href='javascript:setColor(0x0000FF);'>Blue</a>
+</BODY>
+</HTML> 

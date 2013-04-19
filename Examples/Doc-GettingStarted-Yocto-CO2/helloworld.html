@@ -1,0 +1,46 @@
+<HTML>
+<HEAD>
+ <TITLE> Hello World</TITLE>
+ <SCRIPT type="text/javascript" src="../../Sources/yocto_api.js"></SCRIPT>
+ <SCRIPT type="text/javascript" src="../../Sources/yocto_carbondioxide.js"></SCRIPT>
+ <SCRIPT language='javascript1.5'  type='text/JavaScript'>
+ <!--
+ // Use explicit error handling rather than exceptions
+ yDisableExceptions();
+
+ // Setup the API to use the VirtualHub on local machine
+ if(yRegisterHub('http://127.0.0.1:4444/') != YAPI_SUCCESS) {
+     alert("Cannot contact VirtualHub on 127.0.0.1");
+ }
+
+ function refresh()
+ { 
+     var co2, serial = document.getElementById('serial').value;
+
+     if(serial == '') {
+         // or use any conected module suitable for the demo
+         co2 = yFirstCarbonDioxide();
+         if(co2) {
+             serial = co2.module().get_serialNumber();
+             document.getElementById('serial').value = serial;
+         }
+     }
+
+     co2  = yFindCarbonDioxide(serial+".carbonDioxide");   
+     if (co2.isOnline()) {
+         document.getElementById('msg').value = '';
+         document.getElementById("co2-val").value = co2.get_currentValue();
+     } else {
+         document.getElementById('msg').value = 'Module not connected';         
+     }
+     setTimeout('refresh()',500);
+ }
+ -->
+ </SCRIPT>
+</HEAD>  
+<BODY onload='refresh();'>
+ Module to use:       <input id='serial'>
+ <input id='msg' style='color:red;border:none;' readonly><br>
+ CO2: <input id='co2-val' readonly> ppm<br>
+</BODY>
+</HTML> 

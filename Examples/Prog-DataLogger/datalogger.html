@@ -1,0 +1,184 @@
+<HTML>
+<HEAD>
+ <TITLE>Data Logger demo</TITLE>
+ <SCRIPT type="text/javascript" src="../../Sources/yocto_api.js"></SCRIPT>
+ <SCRIPT type="text/javascript" src="../../Sources/yocto_datalogger.js"></SCRIPT>
+ <SCRIPT language='javascript1.5' type='text/JavaScript'>
+ <!--
+ // Use explicit error handling rather than exceptions
+ yDisableExceptions();
+
+ // Setup the API to use the VirtualHub on local machine
+ if(yRegisterHub('http://127.0.0.1:4444/') != YAPI_SUCCESS) {
+     alert("Cannot contact VirtualHub on 127.0.0.1");
+ }
+
+ var logger;
+ var streams = [];
+
+ function refresh()
+ { 
+     var serial = document.getElementById('serial').value;
+     if(serial == '') {
+         // Detect any conected module suitable for the demo
+         logger = yFirstDataLogger();
+         if(logger) {
+             serial = logger.module().get_serialNumber();
+             document.getElementById('serial').value = serial;
+         }
+     }
+
+     logger = yFindDataLogger(serial+".dataLogger");
+     if(logger.isOnline()) {
+         document.getElementById('msg').value = '';
+         showRuns(1);
+     } else {
+         document.getElementById('msg').value = 'Module not connected';         
+         setTimeout('refresh()',500);
+     }
+ }
+
+ function showStreams()
+ {
+     var html = 'Data logger recording state: ';
+     if (logger.get_recording()==Y_RECORDING_ON) {
+         html+="ON <a href='javascript:rec(Y_RECORDING_OFF)'>switch off</a><br><br>";
+     } else {
+         html+="OFF <a href='javascript:rec(Y_RECORDING_ON)'>switch on</a><br><br>";        
+     }
+     if(logger.get_dataStreams(streams) == YAPI_SUCCESS) {
+         // dump stream list
+         html += "Available data streams in the data logger:<br>";
+         html += "<table border=1>\n<tr><th>Run</th><th>Relative time</th>"+
+             "<th>UTC time</th><th>Measures interval</th></tr>\n";
+         for(var key in streams) {
+             var stream = streams[key];
+             var run  = stream.get_runIndex();
+             var time = stream.get_startTime();
+             var utc  = stream.get_startTimeUTC();
+             utc  = (utc == 0 ? '' : new Date(utc*1000));
+             var itv  = stream.get_dataSamplesInterval();
+             html += "<tr><td>#"+run+"</td><td>"+time+" [s]</td><td>"+utc+"</td><td>"+itv+" [s]</td>"+
+                 "<td><a href='javascript:dumpStream("+key+")'>view</a></td></tr>\n";
+         }
+         html += "</table><br>\n";
+     }
+     document.getElementById('data').innerHTML = html; 
+     document.getElementById('log').innerHTML = '&nbsp;'; 
+ }
+             
+ function dumpStream(idx)
+ {
+     // Dump selected stream
+     var stream = streams[idx];
+     var time   = stream.get_startTime();
+     var utc    = stream.get_startTimeUTC();
+     var itv    = stream.get_dataSamplesInterval();
+     var names  = stream.get_columnNames();
+     var values = stream.get_dataRows();
+     var html = "Recorded data:<br><table border=1>\n<tr><th>time</th>";
+     if(names.length > 0) {
+         for(var key in names) html += "<th>"+names[key]+"</th>";
+         for(var i in values) {
+             var row = values[i];
+             var when = (utc > time ? new Date(utc*1000) : "+"+time+" [s]");
+             html += "</tr>\n<tr><td>"+when+"</td>";
+             for(var j in row) html += "<td>"+row[j]+"</td>";
+             time += itv; 
+             utc += itv;
+         }
+     }
+     html += "</tr>\n</table>";
+     document.getElementById('log').innerHTML = html; 
+ }
+
+ function wait()
+ { 
+     document.getElementById('log').innerHTML = '<i>Please wait...</i>'; 
+ }
+
+ function showRuns(itv)
+ {
+     var html = 'Data logger recording state: ';
+     if (logger.get_recording()==Y_RECORDING_ON) {
+         html+="ON <a href='javascript:rec(Y_RECORDING_OFF)'>switch off</a><br><br>";
+     } else {
+         html+="OFF <a href='javascript:rec(Y_RECORDING_ON)'>switch on</a><br><br>";        
+     }
+     if(logger.get_dataStreams(streams) == YAPI_SUCCESS) {
+         // dump list of runs
+         html += "Available data streams in the data logger:<br>";
+         html += "<table border=1>\n<tr><th>Run</th>"+
+             "<th>Start time (UTC time)</th><th>Duration</th></tr>\n";
+         var current = logger.get_currentRunIndex();
+         for(var run = logger.get_oldestRunIndex(); run <= current; run++) {
+             var datarun = logger.get_dataRun(run);
+             if(datarun != null) {
+                 duration = Math.ceil(datarun.get_duration() / 60);
+                 utc = datarun.get_startTimeUTC();
+                 utc = (utc == 0 ? '' : Date("Y-m-d H:i:s", utc));
+                 if(duration > 0) {
+                     html += "<tr><td>#"+run+"</td><td>"+utc+"</td><td>"+duration+" [min]</td>"+
+                             "<td><a onmousedown='wait();' href='javascript:dumpRun("+run+","+itv+")'>view</a></td></tr>\n";
+                 }
+             }
+         }
+         html += "</table><br>\n";
+     }
+     document.getElementById('data').innerHTML = html;
+     document.getElementById('log').innerHTML = '&nbsp;'; 
+ }
+             
+function dumpRun(run,itv)
+ {
+     // Dump selected run
+     itv = 60 * itv;
+     var datarun = logger.get_dataRun(run);
+     datarun.set_valueInterval(itv);
+     var utc   = datarun.get_startTimeUTC();
+     var names = datarun.get_measureNames();
+     var count = datarun.get_valueCount();
+     var html = "<table border=1>\n<tr><th>time</th>";
+     for(var key in names) html += "<th colspan='3'>"+names[key]+"</th>";
+     html += "</tr>\n<tr><th></th>";
+     for(var key in names) html += "<th>min</th><th>average</th><th>max</th>";
+     if(count > 0) {
+         var time  = 0;
+         for(var i = 0; i < count; i++) {
+             if(datarun.get_averageValue(names[0], i) == Y_MINVALUE_INVALID) continue;
+             var when = (utc > time ? new Date(utc*1000) : "+"+time+" [s]");
+             html += "</tr>\n<tr><td>"+when+"</td>";
+             for(var key in names) {
+                 var name = names[key];
+                 html += "<td>"+datarun.get_minValue(name, i)+"</td>"+
+                         "<td>"+datarun.get_averageValue(name, i)+"</td>"+
+                         "<td>"+datarun.get_maxValue(name, i)+"</td>";
+             }
+             time += itv; 
+             utc += itv;
+         }
+     }
+     html += "</tr>\n</table>\n";
+     document.getElementById('log').innerHTML = html; 
+ }
+
+ function rec(recorderState)
+ { 
+     logger.set_recording(recorderState);
+     refresh();
+ }
+ -->
+ </SCRIPT>
+</HEAD>  
+<BODY onload='refresh();'>
+ Module to use: <input id='serial'>
+ <input id='msg' style='color:red;border:none;' readonly><br><br>
+ Dispay interval between measures:
+ <input type='radio' name='itv' onmousedown='wait();' onmouseup='showStreams();'>As recorded
+ <input type='radio' name='itv' onmousedown='wait();' onmouseup='showRuns(1);' checked>1 min
+ <input type='radio' name='itv' onmousedown='wait();' onmouseup='showRuns(5);'>5 min
+ <input type='radio' name='itv' onmousedown='wait();' onmouseup='showRuns(15);'>15 min
+ <input type='radio' name='itv' onmousedown='wait();' onmouseup='showRuns(60);'>60 min<br><br>
+ <table><tr valign='top'><td id='data'></td><td>&nbsp;</td><td id='log'></td></tr></table>
+</BODY>
+</HTML> 

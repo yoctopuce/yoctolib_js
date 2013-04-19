@@ -1,0 +1,62 @@
+<HTML>
+<HEAD>
+ <TITLE>Module Control</TITLE>
+ <SCRIPT type="text/javascript" src="../../Sources/yocto_api.js"></SCRIPT>
+ <SCRIPT language='javascript1.5'  type='text/JavaScript'>
+ <!--
+ // Use explicit error handling rather than exceptions
+ yDisableExceptions();
+
+ // Setup the API to use the VirtualHub on local machine
+ if(yRegisterHub('http://127.0.0.1:4444/') != YAPI_SUCCESS) {
+     alert("Cannot contact VirtualHub on 127.0.0.1");
+ }
+
+ var module;
+
+ function refresh()
+ { 
+     var serial = document.getElementById('serial').value;
+     if(serial == '') {
+         // Detect any conected module suitable for the demo
+         module = yFirstModule().nextModule();
+         if(module) {
+             serial = module.get_serialNumber();
+             document.getElementById('serial').value = serial;
+         }
+     }
+
+     module = yFindModule(serial);
+     if(module.isOnline()) {
+         document.getElementById('msg').value = '';
+         var html = 'serial: '+module.get_serialNumber()+'<br>';
+         html += 'logical name: '+module.get_logicalName()+'<br>';
+         html += 'luminosity:'+module.get_luminosity()+'%<br>';
+         html += 'beacon:';
+         if (module.get_beacon()==Y_BEACON_ON)  
+             html+="ON <a href='javascript:beacon(Y_BEACON_OFF)'>switch off</a><br>";
+         else   
+             html+="OFF <a href='javascript:beacon(Y_BEACON_ON)'>switch on</a><br>";        
+         html += 'upTime: '+parseInt(module.get_upTime()/1000)+' sec<br>';
+         html += 'USB current: '+module.get_usbCurrent()+' mA<br>';
+         document.getElementById('data').innerHTML = html; 
+     } else {
+         document.getElementById('msg').value = 'Module not connected';         
+     }
+     setTimeout('refresh()',1000);
+ }
+
+ function beacon(state)
+ { 
+     module.set_beacon(state);
+     refresh();
+ }
+ -->
+ </SCRIPT>
+</HEAD>  
+<BODY onload='refresh();'>
+ Module to use: <input id='serial'>
+ <input id='msg' style='color:red;border:none;' readonly><br>
+ <span id='data'></span>
+</BODY>
+</HTML> 

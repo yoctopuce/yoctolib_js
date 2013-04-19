@@ -1,0 +1,103 @@
+<HTML>
+<HEAD>
+ <TITLE>Hello World</TITLE>
+ <SCRIPT type="text/javascript" src="../../Sources/yocto_api.js"></SCRIPT>
+ <SCRIPT type="text/javascript" src="../../Sources/yocto_display.js"></SCRIPT>
+ <SCRIPT language='javascript1.5' type='text/JavaScript'>
+ <!--
+ // Setup the API to use the VirtualHub on local machine
+ if(yRegisterHub('http://127.0.0.1:4444/') != YAPI_SUCCESS) {
+     alert("Cannot contact VirtualHub on 127.0.0.1");
+ }
+
+ var disp=null;
+ var lastSerial ='';
+ var h=0;
+ var w=0;
+ var l0=null;
+ var centerX,centerY,a,radius;
+
+ function run()
+ {   var serial = document.getElementById('serial').value;
+     if ((disp==null) || (lastSerial != serial))
+     { if(serial == '') 
+       { // Detect any connected module suitable for the demo
+         disp = yFirstDisplay();
+         if(disp) 
+           { serial = disp.module().get_serialNumber();
+             document.getElementById('serial').value = serial;
+           }
+       }
+       disp = yFindDisplay(serial+".display");
+       if(disp.isOnline())  
+          document.getElementById('msg').value = '';
+       else 
+         { document.getElementById('msg').value = 'Module not connected';         
+           return;
+         }   
+      
+       l1=disp.get_displayLayer(1);
+       l2=disp.get_displayLayer(2);
+       centerX = disp.get_displayWidth() / 2;
+       centerY = disp.get_displayHeight() / 2;
+       radius  = disp.get_displayHeight() / 2;
+       a=0.0;
+       // display clean up
+       disp.resetAll();
+       l1.hide();    // L1 is hidden, l2 stay visible
+       setTimeout('refresh()',20);
+     }
+ }
+  
+  
+// this is the recusive function to draw 1/3nd of the Von Koch flake
+function recursiveLine(layer,  x0,  y0,  x1,  y1 ,   deep)
+{
+  
+    if (deep<=0) 
+	 {
+        layer.moveTo(parseInt(x0+0.5),parseInt(y0+0.5));
+        layer.lineTo(parseInt(x1+0.5),parseInt(y1+0.5));
+	}
+     else
+	 {
+        var dx = (x1-x0) /3;
+        var dy = (y1-y0) /3;
+        var mx =  ((x0+x1) / 2) +  (0.87 *(y1-y0) / 3);
+        var my =  ((y0+y1) / 2) -  (0.87 *(x1-x0) / 3);
+        recursiveLine(layer,x0,y0,x0+dx,y0+dy,deep-1);
+        recursiveLine(layer,x0+dx,y0+dy,mx,my,deep-1);
+        recursiveLine(layer,mx,my,x1-dx,y1-dy,deep-1);
+        recursiveLine(layer,x1-dx,y1-dy,x1,y1,deep-1);
+	}
+}
+
+  
+
+ function refresh()
+ {    
+     // we draw in the hidden layer
+     l1.clear();
+     for (var i=0 ;i< 3;i++) 
+        recursiveLine(l1,centerX + radius*Math.cos(a+i*2.094),
+                         centerY + radius*Math.sin(a+i*2.094) ,
+                         centerX + radius*Math.cos(a+(i+1)*2.094),
+                         centerY + radius*Math.sin(a+(i+1)*2.094), 2);
+     // then we swap contents with the visible layer
+
+     disp.swapLayerContent(1,2);
+     // change the flake angle
+     a+=0.1257;
+     disp.wait_async(refresh);
+ }
+
+ 
+ -->
+ </SCRIPT>
+</HEAD>  
+<BODY onload='run();'>
+ Module to use: <input id='serial'>
+ <input id='msg' style='color:red;border:none;' readonly><br>
+ 
+</BODY>
+</HTML> 

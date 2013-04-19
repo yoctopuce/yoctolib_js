@@ -1,0 +1,60 @@
+<HTML>
+<HEAD>
+ <TITLE>Hello World</TITLE>
+ <SCRIPT type="text/javascript" src="../../Sources/yocto_api.js"></SCRIPT>
+ <SCRIPT type="text/javascript" src="../../Sources/yocto_relay.js"></SCRIPT>
+ <SCRIPT language='javascript1.5' type='text/JavaScript'>
+ <!--
+ // Use explicit error handling rather than exceptions
+ yDisableExceptions();
+
+ // Setup the API to use the VirtualHub on local machine
+ if(yRegisterHub('http://127.0.0.1:4444/') != YAPI_SUCCESS) {
+     alert("Cannot contact VirtualHub on 127.0.0.1");
+ }
+
+ var r = new  Array();
+ function refresh()
+ { 
+     var serial = document.getElementById('serial').value;
+     if(serial == '') {
+         // Detect any connected module suitable for the demo
+         r[1] = yFirstRelay();
+         if(r[1]) {
+             serial = r[1].module().get_serialNumber();
+             document.getElementById('serial').value = serial;
+         }
+     }
+    
+     for (var i=1;i<=8;i++)
+     r[i] = yFindRelay(serial+".relay"+i);
+    
+     if(r[1].isOnline()) {
+         document.getElementById('msg').value = '';
+     } else {
+         document.getElementById('msg').value = 'Module not connected';         
+     }
+     setTimeout('refresh()',500);
+ }
+
+ function sw(relay,state)
+ {
+     if (state) relay.set_output(Y_OUTPUT_ON);
+           else relay.set_output(Y_OUTPUT_OFF);
+ }
+ -->
+ </SCRIPT>
+</HEAD>  
+<BODY onload='refresh();'>
+ Module to use: <input id='serial'>
+ <input id='msg' style='color:red;border:none;' readonly><br>
+ Relay1 <a href='javascript:sw(r[1],0);' >A</a> / <a href='javascript:sw(r[1],1);'>B</a><br>
+ Relay2 <a href='javascript:sw(r[2],0);' >A</a> / <a href='javascript:sw(r[2],1);'>B</a><br>
+ Relay3 <a href='javascript:sw(r[3],0);' >A</a> / <a href='javascript:sw(r[3],1);'>B</a><br>
+ Relay4 <a href='javascript:sw(r[4],0);' >A</a> / <a href='javascript:sw(r[4],1);'>B</a><br>
+ Relay5 <a href='javascript:sw(r[5],0);' >A</a> / <a href='javascript:sw(r[5],1);'>B</a><br>
+ Relay6 <a href='javascript:sw(r[6],0);' >A</a> / <a href='javascript:sw(r[6],1);'>B</a><br>
+ Relay7 <a href='javascript:sw(r[7],0);' >A</a> / <a href='javascript:sw(r[7],1);'>B</a><br>
+ Relay8 <a href='javascript:sw(r[8],0);' >A</a> / <a href='javascript:sw(r[8],1);'>B</a><br>
+ </BODY>
+</HTML> 

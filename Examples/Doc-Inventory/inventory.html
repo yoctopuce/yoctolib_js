@@ -1,0 +1,36 @@
+<HTML>
+<HEAD>
+ <TITLE>Modules inventory</TITLE>
+ <SCRIPT type="text/javascript" src="../../Sources/yocto_api.js"></SCRIPT> 
+ <SCRIPT language='javascript1.5'  type='text/JavaScript'>
+ <!--
+ // Use explicit error handling rather than exceptions
+ yDisableExceptions();
+
+ // Setup the API to use the VirtualHub on local machine
+ if(yRegisterHub('http://127.0.0.1:4444/') != YAPI_SUCCESS) {
+     alert("Cannot contact VirtualHub on 127.0.0.1");
+ }
+
+ function refresh()
+ { 
+     yUpdateDeviceList();
+
+     var htmlcode = '';
+     var module = yFirstModule();
+     while(module) {
+         htmlcode += module.get_serialNumber()
+                     +'('+module.get_productName()+")<br>";
+         module = module.nextModule(); 
+     }
+     document.getElementById('list').innerHTML=htmlcode; 
+     setTimeout('refresh()',500);
+ }
+ -->
+ </SCRIPT>
+</HEAD>  
+<BODY onload='refresh();'>
+ <H1>Device list</H1>
+ <tt><span id='list'></span></tt>
+</BODY>
+</HTML> 

@@ -1,0 +1,54 @@
+<HTML>
+<HEAD>
+ <TITLE>Hello World</TITLE>
+ <SCRIPT type="text/javascript" src="../../Sources/yocto_api.js"></SCRIPT>
+ <SCRIPT type="text/javascript" src="../../Sources/yocto_anbutton.js"></SCRIPT>
+ <SCRIPT language='javascript1.5' type='text/JavaScript'>
+ <!--
+ // Use explicit error handling rather than exceptions
+ yDisableExceptions();
+
+ // Setup the API to use the VirtualHub on local machine
+ if(yRegisterHub('http://127.0.0.1:4444/') != YAPI_SUCCESS) {
+     alert("Cannot contact VirtualHub on 127.0.0.1");
+ }
+
+ function refresh()
+ { 
+     var serial = document.getElementById('serial').value;
+     var input1, input5;
+
+     if(serial == '') {
+         // or use any conected module suitable for the demo
+         input1 = yFirstAnButton();
+         if(input1) {
+             serial = input1.module().get_serialNumber();
+             document.getElementById('serial').value = serial;
+         }
+     }
+
+     input1 = yFindAnButton(serial+".anButton1");   
+     input5 = yFindAnButton(serial+".anButton5"); 
+     if (input1.isOnline()) {
+         document.getElementById('msg').value = '';
+         document.getElementById("inp1-chk").checked = input1.get_isPressed();
+         document.getElementById("inp1-val").value = input1.get_calibratedValue();
+         document.getElementById("inp5-chk").checked = input5.get_isPressed();
+         document.getElementById("inp5-val").value = input5.get_calibratedValue();
+     } else {
+         document.getElementById('msg').value = 'Module not connected';         
+     }
+     setTimeout('refresh()',500);
+ }
+ -->
+ </SCRIPT>
+</HEAD>  
+<BODY onload='refresh();'>
+ Module to use:    <input id='serial'>
+ <input id='msg' style='color:red;border:none;' readonly><br>
+ Input 1: <input type='checkbox' id='inp1-chk' readonly> 
+ pressed / analog value: <input id='inp1-val' readonly><br>
+ Input 5: <input type='checkbox' id='inp5-chk' readonly> 
+ pressed / analog value: <input id='inp5-val' readonly><br>
+</BODY>
+</HTML> 

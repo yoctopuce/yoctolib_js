@@ -1,0 +1,59 @@
+<HTML>
+<HEAD>
+ <TITLE>Change module settings</TITLE>
+ <SCRIPT type="text/javascript" src="../../Sources/yocto_api.js"></SCRIPT>
+ <SCRIPT language='javascript1.5'  type='text/JavaScript'>
+ <!--
+ // Use explicit error handling rather than exceptions
+ yDisableExceptions();
+
+ // Setup the API to use the VirtualHub on local machine
+ if(yRegisterHub('http://127.0.0.1:4444/') != YAPI_SUCCESS) {
+     alert("Cannot contact VirtualHub on 127.0.0.1");
+ }
+
+ var module;
+
+ function refresh()
+ { 
+     var serial = document.getElementById('serial').value;
+     if(serial == '') {
+         // Detect any conected module suitable for the demo
+         module = yFirstModule().nextModule();
+         if(module) {
+             serial = module.get_serialNumber();
+             document.getElementById('serial').value = serial;
+         }
+     }
+
+     module = yFindModule(serial);
+     if(module.isOnline()) {
+         document.getElementById('msg').value = '';
+         document.getElementById('curName').value = module.get_logicalName();
+     } else {
+         document.getElementById('msg').value = 'Module not connected';         
+     }
+     setTimeout('refresh()',1000);
+ }
+
+ function save()
+ { 
+     var newname = document.getElementById('newName').value;
+     if (!yCheckLogicalName(newname)) {
+         alert('invalid logical name'); 
+         return;
+     }
+     module.set_logicalName(newname);
+     module.saveToFlash();
+ }  
+ -->
+ </SCRIPT>
+</HEAD>  
+<BODY onload='refresh();'>
+ Module to use: <input id='serial'>
+ <input id='msg' style='color:red;border:none;' readonly><br>
+ Current name: <input id='curName' readonly><br>
+ New logical name: <input id='newName'>
+ <a href='javascript:save();'>Save</a>
+</BODY>
+</HTML> 

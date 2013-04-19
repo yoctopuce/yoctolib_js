@@ -1,0 +1,52 @@
+<HTML>
+<HEAD>
+ <TITLE>Hello World</TITLE>
+ <SCRIPT type="text/javascript" src="../../Sources/yocto_api.js"></SCRIPT>
+ <SCRIPT type="text/javascript" src="../../Sources/yocto_current.js"></SCRIPT>
+ <SCRIPT language='javascript1.5' type='text/JavaScript'>
+ <!--
+ // Use explicit error handling rather than exceptions
+ yDisableExceptions();
+
+ // Setup the API to use the VirtualHub on local machine
+ if(yRegisterHub('http://127.0.0.1:4444/') != YAPI_SUCCESS) {
+     alert("Cannot contact VirtualHub on 127.0.0.1");
+ }
+
+ function refresh()
+ { 
+     var sensor,sensorAC,sensorDC; 
+     var serial = document.getElementById('serial').value;
+
+     if(serial == '') {
+         // or use any connected module suitable for the demo
+         sensor = yFirstCurrent();
+         if(sensor) {
+             serial = sensor.module().get_serialNumber();
+             document.getElementById('serial').value = serial;
+         }
+     }
+  
+     sensorDC = yFindCurrent(serial+".current1");
+     sensorAC = yFindCurrent(serial+".current2");
+     
+     if (sensorDC.isOnline()) {
+         document.getElementById('msg').value = '';
+         document.getElementById("DC").value = sensorDC.get_currentValue();
+         document.getElementById("AC").value = sensorAC.get_currentValue();
+         
+     } else {
+         document.getElementById('msg').value = 'Module not connected';         
+     }
+     setTimeout('refresh()',500);
+ }
+ -->
+ </SCRIPT>
+</HEAD>  
+<BODY onload='refresh();'>
+ Module to use:    <input id='serial'>
+ <input id='msg' style='color:red;border:none;' readonly><br>  
+   DC: <input id='DC' size=5 readonly>mA<br>   
+   AC: <input id='AC' size=5 readonly>mA
+</BODY>
+</HTML> 
