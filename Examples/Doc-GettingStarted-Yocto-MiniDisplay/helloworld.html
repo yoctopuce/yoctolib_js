@@ -6,8 +6,6 @@
  <SCRIPT language='javascript1.5' type='text/JavaScript'>
  <!--
 
- 
-
  // Setup the API to use the VirtualHub on local machine
  if(yRegisterHub('http://127.0.0.1:4444/') != YAPI_SUCCESS) {
      alert("Cannot contact VirtualHub on 127.0.0.1");
@@ -39,14 +37,12 @@
            return;
          }   
       
-      
       // retreive the display size
       w=disp.get_displayWidth();
       h=disp.get_displayHeight();
-           
+      
       // retreive the first layer
       var l0=disp.get_displayLayer(0);
-      l1=disp.get_displayLayer(1);
 
       disp.resetAll();
       l0.clear();
@@ -61,7 +57,7 @@
       l0.moveTo(w-1,5);l0.lineTo(w-1,0);l0.lineTo(w-6,0);
 
       // draw a circle in the top left corner of layer 1
-    
+      l1=disp.get_displayLayer(1);
       l1.clear();
       l1.drawCircle(h / 8, h / 8, h / 8);
         x=0; y=0; vx=1; vy=1;

@@ -39,6 +39,7 @@
              html+="OFF <a href='javascript:beacon(Y_BEACON_ON)'>switch on</a><br>";        
          html += 'upTime: '+parseInt(module.get_upTime()/1000)+' sec<br>';
          html += 'USB current: '+module.get_usbCurrent()+' mA<br>';
+         html += 'logs:<br><pre>'+module.get_lastLogs()+'</pre><br>';
          document.getElementById('data').innerHTML = html; 
      } else {
          document.getElementById('msg').value = 'Module not connected';         

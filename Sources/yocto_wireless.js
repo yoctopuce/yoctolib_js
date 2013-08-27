@@ -1,47 +1,47 @@
 /*********************************************************************
  *
- * $Id: yocto_wireless.js 9921 2013-02-20 09:39:16Z seb $
+ * $Id: yocto_wireless.js 12337 2013-08-14 15:22:22Z mvuilleu $
  *
  * Implements yFindWireless(), the high-level API for Wireless functions
  *
  * - - - - - - - - - License information: - - - - - - - - - 
  *
- * Copyright (C) 2011 and beyond by Yoctopuce Sarl, Switzerland.
+ *  Copyright (C) 2011 and beyond by Yoctopuce Sarl, Switzerland.
  *
- * 1) If you have obtained this file from www.yoctopuce.com,
- *    Yoctopuce Sarl licenses to you (hereafter Licensee) the
- *    right to use, modify, copy, and integrate this source file
- *    into your own solution for the sole purpose of interfacing
- *    a Yoctopuce product with Licensee's solution.
+ *  Yoctopuce Sarl (hereafter Licensor) grants to you a perpetual
+ *  non-exclusive license to use, modify, copy and integrate this
+ *  file into your software for the sole purpose of interfacing 
+ *  with Yoctopuce products. 
  *
- *    The use of this file and all relationship between Yoctopuce 
- *    and Licensee are governed by Yoctopuce General Terms and 
- *    Conditions.
+ *  You may reproduce and distribute copies of this file in 
+ *  source or object form, as long as the sole purpose of this
+ *  code is to interface with Yoctopuce products. You must retain 
+ *  this notice in the distributed source file.
  *
- *    THE SOFTWARE AND DOCUMENTATION ARE PROVIDED 'AS IS' WITHOUT
- *    WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING 
- *    WITHOUT LIMITATION, ANY WARRANTY OF MERCHANTABILITY, FITNESS 
- *    FOR A PARTICULAR PURPOSE, TITLE AND NON-INFRINGEMENT. IN NO
- *    EVENT SHALL LICENSOR BE LIABLE FOR ANY INCIDENTAL, SPECIAL,
- *    INDIRECT OR CONSEQUENTIAL DAMAGES, LOST PROFITS OR LOST DATA, 
- *    COST OF PROCUREMENT OF SUBSTITUTE GOODS, TECHNOLOGY OR 
- *    SERVICES, ANY CLAIMS BY THIRD PARTIES (INCLUDING BUT NOT 
- *    LIMITED TO ANY DEFENSE THEREOF), ANY CLAIMS FOR INDEMNITY OR
- *    CONTRIBUTION, OR OTHER SIMILAR COSTS, WHETHER ASSERTED ON THE
- *    BASIS OF CONTRACT, TORT (INCLUDING NEGLIGENCE), BREACH OF
- *    WARRANTY, OR OTHERWISE.
+ *  You should refer to Yoctopuce General Terms and Conditions
+ *  for additional information regarding your rights and 
+ *  obligations.
  *
- * 2) If your intent is not to interface with Yoctopuce products,
- *    you are not entitled to use, read or create any derived
- *    material from this source file.
+ *  THE SOFTWARE AND DOCUMENTATION ARE PROVIDED "AS IS" WITHOUT
+ *  WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING 
+ *  WITHOUT LIMITATION, ANY WARRANTY OF MERCHANTABILITY, FITNESS 
+ *  FOR A PARTICULAR PURPOSE, TITLE AND NON-INFRINGEMENT. IN NO
+ *  EVENT SHALL LICENSOR BE LIABLE FOR ANY INCIDENTAL, SPECIAL,
+ *  INDIRECT OR CONSEQUENTIAL DAMAGES, LOST PROFITS OR LOST DATA, 
+ *  COST OF PROCUREMENT OF SUBSTITUTE GOODS, TECHNOLOGY OR 
+ *  SERVICES, ANY CLAIMS BY THIRD PARTIES (INCLUDING BUT NOT 
+ *  LIMITED TO ANY DEFENSE THEREOF), ANY CLAIMS FOR INDEMNITY OR
+ *  CONTRIBUTION, OR OTHER SIMILAR COSTS, WHETHER ASSERTED ON THE
+ *  BASIS OF CONTRACT, TORT (INCLUDING NEGLIGENCE), BREACH OF
+ *  WARRANTY, OR OTHERWISE.
  *
  *********************************************************************/
 
 if(typeof YAPI == "undefined") { if(typeof yAPI != "undefined") window["YAPI"]=yAPI; else throw "YAPI is not defined, please include yocto_api.js first"; }
 
-//--- (return codes)
-//--- (end of return codes)
-//--- (YWireless definitions)
+//--- (generated code: return codes)
+//--- (end of generated code: return codes)
+//--- (generated code: YWireless definitions)
 var Y_SECURITY_UNKNOWN              = 0;
 var Y_SECURITY_OPEN                 = 1;
 var Y_SECURITY_WEP                  = 2;
@@ -55,7 +55,69 @@ var Y_SSID_INVALID                  = "!INVALID!";
 var Y_CHANNEL_INVALID               = -1;
 var Y_MESSAGE_INVALID               = "!INVALID!";
 var Y_WLANCONFIG_INVALID            = "!INVALID!";
-//--- (end of YWireless definitions)
+//--- (end of generated code: YWireless definitions)
+
+
+//--- (generated code: YFileRecord definitions)
+//--- (end of generated code: YFileRecord definitions)
+
+/**
+ * YWlanRecord Class: description of a file on the device filesystem
+ */
+var YWlanRecord; // definition below
+(function()
+{
+
+    //--- (generated code: YWlanRecord implementation)
+
+    function YWlanRecord_get_ssid()
+    {
+        return this._ssid;
+    }
+
+    function YWlanRecord_get_channel()
+    {
+        return this._channel;
+    }
+
+    function YWlanRecord_get_security()
+    {
+        return this._sec;
+    }
+
+    function YWlanRecord_get_linkQuality()
+    {
+        return this._rssi;
+    }
+
+    //--- (end of generated code: YWlanRecord implementation)
+
+    function _YWlanRecord(str_json)
+    {
+        var loadval = JSON.parse(str_json);
+        this._ssid      = loadval.ssid;
+        this._channel   = loadval.channel;
+        this._sec       = loadval.sec;
+        this._rssi      = loadval.rssi;
+        
+        // public
+        //--- (generated code: YWlanRecord constructor)
+        // public
+        this.get_ssid                        = YWlanRecord_get_ssid;
+        this.ssid                            = YWlanRecord_get_ssid;
+        this.get_channel                     = YWlanRecord_get_channel;
+        this.channel                         = YWlanRecord_get_channel;
+        this.get_security                    = YWlanRecord_get_security;
+        this.security                        = YWlanRecord_get_security;
+        this.get_linkQuality                 = YWlanRecord_get_linkQuality;
+        this.linkQuality                     = YWlanRecord_get_linkQuality;
+        //--- (end of generated code: YWlanRecord constructor)
+    }
+
+    YWlanRecord = _YWlanRecord;
+})();
+
+
 
 /**
  * YWireless Class: Wireless function interface
@@ -65,7 +127,7 @@ var Y_WLANCONFIG_INVALID            = "!INVALID!";
 var YWireless; // definition below
 (function()
 {
-    //--- (YWireless implementation)
+    //--- (generated code: YWireless implementation)
 
     /**
      * Returns the logical name of the wireless lan interface.
@@ -326,7 +388,7 @@ var YWireless; // definition below
     /**
      * Changes the configuration of the wireless lan interface to create an ad-hoc
      * wireless network, without using an access point. If a security key is specified,
-     * the network will be protected by WEP128, since WPA is not standardized for
+     * the network is protected by WEP128, since WPA is not standardized for
      * ad-hoc networks.
      * Remember to call the saveToFlash() method and then to reboot the module to apply this setting.
      * 
@@ -341,6 +403,29 @@ var YWireless; // definition below
     {   var rest_val;
         rest_val = 'ADHOC:'+str_ssid+'\\'+str_securityKey;
         return this._setAttr('wlanConfig',rest_val);
+    }
+
+    /**
+     * Returns a list of YWlanRecord objects which describe detected Wireless networks.
+     * This list is not updated when the module is already connected to an acces point (infrastructure mode).
+     * To force an update of this list, adhocNetwork() must be called to disconnect
+     * the module from the current network. The returned list must be unallocated by caller,
+     * 
+     * @return a list of YWlanRecord objects, containing the SSID, channel,
+     *         link quality and the type of security of the wireless network.
+     * 
+     * On failure, throws an exception or returns an empty list.
+     */
+    function YWireless_get_detectedWlans()
+    {
+        var json; // type: bin;
+        var list = new Array();
+        var res = new Array();
+        json = this._download("wlan.json?by=name");
+        list = this._json_get_array(json);
+        for(IDX in list) { res.push(new YWlanRecord(list[IDX])); };
+        return res;
+        
     }
 
     /**
@@ -403,11 +488,11 @@ var YWireless; // definition below
         return YWireless.FindWireless(next_hwid);
     }
 
-    //--- (end of YWireless implementation)
+    //--- (end of generated code: YWireless implementation)
 
     function _YWireless(str_func)
     {
-        //--- (YWireless constructor)
+        //--- (generated code: YWireless constructor)
 
         // inherit from YFunction (=== YAPI.newFunction)
         YAPI.newFunction.call(this, 'Wireless', str_func);
@@ -464,8 +549,10 @@ var YWireless; // definition below
         this.setWlanConfig                   = YWireless_set_wlanConfig;
         this.joinNetwork                     = YWireless_joinNetwork;
         this.adhocNetwork                    = YWireless_adhocNetwork;
+        this.get_detectedWlans               = YWireless_get_detectedWlans;
+        this.detectedWlans                   = YWireless_get_detectedWlans;
         this.nextWireless                    = YWireless_nextWireless;
-        //--- (end of YWireless constructor)
+        //--- (end of generated code: YWireless constructor)
     }
 
     YWireless = _YWireless;
@@ -473,7 +560,7 @@ var YWireless; // definition below
     YWireless.FirstWireless = YWireless_FirstWireless;
 })();
 
-//--- (Wireless functions)
+//--- (generated code: Wireless functions)
 
 /**
  * Retrieves a wireless lan interface for a given identifier.
@@ -517,4 +604,4 @@ function yFirstWireless()
     return YWireless.FirstWireless();
 }
 
-//--- (end of Wireless functions)
+//--- (end of generated code: Wireless functions)

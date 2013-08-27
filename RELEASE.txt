@@ -1,1 +1,7 @@
-- Publish library to GitHub
+- clarify license agreement
+- better diagnostic when Blob constructor is not supported (old Safari)
+- fix race condition in wait_async
+- add get_lastLogs() method to YModule class
+- add examples for Yocto-VOC and Yocto-Watt
+- fix Yocto-MaxiDisplay, Yocto-Display and Yocto-MiniDisplay examples
+- minor fixes

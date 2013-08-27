@@ -1,39 +1,39 @@
 /*********************************************************************
  *
- * $Id: yocto_carbondioxide.js 11112 2013-04-16 14:51:20Z mvuilleu $
+ * $Id: yocto_carbondioxide.js 12324 2013-08-13 15:10:31Z mvuilleu $
  *
  * Implements yFindCarbonDioxide(), the high-level API for CarbonDioxide functions
  *
  * - - - - - - - - - License information: - - - - - - - - - 
  *
- * Copyright (C) 2011 and beyond by Yoctopuce Sarl, Switzerland.
+ *  Copyright (C) 2011 and beyond by Yoctopuce Sarl, Switzerland.
  *
- * 1) If you have obtained this file from www.yoctopuce.com,
- *    Yoctopuce Sarl licenses to you (hereafter Licensee) the
- *    right to use, modify, copy, and integrate this source file
- *    into your own solution for the sole purpose of interfacing
- *    a Yoctopuce product with Licensee's solution.
+ *  Yoctopuce Sarl (hereafter Licensor) grants to you a perpetual
+ *  non-exclusive license to use, modify, copy and integrate this
+ *  file into your software for the sole purpose of interfacing 
+ *  with Yoctopuce products. 
  *
- *    The use of this file and all relationship between Yoctopuce 
- *    and Licensee are governed by Yoctopuce General Terms and 
- *    Conditions.
+ *  You may reproduce and distribute copies of this file in 
+ *  source or object form, as long as the sole purpose of this
+ *  code is to interface with Yoctopuce products. You must retain 
+ *  this notice in the distributed source file.
  *
- *    THE SOFTWARE AND DOCUMENTATION ARE PROVIDED 'AS IS' WITHOUT
- *    WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING 
- *    WITHOUT LIMITATION, ANY WARRANTY OF MERCHANTABILITY, FITNESS 
- *    FOR A PARTICULAR PURPOSE, TITLE AND NON-INFRINGEMENT. IN NO
- *    EVENT SHALL LICENSOR BE LIABLE FOR ANY INCIDENTAL, SPECIAL,
- *    INDIRECT OR CONSEQUENTIAL DAMAGES, LOST PROFITS OR LOST DATA, 
- *    COST OF PROCUREMENT OF SUBSTITUTE GOODS, TECHNOLOGY OR 
- *    SERVICES, ANY CLAIMS BY THIRD PARTIES (INCLUDING BUT NOT 
- *    LIMITED TO ANY DEFENSE THEREOF), ANY CLAIMS FOR INDEMNITY OR
- *    CONTRIBUTION, OR OTHER SIMILAR COSTS, WHETHER ASSERTED ON THE
- *    BASIS OF CONTRACT, TORT (INCLUDING NEGLIGENCE), BREACH OF
- *    WARRANTY, OR OTHERWISE.
+ *  You should refer to Yoctopuce General Terms and Conditions
+ *  for additional information regarding your rights and 
+ *  obligations.
  *
- * 2) If your intent is not to interface with Yoctopuce products,
- *    you are not entitled to use, read or create any derived
- *    material from this source file.
+ *  THE SOFTWARE AND DOCUMENTATION ARE PROVIDED 'AS IS' WITHOUT
+ *  WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING 
+ *  WITHOUT LIMITATION, ANY WARRANTY OF MERCHANTABILITY, FITNESS 
+ *  FOR A PARTICULAR PURPOSE, TITLE AND NON-INFRINGEMENT. IN NO
+ *  EVENT SHALL LICENSOR BE LIABLE FOR ANY INCIDENTAL, SPECIAL,
+ *  INDIRECT OR CONSEQUENTIAL DAMAGES, LOST PROFITS OR LOST DATA, 
+ *  COST OF PROCUREMENT OF SUBSTITUTE GOODS, TECHNOLOGY OR 
+ *  SERVICES, ANY CLAIMS BY THIRD PARTIES (INCLUDING BUT NOT 
+ *  LIMITED TO ANY DEFENSE THEREOF), ANY CLAIMS FOR INDEMNITY OR
+ *  CONTRIBUTION, OR OTHER SIMILAR COSTS, WHETHER ASSERTED ON THE
+ *  BASIS OF CONTRACT, TORT (INCLUDING NEGLIGENCE), BREACH OF
+ *  WARRANTY, OR OTHERWISE.
  *
  *********************************************************************/
 
@@ -49,8 +49,8 @@ var Y_CURRENTVALUE_INVALID          = -Number.MAX_VALUE;
 var Y_LOWESTVALUE_INVALID           = -Number.MAX_VALUE;
 var Y_HIGHESTVALUE_INVALID          = -Number.MAX_VALUE;
 var Y_CURRENTRAWVALUE_INVALID       = -Number.MAX_VALUE;
-var Y_RESOLUTION_INVALID            = -Number.MAX_VALUE;
 var Y_CALIBRATIONPARAM_INVALID      = "!INVALID!";
+var Y_RESOLUTION_INVALID            = -Number.MAX_VALUE;
 //--- (end of YCarbonDioxide definitions)
 
 /**
@@ -312,42 +312,6 @@ var YCarbonDioxide; // definition below
             { cb:func_callback, userctx:obj_context });
     }
 
-    function YCarbonDioxide_set_resolution(newval)
-    {   var rest_val;
-        rest_val = String(Math.round(newval*65536.0));
-        return this._setAttr('resolution',rest_val);
-    }
-
-    /**
-     * Returns the resolution of the measured values. The resolution corresponds to the numerical precision
-     * of the values, which is not always the same as the actual precision of the sensor.
-     * 
-     * @return a floating point number corresponding to the resolution of the measured values
-     * 
-     * On failure, throws an exception or returns Y_RESOLUTION_INVALID.
-     */
-    function YCarbonDioxide_get_resolution()
-    {   var json_val = this._getAttr('resolution');
-        return (json_val == null ? Y_RESOLUTION_INVALID : 1.0 / Math.round(65536.0/json_val));
-    }
-
-    /**
-     * Returns the resolution of the measured values. The resolution corresponds to the numerical precision
-     * of the values, which is not always the same as the actual precision of the sensor.
-     * 
-     * @return a floating point number corresponding to the resolution of the measured values
-     * 
-     * On failure, throws an exception or returns Y_RESOLUTION_INVALID.
-     * Asynchronous version for poor old Firefox
-     */
-    function YCarbonDioxide_get_resolution_async(func_callback, obj_context)
-    {   this._getAttr_async('resolution',
-            function(ctx, obj, json_val) {
-                var res =  (json_val == null ? Y_RESOLUTION_INVALID : 1.0 / Math.round(65536.0/json_val));
-                ctx.cb(ctx.userctx, obj, res); },
-            { cb:func_callback, userctx:obj_context });
-    }
-
     function YCarbonDioxide_get_calibrationParam()
     {   var json_val = this._getAttr('calibrationParam');
         return (json_val == null ? Y_CALIBRATIONPARAM_INVALID : json_val);
@@ -375,7 +339,7 @@ var YCarbonDioxide; // definition below
      * a possible perturbation of the measure caused by an enclosure. It is possible
      * to configure up to five correction points. Correction points must be provided
      * in ascending order, and be in the range of the sensor. The device will automatically
-     * perform a lineat interpolatation of the error correction between specified
+     * perform a linear interpolation of the error correction between specified
      * points. Remember to call the saveToFlash() method of the module if the
      * modification must be kept.
      * 
@@ -400,6 +364,36 @@ var YCarbonDioxide; // definition below
     function YCarbonDioxide_loadCalibrationPoints(floatArrRef_rawValues,floatArrRef_refValues)
     {
         return this._decodeCalibrationPoints(floatArrRef_rawValues,floatArrRef_refValues);
+    }
+
+    /**
+     * Returns the resolution of the measured values. The resolution corresponds to the numerical precision
+     * of the values, which is not always the same as the actual precision of the sensor.
+     * 
+     * @return a floating point number corresponding to the resolution of the measured values
+     * 
+     * On failure, throws an exception or returns Y_RESOLUTION_INVALID.
+     */
+    function YCarbonDioxide_get_resolution()
+    {   var json_val = this._getAttr('resolution');
+        return (json_val == null ? Y_RESOLUTION_INVALID : (json_val > 100 ? 1.0 / Math.round(65536.0/json_val) : 0.001 / Math.round(67.0/json_val)));
+    }
+
+    /**
+     * Returns the resolution of the measured values. The resolution corresponds to the numerical precision
+     * of the values, which is not always the same as the actual precision of the sensor.
+     * 
+     * @return a floating point number corresponding to the resolution of the measured values
+     * 
+     * On failure, throws an exception or returns Y_RESOLUTION_INVALID.
+     * Asynchronous version for poor old Firefox
+     */
+    function YCarbonDioxide_get_resolution_async(func_callback, obj_context)
+    {   this._getAttr_async('resolution',
+            function(ctx, obj, json_val) {
+                var res =  (json_val == null ? Y_RESOLUTION_INVALID : (json_val > 100 ? 1.0 / Math.round(65536.0/json_val) : 0.001 / Math.round(67.0/json_val)));
+                ctx.cb(ctx.userctx, obj, res); },
+            { cb:func_callback, userctx:obj_context });
     }
 
     /**
@@ -479,8 +473,8 @@ var YCarbonDioxide; // definition below
         this.LOWESTVALUE_INVALID             = -Number.MAX_VALUE;
         this.HIGHESTVALUE_INVALID            = -Number.MAX_VALUE;
         this.CURRENTRAWVALUE_INVALID         = -Number.MAX_VALUE;
-        this.RESOLUTION_INVALID              = -Number.MAX_VALUE;
         this.CALIBRATIONPARAM_INVALID        = "!INVALID!";
+        this.RESOLUTION_INVALID              = -Number.MAX_VALUE;
         this._calibrationOffset              = -32767;
         this.get_logicalName                 = YCarbonDioxide_get_logicalName;
         this.logicalName                     = YCarbonDioxide_get_logicalName;
@@ -516,12 +510,6 @@ var YCarbonDioxide; // definition below
         this.currentRawValue                 = YCarbonDioxide_get_currentRawValue;
         this.get_currentRawValue_async       = YCarbonDioxide_get_currentRawValue_async;
         this.currentRawValue_async           = YCarbonDioxide_get_currentRawValue_async;
-        this.set_resolution                  = YCarbonDioxide_set_resolution;
-        this.setResolution                   = YCarbonDioxide_set_resolution;
-        this.get_resolution                  = YCarbonDioxide_get_resolution;
-        this.resolution                      = YCarbonDioxide_get_resolution;
-        this.get_resolution_async            = YCarbonDioxide_get_resolution_async;
-        this.resolution_async                = YCarbonDioxide_get_resolution_async;
         this.get_calibrationParam            = YCarbonDioxide_get_calibrationParam;
         this.calibrationParam                = YCarbonDioxide_get_calibrationParam;
         this.get_calibrationParam_async      = YCarbonDioxide_get_calibrationParam_async;
@@ -530,6 +518,10 @@ var YCarbonDioxide; // definition below
         this.setCalibrationParam             = YCarbonDioxide_set_calibrationParam;
         this.calibrateFromPoints             = YCarbonDioxide_calibrateFromPoints;
         this.loadCalibrationPoints           = YCarbonDioxide_loadCalibrationPoints;
+        this.get_resolution                  = YCarbonDioxide_get_resolution;
+        this.resolution                      = YCarbonDioxide_get_resolution;
+        this.get_resolution_async            = YCarbonDioxide_get_resolution_async;
+        this.resolution_async                = YCarbonDioxide_get_resolution_async;
         this.nextCarbonDioxide               = YCarbonDioxide_nextCarbonDioxide;
         //--- (end of YCarbonDioxide constructor)
     }

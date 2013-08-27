@@ -1,39 +1,39 @@
 /*********************************************************************
  *
- * $Id: yocto_api.js 10792 2013-03-28 13:52:07Z mvuilleu $
+ * $Id: yocto_api.js 12553 2013-08-27 21:08:37Z mvuilleu $
  *
  * High-level programming interface, common to all modules
  *
  * - - - - - - - - - License information: - - - - - - - - -
  *
- * Copyright (C) 2011 and beyond by Yoctopuce Sarl, Switzerland.
+ *  Copyright (C) 2011 and beyond by Yoctopuce Sarl, Switzerland.
  *
- * 1) If you have obtained this file from www.yoctopuce.com,
- *    Yoctopuce Sarl licenses to you (hereafter Licensee) the
- *    right to use, modify, copy, and integrate this source file
- *    into your own solution for the sole purpose of interfacing
- *    a Yoctopuce product with Licensee's solution.
+ *  Yoctopuce Sarl (hereafter Licensor) grants to you a perpetual
+ *  non-exclusive license to use, modify, copy and integrate this
+ *  file into your software for the sole purpose of interfacing 
+ *  with Yoctopuce products. 
  *
- *    The use of this file and all relationship between Yoctopuce 
- *    and Licensee are governed by Yoctopuce General Terms and 
- *    Conditions.
+ *  You may reproduce and distribute copies of this file in 
+ *  source or object form, as long as the sole purpose of this
+ *  code is to interface with Yoctopuce products. You must retain 
+ *  this notice in the distributed source file.
  *
- *    THE SOFTWARE AND DOCUMENTATION ARE PROVIDED "AS IS" WITHOUT
- *    WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING 
- *    WITHOUT LIMITATION, ANY WARRANTY OF MERCHANTABILITY, FITNESS 
- *    FOR A PARTICULAR PURPOSE, TITLE AND NON-INFRINGEMENT. IN NO
- *    EVENT SHALL LICENSOR BE LIABLE FOR ANY INCIDENTAL, SPECIAL,
- *    INDIRECT OR CONSEQUENTIAL DAMAGES, LOST PROFITS OR LOST DATA, 
- *    COST OF PROCUREMENT OF SUBSTITUTE GOODS, TECHNOLOGY OR 
- *    SERVICES, ANY CLAIMS BY THIRD PARTIES (INCLUDING BUT NOT 
- *    LIMITED TO ANY DEFENSE THEREOF), ANY CLAIMS FOR INDEMNITY OR
- *    CONTRIBUTION, OR OTHER SIMILAR COSTS, WHETHER ASSERTED ON THE
- *    BASIS OF CONTRACT, TORT (INCLUDING NEGLIGENCE), BREACH OF
- *    WARRANTY, OR OTHERWISE.
+ *  You should refer to Yoctopuce General Terms and Conditions
+ *  for additional information regarding your rights and 
+ *  obligations.
  *
- * 2) If your intent is not to interface with Yoctopuce products,
- *    you are not entitled to use, read or create any derived 
- *    material from this source file.
+ *  THE SOFTWARE AND DOCUMENTATION ARE PROVIDED "AS IS" WITHOUT
+ *  WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING 
+ *  WITHOUT LIMITATION, ANY WARRANTY OF MERCHANTABILITY, FITNESS 
+ *  FOR A PARTICULAR PURPOSE, TITLE AND NON-INFRINGEMENT. IN NO
+ *  EVENT SHALL LICENSOR BE LIABLE FOR ANY INCIDENTAL, SPECIAL,
+ *  INDIRECT OR CONSEQUENTIAL DAMAGES, LOST PROFITS OR LOST DATA, 
+ *  COST OF PROCUREMENT OF SUBSTITUTE GOODS, TECHNOLOGY OR 
+ *  SERVICES, ANY CLAIMS BY THIRD PARTIES (INCLUDING BUT NOT 
+ *  LIMITED TO ANY DEFENSE THEREOF), ANY CLAIMS FOR INDEMNITY OR
+ *  CONTRIBUTION, OR OTHER SIMILAR COSTS, WHETHER ASSERTED ON THE
+ *  BASIS OF CONTRACT, TORT (INCLUDING NEGLIGENCE), BREACH OF
+ *  WARRANTY, OR OTHERWISE.
  *
  *********************************************************************/
 
@@ -52,6 +52,7 @@ var YAPI_NO_MORE_DATA              = -9;      // there is no more data to read f
 var YAPI_EXHAUSTED                 = -10;     // you have run out of a limited ressource, check the documentation
 var YAPI_DOUBLE_ACCES              = -11;     // you have two process that try to acces to the same device
 var YAPI_UNAUTHORIZED              = -12;     // unauthorized access to password-protected device
+var YAPI_RTC_NOT_READY             = -13;     // real-time clock has not been initialized (or time was lost)
 
 var Y_PERSISTENTSETTINGS_LOADED     = 0;
 var Y_PERSISTENTSETTINGS_SAVED      = 1;
@@ -498,7 +499,7 @@ var YModule;
         YAPI.devRequest_async(this._rootUrl, "GET /api.json", '',
                               function(params, yreq) {
                                   if(yreq.errorType != YAPI_SUCCESS) {
-                                      if(params.cb) params.cb(params.ctx, yreq.errorType);
+                                      if(params.cb) params.cb(params.ctx, yreq);
                                       return;
                                   }
                                   params.obj._cache._expiration = YAPI.GetTickCount() + YAPI.defaultCacheValidity;
@@ -683,6 +684,7 @@ var YModule;
         this._cache           = {_expiration:0, _json:""};
         this._functions       = [];
         this._busy            = 0;
+        this._runningQuery    = null;
         this._pendingQueries  = [];
         this._throw           = YAPI_throw;
         this._updateFromYP    = YDevice_updateFromYP;
@@ -1160,7 +1162,7 @@ var YModule;
             if(ctyp <= 10) {
                 rawPt[i>>1] = (iParams[i-1]+obj_yfunc._calibrationOffset) * resol;
                 calPt[i>>1] = (iParams[i]+obj_yfunc._calibrationOffset) * resol;
-            } else {
+            }else {
                 rawPt[i>>1] = YAPI.decimalToDouble(iParams[i-1]);
                 calPt[i>>1] = YAPI.decimalToDouble(iParams[i]);
             }
@@ -1370,6 +1372,7 @@ var YModule;
         if(devUrl.substr(0,1) == "/") devUrl = devUrl.substr(1);
         var httpRequest = (window.XMLHttpRequest) ? new XMLHttpRequest() : new ActiveXObject("Microsoft.XMLHTTP");
         try { 
+            httpRequest.reqUrl = baseUrl+devUrl;
             httpRequest.open(method,baseUrl+devUrl,async,'','');
             if(!obj_body) {
                 obj_body = '';
@@ -1381,6 +1384,7 @@ var YModule;
             if(async) {
                 httpRequest.onreadystatechange = function() { 
                     if(lockdev && httpRequest.readyState==4) {
+                        lockdev._runningQuery = null;
                         lockdev._busy--;
                         func_statechanged(httpRequest);
                         while(lockdev._busy == 0 && lockdev._pendingQueries.length > 0) {
@@ -1388,6 +1392,7 @@ var YModule;
                             if(pq.xhr) {
                                 // send pending query
                                 lockdev._busy++;
+                                lockdev._runningQuery = pq.xhr;
                                 pq.xhr.send(pq.body);
                             } else if(pq.cb) {
                                 // notify queued callback
@@ -1401,19 +1406,30 @@ var YModule;
                 if(lockdev && (lockdev._busy > 0 || lockdev._pendingQueries.length > 0)) {
                     lockdev._pendingQueries.push({xhr:httpRequest,body:obj_body});
                 } else {
-                    if(lockdev) lockdev._busy++;
+                    if(lockdev) {
+                        lockdev._busy++;
+                        lockdev._runningQuery = httpRequest;
+                    }
                     httpRequest.send(obj_body);
                 }
             } else {
                 if(lockdev && lockdev._busy > 0 && (baseUrl.indexOf('/bySerial/') >= 0 || 
                                                     baseUrl.indexOf('/byName/') >= 0)) {
+                    //console.log("HTTP blocking request: "+httpRequest.reqUrl);
+                    //console.log("Currently executing: "+lockdev._runningQuery.reqUrl);
                     return {errorType:YAPI_DEVICE_BUSY, 
                              errorMsg: "Non-async request would deadlock the browser", 
                              result: null};
                 }
-                if(lockdev) lockdev._busy++;
+                if(lockdev) {
+                    lockdev._busy++;
+                    lockdev._runningQuery = httpRequest;
+                }
                 httpRequest.send(obj_body);
-                if(lockdev) lockdev._busy--;
+                if(lockdev) {
+                    lockdev._runningQuery = null;
+                    lockdev._busy--;
+                }
             }
         } catch(err) {
             //alert('http error:'+(err.message || err.description));
@@ -1631,7 +1647,7 @@ var YModule;
                                       reqcb, {funcid:null, 
                                               hwid:devreq.hwid, 
                                               cb:obj_ctx.callback, 
-                                              ctx:obj_ctx.context });
+                                              ctx:obj_ctx.context});
             }
         }, {extra: str_extra, callback: func_callback, context: obj_context} );
     }
@@ -1670,7 +1686,7 @@ var YModule;
      */
     function YAPI_GetAPIVersion()
     {
-        return "1.01.11167";
+        return "1.01.12553";
     }
 
     /**
@@ -2519,6 +2535,7 @@ var YModule;
         this.EXHAUSTED             = -10;     // you have run out of a limited ressource, check the documentation
         this.DOUBLE_ACCES          = -11;     // you have two process that try to acces to the same device
         this.UNAUTHORIZED          = -12;     // unauthorized access to password-protected device
+        this.RTC_NOT_READY         = -13;     // real-time clock has not been initialized (or time was lost)
 //--- (end of generated code: return codes)
 
         // yInitAPI constants (not really useful in JavaScript)
@@ -2809,7 +2826,27 @@ var YModule;
             }
             // convert Uint8Array to Blob if needed
             if(bin_content instanceof Uint8Array) {
-                bin_content = new Blob([bin_content], {type: "application/octet-binary"});
+                try {
+                    bin_content = new Blob([bin_content], {type: "application/octet-binary"});
+                } catch(e) {
+                    window.BlobBuilder = window.BlobBuilder || 
+                                         window.WebKitBlobBuilder || 
+                                         window.MozBlobBuilder || 
+                                         window.MSBlobBuilder;
+                    if(e.name == 'TypeError' && window.BlobBuilder){
+                        var bb = new BlobBuilder();
+                        bb.append([bin_content.buffer]);
+                        bin_content = bb.getBlob("application/octet-binary");
+                    } else {
+                        try {
+                            bin_content = new Blob([bin_content.buffer], {type: "application/octet-binary"});
+                        } catch(e) {
+                            return this._throw(YAPI_NOT_SUPPORTED,
+                                               "Blob constructor is not supported by this browser",
+                                               YAPI_NOT_SUPPORTED);
+                        }
+                    }
+                }
             }
             // else assume content is already a Blob, a File, etc
             body = new FormData();
@@ -2845,8 +2882,8 @@ var YModule;
      * 
      * @param callback : callback function that is invoked when all pending commands on
      *         the module are completed.
-     *         The callback function receives three arguments: the caller-specific
-     *         context object, the receiving function object and the boolean result
+     *         The callback function receives two arguments: the caller-specific
+     *         context object and the receiving function object.
      * @param context : caller-specific object that is passed as-is to the callback function
      * 
      * @return nothing :
@@ -2859,7 +2896,7 @@ var YModule;
             return '';
         }
         var lockdev = YAPI.getDevice(devid);
-        if(lockdev == null || lockdev._pendingQueries.length == 0) {
+        if(lockdev == null || (lockdev._busy == 0 && lockdev._pendingQueries.length == 0)) {
             // no pending callback
             func_callback(obj_context, this);
         } else {
@@ -4019,6 +4056,20 @@ var YModule;
     }
 
     /**
+     * Returns a string with last logs of the module. This method return only
+     * logs that are still in the module.
+     * 
+     * @return a string with last logs of the module.
+     */
+    function YModule_get_lastLogs()
+    {
+        var content; // type: bin;
+        content = this._download("logs.txt");
+        return content;
+        
+    }
+
+    /**
      * Continues the module enumeration started using yFirstModule().
      * 
      * @return a pointer to a YModule object, corresponding to
@@ -4175,6 +4226,8 @@ var YModule;
         this.download                        = YModule_download;
         this.get_icon2d                      = YModule_get_icon2d;
         this.icon2d                          = YModule_get_icon2d;
+        this.get_lastLogs                    = YModule_get_lastLogs;
+        this.lastLogs                        = YModule_get_lastLogs;
         this.nextModule                      = YModule_nextModule;
         //--- (end of generated code: YModule constructor)
 

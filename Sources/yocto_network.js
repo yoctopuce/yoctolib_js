@@ -1,39 +1,39 @@
 /*********************************************************************
  *
- * $Id: yocto_network.js 9883 2013-02-19 07:47:16Z mvuilleu $
+ * $Id: yocto_network.js 12337 2013-08-14 15:22:22Z mvuilleu $
  *
  * Implements yFindNetwork(), the high-level API for Network functions
  *
  * - - - - - - - - - License information: - - - - - - - - - 
  *
- * Copyright (C) 2011 and beyond by Yoctopuce Sarl, Switzerland.
+ *  Copyright (C) 2011 and beyond by Yoctopuce Sarl, Switzerland.
  *
- * 1) If you have obtained this file from www.yoctopuce.com,
- *    Yoctopuce Sarl licenses to you (hereafter Licensee) the
- *    right to use, modify, copy, and integrate this source file
- *    into your own solution for the sole purpose of interfacing
- *    a Yoctopuce product with Licensee's solution.
+ *  Yoctopuce Sarl (hereafter Licensor) grants to you a perpetual
+ *  non-exclusive license to use, modify, copy and integrate this
+ *  file into your software for the sole purpose of interfacing 
+ *  with Yoctopuce products. 
  *
- *    The use of this file and all relationship between Yoctopuce 
- *    and Licensee are governed by Yoctopuce General Terms and 
- *    Conditions.
+ *  You may reproduce and distribute copies of this file in 
+ *  source or object form, as long as the sole purpose of this
+ *  code is to interface with Yoctopuce products. You must retain 
+ *  this notice in the distributed source file.
  *
- *    THE SOFTWARE AND DOCUMENTATION ARE PROVIDED 'AS IS' WITHOUT
- *    WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING 
- *    WITHOUT LIMITATION, ANY WARRANTY OF MERCHANTABILITY, FITNESS 
- *    FOR A PARTICULAR PURPOSE, TITLE AND NON-INFRINGEMENT. IN NO
- *    EVENT SHALL LICENSOR BE LIABLE FOR ANY INCIDENTAL, SPECIAL,
- *    INDIRECT OR CONSEQUENTIAL DAMAGES, LOST PROFITS OR LOST DATA, 
- *    COST OF PROCUREMENT OF SUBSTITUTE GOODS, TECHNOLOGY OR 
- *    SERVICES, ANY CLAIMS BY THIRD PARTIES (INCLUDING BUT NOT 
- *    LIMITED TO ANY DEFENSE THEREOF), ANY CLAIMS FOR INDEMNITY OR
- *    CONTRIBUTION, OR OTHER SIMILAR COSTS, WHETHER ASSERTED ON THE
- *    BASIS OF CONTRACT, TORT (INCLUDING NEGLIGENCE), BREACH OF
- *    WARRANTY, OR OTHERWISE.
+ *  You should refer to Yoctopuce General Terms and Conditions
+ *  for additional information regarding your rights and 
+ *  obligations.
  *
- * 2) If your intent is not to interface with Yoctopuce products,
- *    you are not entitled to use, read or create any derived
- *    material from this source file.
+ *  THE SOFTWARE AND DOCUMENTATION ARE PROVIDED 'AS IS' WITHOUT
+ *  WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING 
+ *  WITHOUT LIMITATION, ANY WARRANTY OF MERCHANTABILITY, FITNESS 
+ *  FOR A PARTICULAR PURPOSE, TITLE AND NON-INFRINGEMENT. IN NO
+ *  EVENT SHALL LICENSOR BE LIABLE FOR ANY INCIDENTAL, SPECIAL,
+ *  INDIRECT OR CONSEQUENTIAL DAMAGES, LOST PROFITS OR LOST DATA, 
+ *  COST OF PROCUREMENT OF SUBSTITUTE GOODS, TECHNOLOGY OR 
+ *  SERVICES, ANY CLAIMS BY THIRD PARTIES (INCLUDING BUT NOT 
+ *  LIMITED TO ANY DEFENSE THEREOF), ANY CLAIMS FOR INDEMNITY OR
+ *  CONTRIBUTION, OR OTHER SIMILAR COSTS, WHETHER ASSERTED ON THE
+ *  BASIS OF CONTRACT, TORT (INCLUDING NEGLIGENCE), BREACH OF
+ *  WARRANTY, OR OTHERWISE.
  *
  *********************************************************************/
 
@@ -48,6 +48,9 @@ var Y_READINESS_LINKED              = 2;
 var Y_READINESS_LAN_OK              = 3;
 var Y_READINESS_WWW_OK              = 4;
 var Y_READINESS_INVALID             = -1;
+var Y_DISCOVERABLE_FALSE            = 0;
+var Y_DISCOVERABLE_TRUE             = 1;
+var Y_DISCOVERABLE_INVALID          = -1;
 var Y_CALLBACKMETHOD_POST           = 0;
 var Y_CALLBACKMETHOD_GET            = 1;
 var Y_CALLBACKMETHOD_PUT            = 2;
@@ -69,10 +72,12 @@ var Y_PRIMARYDNS_INVALID            = "!INVALID!";
 var Y_SECONDARYDNS_INVALID          = "!INVALID!";
 var Y_USERPASSWORD_INVALID          = "!INVALID!";
 var Y_ADMINPASSWORD_INVALID         = "!INVALID!";
+var Y_WWWWATCHDOGDELAY_INVALID      = -1;
 var Y_CALLBACKURL_INVALID           = "!INVALID!";
 var Y_CALLBACKCREDENTIALS_INVALID   = "!INVALID!";
 var Y_CALLBACKMINDELAY_INVALID      = -1;
 var Y_CALLBACKMAXDELAY_INVALID      = -1;
+var Y_POECURRENT_INVALID            = -1;
 //--- (end of YNetwork definitions)
 
 /**
@@ -171,13 +176,13 @@ var YNetwork; // definition below
      * Level 1 (LIVE_1) is reached when the network is detected, but is not yet connected,
      * For a wireless network, this shows that the requested SSID is present.
      * Level 2 (LINK_2) is reached when the hardware connection is established.
-     * For a wired network connection, level 2 means that the cable is attached on both ends.
+     * For a wired network connection, level 2 means that the cable is attached at both ends.
      * For a connection to a wireless access point, it shows that the security parameters
      * are properly configured. For an ad-hoc wireless connection, it means that there is
      * at least one other device connected on the ad-hoc network.
      * Level 3 (DHCP_3) is reached when an IP address has been obtained using DHCP.
      * Level 4 (DNS_4) is reached when the DNS server is reachable on the network.
-     * Level 5 (WWW_5) is reached when global connectivity is demonstrated by properly loading
+     * Level 5 (WWW_5) is reached when global connectivity is demonstrated by properly loading the
      * current time from an NTP server.
      * 
      * @return a value among Y_READINESS_DOWN, Y_READINESS_EXISTS, Y_READINESS_LINKED, Y_READINESS_LAN_OK
@@ -197,13 +202,13 @@ var YNetwork; // definition below
      * Level 1 (LIVE_1) is reached when the network is detected, but is not yet connected,
      * For a wireless network, this shows that the requested SSID is present.
      * Level 2 (LINK_2) is reached when the hardware connection is established.
-     * For a wired network connection, level 2 means that the cable is attached on both ends.
+     * For a wired network connection, level 2 means that the cable is attached at both ends.
      * For a connection to a wireless access point, it shows that the security parameters
      * are properly configured. For an ad-hoc wireless connection, it means that there is
      * at least one other device connected on the ad-hoc network.
      * Level 3 (DHCP_3) is reached when an IP address has been obtained using DHCP.
      * Level 4 (DNS_4) is reached when the DNS server is reachable on the network.
-     * Level 5 (WWW_5) is reached when global connectivity is demonstrated by properly loading
+     * Level 5 (WWW_5) is reached when global connectivity is demonstrated by properly loading the
      * current time from an NTP server.
      * 
      * @return a value among Y_READINESS_DOWN, Y_READINESS_EXISTS, Y_READINESS_LINKED, Y_READINESS_LAN_OK
@@ -361,7 +366,7 @@ var YNetwork; // definition below
     /**
      * Changes the configuration of the network interface to enable the use of an
      * IP address received from a DHCP server. Until an address is received from a DHCP
-     * server, the module will use the IP parameters specified to this function.
+     * server, the module uses the IP parameters specified to this function.
      * Remember to call the saveToFlash() method and then to reboot the module to apply this setting.
      * 
      * @param fallbackIpAddr : fallback IP address, to be used when no DHCP reply is received
@@ -427,7 +432,7 @@ var YNetwork; // definition below
 
     /**
      * Changes the IP address of the primary name server to be used by the module.
-     * When using DHCP, if a value is specified, it will override the value received from the DHCP server.
+     * When using DHCP, if a value is specified, it overrides the value received from the DHCP server.
      * Remember to call the saveToFlash() method and then to reboot the module to apply this setting.
      * 
      * @param newval : a string corresponding to the IP address of the primary name server to be used by the module
@@ -472,7 +477,7 @@ var YNetwork; // definition below
 
     /**
      * Changes the IP address of the secondarz name server to be used by the module.
-     * When using DHCP, if a value is specified, it will override the value received from the DHCP server.
+     * When using DHCP, if a value is specified, it overrides the value received from the DHCP server.
      * Remember to call the saveToFlash() method and then to reboot the module to apply this setting.
      * 
      * @param newval : a string corresponding to the IP address of the secondarz name server to be used by the module
@@ -488,10 +493,10 @@ var YNetwork; // definition below
     }
 
     /**
-     * Returns a hash string if a password has been set for user "user",
+     * Returns a hash string if a password has been set for "user" user,
      * or an empty string otherwise.
      * 
-     * @return a string corresponding to a hash string if a password has been set for user "user",
+     * @return a string corresponding to a hash string if a password has been set for "user" user,
      *         or an empty string otherwise
      * 
      * On failure, throws an exception or returns Y_USERPASSWORD_INVALID.
@@ -502,10 +507,10 @@ var YNetwork; // definition below
     }
 
     /**
-     * Returns a hash string if a password has been set for user "user",
+     * Returns a hash string if a password has been set for "user" user,
      * or an empty string otherwise.
      * 
-     * @return a string corresponding to a hash string if a password has been set for user "user",
+     * @return a string corresponding to a hash string if a password has been set for "user" user,
      *         or an empty string otherwise
      * 
      * On failure, throws an exception or returns Y_USERPASSWORD_INVALID.
@@ -590,6 +595,114 @@ var YNetwork; // definition below
     }
 
     /**
+     * Returns the activation state of the multicast announce protocols to allow easy
+     * discovery of the module in the network neighborhood (uPnP/Bonjour protocol).
+     * 
+     * @return either Y_DISCOVERABLE_FALSE or Y_DISCOVERABLE_TRUE, according to the activation state of
+     * the multicast announce protocols to allow easy
+     *         discovery of the module in the network neighborhood (uPnP/Bonjour protocol)
+     * 
+     * On failure, throws an exception or returns Y_DISCOVERABLE_INVALID.
+     */
+    function YNetwork_get_discoverable()
+    {   var json_val = this._getAttr('discoverable');
+        return (json_val == null ? Y_DISCOVERABLE_INVALID : parseInt(json_val));
+    }
+
+    /**
+     * Returns the activation state of the multicast announce protocols to allow easy
+     * discovery of the module in the network neighborhood (uPnP/Bonjour protocol).
+     * 
+     * @return either Y_DISCOVERABLE_FALSE or Y_DISCOVERABLE_TRUE, according to the activation state of
+     * the multicast announce protocols to allow easy
+     *         discovery of the module in the network neighborhood (uPnP/Bonjour protocol)
+     * 
+     * On failure, throws an exception or returns Y_DISCOVERABLE_INVALID.
+     * Asynchronous version for poor old Firefox
+     */
+    function YNetwork_get_discoverable_async(func_callback, obj_context)
+    {   this._getAttr_async('discoverable',
+            function(ctx, obj, json_val) {
+                var res =  (json_val == null ? Y_DISCOVERABLE_INVALID : parseInt(json_val));
+                ctx.cb(ctx.userctx, obj, res); },
+            { cb:func_callback, userctx:obj_context });
+    }
+
+    /**
+     * Changes the activation state of the multicast announce protocols to allow easy
+     * discovery of the module in the network neighborhood (uPnP/Bonjour protocol).
+     * 
+     * @param newval : either Y_DISCOVERABLE_FALSE or Y_DISCOVERABLE_TRUE, according to the activation
+     * state of the multicast announce protocols to allow easy
+     *         discovery of the module in the network neighborhood (uPnP/Bonjour protocol)
+     * 
+     * @return YAPI_SUCCESS if the call succeeds.
+     * 
+     * On failure, throws an exception or returns a negative error code.
+     */
+    function YNetwork_set_discoverable(newval)
+    {   var rest_val;
+        rest_val = String(newval);
+        return this._setAttr('discoverable',rest_val);
+    }
+
+    /**
+     * Returns the allowed downtime of the WWW link (in seconds) before triggering an automated
+     * reboot to try to recover Internet connectivity. A zero value disables automated reboot
+     * in case of Internet connectivity loss.
+     * 
+     * @return an integer corresponding to the allowed downtime of the WWW link (in seconds) before
+     * triggering an automated
+     *         reboot to try to recover Internet connectivity
+     * 
+     * On failure, throws an exception or returns Y_WWWWATCHDOGDELAY_INVALID.
+     */
+    function YNetwork_get_wwwWatchdogDelay()
+    {   var json_val = this._getAttr('wwwWatchdogDelay');
+        return (json_val == null ? Y_WWWWATCHDOGDELAY_INVALID : parseInt(json_val));
+    }
+
+    /**
+     * Returns the allowed downtime of the WWW link (in seconds) before triggering an automated
+     * reboot to try to recover Internet connectivity. A zero value disables automated reboot
+     * in case of Internet connectivity loss.
+     * 
+     * @return an integer corresponding to the allowed downtime of the WWW link (in seconds) before
+     * triggering an automated
+     *         reboot to try to recover Internet connectivity
+     * 
+     * On failure, throws an exception or returns Y_WWWWATCHDOGDELAY_INVALID.
+     * Asynchronous version for poor old Firefox
+     */
+    function YNetwork_get_wwwWatchdogDelay_async(func_callback, obj_context)
+    {   this._getAttr_async('wwwWatchdogDelay',
+            function(ctx, obj, json_val) {
+                var res =  (json_val == null ? Y_WWWWATCHDOGDELAY_INVALID : parseInt(json_val));
+                ctx.cb(ctx.userctx, obj, res); },
+            { cb:func_callback, userctx:obj_context });
+    }
+
+    /**
+     * Changes the allowed downtime of the WWW link (in seconds) before triggering an automated
+     * reboot to try to recover Internet connectivity. A zero value disable automated reboot
+     * in case of Internet connectivity loss. The smallest valid non-zero timeout is
+     * 90 seconds.
+     * 
+     * @param newval : an integer corresponding to the allowed downtime of the WWW link (in seconds)
+     * before triggering an automated
+     *         reboot to try to recover Internet connectivity
+     * 
+     * @return YAPI_SUCCESS if the call succeeds.
+     * 
+     * On failure, throws an exception or returns a negative error code.
+     */
+    function YNetwork_set_wwwWatchdogDelay(newval)
+    {   var rest_val;
+        rest_val = String(newval);
+        return this._setAttr('wwwWatchdogDelay',rest_val);
+    }
+
+    /**
      * Returns the callback URL to notify of significant state changes.
      * 
      * @return a string corresponding to the callback URL to notify of significant state changes
@@ -618,10 +731,10 @@ var YNetwork; // definition below
     }
 
     /**
-     * Changes the callback URL to notify of significant state changes. Remember to call the
+     * Changes the callback URL to notify significant state changes. Remember to call the
      * saveToFlash() method of the module if the modification must be kept.
      * 
-     * @param newval : a string corresponding to the callback URL to notify of significant state changes
+     * @param newval : a string corresponding to the callback URL to notify significant state changes
      * 
      * @return YAPI_SUCCESS if the call succeeds.
      * 
@@ -634,10 +747,10 @@ var YNetwork; // definition below
     }
 
     /**
-     * Returns the HTTP Method used to notify callbacks for significant state changes.
+     * Returns the HTTP method used to notify callbacks for significant state changes.
      * 
      * @return a value among Y_CALLBACKMETHOD_POST, Y_CALLBACKMETHOD_GET and Y_CALLBACKMETHOD_PUT
-     * corresponding to the HTTP Method used to notify callbacks for significant state changes
+     * corresponding to the HTTP method used to notify callbacks for significant state changes
      * 
      * On failure, throws an exception or returns Y_CALLBACKMETHOD_INVALID.
      */
@@ -647,10 +760,10 @@ var YNetwork; // definition below
     }
 
     /**
-     * Returns the HTTP Method used to notify callbacks for significant state changes.
+     * Returns the HTTP method used to notify callbacks for significant state changes.
      * 
      * @return a value among Y_CALLBACKMETHOD_POST, Y_CALLBACKMETHOD_GET and Y_CALLBACKMETHOD_PUT
-     * corresponding to the HTTP Method used to notify callbacks for significant state changes
+     * corresponding to the HTTP method used to notify callbacks for significant state changes
      * 
      * On failure, throws an exception or returns Y_CALLBACKMETHOD_INVALID.
      * Asynchronous version for poor old Firefox
@@ -664,10 +777,10 @@ var YNetwork; // definition below
     }
 
     /**
-     * Changes the HTTP Method used to notify callbacks for significant state changes.
+     * Changes the HTTP method used to notify callbacks for significant state changes.
      * 
      * @param newval : a value among Y_CALLBACKMETHOD_POST, Y_CALLBACKMETHOD_GET and Y_CALLBACKMETHOD_PUT
-     * corresponding to the HTTP Method used to notify callbacks for significant state changes
+     * corresponding to the HTTP method used to notify callbacks for significant state changes
      * 
      * @return YAPI_SUCCESS if the call succeeds.
      * 
@@ -785,8 +898,8 @@ var YNetwork; // definition below
 
     /**
      * Connects to the notification callback and saves the credentials required to
-     * log in to it. The password will not be stored into the module, only a hashed
-     * copy of the credentials will be saved. Remember to call the
+     * log into it. The password is not stored into the module, only a hashed
+     * copy of the credentials are saved. Remember to call the
      * saveToFlash() method of the module if the modification must be kept.
      * 
      * @param username : username required to log to the callback
@@ -803,9 +916,9 @@ var YNetwork; // definition below
     }
 
     /**
-     * Returns the minimum wait time between two callback notifications, in seconds.
+     * Returns the minimum waiting time between two callback notifications, in seconds.
      * 
-     * @return an integer corresponding to the minimum wait time between two callback notifications, in seconds
+     * @return an integer corresponding to the minimum waiting time between two callback notifications, in seconds
      * 
      * On failure, throws an exception or returns Y_CALLBACKMINDELAY_INVALID.
      */
@@ -815,9 +928,9 @@ var YNetwork; // definition below
     }
 
     /**
-     * Returns the minimum wait time between two callback notifications, in seconds.
+     * Returns the minimum waiting time between two callback notifications, in seconds.
      * 
-     * @return an integer corresponding to the minimum wait time between two callback notifications, in seconds
+     * @return an integer corresponding to the minimum waiting time between two callback notifications, in seconds
      * 
      * On failure, throws an exception or returns Y_CALLBACKMINDELAY_INVALID.
      * Asynchronous version for poor old Firefox
@@ -831,9 +944,10 @@ var YNetwork; // definition below
     }
 
     /**
-     * Changes the minimum wait time between two callback notifications, in seconds.
+     * Changes the minimum waiting time between two callback notifications, in seconds.
      * 
-     * @param newval : an integer corresponding to the minimum wait time between two callback notifications, in seconds
+     * @param newval : an integer corresponding to the minimum waiting time between two callback
+     * notifications, in seconds
      * 
      * @return YAPI_SUCCESS if the call succeeds.
      * 
@@ -846,9 +960,9 @@ var YNetwork; // definition below
     }
 
     /**
-     * Returns the maximum wait time between two callback notifications, in seconds.
+     * Returns the maximum waiting time between two callback notifications, in seconds.
      * 
-     * @return an integer corresponding to the maximum wait time between two callback notifications, in seconds
+     * @return an integer corresponding to the maximum waiting time between two callback notifications, in seconds
      * 
      * On failure, throws an exception or returns Y_CALLBACKMAXDELAY_INVALID.
      */
@@ -858,9 +972,9 @@ var YNetwork; // definition below
     }
 
     /**
-     * Returns the maximum wait time between two callback notifications, in seconds.
+     * Returns the maximum waiting time between two callback notifications, in seconds.
      * 
-     * @return an integer corresponding to the maximum wait time between two callback notifications, in seconds
+     * @return an integer corresponding to the maximum waiting time between two callback notifications, in seconds
      * 
      * On failure, throws an exception or returns Y_CALLBACKMAXDELAY_INVALID.
      * Asynchronous version for poor old Firefox
@@ -874,9 +988,10 @@ var YNetwork; // definition below
     }
 
     /**
-     * Changes the maximum wait time between two callback notifications, in seconds.
+     * Changes the maximum waiting time between two callback notifications, in seconds.
      * 
-     * @param newval : an integer corresponding to the maximum wait time between two callback notifications, in seconds
+     * @param newval : an integer corresponding to the maximum waiting time between two callback
+     * notifications, in seconds
      * 
      * @return YAPI_SUCCESS if the call succeeds.
      * 
@@ -886,6 +1001,57 @@ var YNetwork; // definition below
     {   var rest_val;
         rest_val = String(newval);
         return this._setAttr('callbackMaxDelay',rest_val);
+    }
+
+    /**
+     * Returns the current consumed by the module from Power-over-Ethernet (PoE), in milli-amps.
+     * The current consumption is measured after converting PoE source to 5 Volt, and should
+     * never exceed 1800 mA.
+     * 
+     * @return an integer corresponding to the current consumed by the module from Power-over-Ethernet
+     * (PoE), in milli-amps
+     * 
+     * On failure, throws an exception or returns Y_POECURRENT_INVALID.
+     */
+    function YNetwork_get_poeCurrent()
+    {   var json_val = this._getAttr('poeCurrent');
+        return (json_val == null ? Y_POECURRENT_INVALID : parseInt(json_val));
+    }
+
+    /**
+     * Returns the current consumed by the module from Power-over-Ethernet (PoE), in milli-amps.
+     * The current consumption is measured after converting PoE source to 5 Volt, and should
+     * never exceed 1800 mA.
+     * 
+     * @return an integer corresponding to the current consumed by the module from Power-over-Ethernet
+     * (PoE), in milli-amps
+     * 
+     * On failure, throws an exception or returns Y_POECURRENT_INVALID.
+     * Asynchronous version for poor old Firefox
+     */
+    function YNetwork_get_poeCurrent_async(func_callback, obj_context)
+    {   this._getAttr_async('poeCurrent',
+            function(ctx, obj, json_val) {
+                var res =  (json_val == null ? Y_POECURRENT_INVALID : parseInt(json_val));
+                ctx.cb(ctx.userctx, obj, res); },
+            { cb:func_callback, userctx:obj_context });
+    }
+
+    /**
+     * Pings str_host to test the network connectivity. Sends four requests ICMP ECHO_REQUEST from the
+     * module to the target str_host. This method returns a string with the result of the
+     * 4 ICMP ECHO_REQUEST result.
+     * 
+     * @param host : the hostname or the IP address of the target
+     * 
+     * @return a string with the result of the ping.
+     */
+    function YNetwork_ping(str_host)
+    {
+        var content; // type: bin;
+        content = this._download("ping.txt?host="+str_host);
+        return content;
+        
     }
 
     /**
@@ -975,6 +1141,10 @@ var YNetwork; // definition below
         this.SECONDARYDNS_INVALID            = "!INVALID!";
         this.USERPASSWORD_INVALID            = "!INVALID!";
         this.ADMINPASSWORD_INVALID           = "!INVALID!";
+        this.DISCOVERABLE_FALSE              = 0;
+        this.DISCOVERABLE_TRUE               = 1;
+        this.DISCOVERABLE_INVALID            = -1;
+        this.WWWWATCHDOGDELAY_INVALID        = -1;
         this.CALLBACKURL_INVALID             = "!INVALID!";
         this.CALLBACKMETHOD_POST             = 0;
         this.CALLBACKMETHOD_GET              = 1;
@@ -989,6 +1159,7 @@ var YNetwork; // definition below
         this.CALLBACKCREDENTIALS_INVALID     = "!INVALID!";
         this.CALLBACKMINDELAY_INVALID        = -1;
         this.CALLBACKMAXDELAY_INVALID        = -1;
+        this.POECURRENT_INVALID              = -1;
         this.get_logicalName                 = YNetwork_get_logicalName;
         this.logicalName                     = YNetwork_get_logicalName;
         this.get_logicalName_async           = YNetwork_get_logicalName_async;
@@ -1051,6 +1222,18 @@ var YNetwork; // definition below
         this.adminPassword_async             = YNetwork_get_adminPassword_async;
         this.set_adminPassword               = YNetwork_set_adminPassword;
         this.setAdminPassword                = YNetwork_set_adminPassword;
+        this.get_discoverable                = YNetwork_get_discoverable;
+        this.discoverable                    = YNetwork_get_discoverable;
+        this.get_discoverable_async          = YNetwork_get_discoverable_async;
+        this.discoverable_async              = YNetwork_get_discoverable_async;
+        this.set_discoverable                = YNetwork_set_discoverable;
+        this.setDiscoverable                 = YNetwork_set_discoverable;
+        this.get_wwwWatchdogDelay            = YNetwork_get_wwwWatchdogDelay;
+        this.wwwWatchdogDelay                = YNetwork_get_wwwWatchdogDelay;
+        this.get_wwwWatchdogDelay_async      = YNetwork_get_wwwWatchdogDelay_async;
+        this.wwwWatchdogDelay_async          = YNetwork_get_wwwWatchdogDelay_async;
+        this.set_wwwWatchdogDelay            = YNetwork_set_wwwWatchdogDelay;
+        this.setWwwWatchdogDelay             = YNetwork_set_wwwWatchdogDelay;
         this.get_callbackUrl                 = YNetwork_get_callbackUrl;
         this.callbackUrl                     = YNetwork_get_callbackUrl;
         this.get_callbackUrl_async           = YNetwork_get_callbackUrl_async;
@@ -1088,6 +1271,11 @@ var YNetwork; // definition below
         this.callbackMaxDelay_async          = YNetwork_get_callbackMaxDelay_async;
         this.set_callbackMaxDelay            = YNetwork_set_callbackMaxDelay;
         this.setCallbackMaxDelay             = YNetwork_set_callbackMaxDelay;
+        this.get_poeCurrent                  = YNetwork_get_poeCurrent;
+        this.poeCurrent                      = YNetwork_get_poeCurrent;
+        this.get_poeCurrent_async            = YNetwork_get_poeCurrent_async;
+        this.poeCurrent_async                = YNetwork_get_poeCurrent_async;
+        this.ping                            = YNetwork_ping;
         this.nextNetwork                     = YNetwork_nextNetwork;
         //--- (end of YNetwork constructor)
     }

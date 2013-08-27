@@ -1,12 +1,10 @@
 <HTML>
 <HEAD>
  <TITLE>Hello World</TITLE>
- <SCRIPT type="text/javascript" src="../../Sources/yocto_api.js"></SCRIPT>
- <SCRIPT type="text/javascript" src="../../Sources/yocto_relay.js"></SCRIPT>
+ <SCRIPT type="text/javascript" src="../../../Sources/yocto_api.js"></SCRIPT>
+ <SCRIPT type="text/javascript" src="../../../Sources/yocto_watchdog.js"></SCRIPT>
  <SCRIPT language='javascript1.5' type='text/JavaScript'>
  <!--
- // Use explicit error handling rather than exceptions
- yDisableExceptions();
 
  // Setup the API to use the VirtualHub on local machine
  if(yRegisterHub('http://127.0.0.1:4444/') != YAPI_SUCCESS) {
