@@ -1,4 +1,3 @@
-// yapi loads asynchronously (usually within 5 ticks), so we don't try to access it right away..
  var yapi = require('./index');
 
  yapi.yDisableExceptions();
