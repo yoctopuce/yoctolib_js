@@ -49,3 +49,11 @@ includes sample code with explanations, and a programming reference manual.
 In case of trouble, contact support@yoctopuce.com
 
 Have fun !
+
+ps: if you would like to use this library as a node.js module, then:
+    
+    npm install -l yoctolib
+    
+    var yapi = require('yoctolib')
+
+    if (yapi.yRegisterHub('http://127.0.0.1:4444/') != yapi.YAPI_SUCCESS) ...
