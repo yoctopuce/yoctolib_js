@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_hubport.js 12337 2013-08-14 15:22:22Z mvuilleu $
+ * $Id: yocto_hubport.js 13065 2013-10-10 16:04:55Z mvuilleu $
  *
  * Implements yFindHubPort(), the high-level API for HubPort functions
  *
@@ -59,7 +59,10 @@ var Y_BAUDRATE_INVALID              = -1;
 /**
  * YHubPort Class: Yocto-hub port interface
  * 
- * 
+ * YHubPort objects provide control over the power supply for every
+ * YoctoHub ports, and provide information about the device connected to it.
+ * The logical name of a YHubPort is always automatically set to the
+ * unique serial number of the Yoctopuce device connected to it.
  */
 var YHubPort; // definition below
 (function()
@@ -82,15 +85,21 @@ var YHubPort; // definition below
     }
 
     /**
-     * Returns the logical name of the Yocto-hub port, which is always the serial number of the
+     * Gets the logical name of the Yocto-hub port, which is always the serial number of the
      * connected module.
      * 
-     * @return a string corresponding to the logical name of the Yocto-hub port, which is always the
-     * serial number of the
-     *         connected module
+     * @param callback : callback function that is invoked when the result is known.
+     *         The callback function receives three arguments:
+     *         - the user-specific context object
+     *         - the YHubPort object that invoked the callback
+     *         - the result:a string corresponding to the logical name of the Yocto-hub port, which is always the
+     *         serial number of the
+     *         connected modu
+     * @param context : user-specific object that is passed as-is to the callback function
+     * 
+     * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      * 
      * On failure, throws an exception or returns Y_LOGICALNAME_INVALID.
-     * Asynchronous version for poor old Firefox
      */
     function YHubPort_get_logicalName_async(func_callback, obj_context)
     {   this._getAttr_async('logicalName',
@@ -129,12 +138,18 @@ var YHubPort; // definition below
     }
 
     /**
-     * Returns the current value of the Yocto-hub port (no more than 6 characters).
+     * Gets the current value of the Yocto-hub port (no more than 6 characters).
      * 
-     * @return a string corresponding to the current value of the Yocto-hub port (no more than 6 characters)
+     * @param callback : callback function that is invoked when the result is known.
+     *         The callback function receives three arguments:
+     *         - the user-specific context object
+     *         - the YHubPort object that invoked the callback
+     *         - the result:a string corresponding to the current value of the Yocto-hub port (no more than 6 character
+     * @param context : user-specific object that is passed as-is to the callback function
+     * 
+     * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      * 
      * On failure, throws an exception or returns Y_ADVERTISEDVALUE_INVALID.
-     * Asynchronous version for poor old Firefox
      */
     function YHubPort_get_advertisedValue_async(func_callback, obj_context)
     {   this._getAttr_async('advertisedValue',
@@ -158,13 +173,19 @@ var YHubPort; // definition below
     }
 
     /**
-     * Returns true if the Yocto-hub port is powered, false otherwise.
+     * Gets true if the Yocto-hub port is powered, false otherwise.
      * 
-     * @return either Y_ENABLED_FALSE or Y_ENABLED_TRUE, according to true if the Yocto-hub port is
-     * powered, false otherwise
+     * @param callback : callback function that is invoked when the result is known.
+     *         The callback function receives three arguments:
+     *         - the user-specific context object
+     *         - the YHubPort object that invoked the callback
+     *         - the result:either Y_ENABLED_FALSE or Y_ENABLED_TRUE, according to true if the Yocto-hub port is
+     *         powered, false otherwi
+     * @param context : user-specific object that is passed as-is to the callback function
+     * 
+     * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      * 
      * On failure, throws an exception or returns Y_ENABLED_INVALID.
-     * Asynchronous version for poor old Firefox
      */
     function YHubPort_get_enabled_async(func_callback, obj_context)
     {   this._getAttr_async('enabled',
@@ -176,7 +197,7 @@ var YHubPort; // definition below
 
     /**
      * Changes the activation of the Yocto-hub port. If the port is enabled, the
-     * *      connected module is powered. Otherwise, port power is shut down.
+     * connected module is powered. Otherwise, port power is shut down.
      * 
      * @param newval : either Y_ENABLED_FALSE or Y_ENABLED_TRUE, according to the activation of the Yocto-hub port
      * 
@@ -204,13 +225,19 @@ var YHubPort; // definition below
     }
 
     /**
-     * Returns the current state of the Yocto-hub port.
+     * Gets the current state of the Yocto-hub port.
      * 
-     * @return a value among Y_PORTSTATE_OFF, Y_PORTSTATE_OVRLD, Y_PORTSTATE_ON, Y_PORTSTATE_RUN and
-     * Y_PORTSTATE_PROG corresponding to the current state of the Yocto-hub port
+     * @param callback : callback function that is invoked when the result is known.
+     *         The callback function receives three arguments:
+     *         - the user-specific context object
+     *         - the YHubPort object that invoked the callback
+     *         - the result:a value among Y_PORTSTATE_OFF, Y_PORTSTATE_OVRLD, Y_PORTSTATE_ON, Y_PORTSTATE_RUN and
+     *         Y_PORTSTATE_PROG corresponding to the current state of the Yocto-hub po
+     * @param context : user-specific object that is passed as-is to the callback function
+     * 
+     * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      * 
      * On failure, throws an exception or returns Y_PORTSTATE_INVALID.
-     * Asynchronous version for poor old Firefox
      */
     function YHubPort_get_portState_async(func_callback, obj_context)
     {   this._getAttr_async('portState',
@@ -235,14 +262,20 @@ var YHubPort; // definition below
     }
 
     /**
-     * Returns the current baud rate used by this Yocto-hub port, in kbps.
+     * Gets the current baud rate used by this Yocto-hub port, in kbps.
      * The default value is 1000 kbps, but a slower rate may be used if communication
      * problems are encountered.
      * 
-     * @return an integer corresponding to the current baud rate used by this Yocto-hub port, in kbps
+     * @param callback : callback function that is invoked when the result is known.
+     *         The callback function receives three arguments:
+     *         - the user-specific context object
+     *         - the YHubPort object that invoked the callback
+     *         - the result:an integer corresponding to the current baud rate used by this Yocto-hub port, in kb
+     * @param context : user-specific object that is passed as-is to the callback function
+     * 
+     * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      * 
      * On failure, throws an exception or returns Y_BAUDRATE_INVALID.
-     * Asynchronous version for poor old Firefox
      */
     function YHubPort_get_baudRate_async(func_callback, obj_context)
     {   this._getAttr_async('baudRate',
@@ -363,6 +396,18 @@ var YHubPort; // definition below
     }
 
     YHubPort = _YHubPort;
+    YHubPort.LOGICALNAME_INVALID             = "!INVALID!";
+    YHubPort.ADVERTISEDVALUE_INVALID         = "!INVALID!";
+    YHubPort.ENABLED_FALSE                   = 0;
+    YHubPort.ENABLED_TRUE                    = 1;
+    YHubPort.ENABLED_INVALID                 = -1;
+    YHubPort.PORTSTATE_OFF                   = 0;
+    YHubPort.PORTSTATE_OVRLD                 = 1;
+    YHubPort.PORTSTATE_ON                    = 2;
+    YHubPort.PORTSTATE_RUN                   = 3;
+    YHubPort.PORTSTATE_PROG                  = 4;
+    YHubPort.PORTSTATE_INVALID               = -1;
+    YHubPort.BAUDRATE_INVALID                = -1;
     YHubPort.FindHubPort  = YHubPort_FindHubPort;
     YHubPort.FirstHubPort = YHubPort_FirstHubPort;
 })();

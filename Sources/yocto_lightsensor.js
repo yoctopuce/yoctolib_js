@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_lightsensor.js 12324 2013-08-13 15:10:31Z mvuilleu $
+ * $Id: yocto_lightsensor.js 13065 2013-10-10 16:04:55Z mvuilleu $
  *
  * Implements yFindLightSensor(), the high-level API for LightSensor functions
  *
@@ -77,12 +77,18 @@ var YLightSensor; // definition below
     }
 
     /**
-     * Returns the logical name of the light sensor.
+     * Gets the logical name of the light sensor.
      * 
-     * @return a string corresponding to the logical name of the light sensor
+     * @param callback : callback function that is invoked when the result is known.
+     *         The callback function receives three arguments:
+     *         - the user-specific context object
+     *         - the YLightSensor object that invoked the callback
+     *         - the result:a string corresponding to the logical name of the light sens
+     * @param context : user-specific object that is passed as-is to the callback function
+     * 
+     * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      * 
      * On failure, throws an exception or returns Y_LOGICALNAME_INVALID.
-     * Asynchronous version for poor old Firefox
      */
     function YLightSensor_get_logicalName_async(func_callback, obj_context)
     {   this._getAttr_async('logicalName',
@@ -123,12 +129,18 @@ var YLightSensor; // definition below
     }
 
     /**
-     * Returns the current value of the light sensor (no more than 6 characters).
+     * Gets the current value of the light sensor (no more than 6 characters).
      * 
-     * @return a string corresponding to the current value of the light sensor (no more than 6 characters)
+     * @param callback : callback function that is invoked when the result is known.
+     *         The callback function receives three arguments:
+     *         - the user-specific context object
+     *         - the YLightSensor object that invoked the callback
+     *         - the result:a string corresponding to the current value of the light sensor (no more than 6 character
+     * @param context : user-specific object that is passed as-is to the callback function
+     * 
+     * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      * 
      * On failure, throws an exception or returns Y_ADVERTISEDVALUE_INVALID.
-     * Asynchronous version for poor old Firefox
      */
     function YLightSensor_get_advertisedValue_async(func_callback, obj_context)
     {   this._getAttr_async('advertisedValue',
@@ -151,12 +163,18 @@ var YLightSensor; // definition below
     }
 
     /**
-     * Returns the measuring unit for the measured value.
+     * Gets the measuring unit for the measured value.
      * 
-     * @return a string corresponding to the measuring unit for the measured value
+     * @param callback : callback function that is invoked when the result is known.
+     *         The callback function receives three arguments:
+     *         - the user-specific context object
+     *         - the YLightSensor object that invoked the callback
+     *         - the result:a string corresponding to the measuring unit for the measured val
+     * @param context : user-specific object that is passed as-is to the callback function
+     * 
+     * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      * 
      * On failure, throws an exception or returns Y_UNIT_INVALID.
-     * Asynchronous version for poor old Firefox
      */
     function YLightSensor_get_unit_async(func_callback, obj_context)
     {   this._getAttr_async('unit',
@@ -182,19 +200,29 @@ var YLightSensor; // definition below
     function YLightSensor_get_currentValue()
     {   if(YAPI.applyCalibration) {
             var res = YAPI.applyCalibration(this);
-            if(res != Y_CURRENTVALUE_INVALID) return res;
+            if(res != Y_CURRENTVALUE_INVALID) {
+                var resol = this.get_resolution();
+                res = Math.round(res / resol) * resol;
+                return res;
+            }
         }
         var json_val = this._getAttr('currentValue');
         return (json_val == null ? Y_CURRENTVALUE_INVALID : Math.round(json_val/6553.6) / 10);
     }
 
     /**
-     * Returns the current measured value.
+     * Gets the current measured value.
      * 
-     * @return a floating point number corresponding to the current measured value
+     * @param callback : callback function that is invoked when the result is known.
+     *         The callback function receives three arguments:
+     *         - the user-specific context object
+     *         - the YLightSensor object that invoked the callback
+     *         - the result:a floating point number corresponding to the current measured val
+     * @param context : user-specific object that is passed as-is to the callback function
+     * 
+     * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      * 
      * On failure, throws an exception or returns Y_CURRENTVALUE_INVALID.
-     * Asynchronous version for poor old Firefox
      */
     function YLightSensor_get_currentValue_async(func_callback, obj_context)
     {   this._getAttr_async('currentValue',
@@ -251,12 +279,18 @@ var YLightSensor; // definition below
     }
 
     /**
-     * Returns the minimal value observed.
+     * Gets the minimal value observed.
      * 
-     * @return a floating point number corresponding to the minimal value observed
+     * @param callback : callback function that is invoked when the result is known.
+     *         The callback function receives three arguments:
+     *         - the user-specific context object
+     *         - the YLightSensor object that invoked the callback
+     *         - the result:a floating point number corresponding to the minimal value observ
+     * @param context : user-specific object that is passed as-is to the callback function
+     * 
+     * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      * 
      * On failure, throws an exception or returns Y_LOWESTVALUE_INVALID.
-     * Asynchronous version for poor old Firefox
      */
     function YLightSensor_get_lowestValue_async(func_callback, obj_context)
     {   this._getAttr_async('lowestValue',
@@ -294,12 +328,18 @@ var YLightSensor; // definition below
     }
 
     /**
-     * Returns the maximal value observed.
+     * Gets the maximal value observed.
      * 
-     * @return a floating point number corresponding to the maximal value observed
+     * @param callback : callback function that is invoked when the result is known.
+     *         The callback function receives three arguments:
+     *         - the user-specific context object
+     *         - the YLightSensor object that invoked the callback
+     *         - the result:a floating point number corresponding to the maximal value observ
+     * @param context : user-specific object that is passed as-is to the callback function
+     * 
+     * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      * 
      * On failure, throws an exception or returns Y_HIGHESTVALUE_INVALID.
-     * Asynchronous version for poor old Firefox
      */
     function YLightSensor_get_highestValue_async(func_callback, obj_context)
     {   this._getAttr_async('highestValue',
@@ -322,12 +362,19 @@ var YLightSensor; // definition below
     }
 
     /**
-     * Returns the unrounded and uncalibrated raw value returned by the sensor.
+     * Gets the unrounded and uncalibrated raw value returned by the sensor.
      * 
-     * @return a floating point number corresponding to the unrounded and uncalibrated raw value returned by the sensor
+     * @param callback : callback function that is invoked when the result is known.
+     *         The callback function receives three arguments:
+     *         - the user-specific context object
+     *         - the YLightSensor object that invoked the callback
+     *         - the result:a floating point number corresponding to the unrounded and uncalibrated raw value
+     *         returned by the sens
+     * @param context : user-specific object that is passed as-is to the callback function
+     * 
+     * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      * 
      * On failure, throws an exception or returns Y_CURRENTRAWVALUE_INVALID.
-     * Asynchronous version for poor old Firefox
      */
     function YLightSensor_get_currentRawValue_async(func_callback, obj_context)
     {   this._getAttr_async('currentRawValue',
@@ -343,7 +390,15 @@ var YLightSensor; // definition below
     }
 
     /**
-     * Asynchronous version for poor old Firefox
+     * 
+     * @param callback : callback function that is invoked when the result is known.
+     *         The callback function receives three arguments:
+     *         - the user-specific context object
+     *         - the YLightSensor object that invoked the callback
+     *         - the result:
+     * @param context : user-specific object that is passed as-is to the callback function
+     * 
+     * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      */
     function YLightSensor_get_calibrationParam_async(func_callback, obj_context)
     {   this._getAttr_async('calibrationParam',
@@ -393,7 +448,7 @@ var YLightSensor; // definition below
 
     /**
      * Returns the resolution of the measured values. The resolution corresponds to the numerical precision
-     * of the values, which is not always the same as the actual precision of the sensor.
+     * of the measures, which is not always the same as the actual precision of the sensor.
      * 
      * @return a floating point number corresponding to the resolution of the measured values
      * 
@@ -405,13 +460,19 @@ var YLightSensor; // definition below
     }
 
     /**
-     * Returns the resolution of the measured values. The resolution corresponds to the numerical precision
-     * of the values, which is not always the same as the actual precision of the sensor.
+     * Gets the resolution of the measured values. The resolution corresponds to the numerical precision
+     * of the measures, which is not always the same as the actual precision of the sensor.
      * 
-     * @return a floating point number corresponding to the resolution of the measured values
+     * @param callback : callback function that is invoked when the result is known.
+     *         The callback function receives three arguments:
+     *         - the user-specific context object
+     *         - the YLightSensor object that invoked the callback
+     *         - the result:a floating point number corresponding to the resolution of the measured valu
+     * @param context : user-specific object that is passed as-is to the callback function
+     * 
+     * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      * 
      * On failure, throws an exception or returns Y_RESOLUTION_INVALID.
-     * Asynchronous version for poor old Firefox
      */
     function YLightSensor_get_resolution_async(func_callback, obj_context)
     {   this._getAttr_async('resolution',
@@ -555,6 +616,16 @@ var YLightSensor; // definition below
     }
 
     YLightSensor = _YLightSensor;
+    YLightSensor.LOGICALNAME_INVALID             = "!INVALID!";
+    YLightSensor.ADVERTISEDVALUE_INVALID         = "!INVALID!";
+    YLightSensor.UNIT_INVALID                    = "!INVALID!";
+    YLightSensor.CURRENTVALUE_INVALID            = -Number.MAX_VALUE;
+    YLightSensor.LOWESTVALUE_INVALID             = -Number.MAX_VALUE;
+    YLightSensor.HIGHESTVALUE_INVALID            = -Number.MAX_VALUE;
+    YLightSensor.CURRENTRAWVALUE_INVALID         = -Number.MAX_VALUE;
+    YLightSensor.CALIBRATIONPARAM_INVALID        = "!INVALID!";
+    YLightSensor.RESOLUTION_INVALID              = -Number.MAX_VALUE;
+    YLightSensor._calibrationOffset              = 0;
     YLightSensor.FindLightSensor  = YLightSensor_FindLightSensor;
     YLightSensor.FirstLightSensor = YLightSensor_FirstLightSensor;
 })();

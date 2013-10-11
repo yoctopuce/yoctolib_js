@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_datalogger.js 12326 2013-08-13 15:52:20Z mvuilleu $
+ * $Id: yocto_datalogger.js 13065 2013-10-10 16:04:55Z mvuilleu $
  *
  * Implements yFindDataLogger(), the high-level API for DataLogger functions
  *
@@ -1064,12 +1064,18 @@ var yFindDataLogger; // definition below
     }
 
     /**
-     * Returns the logical name of the data logger.
+     * Gets the logical name of the data logger.
      * 
-     * @return a string corresponding to the logical name of the data logger
+     * @param callback : callback function that is invoked when the result is known.
+     *         The callback function receives three arguments:
+     *         - the user-specific context object
+     *         - the YDataLogger object that invoked the callback
+     *         - the result:a string corresponding to the logical name of the data logg
+     * @param context : user-specific object that is passed as-is to the callback function
+     * 
+     * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      * 
      * On failure, throws an exception or returns Y_LOGICALNAME_INVALID.
-     * Asynchronous version for poor old Firefox
      */
     function YDataLogger_get_logicalName_async(func_callback, obj_context)
     {   this._getAttr_async('logicalName',
@@ -1110,12 +1116,18 @@ var yFindDataLogger; // definition below
     }
 
     /**
-     * Returns the current value of the data logger (no more than 6 characters).
+     * Gets the current value of the data logger (no more than 6 characters).
      * 
-     * @return a string corresponding to the current value of the data logger (no more than 6 characters)
+     * @param callback : callback function that is invoked when the result is known.
+     *         The callback function receives three arguments:
+     *         - the user-specific context object
+     *         - the YDataLogger object that invoked the callback
+     *         - the result:a string corresponding to the current value of the data logger (no more than 6 character
+     * @param context : user-specific object that is passed as-is to the callback function
+     * 
+     * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      * 
      * On failure, throws an exception or returns Y_ADVERTISEDVALUE_INVALID.
-     * Asynchronous version for poor old Firefox
      */
     function YDataLogger_get_advertisedValue_async(func_callback, obj_context)
     {   this._getAttr_async('advertisedValue',
@@ -1139,13 +1151,19 @@ var yFindDataLogger; // definition below
     }
 
     /**
-     * Returns the index of the oldest run for which the non-volatile memory still holds recorded data.
+     * Gets the index of the oldest run for which the non-volatile memory still holds recorded data.
      * 
-     * @return an integer corresponding to the index of the oldest run for which the non-volatile memory
-     * still holds recorded data
+     * @param callback : callback function that is invoked when the result is known.
+     *         The callback function receives three arguments:
+     *         - the user-specific context object
+     *         - the YDataLogger object that invoked the callback
+     *         - the result:an integer corresponding to the index of the oldest run for which the non-volatile
+     *         memory still holds recorded da
+     * @param context : user-specific object that is passed as-is to the callback function
+     * 
+     * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      * 
      * On failure, throws an exception or returns Y_OLDESTRUNINDEX_INVALID.
-     * Asynchronous version for poor old Firefox
      */
     function YDataLogger_get_oldestRunIndex_async(func_callback, obj_context)
     {   this._getAttr_async('oldestRunIndex',
@@ -1170,14 +1188,21 @@ var yFindDataLogger; // definition below
     }
 
     /**
-     * Returns the current run number, corresponding to the number of times the module was
+     * Gets the current run number, corresponding to the number of times the module was
      * powered on with the dataLogger enabled at some point.
      * 
-     * @return an integer corresponding to the current run number, corresponding to the number of times the module was
-     *         powered on with the dataLogger enabled at some point
+     * @param callback : callback function that is invoked when the result is known.
+     *         The callback function receives three arguments:
+     *         - the user-specific context object
+     *         - the YDataLogger object that invoked the callback
+     *         - the result:an integer corresponding to the current run number, corresponding to the number of
+     *         times the module was
+     *         powered on with the dataLogger enabled at some poi
+     * @param context : user-specific object that is passed as-is to the callback function
+     * 
+     * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      * 
      * On failure, throws an exception or returns Y_CURRENTRUNINDEX_INVALID.
-     * Asynchronous version for poor old Firefox
      */
     function YDataLogger_get_currentRunIndex_async(func_callback, obj_context)
     {   this._getAttr_async('currentRunIndex',
@@ -1193,7 +1218,15 @@ var yFindDataLogger; // definition below
     }
 
     /**
-     * Asynchronous version for poor old Firefox
+     * 
+     * @param callback : callback function that is invoked when the result is known.
+     *         The callback function receives three arguments:
+     *         - the user-specific context object
+     *         - the YDataLogger object that invoked the callback
+     *         - the result:
+     * @param context : user-specific object that is passed as-is to the callback function
+     * 
+     * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      */
     function YDataLogger_get_samplingInterval_async(func_callback, obj_context)
     {   this._getAttr_async('samplingInterval',
@@ -1201,12 +1234,6 @@ var yFindDataLogger; // definition below
                 var res =  (json_val == null ? Y_SAMPLINGINTERVAL_INVALID : parseInt(json_val));
                 ctx.cb(ctx.userctx, obj, res); },
             { cb:func_callback, userctx:obj_context });
-    }
-
-    function YDataLogger_set_samplingInterval(newval)
-    {   var rest_val;
-        rest_val = String(newval);
-        return this._setAttr('samplingInterval',rest_val);
     }
 
     /**
@@ -1222,12 +1249,18 @@ var yFindDataLogger; // definition below
     }
 
     /**
-     * Returns the Unix timestamp for current UTC time, if known.
+     * Gets the Unix timestamp for current UTC time, if known.
      * 
-     * @return an integer corresponding to the Unix timestamp for current UTC time, if known
+     * @param callback : callback function that is invoked when the result is known.
+     *         The callback function receives three arguments:
+     *         - the user-specific context object
+     *         - the YDataLogger object that invoked the callback
+     *         - the result:an integer corresponding to the Unix timestamp for current UTC time, if kno
+     * @param context : user-specific object that is passed as-is to the callback function
+     * 
+     * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      * 
      * On failure, throws an exception or returns Y_TIMEUTC_INVALID.
-     * Asynchronous version for poor old Firefox
      */
     function YDataLogger_get_timeUTC_async(func_callback, obj_context)
     {   this._getAttr_async('timeUTC',
@@ -1265,12 +1298,19 @@ var yFindDataLogger; // definition below
     }
 
     /**
-     * Returns the current activation state of the data logger.
+     * Gets the current activation state of the data logger.
      * 
-     * @return either Y_RECORDING_OFF or Y_RECORDING_ON, according to the current activation state of the data logger
+     * @param callback : callback function that is invoked when the result is known.
+     *         The callback function receives three arguments:
+     *         - the user-specific context object
+     *         - the YDataLogger object that invoked the callback
+     *         - the result:either Y_RECORDING_OFF or Y_RECORDING_ON, according to the current activation state of
+     *         the data logg
+     * @param context : user-specific object that is passed as-is to the callback function
+     * 
+     * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      * 
      * On failure, throws an exception or returns Y_RECORDING_INVALID.
-     * Asynchronous version for poor old Firefox
      */
     function YDataLogger_get_recording_async(func_callback, obj_context)
     {   this._getAttr_async('recording',
@@ -1310,13 +1350,19 @@ var yFindDataLogger; // definition below
     }
 
     /**
-     * Returns the default activation state of the data logger on power up.
+     * Gets the default activation state of the data logger on power up.
      * 
-     * @return either Y_AUTOSTART_OFF or Y_AUTOSTART_ON, according to the default activation state of the
-     * data logger on power up
+     * @param callback : callback function that is invoked when the result is known.
+     *         The callback function receives three arguments:
+     *         - the user-specific context object
+     *         - the YDataLogger object that invoked the callback
+     *         - the result:either Y_AUTOSTART_OFF or Y_AUTOSTART_ON, according to the default activation state of
+     *         the data logger on power
+     * @param context : user-specific object that is passed as-is to the callback function
+     * 
+     * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      * 
      * On failure, throws an exception or returns Y_AUTOSTART_INVALID.
-     * Asynchronous version for poor old Firefox
      */
     function YDataLogger_get_autoStart_async(func_callback, obj_context)
     {   this._getAttr_async('autoStart',
@@ -1350,7 +1396,15 @@ var yFindDataLogger; // definition below
     }
 
     /**
-     * Asynchronous version for poor old Firefox
+     * 
+     * @param callback : callback function that is invoked when the result is known.
+     *         The callback function receives three arguments:
+     *         - the user-specific context object
+     *         - the YDataLogger object that invoked the callback
+     *         - the result:
+     * @param context : user-specific object that is passed as-is to the callback function
+     * 
+     * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      */
     function YDataLogger_get_clearHistory_async(func_callback, obj_context)
     {   this._getAttr_async('clearHistory',
@@ -1473,8 +1527,6 @@ var yFindDataLogger; // definition below
         this.samplingInterval                = YDataLogger_get_samplingInterval;
         this.get_samplingInterval_async      = YDataLogger_get_samplingInterval_async;
         this.samplingInterval_async          = YDataLogger_get_samplingInterval_async;
-        this.set_samplingInterval            = YDataLogger_set_samplingInterval;
-        this.setSamplingInterval             = YDataLogger_set_samplingInterval;
         this.get_timeUTC                     = YDataLogger_get_timeUTC;
         this.timeUTC                         = YDataLogger_get_timeUTC;
         this.get_timeUTC_async               = YDataLogger_get_timeUTC_async;

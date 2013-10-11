@@ -40,9 +40,12 @@ Content of this package:
 Documentation/       API Reference, in HTML and PDF format
 Examples/            Directory with sample code for each device
 Sources/             Source code of the high-level library (in Javascript)
+FILES.txt            List of files contained in this archive
+RELEASE.txt          Release notes
 
 In order to use the Javascript library, you will probably need to download
-as well the VirtualHub software for your OS.
+as well the VirtualHub software for your OS (unless you intend to connect
+directly to a YoctoHub-Ethernet or a YoctoHub-Wireless).
 
 For more details, refer to the documentation specific to each product, which
 includes sample code with explanations, and a programming reference manual.

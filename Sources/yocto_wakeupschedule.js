@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_wakeupschedule.js 12469 2013-08-22 10:11:58Z seb $
+ * $Id: yocto_wakeupschedule.js 13065 2013-10-10 16:04:55Z mvuilleu $
  *
  * Implements yFindWakeUpSchedule(), the high-level API for WakeUpSchedule functions
  *
@@ -56,9 +56,9 @@ var Y_NEXTOCCURENCE_INVALID         = -1;
 /**
  * YWakeUpSchedule Class: WakeUpSchedule function interface
  * 
- * The WakeUpSchedule function implements a wake-up condition. The wake-up time is
- * specified as a set of months and/or days and/or hours and/or minutes where the
- * wake-up should happen.
+ * The WakeUpSchedule function implements a wakeup condition. The wakeup time is
+ * specified as a set of months and/or days and/or hours and/or minutes when the
+ * wakeup should happen.
  */
 var YWakeUpSchedule; // definition below
 (function()
@@ -66,9 +66,9 @@ var YWakeUpSchedule; // definition below
     //--- (YWakeUpSchedule implementation)
 
     /**
-     * Returns the logical name of the wake-up schedule.
+     * Returns the logical name of the wakeup schedule.
      * 
-     * @return a string corresponding to the logical name of the wake-up schedule
+     * @return a string corresponding to the logical name of the wakeup schedule
      * 
      * On failure, throws an exception or returns Y_LOGICALNAME_INVALID.
      */
@@ -78,12 +78,18 @@ var YWakeUpSchedule; // definition below
     }
 
     /**
-     * Returns the logical name of the wake-up schedule.
+     * Gets the logical name of the wakeup schedule.
      * 
-     * @return a string corresponding to the logical name of the wake-up schedule
+     * @param callback : callback function that is invoked when the result is known.
+     *         The callback function receives three arguments:
+     *         - the user-specific context object
+     *         - the YWakeUpSchedule object that invoked the callback
+     *         - the result:a string corresponding to the logical name of the wakeup schedu
+     * @param context : user-specific object that is passed as-is to the callback function
+     * 
+     * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      * 
      * On failure, throws an exception or returns Y_LOGICALNAME_INVALID.
-     * Asynchronous version for poor old Firefox
      */
     function YWakeUpSchedule_get_logicalName_async(func_callback, obj_context)
     {   this._getAttr_async('logicalName',
@@ -94,12 +100,12 @@ var YWakeUpSchedule; // definition below
     }
 
     /**
-     * Changes the logical name of the wake-up schedule. You can use yCheckLogicalName()
+     * Changes the logical name of the wakeup schedule. You can use yCheckLogicalName()
      * prior to this call to make sure that your parameter is valid.
      * Remember to call the saveToFlash() method of the module if the
      * modification must be kept.
      * 
-     * @param newval : a string corresponding to the logical name of the wake-up schedule
+     * @param newval : a string corresponding to the logical name of the wakeup schedule
      * 
      * @return YAPI_SUCCESS if the call succeeds.
      * 
@@ -112,9 +118,9 @@ var YWakeUpSchedule; // definition below
     }
 
     /**
-     * Returns the current value of the wake-up schedule (no more than 6 characters).
+     * Returns the current value of the wakeup schedule (no more than 6 characters).
      * 
-     * @return a string corresponding to the current value of the wake-up schedule (no more than 6 characters)
+     * @return a string corresponding to the current value of the wakeup schedule (no more than 6 characters)
      * 
      * On failure, throws an exception or returns Y_ADVERTISEDVALUE_INVALID.
      */
@@ -124,12 +130,18 @@ var YWakeUpSchedule; // definition below
     }
 
     /**
-     * Returns the current value of the wake-up schedule (no more than 6 characters).
+     * Gets the current value of the wakeup schedule (no more than 6 characters).
      * 
-     * @return a string corresponding to the current value of the wake-up schedule (no more than 6 characters)
+     * @param callback : callback function that is invoked when the result is known.
+     *         The callback function receives three arguments:
+     *         - the user-specific context object
+     *         - the YWakeUpSchedule object that invoked the callback
+     *         - the result:a string corresponding to the current value of the wakeup schedule (no more than 6 character
+     * @param context : user-specific object that is passed as-is to the callback function
+     * 
+     * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      * 
      * On failure, throws an exception or returns Y_ADVERTISEDVALUE_INVALID.
-     * Asynchronous version for poor old Firefox
      */
     function YWakeUpSchedule_get_advertisedValue_async(func_callback, obj_context)
     {   this._getAttr_async('advertisedValue',
@@ -140,9 +152,9 @@ var YWakeUpSchedule; // definition below
     }
 
     /**
-     * Returns the minutes 00-29 of each hour scheduled for wake-up.
+     * Returns the minutes 00-29 of each hour scheduled for wakeup.
      * 
-     * @return an integer corresponding to the minutes 00-29 of each hour scheduled for wake-up
+     * @return an integer corresponding to the minutes 00-29 of each hour scheduled for wakeup
      * 
      * On failure, throws an exception or returns Y_MINUTESA_INVALID.
      */
@@ -152,12 +164,18 @@ var YWakeUpSchedule; // definition below
     }
 
     /**
-     * Returns the minutes 00-29 of each hour scheduled for wake-up.
+     * Gets the minutes 00-29 of each hour scheduled for wakeup.
      * 
-     * @return an integer corresponding to the minutes 00-29 of each hour scheduled for wake-up
+     * @param callback : callback function that is invoked when the result is known.
+     *         The callback function receives three arguments:
+     *         - the user-specific context object
+     *         - the YWakeUpSchedule object that invoked the callback
+     *         - the result:an integer corresponding to the minutes 00-29 of each hour scheduled for wake
+     * @param context : user-specific object that is passed as-is to the callback function
+     * 
+     * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      * 
      * On failure, throws an exception or returns Y_MINUTESA_INVALID.
-     * Asynchronous version for poor old Firefox
      */
     function YWakeUpSchedule_get_minutesA_async(func_callback, obj_context)
     {   this._getAttr_async('minutesA',
@@ -168,9 +186,9 @@ var YWakeUpSchedule; // definition below
     }
 
     /**
-     * Changes the minutes 00-29 where a wake up must take place.
+     * Changes the minutes 00-29 when a wakeup must take place.
      * 
-     * @param newval : an integer corresponding to the minutes 00-29 where a wake up must take place
+     * @param newval : an integer corresponding to the minutes 00-29 when a wakeup must take place
      * 
      * @return YAPI_SUCCESS if the call succeeds.
      * 
@@ -183,9 +201,9 @@ var YWakeUpSchedule; // definition below
     }
 
     /**
-     * Returns the minutes 30-59 of each hour scheduled for wake-up.
+     * Returns the minutes 30-59 of each hour scheduled for wakeup.
      * 
-     * @return an integer corresponding to the minutes 30-59 of each hour scheduled for wake-up
+     * @return an integer corresponding to the minutes 30-59 of each hour scheduled for wakeup
      * 
      * On failure, throws an exception or returns Y_MINUTESB_INVALID.
      */
@@ -195,12 +213,18 @@ var YWakeUpSchedule; // definition below
     }
 
     /**
-     * Returns the minutes 30-59 of each hour scheduled for wake-up.
+     * Gets the minutes 30-59 of each hour scheduled for wakeup.
      * 
-     * @return an integer corresponding to the minutes 30-59 of each hour scheduled for wake-up
+     * @param callback : callback function that is invoked when the result is known.
+     *         The callback function receives three arguments:
+     *         - the user-specific context object
+     *         - the YWakeUpSchedule object that invoked the callback
+     *         - the result:an integer corresponding to the minutes 30-59 of each hour scheduled for wake
+     * @param context : user-specific object that is passed as-is to the callback function
+     * 
+     * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      * 
      * On failure, throws an exception or returns Y_MINUTESB_INVALID.
-     * Asynchronous version for poor old Firefox
      */
     function YWakeUpSchedule_get_minutesB_async(func_callback, obj_context)
     {   this._getAttr_async('minutesB',
@@ -211,9 +235,9 @@ var YWakeUpSchedule; // definition below
     }
 
     /**
-     * Changes the minutes 30-59 where a wake up must take place.
+     * Changes the minutes 30-59 when a wake up must take place.
      * 
-     * @param newval : an integer corresponding to the minutes 30-59 where a wake up must take place
+     * @param newval : an integer corresponding to the minutes 30-59 when a wake up must take place
      * 
      * @return YAPI_SUCCESS if the call succeeds.
      * 
@@ -226,9 +250,9 @@ var YWakeUpSchedule; // definition below
     }
 
     /**
-     * Returns the hours  scheduled for wake-up.
+     * Returns the hours scheduled for wakeup.
      * 
-     * @return an integer corresponding to the hours  scheduled for wake-up
+     * @return an integer corresponding to the hours scheduled for wakeup
      * 
      * On failure, throws an exception or returns Y_HOURS_INVALID.
      */
@@ -238,12 +262,18 @@ var YWakeUpSchedule; // definition below
     }
 
     /**
-     * Returns the hours  scheduled for wake-up.
+     * Gets the hours scheduled for wakeup.
      * 
-     * @return an integer corresponding to the hours  scheduled for wake-up
+     * @param callback : callback function that is invoked when the result is known.
+     *         The callback function receives three arguments:
+     *         - the user-specific context object
+     *         - the YWakeUpSchedule object that invoked the callback
+     *         - the result:an integer corresponding to the hours scheduled for wake
+     * @param context : user-specific object that is passed as-is to the callback function
+     * 
+     * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      * 
      * On failure, throws an exception or returns Y_HOURS_INVALID.
-     * Asynchronous version for poor old Firefox
      */
     function YWakeUpSchedule_get_hours_async(func_callback, obj_context)
     {   this._getAttr_async('hours',
@@ -254,9 +284,9 @@ var YWakeUpSchedule; // definition below
     }
 
     /**
-     * Changes the hours where a wake up must take place.
+     * Changes the hours when a wakeup must take place.
      * 
-     * @param newval : an integer corresponding to the hours where a wake up must take place
+     * @param newval : an integer corresponding to the hours when a wakeup must take place
      * 
      * @return YAPI_SUCCESS if the call succeeds.
      * 
@@ -269,9 +299,9 @@ var YWakeUpSchedule; // definition below
     }
 
     /**
-     * Returns the days of week scheduled for wake-up.
+     * Returns the days of week scheduled for wakeup.
      * 
-     * @return an integer corresponding to the days of week scheduled for wake-up
+     * @return an integer corresponding to the days of week scheduled for wakeup
      * 
      * On failure, throws an exception or returns Y_WEEKDAYS_INVALID.
      */
@@ -281,12 +311,18 @@ var YWakeUpSchedule; // definition below
     }
 
     /**
-     * Returns the days of week scheduled for wake-up.
+     * Gets the days of week scheduled for wakeup.
      * 
-     * @return an integer corresponding to the days of week scheduled for wake-up
+     * @param callback : callback function that is invoked when the result is known.
+     *         The callback function receives three arguments:
+     *         - the user-specific context object
+     *         - the YWakeUpSchedule object that invoked the callback
+     *         - the result:an integer corresponding to the days of week scheduled for wake
+     * @param context : user-specific object that is passed as-is to the callback function
+     * 
+     * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      * 
      * On failure, throws an exception or returns Y_WEEKDAYS_INVALID.
-     * Asynchronous version for poor old Firefox
      */
     function YWakeUpSchedule_get_weekDays_async(func_callback, obj_context)
     {   this._getAttr_async('weekDays',
@@ -297,9 +333,9 @@ var YWakeUpSchedule; // definition below
     }
 
     /**
-     * Changes the days of the week where a wake up must take place.
+     * Changes the days of the week when a wakeup must take place.
      * 
-     * @param newval : an integer corresponding to the days of the week where a wake up must take place
+     * @param newval : an integer corresponding to the days of the week when a wakeup must take place
      * 
      * @return YAPI_SUCCESS if the call succeeds.
      * 
@@ -312,9 +348,9 @@ var YWakeUpSchedule; // definition below
     }
 
     /**
-     * Returns the days of week scheduled for wake-up.
+     * Returns the days of week scheduled for wakeup.
      * 
-     * @return an integer corresponding to the days of week scheduled for wake-up
+     * @return an integer corresponding to the days of week scheduled for wakeup
      * 
      * On failure, throws an exception or returns Y_MONTHDAYS_INVALID.
      */
@@ -324,12 +360,18 @@ var YWakeUpSchedule; // definition below
     }
 
     /**
-     * Returns the days of week scheduled for wake-up.
+     * Gets the days of week scheduled for wakeup.
      * 
-     * @return an integer corresponding to the days of week scheduled for wake-up
+     * @param callback : callback function that is invoked when the result is known.
+     *         The callback function receives three arguments:
+     *         - the user-specific context object
+     *         - the YWakeUpSchedule object that invoked the callback
+     *         - the result:an integer corresponding to the days of week scheduled for wake
+     * @param context : user-specific object that is passed as-is to the callback function
+     * 
+     * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      * 
      * On failure, throws an exception or returns Y_MONTHDAYS_INVALID.
-     * Asynchronous version for poor old Firefox
      */
     function YWakeUpSchedule_get_monthDays_async(func_callback, obj_context)
     {   this._getAttr_async('monthDays',
@@ -340,9 +382,9 @@ var YWakeUpSchedule; // definition below
     }
 
     /**
-     * Changes the days of the week where a wake up must take place.
+     * Changes the days of the week when a wakeup must take place.
      * 
-     * @param newval : an integer corresponding to the days of the week where a wake up must take place
+     * @param newval : an integer corresponding to the days of the week when a wakeup must take place
      * 
      * @return YAPI_SUCCESS if the call succeeds.
      * 
@@ -355,9 +397,9 @@ var YWakeUpSchedule; // definition below
     }
 
     /**
-     * Returns the days of week scheduled for wake-up.
+     * Returns the days of week scheduled for wakeup.
      * 
-     * @return an integer corresponding to the days of week scheduled for wake-up
+     * @return an integer corresponding to the days of week scheduled for wakeup
      * 
      * On failure, throws an exception or returns Y_MONTHS_INVALID.
      */
@@ -367,12 +409,18 @@ var YWakeUpSchedule; // definition below
     }
 
     /**
-     * Returns the days of week scheduled for wake-up.
+     * Gets the days of week scheduled for wakeup.
      * 
-     * @return an integer corresponding to the days of week scheduled for wake-up
+     * @param callback : callback function that is invoked when the result is known.
+     *         The callback function receives three arguments:
+     *         - the user-specific context object
+     *         - the YWakeUpSchedule object that invoked the callback
+     *         - the result:an integer corresponding to the days of week scheduled for wake
+     * @param context : user-specific object that is passed as-is to the callback function
+     * 
+     * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      * 
      * On failure, throws an exception or returns Y_MONTHS_INVALID.
-     * Asynchronous version for poor old Firefox
      */
     function YWakeUpSchedule_get_months_async(func_callback, obj_context)
     {   this._getAttr_async('months',
@@ -383,9 +431,9 @@ var YWakeUpSchedule; // definition below
     }
 
     /**
-     * Changes the days of the week where a wake up must take place.
+     * Changes the days of the week when a wakeup must take place.
      * 
-     * @param newval : an integer corresponding to the days of the week where a wake up must take place
+     * @param newval : an integer corresponding to the days of the week when a wakeup must take place
      * 
      * @return YAPI_SUCCESS if the call succeeds.
      * 
@@ -398,9 +446,9 @@ var YWakeUpSchedule; // definition below
     }
 
     /**
-     * Returns the  nextwake up date/time (seconds) wake up occurence
+     * Returns the date/time (seconds) of the next wakeup occurence
      * 
-     * @return an integer corresponding to the  nextwake up date/time (seconds) wake up occurence
+     * @return an integer corresponding to the date/time (seconds) of the next wakeup occurence
      * 
      * On failure, throws an exception or returns Y_NEXTOCCURENCE_INVALID.
      */
@@ -410,12 +458,18 @@ var YWakeUpSchedule; // definition below
     }
 
     /**
-     * Returns the  nextwake up date/time (seconds) wake up occurence
+     * Gets the date/time (seconds) of the next wakeup occurence
      * 
-     * @return an integer corresponding to the  nextwake up date/time (seconds) wake up occurence
+     * @param callback : callback function that is invoked when the result is known.
+     *         The callback function receives three arguments:
+     *         - the user-specific context object
+     *         - the YWakeUpSchedule object that invoked the callback
+     *         - the result:an integer corresponding to the date/time (seconds) of the next wakeup occuren
+     * @param context : user-specific object that is passed as-is to the callback function
+     * 
+     * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      * 
      * On failure, throws an exception or returns Y_NEXTOCCURENCE_INVALID.
-     * Asynchronous version for poor old Firefox
      */
     function YWakeUpSchedule_get_nextOccurence_async(func_callback, obj_context)
     {   this._getAttr_async('nextOccurence',
@@ -426,7 +480,7 @@ var YWakeUpSchedule; // definition below
     }
 
     /**
-     * Returns every the minutes of each hour scheduled for wake-up.
+     * Returns all the minutes of each hour that are scheduled for wakeup.
      */
     function YWakeUpSchedule_get_minutes()
     {
@@ -441,7 +495,7 @@ var YWakeUpSchedule; // definition below
     /**
      * Changes all the minutes where a wake up must take place.
      * 
-     * @param bitmap : Minutes 00-59 of each hour scheduled for wake-up.,
+     * @param bitmap : Minutes 00-59 of each hour scheduled for wakeup.
      * 
      * @return YAPI_SUCCESS if the call succeeds.
      * 
@@ -456,11 +510,11 @@ var YWakeUpSchedule; // definition below
     }
 
     /**
-     * Continues the enumeration of wake-up schedules started using yFirstWakeUpSchedule().
+     * Continues the enumeration of wakeup schedules started using yFirstWakeUpSchedule().
      * 
      * @return a pointer to a YWakeUpSchedule object, corresponding to
-     *         a wake-up schedule currently online, or a null pointer
-     *         if there are no more wake-up schedules to enumerate.
+     *         a wakeup schedule currently online, or a null pointer
+     *         if there are no more wakeup schedules to enumerate.
      */
     function YWakeUpSchedule_nextWakeUpSchedule()
     {   var next_hwid = YAPI.getNextHardwareId(this._className, this._func);
@@ -469,7 +523,7 @@ var YWakeUpSchedule; // definition below
     }
 
     /**
-     * Retrieves a wake-up schedule for a given identifier.
+     * Retrieves a wakeup schedule for a given identifier.
      * The identifier can be specified using several formats:
      * <ul>
      * <li>FunctionLogicalName</li>
@@ -479,17 +533,17 @@ var YWakeUpSchedule; // definition below
      * <li>ModuleLogicalName.FunctionLogicalName</li>
      * </ul>
      * 
-     * This function does not require that the wake-up schedule is online at the time
+     * This function does not require that the wakeup schedule is online at the time
      * it is invoked. The returned object is nevertheless valid.
-     * Use the method YWakeUpSchedule.isOnline() to test if the wake-up schedule is
+     * Use the method YWakeUpSchedule.isOnline() to test if the wakeup schedule is
      * indeed online at a given time. In case of ambiguity when looking for
-     * a wake-up schedule by logical name, no error is notified: the first instance
+     * a wakeup schedule by logical name, no error is notified: the first instance
      * found is returned. The search is performed first by hardware name,
      * then by logical name.
      * 
-     * @param func : a string that uniquely characterizes the wake-up schedule
+     * @param func : a string that uniquely characterizes the wakeup schedule
      * 
-     * @return a YWakeUpSchedule object allowing you to drive the wake-up schedule.
+     * @return a YWakeUpSchedule object allowing you to drive the wakeup schedule.
      */
     function YWakeUpSchedule_FindWakeUpSchedule(str_func)
     {
@@ -500,12 +554,12 @@ var YWakeUpSchedule; // definition below
     }
 
     /**
-     * Starts the enumeration of wake-up schedules currently accessible.
+     * Starts the enumeration of wakeup schedules currently accessible.
      * Use the method YWakeUpSchedule.nextWakeUpSchedule() to iterate on
-     * next wake-up schedules.
+     * next wakeup schedules.
      * 
      * @return a pointer to a YWakeUpSchedule object, corresponding to
-     *         the first wake-up schedule currently online, or a null pointer
+     *         the first wakeup schedule currently online, or a null pointer
      *         if there are none.
      */
     function YWakeUpSchedule_FirstWakeUpSchedule()
@@ -593,6 +647,15 @@ var YWakeUpSchedule; // definition below
     }
 
     YWakeUpSchedule = _YWakeUpSchedule;
+    YWakeUpSchedule.LOGICALNAME_INVALID             = "!INVALID!";
+    YWakeUpSchedule.ADVERTISEDVALUE_INVALID         = "!INVALID!";
+    YWakeUpSchedule.MINUTESA_INVALID                = -1;
+    YWakeUpSchedule.MINUTESB_INVALID                = -1;
+    YWakeUpSchedule.HOURS_INVALID                   = -1;
+    YWakeUpSchedule.WEEKDAYS_INVALID                = -1;
+    YWakeUpSchedule.MONTHDAYS_INVALID               = -1;
+    YWakeUpSchedule.MONTHS_INVALID                  = -1;
+    YWakeUpSchedule.NEXTOCCURENCE_INVALID           = -1;
     YWakeUpSchedule.FindWakeUpSchedule  = YWakeUpSchedule_FindWakeUpSchedule;
     YWakeUpSchedule.FirstWakeUpSchedule = YWakeUpSchedule_FirstWakeUpSchedule;
 })();
@@ -600,7 +663,7 @@ var YWakeUpSchedule; // definition below
 //--- (WakeUpSchedule functions)
 
 /**
- * Retrieves a wake-up schedule for a given identifier.
+ * Retrieves a wakeup schedule for a given identifier.
  * The identifier can be specified using several formats:
  * <ul>
  * <li>FunctionLogicalName</li>
@@ -610,17 +673,17 @@ var YWakeUpSchedule; // definition below
  * <li>ModuleLogicalName.FunctionLogicalName</li>
  * </ul>
  * 
- * This function does not require that the wake-up schedule is online at the time
+ * This function does not require that the wakeup schedule is online at the time
  * it is invoked. The returned object is nevertheless valid.
- * Use the method YWakeUpSchedule.isOnline() to test if the wake-up schedule is
+ * Use the method YWakeUpSchedule.isOnline() to test if the wakeup schedule is
  * indeed online at a given time. In case of ambiguity when looking for
- * a wake-up schedule by logical name, no error is notified: the first instance
+ * a wakeup schedule by logical name, no error is notified: the first instance
  * found is returned. The search is performed first by hardware name,
  * then by logical name.
  * 
- * @param func : a string that uniquely characterizes the wake-up schedule
+ * @param func : a string that uniquely characterizes the wakeup schedule
  * 
- * @return a YWakeUpSchedule object allowing you to drive the wake-up schedule.
+ * @return a YWakeUpSchedule object allowing you to drive the wakeup schedule.
  */
 function yFindWakeUpSchedule(str_func)
 {
@@ -628,12 +691,12 @@ function yFindWakeUpSchedule(str_func)
 }
 
 /**
- * Starts the enumeration of wake-up schedules currently accessible.
+ * Starts the enumeration of wakeup schedules currently accessible.
  * Use the method YWakeUpSchedule.nextWakeUpSchedule() to iterate on
- * next wake-up schedules.
+ * next wakeup schedules.
  * 
  * @return a pointer to a YWakeUpSchedule object, corresponding to
- *         the first wake-up schedule currently online, or a null pointer
+ *         the first wakeup schedule currently online, or a null pointer
  *         if there are none.
  */
 function yFirstWakeUpSchedule()

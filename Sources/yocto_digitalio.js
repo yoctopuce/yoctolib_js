@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: pic24config.php 12323 2013-08-13 15:09:18Z mvuilleu $
+ * $Id: yocto_digitalio.js 13065 2013-10-10 16:04:55Z mvuilleu $
  *
  * Implements yFindDigitalIO(), the high-level API for DigitalIO functions
  *
@@ -43,7 +43,7 @@ if(typeof YAPI == "undefined") { if(typeof yAPI != "undefined") window["YAPI"]=y
 //--- (end of return codes)
 //--- (YDigitalIO definitions)
 var Y_OUTPUTVOLTAGE_USB_5V          = 0;
-var Y_OUTPUTVOLTAGE_USB_3V3         = 1;
+var Y_OUTPUTVOLTAGE_USB_3V          = 1;
 var Y_OUTPUTVOLTAGE_EXT_V           = 2;
 var Y_OUTPUTVOLTAGE_INVALID         = -1;
 var Y_LOGICALNAME_INVALID           = "!INVALID!";
@@ -51,6 +51,7 @@ var Y_ADVERTISEDVALUE_INVALID       = "!INVALID!";
 var Y_PORTSTATE_INVALID             = -1;
 var Y_PORTDIRECTION_INVALID         = -1;
 var Y_PORTOPENDRAIN_INVALID         = -1;
+var Y_PORTPOLARITY_INVALID          = -1;
 var Y_PORTSIZE_INVALID              = -1;
 var Y_COMMAND_INVALID               = "!INVALID!";
 //--- (end of YDigitalIO definitions)
@@ -58,7 +59,10 @@ var Y_COMMAND_INVALID               = "!INVALID!";
 /**
  * YDigitalIO Class: Digital IO function interface
  * 
- * ....
+ * The Yoctopuce application programming interface allows you to switch the state of each
+ * bit of the I/O port. You can switch all bits at once, or one by one. The library
+ * can also automatically generate short pulses of a determined duration. Electrical behavior
+ * of each I/O can be modified (open drain and reverse polarity).
  */
 var YDigitalIO; // definition below
 (function()
@@ -78,12 +82,18 @@ var YDigitalIO; // definition below
     }
 
     /**
-     * Returns the logical name of the digital IO port.
+     * Gets the logical name of the digital IO port.
      * 
-     * @return a string corresponding to the logical name of the digital IO port
+     * @param callback : callback function that is invoked when the result is known.
+     *         The callback function receives three arguments:
+     *         - the user-specific context object
+     *         - the YDigitalIO object that invoked the callback
+     *         - the result:a string corresponding to the logical name of the digital IO po
+     * @param context : user-specific object that is passed as-is to the callback function
+     * 
+     * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      * 
      * On failure, throws an exception or returns Y_LOGICALNAME_INVALID.
-     * Asynchronous version for poor old Firefox
      */
     function YDigitalIO_get_logicalName_async(func_callback, obj_context)
     {   this._getAttr_async('logicalName',
@@ -124,12 +134,18 @@ var YDigitalIO; // definition below
     }
 
     /**
-     * Returns the current value of the digital IO port (no more than 6 characters).
+     * Gets the current value of the digital IO port (no more than 6 characters).
      * 
-     * @return a string corresponding to the current value of the digital IO port (no more than 6 characters)
+     * @param callback : callback function that is invoked when the result is known.
+     *         The callback function receives three arguments:
+     *         - the user-specific context object
+     *         - the YDigitalIO object that invoked the callback
+     *         - the result:a string corresponding to the current value of the digital IO port (no more than 6 character
+     * @param context : user-specific object that is passed as-is to the callback function
+     * 
+     * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      * 
      * On failure, throws an exception or returns Y_ADVERTISEDVALUE_INVALID.
-     * Asynchronous version for poor old Firefox
      */
     function YDigitalIO_get_advertisedValue_async(func_callback, obj_context)
     {   this._getAttr_async('advertisedValue',
@@ -152,12 +168,18 @@ var YDigitalIO; // definition below
     }
 
     /**
-     * Returns the digital IO port state: bit 0 represents input 0, and so on.
+     * Gets the digital IO port state: bit 0 represents input 0, and so on.
      * 
-     * @return an integer corresponding to the digital IO port state: bit 0 represents input 0, and so on
+     * @param callback : callback function that is invoked when the result is known.
+     *         The callback function receives three arguments:
+     *         - the user-specific context object
+     *         - the YDigitalIO object that invoked the callback
+     *         - the result:an integer corresponding to the digital IO port state: bit 0 represents input 0, and so
+     * @param context : user-specific object that is passed as-is to the callback function
+     * 
+     * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      * 
      * On failure, throws an exception or returns Y_PORTSTATE_INVALID.
-     * Asynchronous version for poor old Firefox
      */
     function YDigitalIO_get_portState_async(func_callback, obj_context)
     {   this._getAttr_async('portState',
@@ -197,13 +219,19 @@ var YDigitalIO; // definition below
     }
 
     /**
-     * Returns the IO direction of all bits of the port: 0 makes a bit an input, 1 makes it an output.
+     * Gets the IO direction of all bits of the port: 0 makes a bit an input, 1 makes it an output.
      * 
-     * @return an integer corresponding to the IO direction of all bits of the port: 0 makes a bit an
-     * input, 1 makes it an output
+     * @param callback : callback function that is invoked when the result is known.
+     *         The callback function receives three arguments:
+     *         - the user-specific context object
+     *         - the YDigitalIO object that invoked the callback
+     *         - the result:an integer corresponding to the IO direction of all bits of the port: 0 makes a bit an
+     *         input, 1 makes it an outp
+     * @param context : user-specific object that is passed as-is to the callback function
+     * 
+     * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      * 
      * On failure, throws an exception or returns Y_PORTDIRECTION_INVALID.
-     * Asynchronous version for poor old Firefox
      */
     function YDigitalIO_get_portDirection_async(func_callback, obj_context)
     {   this._getAttr_async('portDirection',
@@ -215,7 +243,7 @@ var YDigitalIO; // definition below
 
     /**
      * Changes the IO direction of all bits of the port: 0 makes a bit an input, 1 makes it an output.
-     * Remember to call the saveToFlash() method  to make sure the setting will be kept after a reboot.
+     * Remember to call the saveToFlash() method  to make sure the setting is kept after a reboot.
      * 
      * @param newval : an integer corresponding to the IO direction of all bits of the port: 0 makes a bit
      * an input, 1 makes it an output
@@ -231,8 +259,9 @@ var YDigitalIO; // definition below
     }
 
     /**
-     * Returns the electrical interface for each bit of the port. 0 makes a bit a regular input/output, 1 makes
-     * it an open-drain (open-collector) input/output.
+     * Returns the electrical interface for each bit of the port. For each bit set to 0  the matching I/O
+     * works in the regular,
+     * intuitive way, for each bit set to 1, the I/O works in reverse mode.
      * 
      * @return an integer corresponding to the electrical interface for each bit of the port
      * 
@@ -244,13 +273,20 @@ var YDigitalIO; // definition below
     }
 
     /**
-     * Returns the electrical interface for each bit of the port. 0 makes a bit a regular input/output, 1 makes
-     * it an open-drain (open-collector) input/output.
+     * Gets the electrical interface for each bit of the port. For each bit set to 0  the matching I/O
+     * works in the regular,
+     * intuitive way, for each bit set to 1, the I/O works in reverse mode.
      * 
-     * @return an integer corresponding to the electrical interface for each bit of the port
+     * @param callback : callback function that is invoked when the result is known.
+     *         The callback function receives three arguments:
+     *         - the user-specific context object
+     *         - the YDigitalIO object that invoked the callback
+     *         - the result:an integer corresponding to the electrical interface for each bit of the po
+     * @param context : user-specific object that is passed as-is to the callback function
+     * 
+     * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      * 
      * On failure, throws an exception or returns Y_PORTOPENDRAIN_INVALID.
-     * Asynchronous version for poor old Firefox
      */
     function YDigitalIO_get_portOpenDrain_async(func_callback, obj_context)
     {   this._getAttr_async('portOpenDrain',
@@ -263,7 +299,7 @@ var YDigitalIO; // definition below
     /**
      * Changes the electrical interface for each bit of the port. 0 makes a bit a regular input/output, 1 makes
      * it an open-drain (open-collector) input/output. Remember to call the
-     * saveToFlash() method  to make sure the setting will be kept after a reboot.
+     * saveToFlash() method  to make sure the setting is kept after a reboot.
      * 
      * @param newval : an integer corresponding to the electrical interface for each bit of the port
      * 
@@ -275,6 +311,59 @@ var YDigitalIO; // definition below
     {   var rest_val;
         rest_val = String(newval);
         return this._setAttr('portOpenDrain',rest_val);
+    }
+
+    /**
+     * Returns the polarity of all the bits of the port.  For each bit set to 0, the matching I/O works the regular,
+     * intuitive way; for each bit set to 1, the I/O works in reverse mode.
+     * 
+     * @return an integer corresponding to the polarity of all the bits of the port
+     * 
+     * On failure, throws an exception or returns Y_PORTPOLARITY_INVALID.
+     */
+    function YDigitalIO_get_portPolarity()
+    {   var json_val = this._getAttr('portPolarity');
+        return (json_val == null ? Y_PORTPOLARITY_INVALID : parseInt(json_val));
+    }
+
+    /**
+     * Gets the polarity of all the bits of the port.  For each bit set to 0, the matching I/O works the regular,
+     * intuitive way; for each bit set to 1, the I/O works in reverse mode.
+     * 
+     * @param callback : callback function that is invoked when the result is known.
+     *         The callback function receives three arguments:
+     *         - the user-specific context object
+     *         - the YDigitalIO object that invoked the callback
+     *         - the result:an integer corresponding to the polarity of all the bits of the po
+     * @param context : user-specific object that is passed as-is to the callback function
+     * 
+     * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
+     * 
+     * On failure, throws an exception or returns Y_PORTPOLARITY_INVALID.
+     */
+    function YDigitalIO_get_portPolarity_async(func_callback, obj_context)
+    {   this._getAttr_async('portPolarity',
+            function(ctx, obj, json_val) {
+                var res =  (json_val == null ? Y_PORTPOLARITY_INVALID : parseInt(json_val));
+                ctx.cb(ctx.userctx, obj, res); },
+            { cb:func_callback, userctx:obj_context });
+    }
+
+    /**
+     * Changes the polarity of all the bits of the port: 0 makes a bit an input, 1 makes it an output.
+     * Remember to call the saveToFlash() method  to make sure the setting will be kept after a reboot.
+     * 
+     * @param newval : an integer corresponding to the polarity of all the bits of the port: 0 makes a bit
+     * an input, 1 makes it an output
+     * 
+     * @return YAPI_SUCCESS if the call succeeds.
+     * 
+     * On failure, throws an exception or returns a negative error code.
+     */
+    function YDigitalIO_set_portPolarity(newval)
+    {   var rest_val;
+        rest_val = String(newval);
+        return this._setAttr('portPolarity',rest_val);
     }
 
     /**
@@ -290,12 +379,18 @@ var YDigitalIO; // definition below
     }
 
     /**
-     * Returns the number of bits implemented in the I/O port.
+     * Gets the number of bits implemented in the I/O port.
      * 
-     * @return an integer corresponding to the number of bits implemented in the I/O port
+     * @param callback : callback function that is invoked when the result is known.
+     *         The callback function receives three arguments:
+     *         - the user-specific context object
+     *         - the YDigitalIO object that invoked the callback
+     *         - the result:an integer corresponding to the number of bits implemented in the I/O po
+     * @param context : user-specific object that is passed as-is to the callback function
+     * 
+     * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      * 
      * On failure, throws an exception or returns Y_PORTSIZE_INVALID.
-     * Asynchronous version for poor old Firefox
      */
     function YDigitalIO_get_portSize_async(func_callback, obj_context)
     {   this._getAttr_async('portSize',
@@ -308,7 +403,7 @@ var YDigitalIO; // definition below
     /**
      * Returns the voltage source used to drive output bits.
      * 
-     * @return a value among Y_OUTPUTVOLTAGE_USB_5V, Y_OUTPUTVOLTAGE_USB_3V3 and Y_OUTPUTVOLTAGE_EXT_V
+     * @return a value among Y_OUTPUTVOLTAGE_USB_5V, Y_OUTPUTVOLTAGE_USB_3V and Y_OUTPUTVOLTAGE_EXT_V
      * corresponding to the voltage source used to drive output bits
      * 
      * On failure, throws an exception or returns Y_OUTPUTVOLTAGE_INVALID.
@@ -319,13 +414,19 @@ var YDigitalIO; // definition below
     }
 
     /**
-     * Returns the voltage source used to drive output bits.
+     * Gets the voltage source used to drive output bits.
      * 
-     * @return a value among Y_OUTPUTVOLTAGE_USB_5V, Y_OUTPUTVOLTAGE_USB_3V3 and Y_OUTPUTVOLTAGE_EXT_V
-     * corresponding to the voltage source used to drive output bits
+     * @param callback : callback function that is invoked when the result is known.
+     *         The callback function receives three arguments:
+     *         - the user-specific context object
+     *         - the YDigitalIO object that invoked the callback
+     *         - the result:a value among Y_OUTPUTVOLTAGE_USB_5V, Y_OUTPUTVOLTAGE_USB_3V and Y_OUTPUTVOLTAGE_EXT_V
+     *         corresponding to the voltage source used to drive output bi
+     * @param context : user-specific object that is passed as-is to the callback function
+     * 
+     * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      * 
      * On failure, throws an exception or returns Y_OUTPUTVOLTAGE_INVALID.
-     * Asynchronous version for poor old Firefox
      */
     function YDigitalIO_get_outputVoltage_async(func_callback, obj_context)
     {   this._getAttr_async('outputVoltage',
@@ -337,9 +438,9 @@ var YDigitalIO; // definition below
 
     /**
      * Changes the voltage source used to drive output bits.
-     * Remember to call the saveToFlash() method  to make sure the setting will be kept after a reboot.
+     * Remember to call the saveToFlash() method  to make sure the setting is kept after a reboot.
      * 
-     * @param newval : a value among Y_OUTPUTVOLTAGE_USB_5V, Y_OUTPUTVOLTAGE_USB_3V3 and
+     * @param newval : a value among Y_OUTPUTVOLTAGE_USB_5V, Y_OUTPUTVOLTAGE_USB_3V and
      * Y_OUTPUTVOLTAGE_EXT_V corresponding to the voltage source used to drive output bits
      * 
      * @return YAPI_SUCCESS if the call succeeds.
@@ -358,7 +459,15 @@ var YDigitalIO; // definition below
     }
 
     /**
-     * Asynchronous version for poor old Firefox
+     * 
+     * @param callback : callback function that is invoked when the result is known.
+     *         The callback function receives three arguments:
+     *         - the user-specific context object
+     *         - the YDigitalIO object that invoked the callback
+     *         - the result:
+     * @param context : user-specific object that is passed as-is to the callback function
+     * 
+     * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      */
     function YDigitalIO_get_command_async(func_callback, obj_context)
     {   this._getAttr_async('command',
@@ -375,9 +484,9 @@ var YDigitalIO; // definition below
     }
 
     /**
-     * Set a single bit of the I/O port.
+     * Sets a single bit of the I/O port.
      * 
-     * @param bitno: the bit number; lowest bit is index 0
+     * @param bitno: the bit number; lowest bit has index 0
      * @param bitval: the value of the bit (1 or 0)
      * 
      * @return YAPI_SUCCESS if the call succeeds.
@@ -395,7 +504,7 @@ var YDigitalIO; // definition below
     /**
      * Returns the value of a single bit of the I/O port.
      * 
-     * @param bitno: the bit number; lowest bit is index 0
+     * @param bitno: the bit number; lowest bit has index 0
      * 
      * @return the bit value (0 or 1)
      * 
@@ -410,9 +519,9 @@ var YDigitalIO; // definition below
     }
 
     /**
-     * Revert a single bit of the I/O port.
+     * Reverts a single bit of the I/O port.
      * 
-     * @param bitno: the bit number; lowest bit is index 0
+     * @param bitno: the bit number; lowest bit has index 0
      * 
      * @return YAPI_SUCCESS if the call succeeds.
      * 
@@ -425,11 +534,11 @@ var YDigitalIO; // definition below
     }
 
     /**
-     * Change  the direction of a single bit from the I/O port.
+     * Changes  the direction of a single bit from the I/O port.
      * 
-     * @param bitno: the bit number; lowest bit is index 0
+     * @param bitno: the bit number; lowest bit has index 0
      * @param bitdirection: direction to set, 0 makes the bit an input, 1 makes it an output.
-     *         Remember to call the   saveToFlash() method to make sure the setting will be kept after a reboot.
+     *         Remember to call the   saveToFlash() method to make sure the setting is kept after a reboot.
      * 
      * @return YAPI_SUCCESS if the call succeeds.
      * 
@@ -444,9 +553,9 @@ var YDigitalIO; // definition below
     }
 
     /**
-     * Change  the direction of a single bit from the I/O port (0 means the bit is an input, 1  an output).
+     * Returns the direction of a single bit from the I/O port (0 means the bit is an input, 1  an output).
      * 
-     * @param bitno: the bit number; lowest bit is index 0
+     * @param bitno: the bit number; lowest bit has index 0
      * 
      * @return YAPI_SUCCESS if the call succeeds.
      * 
@@ -461,12 +570,50 @@ var YDigitalIO; // definition below
     }
 
     /**
-     * Change  the electrical interface of a single bit from the I/O port.
+     * Changes the polarity of a single bit from the I/O port.
      * 
-     * @param bitno: the bit number; lowest bit is index 0
+     * @param bitno: the bit number; lowest bit has index 0.
+     * @param bitpolarity: polarity to set, 0 makes the I/O work in regular mode, 1 makes the I/O  works
+     * in reverse mode.
+     *         Remember to call the   saveToFlash() method to make sure the setting is kept after a reboot.
+     * 
+     * @return YAPI_SUCCESS if the call succeeds.
+     * 
+     * On failure, throws an exception or returns a negative error code.
+     */
+    function YDigitalIO_set_bitPolarity(int_bitno,int_bitpolarity)
+    {
+        if (!(int_bitpolarity >= 0)) return this._throw( YAPI_INVALID_ARGUMENT, "invalid bitpolarity", YAPI_INVALID_ARGUMENT);
+        if (!(int_bitpolarity <= 1)) return this._throw( YAPI_INVALID_ARGUMENT, "invalid bitpolarity", YAPI_INVALID_ARGUMENT);
+        return this.set_command(""+String.fromCharCode(110+4*int_bitpolarity)+""+String(Math.round( bitno))); 
+        
+    }
+
+    /**
+     * Returns the polarity of a single bit from the I/O port (0 means the I/O works in regular mode, 1
+     * means the I/O  works in reverse mode).
+     * 
+     * @param bitno: the bit number; lowest bit has index 0
+     * 
+     * @return YAPI_SUCCESS if the call succeeds.
+     * 
+     * On failure, throws an exception or returns a negative error code.
+     */
+    function YDigitalIO_get_bitPolarity(int_bitno)
+    {
+        var portPol; // type: int;
+        portPol = this.get_portPolarity();
+        return ((((portPol) >> (int_bitno))) & (1));
+        
+    }
+
+    /**
+     * Changes  the electrical interface of a single bit from the I/O port.
+     * 
+     * @param bitno: the bit number; lowest bit has index 0
      * @param opendrain: value to set, 0 makes a bit a regular input/output, 1 makes
      *         it an open-drain (open-collector) input/output. Remember to call the
-     *         saveToFlash() method to make sure the setting will be kept after a reboot.
+     *         saveToFlash() method to make sure the setting is kept after a reboot.
      * 
      * @return YAPI_SUCCESS if the call succeeds.
      * 
@@ -484,9 +631,9 @@ var YDigitalIO; // definition below
      * Returns the type of electrical interface of a single bit from the I/O port. (0 means the bit is an
      * input, 1  an output).
      * 
-     * @param bitno: the bit number; lowest bit is index 0
+     * @param bitno: the bit number; lowest bit has index 0
      * 
-     * @return   0 means the a bit is a regular input/output, 1means the b it an open-drain
+     * @return   0 means the a bit is a regular input/output, 1 means the bit is an open-drain
      * (open-collector) input/output.
      * 
      * On failure, throws an exception or returns a negative error code.
@@ -500,11 +647,48 @@ var YDigitalIO; // definition below
     }
 
     /**
-     * Continues the enumeration of digital IO port started using yFirstDigitalIO().
+     * Starts a pulse with a specific duration: the  specified bit goes up
+     * and automatically down after the given duration
+     * 
+     * @param bitno: the bit number; lowest bit has index 0
+     * @param ms_duration: pulse duration in ms, note that your device might have a
+     *         resolution larger than 1 ms.
+     * 
+     * @return YAPI_SUCCESS if the call succeeds.
+     * 
+     * On failure, throws an exception or returns a negative error code.
+     */
+    function YDigitalIO_set_pulse(int_bitno,int_ms_duration)
+    {
+        return this.set_command("Z"+String(Math.round( bitno))+",0,"+String(Math.round(int_ms_duration))); 
+        
+    }
+
+    /**
+     * Schedules a pulse with a specific duration: the  specified bit goes up
+     * and automatically down after the given duration
+     * 
+     * @param bitno: the bit number; lowest bit has index 0
+     * @param ms_delay : waiting time before the pulse, in millisecondes
+     * @param ms_duration: pulse duration in ms, note that your device might have a
+     *         resolution larger than 1 ms.
+     * 
+     * @return YAPI_SUCCESS if the call succeeds.
+     * 
+     * On failure, throws an exception or returns a negative error code.
+     */
+    function YDigitalIO_set_delayedPulse(int_bitno,int_ms_delay,int_ms_duration)
+    {
+        return this.set_command("Z"+String(Math.round(int_bitno))+","+String(Math.round(int_ms_delay))+","+String(Math.round(int_ms_duration))); 
+        
+    }
+
+    /**
+     * Continues the enumeration of digital IO ports started using yFirstDigitalIO().
      * 
      * @return a pointer to a YDigitalIO object, corresponding to
      *         a digital IO port currently online, or a null pointer
-     *         if there are no more digital IO port to enumerate.
+     *         if there are no more digital IO ports to enumerate.
      */
     function YDigitalIO_nextDigitalIO()
     {   var next_hwid = YAPI.getNextHardwareId(this._className, this._func);
@@ -544,9 +728,9 @@ var YDigitalIO; // definition below
     }
 
     /**
-     * Starts the enumeration of digital IO port currently accessible.
+     * Starts the enumeration of digital IO ports currently accessible.
      * Use the method YDigitalIO.nextDigitalIO() to iterate on
-     * next digital IO port.
+     * next digital IO ports.
      * 
      * @return a pointer to a YDigitalIO object, corresponding to
      *         the first digital IO port currently online, or a null pointer
@@ -574,9 +758,10 @@ var YDigitalIO; // definition below
         this.PORTSTATE_INVALID               = -1;
         this.PORTDIRECTION_INVALID           = -1;
         this.PORTOPENDRAIN_INVALID           = -1;
+        this.PORTPOLARITY_INVALID            = -1;
         this.PORTSIZE_INVALID                = -1;
         this.OUTPUTVOLTAGE_USB_5V            = 0;
-        this.OUTPUTVOLTAGE_USB_3V3           = 1;
+        this.OUTPUTVOLTAGE_USB_3V            = 1;
         this.OUTPUTVOLTAGE_EXT_V             = 2;
         this.OUTPUTVOLTAGE_INVALID           = -1;
         this.COMMAND_INVALID                 = "!INVALID!";
@@ -608,6 +793,12 @@ var YDigitalIO; // definition below
         this.portOpenDrain_async             = YDigitalIO_get_portOpenDrain_async;
         this.set_portOpenDrain               = YDigitalIO_set_portOpenDrain;
         this.setPortOpenDrain                = YDigitalIO_set_portOpenDrain;
+        this.get_portPolarity                = YDigitalIO_get_portPolarity;
+        this.portPolarity                    = YDigitalIO_get_portPolarity;
+        this.get_portPolarity_async          = YDigitalIO_get_portPolarity_async;
+        this.portPolarity_async              = YDigitalIO_get_portPolarity_async;
+        this.set_portPolarity                = YDigitalIO_set_portPolarity;
+        this.setPortPolarity                 = YDigitalIO_set_portPolarity;
         this.get_portSize                    = YDigitalIO_get_portSize;
         this.portSize                        = YDigitalIO_get_portSize;
         this.get_portSize_async              = YDigitalIO_get_portSize_async;
@@ -633,15 +824,35 @@ var YDigitalIO; // definition below
         this.setBitDirection                 = YDigitalIO_set_bitDirection;
         this.get_bitDirection                = YDigitalIO_get_bitDirection;
         this.bitDirection                    = YDigitalIO_get_bitDirection;
+        this.set_bitPolarity                 = YDigitalIO_set_bitPolarity;
+        this.setBitPolarity                  = YDigitalIO_set_bitPolarity;
+        this.get_bitPolarity                 = YDigitalIO_get_bitPolarity;
+        this.bitPolarity                     = YDigitalIO_get_bitPolarity;
         this.set_bitOpenDrain                = YDigitalIO_set_bitOpenDrain;
         this.setBitOpenDrain                 = YDigitalIO_set_bitOpenDrain;
         this.get_bitOpenDrain                = YDigitalIO_get_bitOpenDrain;
         this.bitOpenDrain                    = YDigitalIO_get_bitOpenDrain;
+        this.set_pulse                       = YDigitalIO_set_pulse;
+        this.setPulse                        = YDigitalIO_set_pulse;
+        this.set_delayedPulse                = YDigitalIO_set_delayedPulse;
+        this.setDelayedPulse                 = YDigitalIO_set_delayedPulse;
         this.nextDigitalIO                   = YDigitalIO_nextDigitalIO;
         //--- (end of YDigitalIO constructor)
     }
 
     YDigitalIO = _YDigitalIO;
+    YDigitalIO.LOGICALNAME_INVALID             = "!INVALID!";
+    YDigitalIO.ADVERTISEDVALUE_INVALID         = "!INVALID!";
+    YDigitalIO.PORTSTATE_INVALID               = -1;
+    YDigitalIO.PORTDIRECTION_INVALID           = -1;
+    YDigitalIO.PORTOPENDRAIN_INVALID           = -1;
+    YDigitalIO.PORTPOLARITY_INVALID            = -1;
+    YDigitalIO.PORTSIZE_INVALID                = -1;
+    YDigitalIO.OUTPUTVOLTAGE_USB_5V            = 0;
+    YDigitalIO.OUTPUTVOLTAGE_USB_3V            = 1;
+    YDigitalIO.OUTPUTVOLTAGE_EXT_V             = 2;
+    YDigitalIO.OUTPUTVOLTAGE_INVALID           = -1;
+    YDigitalIO.COMMAND_INVALID                 = "!INVALID!";
     YDigitalIO.FindDigitalIO  = YDigitalIO_FindDigitalIO;
     YDigitalIO.FirstDigitalIO = YDigitalIO_FirstDigitalIO;
 })();
@@ -677,9 +888,9 @@ function yFindDigitalIO(str_func)
 }
 
 /**
- * Starts the enumeration of digital IO port currently accessible.
+ * Starts the enumeration of digital IO ports currently accessible.
  * Use the method YDigitalIO.nextDigitalIO() to iterate on
- * next digital IO port.
+ * next digital IO ports.
  * 
  * @return a pointer to a YDigitalIO object, corresponding to
  *         the first digital IO port currently online, or a null pointer

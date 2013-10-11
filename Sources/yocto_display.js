@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_display.js 12326 2013-08-13 15:52:20Z mvuilleu $
+ * $Id: yocto_display.js 13065 2013-10-10 16:04:55Z mvuilleu $
  *
  * Implements yFindDisplay(), the high-level API for Display functions
  *
@@ -724,12 +724,18 @@ var YDisplay; // definition below
     }
 
     /**
-     * Returns the logical name of the display.
+     * Gets the logical name of the display.
      * 
-     * @return a string corresponding to the logical name of the display
+     * @param callback : callback function that is invoked when the result is known.
+     *         The callback function receives three arguments:
+     *         - the user-specific context object
+     *         - the YDisplay object that invoked the callback
+     *         - the result:a string corresponding to the logical name of the displ
+     * @param context : user-specific object that is passed as-is to the callback function
+     * 
+     * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      * 
      * On failure, throws an exception or returns Y_LOGICALNAME_INVALID.
-     * Asynchronous version for poor old Firefox
      */
     function YDisplay_get_logicalName_async(func_callback, obj_context)
     {   this._getAttr_async('logicalName',
@@ -770,12 +776,18 @@ var YDisplay; // definition below
     }
 
     /**
-     * Returns the current value of the display (no more than 6 characters).
+     * Gets the current value of the display (no more than 6 characters).
      * 
-     * @return a string corresponding to the current value of the display (no more than 6 characters)
+     * @param callback : callback function that is invoked when the result is known.
+     *         The callback function receives three arguments:
+     *         - the user-specific context object
+     *         - the YDisplay object that invoked the callback
+     *         - the result:a string corresponding to the current value of the display (no more than 6 character
+     * @param context : user-specific object that is passed as-is to the callback function
+     * 
+     * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      * 
      * On failure, throws an exception or returns Y_ADVERTISEDVALUE_INVALID.
-     * Asynchronous version for poor old Firefox
      */
     function YDisplay_get_advertisedValue_async(func_callback, obj_context)
     {   this._getAttr_async('advertisedValue',
@@ -798,12 +810,18 @@ var YDisplay; // definition below
     }
 
     /**
-     * Returns the power state of the display.
+     * Gets the power state of the display.
      * 
-     * @return either Y_POWERSTATE_OFF or Y_POWERSTATE_ON, according to the power state of the display
+     * @param callback : callback function that is invoked when the result is known.
+     *         The callback function receives three arguments:
+     *         - the user-specific context object
+     *         - the YDisplay object that invoked the callback
+     *         - the result:either Y_POWERSTATE_OFF or Y_POWERSTATE_ON, according to the power state of the displ
+     * @param context : user-specific object that is passed as-is to the callback function
+     * 
+     * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      * 
      * On failure, throws an exception or returns Y_POWERSTATE_INVALID.
-     * Asynchronous version for poor old Firefox
      */
     function YDisplay_get_powerState_async(func_callback, obj_context)
     {   this._getAttr_async('powerState',
@@ -841,12 +859,18 @@ var YDisplay; // definition below
     }
 
     /**
-     * Returns the name of the sequence to play when the displayed is powered on.
+     * Gets the name of the sequence to play when the displayed is powered on.
      * 
-     * @return a string corresponding to the name of the sequence to play when the displayed is powered on
+     * @param callback : callback function that is invoked when the result is known.
+     *         The callback function receives three arguments:
+     *         - the user-specific context object
+     *         - the YDisplay object that invoked the callback
+     *         - the result:a string corresponding to the name of the sequence to play when the displayed is powered
+     * @param context : user-specific object that is passed as-is to the callback function
+     * 
+     * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      * 
      * On failure, throws an exception or returns Y_STARTUPSEQ_INVALID.
-     * Asynchronous version for poor old Firefox
      */
     function YDisplay_get_startupSeq_async(func_callback, obj_context)
     {   this._getAttr_async('startupSeq',
@@ -886,12 +910,18 @@ var YDisplay; // definition below
     }
 
     /**
-     * Returns the luminosity of the  module informative leds (from 0 to 100).
+     * Gets the luminosity of the  module informative leds (from 0 to 100).
      * 
-     * @return an integer corresponding to the luminosity of the  module informative leds (from 0 to 100)
+     * @param callback : callback function that is invoked when the result is known.
+     *         The callback function receives three arguments:
+     *         - the user-specific context object
+     *         - the YDisplay object that invoked the callback
+     *         - the result:an integer corresponding to the luminosity of the  module informative leds (from 0 to 10
+     * @param context : user-specific object that is passed as-is to the callback function
+     * 
+     * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      * 
      * On failure, throws an exception or returns Y_BRIGHTNESS_INVALID.
-     * Asynchronous version for poor old Firefox
      */
     function YDisplay_get_brightness_async(func_callback, obj_context)
     {   this._getAttr_async('brightness',
@@ -932,13 +962,19 @@ var YDisplay; // definition below
     }
 
     /**
-     * Returns the currently selected display orientation.
+     * Gets the currently selected display orientation.
      * 
-     * @return a value among Y_ORIENTATION_LEFT, Y_ORIENTATION_UP, Y_ORIENTATION_RIGHT and
-     * Y_ORIENTATION_DOWN corresponding to the currently selected display orientation
+     * @param callback : callback function that is invoked when the result is known.
+     *         The callback function receives three arguments:
+     *         - the user-specific context object
+     *         - the YDisplay object that invoked the callback
+     *         - the result:a value among Y_ORIENTATION_LEFT, Y_ORIENTATION_UP, Y_ORIENTATION_RIGHT and
+     *         Y_ORIENTATION_DOWN corresponding to the currently selected display orientati
+     * @param context : user-specific object that is passed as-is to the callback function
+     * 
+     * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      * 
      * On failure, throws an exception or returns Y_ORIENTATION_INVALID.
-     * Asynchronous version for poor old Firefox
      */
     function YDisplay_get_orientation_async(func_callback, obj_context)
     {   this._getAttr_async('orientation',
@@ -978,12 +1014,18 @@ var YDisplay; // definition below
     }
 
     /**
-     * Returns the display width, in pixels.
+     * Gets the display width, in pixels.
      * 
-     * @return an integer corresponding to the display width, in pixels
+     * @param callback : callback function that is invoked when the result is known.
+     *         The callback function receives three arguments:
+     *         - the user-specific context object
+     *         - the YDisplay object that invoked the callback
+     *         - the result:an integer corresponding to the display width, in pixe
+     * @param context : user-specific object that is passed as-is to the callback function
+     * 
+     * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      * 
      * On failure, throws an exception or returns Y_DISPLAYWIDTH_INVALID.
-     * Asynchronous version for poor old Firefox
      */
     function YDisplay_get_displayWidth_async(func_callback, obj_context)
     {   this._getAttr_async('displayWidth',
@@ -1006,12 +1048,18 @@ var YDisplay; // definition below
     }
 
     /**
-     * Returns the display height, in pixels.
+     * Gets the display height, in pixels.
      * 
-     * @return an integer corresponding to the display height, in pixels
+     * @param callback : callback function that is invoked when the result is known.
+     *         The callback function receives three arguments:
+     *         - the user-specific context object
+     *         - the YDisplay object that invoked the callback
+     *         - the result:an integer corresponding to the display height, in pixe
+     * @param context : user-specific object that is passed as-is to the callback function
+     * 
+     * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      * 
      * On failure, throws an exception or returns Y_DISPLAYHEIGHT_INVALID.
-     * Asynchronous version for poor old Firefox
      */
     function YDisplay_get_displayHeight_async(func_callback, obj_context)
     {   this._getAttr_async('displayHeight',
@@ -1035,13 +1083,19 @@ var YDisplay; // definition below
     }
 
     /**
-     * Returns the display type: monochrome, gray levels or full color.
+     * Gets the display type: monochrome, gray levels or full color.
      * 
-     * @return a value among Y_DISPLAYTYPE_MONO, Y_DISPLAYTYPE_GRAY and Y_DISPLAYTYPE_RGB corresponding to
-     * the display type: monochrome, gray levels or full color
+     * @param callback : callback function that is invoked when the result is known.
+     *         The callback function receives three arguments:
+     *         - the user-specific context object
+     *         - the YDisplay object that invoked the callback
+     *         - the result:a value among Y_DISPLAYTYPE_MONO, Y_DISPLAYTYPE_GRAY and Y_DISPLAYTYPE_RGB
+     *         corresponding to the display type: monochrome, gray levels or full col
+     * @param context : user-specific object that is passed as-is to the callback function
+     * 
+     * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      * 
      * On failure, throws an exception or returns Y_DISPLAYTYPE_INVALID.
-     * Asynchronous version for poor old Firefox
      */
     function YDisplay_get_displayType_async(func_callback, obj_context)
     {   this._getAttr_async('displayType',
@@ -1064,12 +1118,18 @@ var YDisplay; // definition below
     }
 
     /**
-     * Returns the width of the layers to draw on, in pixels.
+     * Gets the width of the layers to draw on, in pixels.
      * 
-     * @return an integer corresponding to the width of the layers to draw on, in pixels
+     * @param callback : callback function that is invoked when the result is known.
+     *         The callback function receives three arguments:
+     *         - the user-specific context object
+     *         - the YDisplay object that invoked the callback
+     *         - the result:an integer corresponding to the width of the layers to draw on, in pixe
+     * @param context : user-specific object that is passed as-is to the callback function
+     * 
+     * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      * 
      * On failure, throws an exception or returns Y_LAYERWIDTH_INVALID.
-     * Asynchronous version for poor old Firefox
      */
     function YDisplay_get_layerWidth_async(func_callback, obj_context)
     {   this._getAttr_async('layerWidth',
@@ -1092,12 +1152,18 @@ var YDisplay; // definition below
     }
 
     /**
-     * Returns the height of the layers to draw on, in pixels.
+     * Gets the height of the layers to draw on, in pixels.
      * 
-     * @return an integer corresponding to the height of the layers to draw on, in pixels
+     * @param callback : callback function that is invoked when the result is known.
+     *         The callback function receives three arguments:
+     *         - the user-specific context object
+     *         - the YDisplay object that invoked the callback
+     *         - the result:an integer corresponding to the height of the layers to draw on, in pixe
+     * @param context : user-specific object that is passed as-is to the callback function
+     * 
+     * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      * 
      * On failure, throws an exception or returns Y_LAYERHEIGHT_INVALID.
-     * Asynchronous version for poor old Firefox
      */
     function YDisplay_get_layerHeight_async(func_callback, obj_context)
     {   this._getAttr_async('layerHeight',
@@ -1120,12 +1186,18 @@ var YDisplay; // definition below
     }
 
     /**
-     * Returns the number of available layers to draw on.
+     * Gets the number of available layers to draw on.
      * 
-     * @return an integer corresponding to the number of available layers to draw on
+     * @param callback : callback function that is invoked when the result is known.
+     *         The callback function receives three arguments:
+     *         - the user-specific context object
+     *         - the YDisplay object that invoked the callback
+     *         - the result:an integer corresponding to the number of available layers to draw
+     * @param context : user-specific object that is passed as-is to the callback function
+     * 
+     * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      * 
      * On failure, throws an exception or returns Y_LAYERCOUNT_INVALID.
-     * Asynchronous version for poor old Firefox
      */
     function YDisplay_get_layerCount_async(func_callback, obj_context)
     {   this._getAttr_async('layerCount',
@@ -1141,7 +1213,15 @@ var YDisplay; // definition below
     }
 
     /**
-     * Asynchronous version for poor old Firefox
+     * 
+     * @param callback : callback function that is invoked when the result is known.
+     *         The callback function receives three arguments:
+     *         - the user-specific context object
+     *         - the YDisplay object that invoked the callback
+     *         - the result:
+     * @param context : user-specific object that is passed as-is to the callback function
+     * 
+     * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      */
     function YDisplay_get_command_async(func_callback, obj_context)
     {   this._getAttr_async('command',

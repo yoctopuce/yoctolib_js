@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_wireless.js 12337 2013-08-14 15:22:22Z mvuilleu $
+ * $Id: yocto_wireless.js 13065 2013-10-10 16:04:55Z mvuilleu $
  *
  * Implements yFindWireless(), the high-level API for Wireless functions
  *
@@ -142,12 +142,18 @@ var YWireless; // definition below
     }
 
     /**
-     * Returns the logical name of the wireless lan interface.
+     * Gets the logical name of the wireless lan interface.
      * 
-     * @return a string corresponding to the logical name of the wireless lan interface
+     * @param callback : callback function that is invoked when the result is known.
+     *         The callback function receives three arguments:
+     *         - the user-specific context object
+     *         - the YWireless object that invoked the callback
+     *         - the result:a string corresponding to the logical name of the wireless lan interfa
+     * @param context : user-specific object that is passed as-is to the callback function
+     * 
+     * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      * 
      * On failure, throws an exception or returns Y_LOGICALNAME_INVALID.
-     * Asynchronous version for poor old Firefox
      */
     function YWireless_get_logicalName_async(func_callback, obj_context)
     {   this._getAttr_async('logicalName',
@@ -188,12 +194,18 @@ var YWireless; // definition below
     }
 
     /**
-     * Returns the current value of the wireless lan interface (no more than 6 characters).
+     * Gets the current value of the wireless lan interface (no more than 6 characters).
      * 
-     * @return a string corresponding to the current value of the wireless lan interface (no more than 6 characters)
+     * @param callback : callback function that is invoked when the result is known.
+     *         The callback function receives three arguments:
+     *         - the user-specific context object
+     *         - the YWireless object that invoked the callback
+     *         - the result:a string corresponding to the current value of the wireless lan interface (no more than 6 character
+     * @param context : user-specific object that is passed as-is to the callback function
+     * 
+     * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      * 
      * On failure, throws an exception or returns Y_ADVERTISEDVALUE_INVALID.
-     * Asynchronous version for poor old Firefox
      */
     function YWireless_get_advertisedValue_async(func_callback, obj_context)
     {   this._getAttr_async('advertisedValue',
@@ -216,12 +228,18 @@ var YWireless; // definition below
     }
 
     /**
-     * Returns the link quality, expressed in per cents.
+     * Gets the link quality, expressed in per cents.
      * 
-     * @return an integer corresponding to the link quality, expressed in per cents
+     * @param callback : callback function that is invoked when the result is known.
+     *         The callback function receives three arguments:
+     *         - the user-specific context object
+     *         - the YWireless object that invoked the callback
+     *         - the result:an integer corresponding to the link quality, expressed in per cen
+     * @param context : user-specific object that is passed as-is to the callback function
+     * 
+     * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      * 
      * On failure, throws an exception or returns Y_LINKQUALITY_INVALID.
-     * Asynchronous version for poor old Firefox
      */
     function YWireless_get_linkQuality_async(func_callback, obj_context)
     {   this._getAttr_async('linkQuality',
@@ -244,12 +262,18 @@ var YWireless; // definition below
     }
 
     /**
-     * Returns the wireless network name (SSID).
+     * Gets the wireless network name (SSID).
      * 
-     * @return a string corresponding to the wireless network name (SSID)
+     * @param callback : callback function that is invoked when the result is known.
+     *         The callback function receives three arguments:
+     *         - the user-specific context object
+     *         - the YWireless object that invoked the callback
+     *         - the result:a string corresponding to the wireless network name (SSI
+     * @param context : user-specific object that is passed as-is to the callback function
+     * 
+     * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      * 
      * On failure, throws an exception or returns Y_SSID_INVALID.
-     * Asynchronous version for poor old Firefox
      */
     function YWireless_get_ssid_async(func_callback, obj_context)
     {   this._getAttr_async('ssid',
@@ -272,12 +296,18 @@ var YWireless; // definition below
     }
 
     /**
-     * Returns the 802.11 channel currently used, or 0 when the selected network has not been found.
+     * Gets the 802.11 channel currently used, or 0 when the selected network has not been found.
      * 
-     * @return an integer corresponding to the 802
+     * @param callback : callback function that is invoked when the result is known.
+     *         The callback function receives three arguments:
+     *         - the user-specific context object
+     *         - the YWireless object that invoked the callback
+     *         - the result:an integer corresponding to the 8
+     * @param context : user-specific object that is passed as-is to the callback function
+     * 
+     * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      * 
      * On failure, throws an exception or returns Y_CHANNEL_INVALID.
-     * Asynchronous version for poor old Firefox
      */
     function YWireless_get_channel_async(func_callback, obj_context)
     {   this._getAttr_async('channel',
@@ -301,13 +331,19 @@ var YWireless; // definition below
     }
 
     /**
-     * Returns the security algorithm used by the selected wireless network.
+     * Gets the security algorithm used by the selected wireless network.
      * 
-     * @return a value among Y_SECURITY_UNKNOWN, Y_SECURITY_OPEN, Y_SECURITY_WEP, Y_SECURITY_WPA and
-     * Y_SECURITY_WPA2 corresponding to the security algorithm used by the selected wireless network
+     * @param callback : callback function that is invoked when the result is known.
+     *         The callback function receives three arguments:
+     *         - the user-specific context object
+     *         - the YWireless object that invoked the callback
+     *         - the result:a value among Y_SECURITY_UNKNOWN, Y_SECURITY_OPEN, Y_SECURITY_WEP, Y_SECURITY_WPA and
+     *         Y_SECURITY_WPA2 corresponding to the security algorithm used by the selected wireless netwo
+     * @param context : user-specific object that is passed as-is to the callback function
+     * 
+     * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      * 
      * On failure, throws an exception or returns Y_SECURITY_INVALID.
-     * Asynchronous version for poor old Firefox
      */
     function YWireless_get_security_async(func_callback, obj_context)
     {   this._getAttr_async('security',
@@ -330,12 +366,18 @@ var YWireless; // definition below
     }
 
     /**
-     * Returns the last status message from the wireless interface.
+     * Gets the last status message from the wireless interface.
      * 
-     * @return a string corresponding to the last status message from the wireless interface
+     * @param callback : callback function that is invoked when the result is known.
+     *         The callback function receives three arguments:
+     *         - the user-specific context object
+     *         - the YWireless object that invoked the callback
+     *         - the result:a string corresponding to the last status message from the wireless interfa
+     * @param context : user-specific object that is passed as-is to the callback function
+     * 
+     * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      * 
      * On failure, throws an exception or returns Y_MESSAGE_INVALID.
-     * Asynchronous version for poor old Firefox
      */
     function YWireless_get_message_async(func_callback, obj_context)
     {   this._getAttr_async('message',
@@ -351,7 +393,15 @@ var YWireless; // definition below
     }
 
     /**
-     * Asynchronous version for poor old Firefox
+     * 
+     * @param callback : callback function that is invoked when the result is known.
+     *         The callback function receives three arguments:
+     *         - the user-specific context object
+     *         - the YWireless object that invoked the callback
+     *         - the result:
+     * @param context : user-specific object that is passed as-is to the callback function
+     * 
+     * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      */
     function YWireless_get_wlanConfig_async(func_callback, obj_context)
     {   this._getAttr_async('wlanConfig',
@@ -409,7 +459,7 @@ var YWireless; // definition below
      * Returns a list of YWlanRecord objects which describe detected Wireless networks.
      * This list is not updated when the module is already connected to an acces point (infrastructure mode).
      * To force an update of this list, adhocNetwork() must be called to disconnect
-     * the module from the current network. The returned list must be unallocated by caller,
+     * the module from the current network. The returned list must be unallocated by the caller.
      * 
      * @return a list of YWlanRecord objects, containing the SSID, channel,
      *         link quality and the type of security of the wireless network.

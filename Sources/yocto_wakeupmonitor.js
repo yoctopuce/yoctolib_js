@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_wakeupmonitor.js 12324 2013-08-13 15:10:31Z mvuilleu $
+ * $Id: yocto_wakeupmonitor.js 13065 2013-10-10 16:04:55Z mvuilleu $
  *
  * Implements yFindWakeUpMonitor(), the high-level API for WakeUpMonitor functions
  *
@@ -90,12 +90,18 @@ var YWakeUpMonitor; // definition below
     }
 
     /**
-     * Returns the logical name of the monitor.
+     * Gets the logical name of the monitor.
      * 
-     * @return a string corresponding to the logical name of the monitor
+     * @param callback : callback function that is invoked when the result is known.
+     *         The callback function receives three arguments:
+     *         - the user-specific context object
+     *         - the YWakeUpMonitor object that invoked the callback
+     *         - the result:a string corresponding to the logical name of the monit
+     * @param context : user-specific object that is passed as-is to the callback function
+     * 
+     * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      * 
      * On failure, throws an exception or returns Y_LOGICALNAME_INVALID.
-     * Asynchronous version for poor old Firefox
      */
     function YWakeUpMonitor_get_logicalName_async(func_callback, obj_context)
     {   this._getAttr_async('logicalName',
@@ -136,12 +142,18 @@ var YWakeUpMonitor; // definition below
     }
 
     /**
-     * Returns the current value of the monitor (no more than 6 characters).
+     * Gets the current value of the monitor (no more than 6 characters).
      * 
-     * @return a string corresponding to the current value of the monitor (no more than 6 characters)
+     * @param callback : callback function that is invoked when the result is known.
+     *         The callback function receives three arguments:
+     *         - the user-specific context object
+     *         - the YWakeUpMonitor object that invoked the callback
+     *         - the result:a string corresponding to the current value of the monitor (no more than 6 character
+     * @param context : user-specific object that is passed as-is to the callback function
+     * 
+     * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      * 
      * On failure, throws an exception or returns Y_ADVERTISEDVALUE_INVALID.
-     * Asynchronous version for poor old Firefox
      */
     function YWakeUpMonitor_get_advertisedValue_async(func_callback, obj_context)
     {   this._getAttr_async('advertisedValue',
@@ -152,9 +164,9 @@ var YWakeUpMonitor; // definition below
     }
 
     /**
-     * Returns the maximal wake up time (seconds) before going to sleep automatically.
+     * Returns the maximal wakeup time (in seconds) before automatically going to sleep.
      * 
-     * @return an integer corresponding to the maximal wake up time (seconds) before going to sleep automatically
+     * @return an integer corresponding to the maximal wakeup time (in seconds) before automatically going to sleep
      * 
      * On failure, throws an exception or returns Y_POWERDURATION_INVALID.
      */
@@ -164,12 +176,18 @@ var YWakeUpMonitor; // definition below
     }
 
     /**
-     * Returns the maximal wake up time (seconds) before going to sleep automatically.
+     * Gets the maximal wakeup time (in seconds) before automatically going to sleep.
      * 
-     * @return an integer corresponding to the maximal wake up time (seconds) before going to sleep automatically
+     * @param callback : callback function that is invoked when the result is known.
+     *         The callback function receives three arguments:
+     *         - the user-specific context object
+     *         - the YWakeUpMonitor object that invoked the callback
+     *         - the result:an integer corresponding to the maximal wakeup time (in seconds) before automatically going to sle
+     * @param context : user-specific object that is passed as-is to the callback function
+     * 
+     * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      * 
      * On failure, throws an exception or returns Y_POWERDURATION_INVALID.
-     * Asynchronous version for poor old Firefox
      */
     function YWakeUpMonitor_get_powerDuration_async(func_callback, obj_context)
     {   this._getAttr_async('powerDuration',
@@ -180,10 +198,10 @@ var YWakeUpMonitor; // definition below
     }
 
     /**
-     * Changes the maximal wake up time (seconds) before going to sleep automatically.
+     * Changes the maximal wakeup time (seconds) before automatically going to sleep.
      * 
-     * @param newval : an integer corresponding to the maximal wake up time (seconds) before going to
-     * sleep automatically
+     * @param newval : an integer corresponding to the maximal wakeup time (seconds) before automatically
+     * going to sleep
      * 
      * @return YAPI_SUCCESS if the call succeeds.
      * 
@@ -196,9 +214,9 @@ var YWakeUpMonitor; // definition below
     }
 
     /**
-     * Returns the delay before next sleep.
+     * Returns the delay before the  next sleep period.
      * 
-     * @return an integer corresponding to the delay before next sleep
+     * @return an integer corresponding to the delay before the  next sleep period
      * 
      * On failure, throws an exception or returns Y_SLEEPCOUNTDOWN_INVALID.
      */
@@ -208,12 +226,18 @@ var YWakeUpMonitor; // definition below
     }
 
     /**
-     * Returns the delay before next sleep.
+     * Gets the delay before the  next sleep period.
      * 
-     * @return an integer corresponding to the delay before next sleep
+     * @param callback : callback function that is invoked when the result is known.
+     *         The callback function receives three arguments:
+     *         - the user-specific context object
+     *         - the YWakeUpMonitor object that invoked the callback
+     *         - the result:an integer corresponding to the delay before the  next sleep peri
+     * @param context : user-specific object that is passed as-is to the callback function
+     * 
+     * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      * 
      * On failure, throws an exception or returns Y_SLEEPCOUNTDOWN_INVALID.
-     * Asynchronous version for poor old Firefox
      */
     function YWakeUpMonitor_get_sleepCountdown_async(func_callback, obj_context)
     {   this._getAttr_async('sleepCountdown',
@@ -224,9 +248,9 @@ var YWakeUpMonitor; // definition below
     }
 
     /**
-     * Changes the delay before next sleep.
+     * Changes the delay before the next sleep period.
      * 
-     * @param newval : an integer corresponding to the delay before next sleep
+     * @param newval : an integer corresponding to the delay before the next sleep period
      * 
      * @return YAPI_SUCCESS if the call succeeds.
      * 
@@ -239,9 +263,9 @@ var YWakeUpMonitor; // definition below
     }
 
     /**
-     * Returns the next scheduled wake-up date/time (UNIX format)
+     * Returns the next scheduled wakeup date/time (UNIX format)
      * 
-     * @return an integer corresponding to the next scheduled wake-up date/time (UNIX format)
+     * @return an integer corresponding to the next scheduled wakeup date/time (UNIX format)
      * 
      * On failure, throws an exception or returns Y_NEXTWAKEUP_INVALID.
      */
@@ -251,12 +275,18 @@ var YWakeUpMonitor; // definition below
     }
 
     /**
-     * Returns the next scheduled wake-up date/time (UNIX format)
+     * Gets the next scheduled wakeup date/time (UNIX format)
      * 
-     * @return an integer corresponding to the next scheduled wake-up date/time (UNIX format)
+     * @param callback : callback function that is invoked when the result is known.
+     *         The callback function receives three arguments:
+     *         - the user-specific context object
+     *         - the YWakeUpMonitor object that invoked the callback
+     *         - the result:an integer corresponding to the next scheduled wakeup date/time (UNIX forma
+     * @param context : user-specific object that is passed as-is to the callback function
+     * 
+     * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      * 
      * On failure, throws an exception or returns Y_NEXTWAKEUP_INVALID.
-     * Asynchronous version for poor old Firefox
      */
     function YWakeUpMonitor_get_nextWakeUp_async(func_callback, obj_context)
     {   this._getAttr_async('nextWakeUp',
@@ -267,9 +297,9 @@ var YWakeUpMonitor; // definition below
     }
 
     /**
-     * Changes the days of the week where a wake up must take place.
+     * Changes the days of the week when a wakeup must take place.
      * 
-     * @param newval : an integer corresponding to the days of the week where a wake up must take place
+     * @param newval : an integer corresponding to the days of the week when a wakeup must take place
      * 
      * @return YAPI_SUCCESS if the call succeeds.
      * 
@@ -282,12 +312,13 @@ var YWakeUpMonitor; // definition below
     }
 
     /**
-     * Return the last wake up reason.
+     * Returns the last wake up reason.
      * 
      * @return a value among Y_WAKEUPREASON_USBPOWER, Y_WAKEUPREASON_EXTPOWER, Y_WAKEUPREASON_ENDOFSLEEP,
      * Y_WAKEUPREASON_EXTSIG1, Y_WAKEUPREASON_EXTSIG2, Y_WAKEUPREASON_EXTSIG3, Y_WAKEUPREASON_EXTSIG4,
      * Y_WAKEUPREASON_SCHEDULE1, Y_WAKEUPREASON_SCHEDULE2, Y_WAKEUPREASON_SCHEDULE3,
-     * Y_WAKEUPREASON_SCHEDULE4, Y_WAKEUPREASON_SCHEDULE5 and Y_WAKEUPREASON_SCHEDULE6
+     * Y_WAKEUPREASON_SCHEDULE4, Y_WAKEUPREASON_SCHEDULE5 and Y_WAKEUPREASON_SCHEDULE6 corresponding to
+     * the last wake up reason
      * 
      * On failure, throws an exception or returns Y_WAKEUPREASON_INVALID.
      */
@@ -297,15 +328,22 @@ var YWakeUpMonitor; // definition below
     }
 
     /**
-     * Return the last wake up reason.
+     * Gets the last wake up reason.
      * 
-     * @return a value among Y_WAKEUPREASON_USBPOWER, Y_WAKEUPREASON_EXTPOWER, Y_WAKEUPREASON_ENDOFSLEEP,
-     * Y_WAKEUPREASON_EXTSIG1, Y_WAKEUPREASON_EXTSIG2, Y_WAKEUPREASON_EXTSIG3, Y_WAKEUPREASON_EXTSIG4,
-     * Y_WAKEUPREASON_SCHEDULE1, Y_WAKEUPREASON_SCHEDULE2, Y_WAKEUPREASON_SCHEDULE3,
-     * Y_WAKEUPREASON_SCHEDULE4, Y_WAKEUPREASON_SCHEDULE5 and Y_WAKEUPREASON_SCHEDULE6
+     * @param callback : callback function that is invoked when the result is known.
+     *         The callback function receives three arguments:
+     *         - the user-specific context object
+     *         - the YWakeUpMonitor object that invoked the callback
+     *         - the result:a value among Y_WAKEUPREASON_USBPOWER, Y_WAKEUPREASON_EXTPOWER,
+     *         Y_WAKEUPREASON_ENDOFSLEEP, Y_WAKEUPREASON_EXTSIG1, Y_WAKEUPREASON_EXTSIG2, Y_WAKEUPREASON_EXTSIG3,
+     *         Y_WAKEUPREASON_EXTSIG4, Y_WAKEUPREASON_SCHEDULE1, Y_WAKEUPREASON_SCHEDULE2,
+     *         Y_WAKEUPREASON_SCHEDULE3, Y_WAKEUPREASON_SCHEDULE4, Y_WAKEUPREASON_SCHEDULE5 and
+     *         Y_WAKEUPREASON_SCHEDULE6 corresponding to the last wake up reas
+     * @param context : user-specific object that is passed as-is to the callback function
+     * 
+     * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      * 
      * On failure, throws an exception or returns Y_WAKEUPREASON_INVALID.
-     * Asynchronous version for poor old Firefox
      */
     function YWakeUpMonitor_get_wakeUpReason_async(func_callback, obj_context)
     {   this._getAttr_async('wakeUpReason',
@@ -328,12 +366,18 @@ var YWakeUpMonitor; // definition below
     }
 
     /**
-     * Returns  the current state of the monitor
+     * Gets  the current state of the monitor
      * 
-     * @return either Y_WAKEUPSTATE_SLEEPING or Y_WAKEUPSTATE_AWAKE, according to  the current state of the monitor
+     * @param callback : callback function that is invoked when the result is known.
+     *         The callback function receives three arguments:
+     *         - the user-specific context object
+     *         - the YWakeUpMonitor object that invoked the callback
+     *         - the result:either Y_WAKEUPSTATE_SLEEPING or Y_WAKEUPSTATE_AWAKE, according to  the current state of the monit
+     * @param context : user-specific object that is passed as-is to the callback function
+     * 
+     * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      * 
      * On failure, throws an exception or returns Y_WAKEUPSTATE_INVALID.
-     * Asynchronous version for poor old Firefox
      */
     function YWakeUpMonitor_get_wakeUpState_async(func_callback, obj_context)
     {   this._getAttr_async('wakeUpState',
@@ -355,7 +399,15 @@ var YWakeUpMonitor; // definition below
     }
 
     /**
-     * Asynchronous version for poor old Firefox
+     * 
+     * @param callback : callback function that is invoked when the result is known.
+     *         The callback function receives three arguments:
+     *         - the user-specific context object
+     *         - the YWakeUpMonitor object that invoked the callback
+     *         - the result:
+     * @param context : user-specific object that is passed as-is to the callback function
+     * 
+     * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      */
     function YWakeUpMonitor_get_rtcTime_async(func_callback, obj_context)
     {   this._getAttr_async('rtcTime',
@@ -375,7 +427,7 @@ var YWakeUpMonitor; // definition below
     }
 
     /**
-     * Go to sleep until the next wakeup condition is met,  the
+     * Goes to sleep until the next wakeup condition is met,  the
      * RTC time must have been set before calling this function.
      * 
      * @param secBeforeSleep : number of seconds before going into sleep mode,
@@ -396,7 +448,7 @@ var YWakeUpMonitor; // definition below
     }
 
     /**
-     * Go to sleep for a specific time or until the next wakeup condition is met, the
+     * Goes to sleep for a specific duration or until the next wakeup condition is met, the
      * RTC time must have been set before calling this function. The count down before sleep
      * can be canceled with resetSleepCountDown.
      * 
@@ -442,7 +494,7 @@ var YWakeUpMonitor; // definition below
     }
 
     /**
-     * Reset the sleep countdown.
+     * Resets the sleep countdown.
      * 
      * @return YAPI_SUCCESS if the call succeeds.
      *         On failure, throws an exception or returns a negative error code.
@@ -601,6 +653,30 @@ var YWakeUpMonitor; // definition below
     }
 
     YWakeUpMonitor = _YWakeUpMonitor;
+    YWakeUpMonitor.LOGICALNAME_INVALID             = "!INVALID!";
+    YWakeUpMonitor.ADVERTISEDVALUE_INVALID         = "!INVALID!";
+    YWakeUpMonitor.POWERDURATION_INVALID           = Number.NEGATIVE_INFINITY;
+    YWakeUpMonitor.SLEEPCOUNTDOWN_INVALID          = Number.NEGATIVE_INFINITY;
+    YWakeUpMonitor.NEXTWAKEUP_INVALID              = -1;
+    YWakeUpMonitor.WAKEUPREASON_USBPOWER           = 0;
+    YWakeUpMonitor.WAKEUPREASON_EXTPOWER           = 1;
+    YWakeUpMonitor.WAKEUPREASON_ENDOFSLEEP         = 2;
+    YWakeUpMonitor.WAKEUPREASON_EXTSIG1            = 3;
+    YWakeUpMonitor.WAKEUPREASON_EXTSIG2            = 4;
+    YWakeUpMonitor.WAKEUPREASON_EXTSIG3            = 5;
+    YWakeUpMonitor.WAKEUPREASON_EXTSIG4            = 6;
+    YWakeUpMonitor.WAKEUPREASON_SCHEDULE1          = 7;
+    YWakeUpMonitor.WAKEUPREASON_SCHEDULE2          = 8;
+    YWakeUpMonitor.WAKEUPREASON_SCHEDULE3          = 9;
+    YWakeUpMonitor.WAKEUPREASON_SCHEDULE4          = 10;
+    YWakeUpMonitor.WAKEUPREASON_SCHEDULE5          = 11;
+    YWakeUpMonitor.WAKEUPREASON_SCHEDULE6          = 12;
+    YWakeUpMonitor.WAKEUPREASON_INVALID            = -1;
+    YWakeUpMonitor.WAKEUPSTATE_SLEEPING            = 0;
+    YWakeUpMonitor.WAKEUPSTATE_AWAKE               = 1;
+    YWakeUpMonitor.WAKEUPSTATE_INVALID             = -1;
+    YWakeUpMonitor.RTCTIME_INVALID                 = -1;
+    YWakeUpMonitor._endOfTime                      = 2145960000;
     YWakeUpMonitor.FindWakeUpMonitor  = YWakeUpMonitor_FindWakeUpMonitor;
     YWakeUpMonitor.FirstWakeUpMonitor = YWakeUpMonitor_FirstWakeUpMonitor;
 })();
