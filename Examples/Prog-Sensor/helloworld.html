@@ -1,0 +1,36 @@
+<HTML>
+<HEAD>
+ <TITLE> Hello World</TITLE>
+ <SCRIPT type="text/javascript" src="../../Sources/yocto_api.js"></SCRIPT>
+ <SCRIPT language='javascript1.5'  type='text/JavaScript'>
+ <!--
+
+ // Setup the API to use the VirtualHub on local machine
+ if(yRegisterHub('http://127.0.0.1:4444/') != YAPI_SUCCESS) {
+     alert("Cannot contact VirtualHub on 127.0.0.1");
+ }
+
+ function refresh()
+ { 
+     var sensor = yFirstSensor();
+     if (!sensor) {
+         document.getElementById('msg').value = 'No sensor connected (check USB cable and firmware version)';
+     } else {
+         document.getElementById('msg').value = '';
+         var html = '';
+         while(sensor) {
+             html += sensor.get_friendlyName()+': '+sensor.get_currentValue()+' '+sensor.get_unit()+'<br>';
+             sensor = sensor.nextSensor();
+         }
+         document.getElementById("sensors").innerHTML = html;
+     }
+     setTimeout('refresh()',500);
+ }
+ -->
+ </SCRIPT>
+</HEAD>  
+<BODY onload='refresh();'>
+<input id='msg' size='86' style='color:red;border:none;' readonly><br>
+<div id="sensors"></div>
+</BODY>
+</HTML> 

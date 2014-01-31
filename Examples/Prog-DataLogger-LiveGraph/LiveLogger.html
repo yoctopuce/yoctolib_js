@@ -1,0 +1,305 @@
+<html><head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>Yoctopuce Datalogger Live Graph</title>
+<style>
+DIV.gauge
+{position:absolute;
+ top:3px;left:5px;
+ height:8px;width:200px;
+ overflow:hidden;
+ border-style:solid;
+ border-width:1px 1px 1px 1px;
+ background-color:#f0f0f0;
+ text-decoration:none;
+ overflow:hidden;
+ border-color:gray;
+ border-radius:2px;
+ -moz-border-radius:2px;
+ -webkit-border-top-left-radius:2px;
+ -webkit-border-top-right-radius:2px;
+ -webkit-border-bottom-right-radius:2px;
+ -webkit-border-bottom-left-radius:2px;}
+DIV.framed
+{border-style:solid;
+ border-width:1px 1px 1px 1px;
+ border-radius:10px;
+ border-color:gray;
+ padding:10px;
+ margin:10px;
+ width: 820px;
+ -moz-border-radius:10px;
+ -webkit-border-top-left-radius:10px;
+ -webkit-border-top-right-radius:10px;
+ -webkit-border-bottom-right-radius:10px;
+ -webkit-border-bottom-left-radius:10px;}
+DL 
+{width:820px;
+ margin-left:10px;
+ text-align:justify; }
+DIV.gaugevalue
+{position:absolute;
+ left:0px;top:0px;
+ width:0px;height:8px;
+ border:0px solid black;
+ background-color:#404040;
+ overflow:hidden;}
+</style>
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
+<script src="http://code.highcharts.com/stock/highstock.js"></script>
+<script src="../../Sources/yocto_api.js"></script>
+<script src="../../Sources/yocto_datalogger.js"></script>
+<script src="../../Sources/yocto_temperature.js"></script>
+<script src="../../Sources/yocto_humidity.js"></script>
+<script src="../../Sources/yocto_pressure.js"></script>
+<script src="../../Sources/yocto_lightsensor.js"></script>
+<script src="../../Sources/yocto_carbondioxide.js"></script>
+<script src="../../Sources/yocto_current.js"></script>
+<script src="../../Sources/yocto_voltage.js"></script>
+<script src="../../Sources/yocto_power.js"></script>
+<script src="../../Sources/yocto_genericsensor.js"></script>
+<script type="text/javascript">
+//
+// HighStock graph library integration example
+//
+var functions={};
+
+// Show local time on the graph
+Highcharts.setOptions({ global : { useUTC : false }});
+
+function drawChart(fct, dataSet, progress)
+{
+    var hwid = fct.get_hardwareId();
+    var recs;
+    
+    if(progress < 100) {
+        // Show a preview (if makes sense) and load more
+        recs = dataSet.get_preview();
+        if(recs.length < 3 || document.getElementById(hwid+':chart').style.display != 'none') {
+            dataSet.loadMore_async(drawChart, fct);
+            return;
+        }
+    } else {
+        // About to display full graph
+        recs = dataSet.get_measures();
+        document.getElementById(hwid+':progress').style.display = 'none';
+    }
+    var records = [];
+    for(var i = 0; i < recs.length; i++) {
+        records.push([+recs[i].get_endTimeUTC_asDate(),recs[i].get_averageValue()]);
+    }
+    if(records.length == 0) {
+        // Highstock needs at least one measure
+        records.push([+new Date(),fct.get_currentValue()]);
+    }
+    var chart = new Highcharts.StockChart({
+        chart : { type: 'line', zoomType: 'x', renderTo: hwid+':chart' },
+        scrollbar: { liveRedraw: true },
+        title: { text: fct.get_friendlyName() },
+        rangeSelector: {
+            buttons: [{ count:5, type:'minute', text:'5min' }, 
+                      { count:1, type:'hour', text: 'hour' }, 
+                      { count:1, type:'day', text: 'day' }, 
+                      { type:'all', text: 'All' }],
+                      selected: 2 },
+        xAxis : { minRange: 60 * 1000 },
+        series : [{	name: hwid, data : records }]    
+    });
+    document.getElementById(hwid+':data').style.display  = 'none';
+    document.getElementById(hwid+':chart').style.display = '';
+    if(progress == 100) {
+        fct.set_userData(chart);
+    } else {
+        dataSet.loadMore_async(drawChart, fct);        
+    }
+}
+
+// Callback used for live update with new measures
+//
+function liveCallback(fct, measure)
+{
+    // Update text value of measures
+    var hwid = measure.get_hardwareId();
+    var timestr = measure.get_endTimeUTC_asDate().toTimeString().split(" ")[0];
+    document.getElementById(hwid+':stamp').innerHTML = "At "+timestr;
+    document.getElementById(hwid+':min').innerHTML = measure.get_minValue();
+    document.getElementById(hwid+':avg').innerHTML = measure.get_averageValue();
+    document.getElementById(hwid+':max').innerHTML = measure.get_maxValue();
+
+    var chart = fct.get_userData();
+    if(chart && chart.series) {
+        // add point to graph
+        chart.series[0].addPoint( [+measure.get_endTimeUTC_asDate(), measure.get_averageValue()], true );
+    }
+}
+
+function setupChart(fct)
+{
+    var hwid = fct.get_hardwareId();
+    document.getElementById(hwid+':progress').style.display = '';
+    fct.get_recordedData(0, 0).loadMore_async(drawChart, fct);
+}
+
+function setupText(fct)
+{
+    var hwid = fct.get_hardwareId();
+    fct.set_userData(null);
+    document.getElementById(hwid+':progress').style.display = 'none';
+    document.getElementById(hwid+':chart').style.display    = 'none';
+    document.getElementById(hwid+':data').style.display     = '';
+}
+
+// Function invoked each time that a setting is changed
+//
+function chg(wdg)
+{
+    var ids = wdg.id.split(":");
+    var fct = functions[ids[0]];
+    switch(ids[1]) {
+        case "rec":
+            fct.set_recording(wdg.checked);
+            break;
+        case "autorec":
+            fct.set_autoStart(wdg.checked);
+            fct.get_module().saveToFlash();
+            break;
+        case "freq":
+            fct.set_logFrequency(wdg.value);
+            fct.set_reportFrequency(wdg.value);
+            break;
+        case "graph":
+            if(wdg.checked) setupChart(fct);
+            else setupText(fct);                
+            break;
+    }
+}
+
+// Function invoked each time that a Yoctopuce sensor is plugged
+//
+function deviceArrival(module)
+{
+    // Enumerate functions and setup graph if there is a dataLogger
+    var product = module.get_productName();
+    var serial = module.get_serialNumber();
+    var name = module.get_logicalName() || serial;
+    var hwid = serial+'.dataLogger';
+    var dataLogger = yFindDataLogger(hwid);
+    var html, setupstr = "";
+    
+    if(document.getElementById(serial)) return;
+    if(!dataLogger.isOnline()) {
+        return; // no datalogger
+    } else if(module.get_firmwareRelease() < 13000) {
+        html = product+' '+name+' has an old datalogger, please upgrade firmware to use this new API.';
+    } else {
+        functions[hwid] = dataLogger;
+        var recchk = (dataLogger.get_recording() ? " checked" : "");
+        var autochk = (dataLogger.get_autoStart() ? " checked" : "");
+        html = '<tr><td width="150px">Device:</td><td>'+product+' ('+name+')</td></tr>\n'
+             + '<tr><td></td><td><input type="checkbox" id="'+hwid+':rec" onchange="chg(this)"'+recchk+'>'
+             + 'Record measures into datalogger now</td></tr>\n'
+             + '<tr><td></td><td><input type="checkbox" id="'+hwid+':autorec" onchange="chg(this)"'+autochk+'>'
+             + 'Auto-start recording at power on</td></tr>\n';
+        for (var i = 0; i < module.functionCount(); i++) {
+            // Search for sensor functions
+            var fctName = module.functionId(i);
+            var className = fctName[0].toUpperCase()+fctName.slice(1);
+            while(className.slice(-1)<='9') className=className.slice(0,-1);
+            var fctClass = window["Y"+className];
+            if(!fctClass || !fctClass["Find"+className]) continue;
+            hwid = serial + "." + fctName;
+            var fct = fctClass["Find"+className](hwid);
+            if(fct.get_logFrequency == null) continue;
+            functions[hwid] = fct;
+            fct.registerTimedReportCallback(liveCallback);
+            var freq = fct.get_logFrequency();
+            if(fct.get_reportFrequency() != freq) {
+                setupstr += "{var fct=functions['"+hwid+"'];fct.set_reportFrequency('"+freq+"');}\n";
+            }
+            
+
+            // Create a container for the graph
+            html += '<tr><td colspan=2><hr></td></tr>'
+                 + '<tr><td>Function: </td><td>'+fct.get_friendlyName()+'</td></tr>\n'
+                 + '<tr><td>Log frequency:</td><td><input size=5 id="'+hwid+':freq" value="'+fct.get_logFrequency()+'"onchange="chg(this)">'
+                 + '&nbsp; <input type="checkbox" id="'+hwid+':graph" onchange="chg(this)">Display chart</td></tr>\n'
+                 + '<tr id="'+hwid+':data"><td id="'+hwid+':stamp"></td><td><table>\n'
+                 + '<tr><td>Min: <td></td><td><span id="'+hwid+':min"></span> '+fct.get_unit()+'</td></tr>\n'
+                 + '<tr><td>Avg: <td></td><td><span id="'+hwid+':avg"></span> '+fct.get_unit()+'</td></tr>\n'
+                 + '<tr><td>Max: <td></td><td><span id="'+hwid+':max"></span> '+fct.get_unit()+'</td></tr>\n'
+                 + '</table></td></tr>\n'
+                 + '<tr><td colspan=2 id="'+hwid+':chart" style="width:800px; display:none"></td></tr>\n'
+                 + '<tr><td colspan=2 id="'+hwid+':progress" style="display:none"><center>'
+                 + '<i>Loading measures from datalogger on '+name+'...</i><br>'
+                 + '<div style="position:relative;height:16px;width:200px">'
+                 + '<div class="gauge"><div class="gaugevalue" id="'+hwid+'.gauge">'
+                 + '</div></div></div></center></td></tr>\n';
+        }
+    }
+
+    if(setupstr != "") setTimeout(setupstr, 500);
+
+    // Add device-specific container
+    document.getElementById('graphs').innerHTML += "<div id='"+serial+"' class='framed'><table>" + html + "</table></div>";
+}
+
+function deviceRemoval(module)
+{
+    // Remove anything we displayed for this device
+    var serial = module.get_serialNumber();
+    var deviceDiv = document.getElementById(serial);
+    if(deviceDiv){
+        deviceDiv.parentNode.removeChild(deviceDiv);
+    } 
+}
+
+function handleHotPlug()
+{
+    YAPI.SetTimeout("handleHotPlug()",1000);
+}
+
+// Detect desired IP address to connect to
+var myurl = ''+document.location.href;
+
+function connectToHub()
+{
+    var ipaddr = "127.0.0.1";
+    var ippos = myurl.indexOf('?ip=');
+    if(ippos >= 0) {
+        ipaddr = myurl.slice(ippos+4);
+        myurl = myurl.slice(0,ippos)
+    }
+    document.getElementById('ipaddr').value = ipaddr;
+
+    YAPI.DisableExceptions();
+    if(YAPI.RegisterHub(ipaddr+":4444") != YAPI.SUCCESS) {
+        alert("Cannot contact VirtualHub on "+ipaddr);
+    }
+    YAPI.RegisterDeviceArrivalCallback(deviceArrival);
+    YAPI.RegisterDeviceRemovalCallback(deviceRemoval);
+    handleHotPlug();
+}
+
+function newIP(str_addr)
+{
+    document.location.href = myurl+'?ip='+str_addr;
+}
+
+</script>
+</head>
+
+<body onload="connectToHub()" style="font-family: sans-serif;">
+  <h3>Sample integration of HighStock JS with Yoctopuce DataLogger</h3>
+  <dl><dt><b>Important:</b></dt><dd>
+          The <a href="http://www.highcharts.com/products/highstock">Highstock library</a> used in this
+          example code is <b>not freeware</b>. You can use it under the Creative Commons Attribution-NonCommercial
+          License <b>for personal or non-profit projects</b>. If you intend to do anything else with this sample code,
+          you should <a href="http://shop.highsoft.com/highstock.html">buy a license of Highstock JS</a>.
+          Yoctopuce provides this sample AS IS to ease your integration with this popular chart library, but
+          it is your own responsibility to determine if you need a commercial license for using it.
+      </dd></dl>
+  <p>IP Address of VirtualHub or YoctoHub: <input id="ipaddr" onchange="newIP(this.value)"></p>
+  <div id="graphs">
+  </div>
+  <h4>Connect more sensors to log their measures</h4>
+</body>
+</html>

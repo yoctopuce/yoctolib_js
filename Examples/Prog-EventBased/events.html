@@ -3,15 +3,20 @@
  <TITLE>Event-based programming example</TITLE>
  <SCRIPT type="text/javascript" src="../../Sources/yocto_api.js"></SCRIPT>
  <SCRIPT type="text/javascript" src="../../Sources/yocto_anbutton.js"></SCRIPT>
- <SCRIPT type="text/javascript" src="../../Sources/yocto_temperature.js"></SCRIPT>
- <SCRIPT type="text/javascript" src="../../Sources/yocto_lightsensor.js"></SCRIPT>
  <SCRIPT language='javascript1.5' type='text/JavaScript'>
  <!--
  function valueChangeCallBack(obj_fct, str_value)
  {
      // the field to update is stored in the function userData
-     var spanId = obj_fct.get_userData();
-     document.getElementById(spanId).innerHTML = str_value;
+     var info = obj_fct.get_userData();
+     document.getElementById(info.name).innerHTML = str_value+' '+info.unit+' (new value)';
+ }
+
+ function timedReportCallBack(obj_fct, obj_measure)
+ {
+     // the field to update is stored in the function userData
+     var info = obj_fct.get_userData();
+     document.getElementById(info.name).innerHTML = ''+obj_measure.get_averageValue()+' '+info.unit+' (timed report)';
  }
 
  function deviceArrival(module)
@@ -22,36 +27,32 @@
          div.style.display = "block";
          return;
      }
-     var descr = "<div id='"+serial+"'>Module "+serial+":<br>";
+     document.getElementById('modules').innerHTML += "<div id='"+serial+"'>Module "+serial+"<br></div>";
 
+     // First solution: look for a specific type of function (eg. anButton)
      var fctcount = module.functionCount();
-     var fctobjs = {};
      for (var i = 0; i < fctcount; i++)
      {
-         var fctName = module.functionId(i);
-         var fctFullName = module.get_serialNumber() + "." + fctName;
-
-         if (fctName.indexOf("anButton")==0) { 
-             descr += "- "+fctName+": <span id='"+fctFullName+"'></span><br>";
-             fctobjs[fctFullName] = YAnButton.FindAnButton(fctFullName);
-         }
-         if (fctName.indexOf("temperature")==0) {
-             descr += "- "+fctName+": <span id='"+fctFullName+"'></span> &deg;C<br>";
-             fctobjs[fctFullName] = YTemperature.FindTemperature(fctFullName);
-         }
-         if (fctName.indexOf("lightSensor")==0) {
-             descr += "- "+fctName+": <span id='"+fctFullName+"'></span> lux<br>";
-             fctobjs[fctFullName] = YLightSensor.FindLightSensor(fctFullName);
+         var hardwareId = serial + "." + module.functionId(i);         
+         if (hardwareId.indexOf(".anButton") > 0) { 
+             document.getElementById(serial).innerHTML += "- "+hardwareId+' : <span id="'+hardwareId+'"></span><br>';
+             var anButton = YAnButton.FindAnButton(hardwareId);
+             anButton.set_userData({name:hardwareId,unit:''});
+             anButton.registerValueCallback(valueChangeCallBack);
          }
      }
-     descr += "</div>";
-     document.getElementById('modules').innerHTML += descr;
-
-     // register callbacks
-     for(var fctFullName in fctobjs) {
-         var fct = fctobjs[fctFullName];
-         fct.set_userData(fctFullName);
-         fct.set_callback(valueChangeCallBack);
+    
+     // Alternate solution: register any kind of sensor on the device
+     var sensor = YSensor.FirstSensor();
+     while(sensor) {
+         if(sensor.get_module().get_serialNumber() == serial) {
+             var hardwareId = sensor.get_hardwareId();
+             document.getElementById(serial).innerHTML += "- "+hardwareId+' : <span id="'+hardwareId+'"></span><br>';
+             sensor.set_userData({name:hardwareId,unit:sensor.get_unit()});
+             sensor.registerValueCallback(valueChangeCallBack);
+             sensor.registerTimedReportCallback(timedReportCallBack);
+         }
+         sensor = sensor.nextSensor();
      }
  }
 

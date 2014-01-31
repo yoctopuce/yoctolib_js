@@ -41,7 +41,7 @@
          
          io.wait_async( function()  
           { var inputdata = io.get_portState(); // read port values
-            var line = "";  // display part state value as binary
+            var line = "";  // display port value as binary
             for (var i = 0; i < 8; i++)
               if ((inputdata & (128 >> i))>0) line = line + '1'; else line = line + '0';
                  document.getElementById('state').value = line;
@@ -58,6 +58,6 @@
   are configred as inputs, you can connect some inputs to 
   ouputs and see what happens</p> 
   Module to use: <input id='serial'>
-  Port state : <input id='state' style='border:none;' readonly><br> 
+  Port value : <input id='state' style='border:none;' readonly><br> 
 </BODY>
 </HTML> 

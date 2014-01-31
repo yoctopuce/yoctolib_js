@@ -1,3 +1,2 @@
-- Improve documentation of _async functions
-- Add enum symbols into classes
-- Add some example files
+- add YAPI.RegisterHubDiscoveryCallback and YAPI.TriggerHubDiscovery
+- minor bug fixes

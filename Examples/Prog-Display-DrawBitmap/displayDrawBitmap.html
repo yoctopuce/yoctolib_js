@@ -24,11 +24,6 @@
  var  distance = 1;
  var  data = new Array();
 
-
-  
-  
-
-
  function refresh()
  {    
     for(var i=0 ;i< data.length; i++)  data[i]=0;
@@ -89,7 +84,7 @@
       bytesPerLines = parseInt(w / 8);
        // display clean up
       disp.resetAll();
-      for (var i=0;i<bytesPerLines;i++) data[i]=0;     
+      for (var i=0;i<h*bytesPerLines;i++) data[i]=0;     
       setTimeout('refresh()',20);
      }
   }
