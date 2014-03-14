@@ -1,0 +1,39 @@
+﻿<HTML>
+<HEAD>
+ <TITLE>Device logs example</TITLE>
+ <SCRIPT type="text/javascript" src="../../Sources/yocto_api.js"></SCRIPT>
+
+ <SCRIPT language='javascript1.5' type='text/JavaScript'>
+ <!--
+ function logfun(obj_module, str_value)
+ {   document.getElementById('log').innerHTML +=obj_module.get_serialNumber()+' '+str_value+'<br>';
+ }
+
+ function deviceArrival(obj_module)
+ {   var serial = obj_module.get_serialNumber();
+     document.getElementById('log').innerHTML =serial+" arrival<br>";
+     obj_module.registerLogCallback(logfun); 
+ }
+ 
+ function handleHotPlug()
+ {
+     YAPI.SetTimeout("handleHotPlug()",1000);
+ }
+
+  // Use explicit error handling rather than exceptions
+  YAPI.DisableExceptions();
+
+  // Setup the API to use the VirtualHub on local machine
+  if(YAPI.RegisterHub('http://127.0.0.1:4444/') != YAPI.SUCCESS) {
+      alert("Cannot contact VirtualHub on 127.0.0.1");
+  }
+
+  YAPI.RegisterDeviceArrivalCallback(deviceArrival);
+-->
+ </SCRIPT>
+</HEAD>  
+<BODY onload='handleHotPlug();'>
+Plug a Yoctopuce device<br>
+<div id='log'></div>
+</BODY>
+</HTML> 

@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_display.js 14687 2014-01-23 11:01:59Z seb $
+ * $Id: yocto_display.js 15402 2014-03-12 16:23:14Z mvuilleu $
  *
  * Implements yFindDisplay(), the high-level API for Display functions
  *
@@ -1617,7 +1617,9 @@ var YDisplay; // definition below
      *         if there are no more displays to enumerate.
      */
     function YDisplay_nextDisplay()
-    {   var next_hwid = YAPI.getNextHardwareId(this._className, this._func);
+    {   var resolve = YAPI.resolveFunction(this._className, this._func);
+        if(resolve.errorType != YAPI_SUCCESS) return null;
+        var next_hwid = YAPI.getNextHardwareId(this._className, resolve.result);
         if(next_hwid == null) return null;
         return YDisplay.FindDisplay(next_hwid);
     }
@@ -1666,13 +1668,6 @@ var YDisplay; // definition below
         return this._allDisplayLayers[layerId];
     }
     
-    /**
-     * Force a flush of all commands buffered by all layers.
-     * 
-     * @return YAPI_SUCCESS if the call succeeds.
-     * 
-     * On failure, throws an exception or returns a negative error code.
-     */
     function YDisplay_flushLayers()
     {
         if(this._allDisplayLayers) {
@@ -1692,13 +1687,6 @@ var YDisplay; // definition below
         }
     }
 
-    /**
-     * Add a given command string to the currently recorded display sequence
-     * 
-     * @return YAPI_SUCCESS if the call succeeds.
-     * 
-     * On failure, throws an exception or returns a negative error code.
-     */
     function YDisplay_sendCommand(cmd)
     {
         if(!this._recording) {
