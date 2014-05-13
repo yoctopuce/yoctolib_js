@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_refframe.js 15402 2014-03-12 16:23:14Z mvuilleu $
+ * $Id: yocto_refframe.js 15998 2014-05-01 08:25:18Z seb $
  *
  * Implements the high-level API for RefFrame functions
  *
@@ -374,12 +374,12 @@ var YRefFrame; // definition below
      * and horizontally, you must select its reference orientation (parallel to
      * the earth surface) so that the measures are made relative to this position.
      * 
-     * @param position: a value among the Y_MOUNTPOSITION enumeration
+     * @param position : a value among the Y_MOUNTPOSITION enumeration
      *         (Y_MOUNTPOSITION_BOTTOM,   Y_MOUNTPOSITION_TOP,
      *         Y_MOUNTPOSITION_FRONT,    Y_MOUNTPOSITION_RIGHT,
      *         Y_MOUNTPOSITION_REAR,     Y_MOUNTPOSITION_LEFT),
      *         corresponding to the installation in a box, on one of the six faces.
-     * @param orientation: a value among the enumeration Y_MOUNTORIENTATION
+     * @param orientation : a value among the enumeration Y_MOUNTORIENTATION
      *         (Y_MOUNTORIENTATION_TWELVE, Y_MOUNTORIENTATION_THREE,
      *         Y_MOUNTORIENTATION_SIX,     Y_MOUNTORIENTATION_NINE)
      *         corresponding to the orientation of the "X" arrow on the device,
