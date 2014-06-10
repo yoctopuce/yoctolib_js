@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_api.js 16091 2014-05-08 12:10:31Z seb $
+ * $Id: yocto_api.js 16246 2014-05-16 12:09:39Z seb $
  *
  * High-level programming interface, common to all modules
  *
@@ -196,7 +196,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
     }    
 
     // Index a single function given by HardwareId and logical name; store any advertised value
-    // Return true iff there was a logical name discrepency
+    // Return true iff there was a logical name discrepancy
     function YFunctionType_reindexFunction(str_hwid, str_name, str_val, int_basetype)
     {
         var currname = this._nameByHwId[str_hwid];
@@ -1995,7 +1995,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
      */
     function YAPI_GetAPIVersion()
     {
-        return "1.10.16182";
+        return "1.10.16490";
     }
 
     /**
@@ -3095,6 +3095,9 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
      */
     function YFunction_set_logicalName(newval)
     {   var rest_val;
+        if (!YAPI.CheckLogicalName(newval)) {
+            return this._throw(YAPI_INVALID_ARGUMENT,"Invalid name :" + newval, YAPI_INVALID_ARGUMENT);
+        }
         rest_val = newval;
         return this._setAttr('logicalName',rest_val);
     }
