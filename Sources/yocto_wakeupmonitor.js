@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_wakeupmonitor.js 16424 2014-06-04 14:26:41Z seb $
+ * $Id: yocto_wakeupmonitor.js 17249 2014-08-21 14:40:17Z seb $
  *
  * Implements the high-level API for WakeUpMonitor functions
  *
@@ -46,15 +46,8 @@ var Y_WAKEUPREASON_USBPOWER         = 0;
 var Y_WAKEUPREASON_EXTPOWER         = 1;
 var Y_WAKEUPREASON_ENDOFSLEEP       = 2;
 var Y_WAKEUPREASON_EXTSIG1          = 3;
-var Y_WAKEUPREASON_EXTSIG2          = 4;
-var Y_WAKEUPREASON_EXTSIG3          = 5;
-var Y_WAKEUPREASON_EXTSIG4          = 6;
-var Y_WAKEUPREASON_SCHEDULE1        = 7;
-var Y_WAKEUPREASON_SCHEDULE2        = 8;
-var Y_WAKEUPREASON_SCHEDULE3        = 9;
-var Y_WAKEUPREASON_SCHEDULE4        = 10;
-var Y_WAKEUPREASON_SCHEDULE5        = 11;
-var Y_WAKEUPREASON_SCHEDULE6        = 12;
+var Y_WAKEUPREASON_SCHEDULE1        = 4;
+var Y_WAKEUPREASON_SCHEDULE2        = 5;
 var Y_WAKEUPREASON_INVALID          = -1;
 var Y_WAKEUPSTATE_SLEEPING          = 0;
 var Y_WAKEUPSTATE_AWAKE             = 1;
@@ -316,10 +309,8 @@ var YWakeUpMonitor; // definition below
      * Returns the latest wake up reason.
      * 
      * @return a value among Y_WAKEUPREASON_USBPOWER, Y_WAKEUPREASON_EXTPOWER, Y_WAKEUPREASON_ENDOFSLEEP,
-     * Y_WAKEUPREASON_EXTSIG1, Y_WAKEUPREASON_EXTSIG2, Y_WAKEUPREASON_EXTSIG3, Y_WAKEUPREASON_EXTSIG4,
-     * Y_WAKEUPREASON_SCHEDULE1, Y_WAKEUPREASON_SCHEDULE2, Y_WAKEUPREASON_SCHEDULE3,
-     * Y_WAKEUPREASON_SCHEDULE4, Y_WAKEUPREASON_SCHEDULE5 and Y_WAKEUPREASON_SCHEDULE6 corresponding to
-     * the latest wake up reason
+     * Y_WAKEUPREASON_EXTSIG1, Y_WAKEUPREASON_SCHEDULE1 and Y_WAKEUPREASON_SCHEDULE2 corresponding to the
+     * latest wake up reason
      * 
      * On failure, throws an exception or returns Y_WAKEUPREASON_INVALID.
      */
@@ -341,10 +332,8 @@ var YWakeUpMonitor; // definition below
      *         - the user-specific context object
      *         - the YWakeUpMonitor object that invoked the callback
      *         - the result:a value among Y_WAKEUPREASON_USBPOWER, Y_WAKEUPREASON_EXTPOWER,
-     *         Y_WAKEUPREASON_ENDOFSLEEP, Y_WAKEUPREASON_EXTSIG1, Y_WAKEUPREASON_EXTSIG2, Y_WAKEUPREASON_EXTSIG3,
-     *         Y_WAKEUPREASON_EXTSIG4, Y_WAKEUPREASON_SCHEDULE1, Y_WAKEUPREASON_SCHEDULE2,
-     *         Y_WAKEUPREASON_SCHEDULE3, Y_WAKEUPREASON_SCHEDULE4, Y_WAKEUPREASON_SCHEDULE5 and
-     *         Y_WAKEUPREASON_SCHEDULE6 corresponding to the latest wake up reason
+     *         Y_WAKEUPREASON_ENDOFSLEEP, Y_WAKEUPREASON_EXTSIG1, Y_WAKEUPREASON_SCHEDULE1 and
+     *         Y_WAKEUPREASON_SCHEDULE2 corresponding to the latest wake up reason
      * @param context : user-specific object that is passed as-is to the callback function
      * 
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
@@ -517,7 +506,9 @@ var YWakeUpMonitor; // definition below
     {
         var currTime;               // int;
         currTime = this.get_rtcTime();
-        if (!(currTime != 0)) return this._throw( YAPI_RTC_NOT_READY, "RTC time not set",YAPI_RTC_NOT_READY);
+        if (!(currTime != 0)) {
+            return this._throw(YAPI_RTC_NOT_READY,"RTC time not set",YAPI_RTC_NOT_READY);
+        }
         this.set_nextWakeUp(this._endOfTime);
         this.set_sleepCountdown(secBeforeSleep);
         return YAPI_SUCCESS;
@@ -539,7 +530,9 @@ var YWakeUpMonitor; // definition below
     {
         var currTime;               // int;
         currTime = this.get_rtcTime();
-        if (!(currTime != 0)) return this._throw( YAPI_RTC_NOT_READY, "RTC time not set",YAPI_RTC_NOT_READY);
+        if (!(currTime != 0)) {
+            return this._throw(YAPI_RTC_NOT_READY,"RTC time not set",YAPI_RTC_NOT_READY);
+        }
         this.set_nextWakeUp(currTime+secUntilWakeUp);
         this.set_sleepCountdown(secBeforeSleep);
         return YAPI_SUCCESS;
@@ -561,7 +554,9 @@ var YWakeUpMonitor; // definition below
     {
         var currTime;               // int;
         currTime = this.get_rtcTime();
-        if (!(currTime != 0)) return this._throw( YAPI_RTC_NOT_READY, "RTC time not set",YAPI_RTC_NOT_READY);
+        if (!(currTime != 0)) {
+            return this._throw(YAPI_RTC_NOT_READY,"RTC time not set",YAPI_RTC_NOT_READY);
+        }
         this.set_nextWakeUp(wakeUpTime);
         this.set_sleepCountdown(secBeforeSleep);
         return YAPI_SUCCESS;
@@ -623,15 +618,8 @@ var YWakeUpMonitor; // definition below
         WAKEUPREASON_EXTPOWER       : 1,
         WAKEUPREASON_ENDOFSLEEP     : 2,
         WAKEUPREASON_EXTSIG1        : 3,
-        WAKEUPREASON_EXTSIG2        : 4,
-        WAKEUPREASON_EXTSIG3        : 5,
-        WAKEUPREASON_EXTSIG4        : 6,
-        WAKEUPREASON_SCHEDULE1      : 7,
-        WAKEUPREASON_SCHEDULE2      : 8,
-        WAKEUPREASON_SCHEDULE3      : 9,
-        WAKEUPREASON_SCHEDULE4      : 10,
-        WAKEUPREASON_SCHEDULE5      : 11,
-        WAKEUPREASON_SCHEDULE6      : 12,
+        WAKEUPREASON_SCHEDULE1      : 4,
+        WAKEUPREASON_SCHEDULE2      : 5,
         WAKEUPREASON_INVALID        : -1,
         WAKEUPSTATE_SLEEPING        : 0,
         WAKEUPSTATE_AWAKE           : 1,

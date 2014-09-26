@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_api.js 16246 2014-05-16 12:09:39Z seb $
+ * $Id: yocto_api.js 17816 2014-09-24 14:47:30Z seb $
  *
  * High-level programming interface, common to all modules
  *
@@ -39,7 +39,7 @@
 
 //--- (generated code: YFunction definitions)
 // Yoctopuce error codes, also used by default as function return value
-var YAPI_SUCCESS                    = 0;       // everything worked allright
+var YAPI_SUCCESS                    = 0;       // everything worked all right
 var YAPI_NOT_INITIALIZED            = -1;      // call yInitAPI() first !
 var YAPI_INVALID_ARGUMENT           = -2;      // one of the arguments passed to the function is invalid
 var YAPI_NOT_SUPPORTED              = -3;      // the operation attempted is (currently) not supported
@@ -49,10 +49,11 @@ var YAPI_DEVICE_BUSY                = -6;      // the device is busy with anothe
 var YAPI_TIMEOUT                    = -7;      // the device took too long to provide an answer
 var YAPI_IO_ERROR                   = -8;      // there was an I/O problem while talking to the device
 var YAPI_NO_MORE_DATA               = -9;      // there is no more data to read from
-var YAPI_EXHAUSTED                  = -10;     // you have run out of a limited ressource, check the documentation
-var YAPI_DOUBLE_ACCES               = -11;     // you have two process that try to acces to the same device
+var YAPI_EXHAUSTED                  = -10;     // you have run out of a limited resource, check the documentation
+var YAPI_DOUBLE_ACCES               = -11;     // you have two process that try to access to the same device
 var YAPI_UNAUTHORIZED               = -12;     // unauthorized access to password-protected device
 var YAPI_RTC_NOT_READY              = -13;     // real-time clock has not been initialized (or time was lost)
+var YAPI_FILE_NOT_FOUND             = -14;     // the file is not found
 
 var YAPI_INVALID_INT                = 0x7fffffff;
 var YAPI_INVALID_UINT               = -1;
@@ -72,6 +73,8 @@ var Y_ADVERTISEDVALUE_INVALID       = YAPI_INVALID_STRING;
 var Y_DATA_INVALID                  = YAPI_INVALID_DOUBLE;
 var Y_DURATION_INVALID              = YAPI_INVALID_INT;
 
+//--- (generated code: YFirmwareUpdate definitions)
+//--- (end of generated code: YFirmwareUpdate definitions)
 //--- (generated code: YDataStream definitions)
 //--- (end of generated code: YDataStream definitions)
 
@@ -98,9 +101,6 @@ var Y_PERSISTENTSETTINGS_INVALID    = -1;
 var Y_BEACON_OFF                    = 0;
 var Y_BEACON_ON                     = 1;
 var Y_BEACON_INVALID                = -1;
-var Y_USBBANDWIDTH_SIMPLE           = 0;
-var Y_USBBANDWIDTH_DOUBLE           = 1;
-var Y_USBBANDWIDTH_INVALID          = -1;
 var Y_PRODUCTNAME_INVALID           = YAPI_INVALID_STRING;
 var Y_SERIALNUMBER_INVALID          = YAPI_INVALID_STRING;
 var Y_PRODUCTID_INVALID             = YAPI_INVALID_UINT;
@@ -110,6 +110,7 @@ var Y_LUMINOSITY_INVALID            = YAPI_INVALID_UINT;
 var Y_UPTIME_INVALID                = YAPI_INVALID_LONG;
 var Y_USBCURRENT_INVALID            = YAPI_INVALID_UINT;
 var Y_REBOOTCOUNTDOWN_INVALID       = YAPI_INVALID_INT;
+var Y_USERVAR_INVALID               = YAPI_INVALID_INT;
 //--- (end of generated code: YModule definitions)
 
 // yInitAPI constants (not really useful in Javascript, but defined for code portability)
@@ -117,6 +118,9 @@ var Y_DETECT_NONE                   = 0;
 var Y_DETECT_USB                    = 1;
 var Y_DETECT_NET                    = 2;
 var Y_DETECT_ALL                    = (Y_DETECT_USB | Y_DETECT_NET);
+
+// calibration types
+var YOCTO_CALIB_TYPE_OFS            = 30;
 
 var yAPI, YAPI;
 var YFunction;
@@ -594,7 +598,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
     }
 
     // Get the whole REST API string for a device, from cache if possible
-    function YDevice_requestAPI()
+    function YDevice_requestAPI(int_msValidity)
     {
         if(this._cache._expiration > YAPI.GetTickCount()) {
             return {errorType:YAPI_SUCCESS, 
@@ -603,7 +607,10 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
         }
         var yreq = YAPI.devRequest(this._rootUrl, "GET /api.json");
         if(yreq.errorType != YAPI_SUCCESS) return yreq;
-        this._cache._expiration = YAPI.GetTickCount() + YAPI.defaultCacheValidity;
+        if(!int_msValidity) {
+            int_msValidity = YAPI.defaultCacheValidity;
+        }
+        this._cache._expiration = YAPI.GetTickCount() + int_msValidity;
         this._cache._json = yreq.result;
         return yreq;
     }
@@ -709,7 +716,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
     // Reload a device API (store in cache), and update YAPI function lists accordingly
     function YDevice_refresh()
     {
-        var yreq = this.requestAPI();
+        var yreq = this.requestAPI(YAPI.defaultCacheValidity);
         if(yreq.errorType != YAPI_SUCCESS) {
             return this._throw(yreq.errorType, yreq.errorMsg, yreq.errorType);
         }
@@ -857,6 +864,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
         for(var i = 1; i <= 20; i++) {
             this.RegisterCalibrationHandler(i,this.LinearCalibrationHandler);
         }
+        this.RegisterCalibrationHandler(YOCTO_CALIB_TYPE_OFS,this.LinearCalibrationHandler);
     }
     
     // Context used to update the list of known devices by rescanning all hubs as needed
@@ -1058,7 +1066,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
                          errorMsg:  hubdev._lastErrorMsg, 
                          result:    retcode};
             }
-            var yreq = hubdev.requestAPI();
+            var yreq = hubdev.requestAPI(YAPI.defaultCacheValidity);
             if(yreq.errorType != YAPI_SUCCESS) {
                 return yreq;
             }
@@ -1085,7 +1093,9 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
             return; // no event monitoring in callback mode
         }
         var args = "?len="+yhub.notiflen.toString();
-        if(yhub.notifPos > 0) args += "&abs="+yhub.notifPos;
+        if(yhub.notifPos > 0) {
+            args += "&abs="+yhub.notifPos.toString();
+        }
         this.devRequest(yhub.urlInfo.url, "GET /not.byn"+args, 
             function(httpRequest) {
                 var hub = YAPI._hubs[int_hubidx];
@@ -1098,7 +1108,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
                         hub.devListExpires = 0;
                         // FOR BROWSERS ONLY:
                         if(typeof chrome != "undefined" && chrome.app && chrome.app.window) {
-                            setTimeout(function(hubidx){YAPI.monitorEvents(hubidx)}, hub.retryDelay, int_hubidx);
+                            setTimeout(function(hubidx){YAPI.monitorEvents(hubidx);}, hub.retryDelay, int_hubidx);
                         } else {
                             setTimeout("YAPI.monitorEvents("+int_hubidx+")", hub.retryDelay);
                         }
@@ -1118,7 +1128,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
                                 hub.notiflen = 1;
                                 hub.currPos = 0;
                                 if(typeof chrome != "undefined" && chrome.app && chrome.app.window) {
-                                    setTimeout(function(hubidx){YAPI.monitorEvents(hubidx)}, 15, int_hubidx);
+                                    setTimeout(function(hubidx){YAPI.monitorEvents(hubidx);}, 15, int_hubidx);
                                 } else {
                                     setTimeout("YAPI.monitorEvents("+int_hubidx+")", 15);
                                 }
@@ -1139,7 +1149,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
                                 var ev = rows[idx];
                                 if(ev.length == 0) continue;
                                 var firstCode = ev.charAt(0);
-                                if(ev.length >= 3 && firstCode >= 'x' && firstCode <= 'z') {
+                                if(ev.length >= 3 && firstCode >= 'v' && firstCode <= 'z') {
                                     hub.retryDelay = 15;
                                     if(hub.notifPos>=0) hub.notifPos += ev.length+1;
                                     var devydx = ev.charCodeAt(1) - 65; // from 'A'
@@ -1157,9 +1167,9 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
                                             if(firstCode == 'y') {
                                                 // function value ydx (tiny notification)
                                                 YAPI.setFunctionValue(serial+"."+funcid, value);
-                                            } else {
+                                            } else if(firstCode != 'w') { // normally always true
                                                 // timed value report
-                                                var pos, arr = [(firstCode == 'z' ? 1 : 0)];
+                                                var pos, arr = [(firstCode == 'x' ? 0 : (firstCode == 'z' ? 1 : 2))];
                                                 for(pos = 0; pos < value.length; pos += 2) {
                                                     arr.push(parseInt(value.substr(pos,2), 16));
                                                 }
@@ -1173,6 +1183,8 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
                                             }
                                         }
                                     }
+                                } else if(ev.length == 3 && firstCode >= 'w') {
+                                    // log notification
                                 } else if(ev.length > 5 && ev.substr(0,4) == 'YN01') {
                                     hub.retryDelay = 15;
                                     if(hub.notifPos>=0) hub.notifPos += ev.length+1;
@@ -1276,7 +1288,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
 
     function YAPI_getCalibrationHandler(calibType)
     {
-        return this._calibHandlers[calibType]
+        return this._calibHandlers[calibType];
     }
     
     // Parse an array of u16 encoded in a base64-like string with memory-based compresssion
@@ -1313,6 +1325,54 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
         return udata;
     }
 
+    // Parse an array of u16 encoded in a base64-like string with memory-based compresssion
+    function YAPI_decodeFloats(data)
+    {
+        var idata = [];
+        var p = 0;
+        var datalen = data.length;
+        while (p < datalen) {
+            var val = 0;
+            var sign = 1;
+            var dec = 0;
+            var decInc = 0;
+            var c = data[p++];
+            while(c != '-' && (c < '0' || c > '9')) {
+                if(p >= datalen) {
+                    return idata;
+                }
+                c = data[p++];
+            }
+            if(c == '-') {
+                if(p >= datalen) {
+                    return idata;
+                }
+                sign = -sign;
+                c = data[p++];
+            }
+            while((c >= '0' && c <= '9') || c == '.') {
+                if(c == '.') {
+                    decInc = 1;
+                } else if(dec < 3) {
+                    val = val * 10 + (c.charCodeAt(0) - 48);
+                    dec += decInc;
+                }
+                if(p < datalen) {
+                    c = data[p++];
+                } else {
+                    c = '\0';
+                }
+            }
+            if(dec < 3) {
+                if(dec == 0) val *= 1000;
+                else if(dec == 1) val *= 100;
+                else val *= 10;
+            }
+            idata.push(sign*val);
+        }
+        return idata;
+    }
+    
     // Return a Device object for a specified URL, serial number or logical device name
     // This function will not cause any network access
     function YAPI_getDevice(str_device)
@@ -1575,7 +1635,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
             }
             // use the device cache when loading the whole API
             if(lines[0] == "GET /api.json") {
-                return lockdev.requestAPI();
+                return lockdev.requestAPI(YAPI.defaultCacheValidity);
             }
             baseUrl = lockdev.getRootUrl();
         }
@@ -1595,11 +1655,11 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
         if(devUrl.substr(0,1) == "/") devUrl = devUrl.substr(1);
         if(baseUrl == "http://callback:4444/") {
             baseUrl = baseUrl.slice(baseUrl.indexOf('/',16));
-            return this._httpCallbackRequest(method, baseUrl+devUrl, func_statechanged, obj_body)
+            return this._httpCallbackRequest(method, baseUrl+devUrl, func_statechanged, obj_body);
         }
         // FOR BROWSERS ONLY:
         var httpRequest = (window.XMLHttpRequest) ? new XMLHttpRequest() : new ActiveXObject("Microsoft.XMLHTTP");
-        try { 
+        try {
             httpRequest.reqUrl = baseUrl+devUrl;
             httpRequest.open(method,baseUrl+devUrl,async,'','');
             if(!obj_body) {
@@ -1630,7 +1690,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
                     } else {
                         func_statechanged(httpRequest); 
                     }
-                }
+                };
                 if(lockdev && (lockdev._busy > 0 || lockdev._pendingQueries.length > 0)) {
                     lockdev._pendingQueries.push({xhr:httpRequest,body:obj_body});
                 } else {
@@ -1662,7 +1722,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
         } catch(err) {
             //alert('http error:'+(err.message || err.description));
             return {errorType:YAPI_IO_ERROR, 
-                     errorMsg:"HTTP request raised an exception: "+(err.message || err.description), 
+                     errorMsg:"HTTP request raised an exception: "+(err.message || err.description || err.name), 
                      result:null};
         }
         if(!async) {
@@ -1765,7 +1825,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
                 var status = parseInt(httpRequest.status);
                 if(status != 200 && status != 304) {
                     func_callback(obj_context, {errorType:YAPI_IO_ERROR, 
-                                                errorMsg:"Received HTTP status "+status+" ("+httpRequest.responseText+")", 
+                                                errorMsg:"Received HTTP status "+status+" ("+httpRequest.responseText+") for async query on "+str_device, 
                                                 result:null});
                 } else {
                     func_callback(obj_context, {errorType:YAPI_SUCCESS, 
@@ -1858,7 +1918,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
     // Load and parse the REST API for a function given by class name and identifier, possibly applying changes
     // Device cache will be preloaded when loading function "module" and leveraged for other modules
     // Return a strucure including errorType, errorMsg and result
-    function YAPI_funcRequest(str_className, str_func, str_extra)
+    function YAPI_funcRequest(str_className, str_func, str_extra, int_msValidity)
     {
         var devreq = this._funcDev(str_className, str_func);
         if(devreq.errorType != YAPI_SUCCESS) {
@@ -1869,7 +1929,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
         var loadval = null;
         if(str_extra == "") {
             // use a cached API string (reload if needed)
-            yreq = devreq.device.requestAPI();
+            yreq = devreq.device.requestAPI(int_msValidity);
             if(yreq != null) {
                 if(yreq.errorType != YAPI_SUCCESS) return yreq;
                 try {loadval = JSON.parse(yreq.result)[devreq.functionid];} catch(err) {}
@@ -1995,7 +2055,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
      */
     function YAPI_GetAPIVersion()
     {
-        return "1.10.16490";
+        return "1.10.17849";
     }
 
     /**
@@ -2107,7 +2167,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
             url ="http://callback:4444/";
         else
             url += host + ':' + port + "/";
-        var res = {'user':user, 'pass':pass, 'host':host, 'port':port, 'url':url}
+        var res = {'user':user, 'pass':pass, 'host':host, 'port':port, 'url':url};
         return res;
 
     }
@@ -2120,11 +2180,10 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
         }
 
         // Add hub to known list
-        var notiflen = 32500;
         var newhub = {
             hubidx          : this._hubs.length,   // index of hub in array
             urlInfo         : var_urlInfo,         // structure that describe the root URL of the hub
-            notiflen        : notiflen,            // notification message length before forced deconnection
+            notiflen        : 0,                   // notification message length before forced deconnection
             notifTrigger    : 0,                   // timestamp of next manual updateDeviceList that would open not.byn
             devListValidity : 500,                 // default validity of updateDeviceList
             devListExpires  : 0,                   // timestamp of next useful updateDeviceList
@@ -2132,7 +2191,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
             retryDelay      : 15,                  // delay before reconnecting in case of error: initially 15ms
             notifPos        : -1,                  // current absolute position in hub notification stream
             currPos         : 0                    // current position in data stream
-        }            
+        };
         this._hubs.push(newhub);
     }
 
@@ -2168,7 +2227,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
      * If access control has been activated on the hub, virtual or not, you want to
      * reach, the URL parameter should look like:
      * 
-     * http://username:password@adresse:port
+     * http://username:password@address:port
      * 
      * You can call <i>RegisterHub</i> several times to connect to several machines.
      * 
@@ -2276,7 +2335,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
                     }, params);
                 }
             }, {rooturl: urlInfo.url, cb: callback, ctx: context});
-        }
+        };
         if(urlInfo['host'] == "callback") {
             YAPI._serverResponse = serverResponse;
             var badCallback = function() {
@@ -2399,7 +2458,6 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
                 return;
             }
         }
-        return;
     }
 
     /**
@@ -2707,11 +2765,16 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
                                            arr_calibRawValues, arr_calibRefValues)
     {
         // calibration types n=1..10 and 11..20 are meant for linear calibration using n points
-        var npt = Math.min(int_calibType % 10, arr_calibRawValues.length, arr_calibRefValues.length);
+        var npt;
         var x   = arr_calibRawValues[0];
         var adj = arr_calibRefValues[0] - x;
         var i   = 0;
 
+        if(int_calibType < YOCTO_CALIB_TYPE_OFS) {
+            npt = Math.min(int_calibType % 10, arr_calibRawValues.length, arr_calibRefValues.length);
+        } else {
+            npt = arr_calibRefValues.length;
+        }
         while(float_rawValue > arr_calibRawValues[i] && ++i < npt) {
             var x2   = x;
             var adj2 = adj;
@@ -2779,7 +2842,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
             d = c;
             c = (b << 30) | (b >>> 2);
             b = a;
-            a = t & 0xffffffff
+            a = t & 0xffffffff;
         }
         for (k = 20; k < 40; k++) {
             t = ((a << 5) | (a >>> 27)) + e + _shaw[k] + 0x6ED9EBA1 + (b^c^d);
@@ -2787,7 +2850,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
             d = c;
             c = (b << 30) | (b >>> 2);
             b = a;
-            a = t & 0xffffffff
+            a = t & 0xffffffff;
         }
         for (k = 40; k < 60; k++) {
             t = ((a << 5) | (a >>> 27)) + e + _shaw[k] + 0x8F1BBCDC + ((b & c) | (b & d) | (c & d));
@@ -2795,7 +2858,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
             d = c;
             c = (b << 30) | (b >>> 2);
             b = a;
-            a = t & 0xffffffff
+            a = t & 0xffffffff;
         }
         for (k = 60; k < 80; k++) {
             t = ((a << 5) | (a >>> 27)) + e + _shaw[k] + 0xCA62C1D6 + (b^c^d);
@@ -2803,7 +2866,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
             d = c;
             c = (b << 30) | (b >>> 2);
             b = a;
-            a = t & 0xffffffff
+            a = t & 0xffffffff;
         }
         _shaw[0] = (s[0] + a) & 0xffffffff;
         _shaw[1] = (s[1] + b) & 0xffffffff;
@@ -2892,8 +2955,9 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
     _YAPI.prototype._decimalToDouble           = YAPI_decimalToDouble;
     _YAPI.prototype._getCalibrationHandler     = YAPI_getCalibrationHandler;
     _YAPI.prototype._decodeWords               = YAPI_decodeWords;
+    _YAPI.prototype._decodeFloats              = YAPI_decodeFloats;
 
-        // Internal functions
+    // Internal functions
     _YAPI.prototype.getDevice             = YAPI_getDevice;
     _YAPI.prototype.reindexDevice         = YAPI_reindexDevice;
     _YAPI.prototype.forgetDevice          = YAPI_forgetDevice;
@@ -2920,7 +2984,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
     _YAPI.prototype.HTTPRequest_async     = YAPI_HTTPRequest_async;
 
 //--- (generated code: YFunction return codes)
-    _YAPI.prototype.SUCCESS               = 0;       // everything worked allright
+    _YAPI.prototype.SUCCESS               = 0;       // everything worked all right
     _YAPI.prototype.NOT_INITIALIZED       = -1;      // call yInitAPI() first !
     _YAPI.prototype.INVALID_ARGUMENT      = -2;      // one of the arguments passed to the function is invalid
     _YAPI.prototype.NOT_SUPPORTED         = -3;      // the operation attempted is (currently) not supported
@@ -2930,10 +2994,11 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
     _YAPI.prototype.TIMEOUT               = -7;      // the device took too long to provide an answer
     _YAPI.prototype.IO_ERROR              = -8;      // there was an I/O problem while talking to the device
     _YAPI.prototype.NO_MORE_DATA          = -9;      // there is no more data to read from
-    _YAPI.prototype.EXHAUSTED             = -10;     // you have run out of a limited ressource, check the documentation
-    _YAPI.prototype.DOUBLE_ACCES          = -11;     // you have two process that try to acces to the same device
+    _YAPI.prototype.EXHAUSTED             = -10;     // you have run out of a limited resource, check the documentation
+    _YAPI.prototype.DOUBLE_ACCES          = -11;     // you have two process that try to access to the same device
     _YAPI.prototype.UNAUTHORIZED          = -12;     // unauthorized access to password-protected device
     _YAPI.prototype.RTC_NOT_READY         = -13;     // real-time clock has not been initialized (or time was lost)
+    _YAPI.prototype.FILE_NOT_FOUND        = -14;     // the file is not found
 //--- (end of generated code: YFunction return codes)
 
     _YAPI.prototype.INVALID_INT           = YAPI_INVALID_INT;
@@ -3404,7 +3469,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
      * Returns a global identifier of the function in the format MODULE_NAME&#46;FUNCTION_NAME.
      * The returned string uses the logical names of the module and of the function if they are defined,
      * otherwise the serial number of the module and the hardware identifier of the function
-     * (for exemple: MyCustomName.relay1)
+     * (for example: MyCustomName.relay1)
      * 
      * @return a string that uniquely identifies the function using logical names
      *         (ex: MyCustomName.relay1)
@@ -3515,6 +3580,8 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
                         .replace(/%2[cC]/g, ',').replace(/%2[fF]/g, '/')
                         .replace(/%3[aA]/g, ':').replace(/%3[bB]/g, ';').replace(/%3[fF]/g, '?')                        
                         .replace(/%5[bB]/g, '[').replace(/%5[dD]/g, ']');
+        // FOR BROWSERS ONLY: add &. to use a persistant connection (would not work
+        //                    on node since the XMLHttpRequest package is limited)
         var extra = "/"+attrname+"?"+attrname+"="+attrval+"&.";
         if(this._cacheExpiration != 0) {
             this._cacheExpiration = YAPI.GetTickCount();
@@ -3779,7 +3846,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
         if(this._cacheExpiration > YAPI.GetTickCount()) return true;
 
         // Check that the function is available without throwing exceptions
-        var yreq = YAPI.funcRequest(this._className, this._func, "");
+        var yreq = YAPI.funcRequest(this._className, this._func, "", YAPI.defaultCacheValidity);
         if(yreq.errorType != YAPI_SUCCESS) {
             if(yreq.errorType == YAPI_DEVICE_BUSY) {
                 return true;
@@ -3837,7 +3904,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
      * This method is mostly useful when using the Yoctopuce library with
      * exceptions disabled.
      * 
-     * @return a number corresponding to the code of the latest error that occured while
+     * @return a number corresponding to the code of the latest error that occurred while
      *         using the function object
      */
     function YFunction_get_errorType()
@@ -3863,7 +3930,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
      * By default, whenever accessing a device, all function attributes
      * are kept in cache for the standard duration (5 ms). This method can be
      * used to temporarily mark the cache as valid for a longer period, in order
-     * to reduce network trafic for instance.
+     * to reduce network traffic for instance.
      * 
      * @param msValidity : an integer corresponding to the validity attributed to the
      *         loaded function parameters, in milliseconds
@@ -3874,7 +3941,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
      */
     function YFunction_load(msValidity)
     {
-        var yreq = YAPI.funcRequest(this._className, this._func, "");
+        var yreq = YAPI.funcRequest(this._className, this._func, "", msValidity);
         if(yreq.errorType != YAPI_SUCCESS) {
             return this._throw(yreq.errorType, yreq.errorMsg, yreq.errorType);
         }
@@ -4311,6 +4378,98 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
     YMeasure.prototype.get_endTimeUTC_asDate       = YMeasure_get_endTimeUTC_asDate;    
     YMeasure.prototype.endTimeUTC_asDate           = YMeasure_get_endTimeUTC_asDate;
 
+//--- (generated code: YFirmwareUpdate class start)
+/**
+ * YFirmwareUpdate Class: Control interface for the firmware update process
+ * 
+ * The YFirmwareUpdate class let you control the firmware update of a Yoctopuce
+ * module. This class should not be instantiate directly, instead the method
+ * updateFirmware should be called to get an instance of YFirmwareUpdate.
+ */
+//--- (end of generated code: YFirmwareUpdate class start)
+    
+
+    function _YFirmwareUpdate(str_serial, str_path, bin_settings)
+    {
+        //--- (generated code: YFirmwareUpdate constructor)
+        this._serial                         = "";                         // str
+        this._settings                       = "";                         // bin
+        this._firmwarepath                   = "";                         // str
+        this._progress_msg                   = "";                         // str
+        this._progress                       = 0;                          // int
+        //--- (end of generated code: YFirmwareUpdate constructor)
+        this._serial                         = str_serial;
+        this._settings                       = bin_settings;               // bin
+        this._firmwarepath                   = str_path;                         // str        
+    }
+    
+    function YFirmwareUpdate_processMore(i) 
+    {
+        this._progress = -1;    
+        this._progress_msg = "not supported in JS";
+    }
+
+    //--- (generated code: YFirmwareUpdate implementation)
+
+    //cannot be generated for JS:
+    //function YFirmwareUpdate_processMore(newupdate)
+
+    function YFirmwareUpdate_get_progress()
+    {
+        var m;                      // YModule;
+        this._processMore(0);
+        if ((this._progress == 100) && ((this._settings).length != 0)) {
+            m = YModule.FindModule(this._serial);
+            if (m.isOnline()) {
+                m.set_allSettings(this._settings);
+                this._settings = new Array(0+1).join(' ');
+            }
+        }
+        return this._progress;
+    }
+
+    /**
+     * Returns the last progress message of the firmware update process. If an error occur during the
+     * firmware update process the error message is returned
+     * 
+     * @return an string  with the last progress message, or the error message.
+     */
+    function YFirmwareUpdate_get_progressMessage()
+    {
+        return this._progress_msg;
+    }
+
+    /**
+     * Start the firmware update process. This method start the firmware update process in background. This method
+     * return immediately. The progress of the firmware update can be monitored with methods get_progress()
+     * and get_progressMessage().
+     * 
+     * @return an integer in the range 0 to 100 (percentage of completion),
+     *         or a negative error code in case of failure.
+     * 
+     * On failure returns a negative error code.
+     */
+    function YFirmwareUpdate_startUpdate()
+    {
+        this._processMore(1);
+        return this._progress;
+    }
+
+    //--- (end of generated code: YFirmwareUpdate implementation)
+    //
+    //--- (generated code: YFirmwareUpdate initialization)
+    YFirmwareUpdate = _YFirmwareUpdate;
+    // Methods
+    YFirmwareUpdate.prototype._processMore                = YFirmwareUpdate_processMore;
+    YFirmwareUpdate.prototype.get_progress                = YFirmwareUpdate_get_progress;
+    YFirmwareUpdate.prototype.progress                    = YFirmwareUpdate_get_progress;
+    YFirmwareUpdate.prototype.get_progressMessage         = YFirmwareUpdate_get_progressMessage;
+    YFirmwareUpdate.prototype.progressMessage             = YFirmwareUpdate_get_progressMessage;
+    YFirmwareUpdate.prototype.startUpdate                 = YFirmwareUpdate_startUpdate;
+    //--- (end of generated code: YFirmwareUpdate initialization)
+    YFirmwareUpdate.prototype.processMore                 = YFirmwareUpdate_processMore;
+
+
 //--- (generated code: YDataStream class start)
 /**
  * YDataStream Class: Unformatted data sequence
@@ -4326,7 +4485,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
  * a more convenient interface.
  */
 //--- (end of generated code: YDataStream class start)
-    
+
 
     function _YDataStream(obj_parent, obj_dataset, encoded)
     {
@@ -4342,6 +4501,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
         this._isClosed                       = 0;                          // bool
         this._isAvg                          = 0;                          // bool
         this._isScal                         = 0;                          // bool
+        this._isScal32                       = 0;                          // bool
         this._decimals                       = 0;                          // int
         this._offset                         = 0;                          // float
         this._scale                          = 0;                          // float
@@ -4370,13 +4530,13 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
     {
         var val;                    // int;
         var i;                      // int;
+        var maxpos;                 // int;
         var iRaw;                   // int;
         var iRef;                   // int;
         var fRaw;                   // float;
         var fRef;                   // float;
         var duration_float;         // float;
         var iCalib = [];            // intArr;
-        
         // decode sequence header to extract data
         this._runNo = encoded[0] + (((encoded[1]) << (16)));
         this._utcStamp = encoded[2] + (((encoded[3]) << (16)));
@@ -4390,7 +4550,6 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
                 this._samplesPerHour = this._samplesPerHour * 60;
             }
         }
-        
         val = encoded[5];
         if (val > 32767) {
             val = val - 65536;
@@ -4399,7 +4558,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
         this._offset = val;
         this._scale = encoded[6];
         this._isScal = (this._scale != 0);
-        
+        this._isScal32 = (encoded.length >= 14);
         val = encoded[7];
         this._isClosed = (val != 0xffff);
         if (val == 0xffff) {
@@ -4421,27 +4580,46 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
         this._caltyp = iCalib[0];
         if (this._caltyp != 0) {
             this._calhdl = YAPI._getCalibrationHandler(this._caltyp);
+            maxpos = iCalib.length;
             this._calpar.length = 0;
             this._calraw.length = 0;
             this._calref.length = 0;
-            i = 1;
-            while (i + 1 < iCalib.length) {
-                iRaw = iCalib[i];
-                iRef = iCalib[i + 1];
-                this._calpar.push(iRaw);
-                this._calpar.push(iRef);
-                if (this._isScal) {
-                    fRaw = iRaw;
-                    fRaw = (fRaw - this._offset) / this._scale;
-                    fRef = iRef;
-                    fRef = (fRef - this._offset) / this._scale;
+            if (this._isScal32) {
+                i = 1;
+                while (i < maxpos) {
+                    this._calpar.push(iCalib[i]);
+                    i = i + 1;
+                }
+                i = 1;
+                while (i + 1 < maxpos) {
+                    fRaw = iCalib[i];
+                    fRaw = fRaw / 1000.0;
+                    fRef = iCalib[i + 1];
+                    fRef = fRef / 1000.0;
                     this._calraw.push(fRaw);
                     this._calref.push(fRef);
-                } else {
-                    this._calraw.push(YAPI._decimalToDouble(iRaw));
-                    this._calref.push(YAPI._decimalToDouble(iRef));
+                    i = i + 2;
                 }
-                i = i + 2;
+            } else {
+                i = 1;
+                while (i + 1 < maxpos) {
+                    iRaw = iCalib[i];
+                    iRef = iCalib[i + 1];
+                    this._calpar.push(iRaw);
+                    this._calpar.push(iRef);
+                    if (this._isScal) {
+                        fRaw = iRaw;
+                        fRaw = (fRaw - this._offset) / this._scale;
+                        fRef = iRef;
+                        fRef = (fRef - this._offset) / this._scale;
+                        this._calraw.push(fRaw);
+                        this._calref.push(fRef);
+                    } else {
+                        this._calraw.push(YAPI._decimalToDouble(iRaw));
+                        this._calref.push(YAPI._decimalToDouble(iRef));
+                    }
+                    i = i + 2;
+                }
             }
         }
         // preload column names for backward-compatibility
@@ -4459,9 +4637,15 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
         }
         // decode min/avg/max values for the sequence
         if (this._nRows > 0) {
-            this._minVal = this._decodeVal(encoded[8]);
-            this._maxVal = this._decodeVal(encoded[9]);
-            this._avgVal = this._decodeAvg(encoded[10] + (((encoded[11]) << (16))), this._nRows);
+            if (this._isScal32) {
+                this._avgVal = this._decodeAvg(encoded[8] + (((((encoded[9]) ^ (0x8000))) << (16))), 1);
+                this._minVal = this._decodeVal(encoded[10] + (((encoded[11]) << (16))));
+                this._maxVal = this._decodeVal(encoded[12] + (((encoded[13]) << (16))));
+            } else {
+                this._minVal = this._decodeVal(encoded[8]);
+                this._maxVal = this._decodeVal(encoded[9]);
+                this._avgVal = this._decodeAvg(encoded[10] + (((encoded[11]) << (16))), this._nRows);
+            }
         }
         return 0;
     }
@@ -4478,14 +4662,21 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
         if (this._isAvg) {
             while (idx + 3 < udat.length) {
                 dat.length = 0;
-                dat.push(this._decodeVal(udat[idx]));
-                dat.push(this._decodeAvg(udat[idx + 2] + (((udat[idx + 3]) << (16))), 1));
-                dat.push(this._decodeVal(udat[idx + 1]));
+                if (this._isScal32) {
+                    dat.push(this._decodeVal(udat[idx + 2] + (((udat[idx + 3]) << (16)))));
+                    dat.push(this._decodeAvg(udat[idx] + (((((udat[idx + 1]) ^ (0x8000))) << (16))), 1));
+                    dat.push(this._decodeVal(udat[idx + 4] + (((udat[idx + 5]) << (16)))));
+                    idx = idx + 6;
+                } else {
+                    dat.push(this._decodeVal(udat[idx]));
+                    dat.push(this._decodeAvg(udat[idx + 2] + (((udat[idx + 3]) << (16))), 1));
+                    dat.push(this._decodeVal(udat[idx + 1]));
+                    idx = idx + 4;
+                }
                 this._values.push(dat.slice());
-                idx = idx + 4;
             }
         } else {
-            if (this._isScal) {
+            if (this._isScal && !(this._isScal32)) {
                 while (idx < udat.length) {
                     dat.length = 0;
                     dat.push(this._decodeVal(udat[idx]));
@@ -4495,7 +4686,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
             } else {
                 while (idx + 1 < udat.length) {
                     dat.length = 0;
-                    dat.push(this._decodeAvg(udat[idx] + (((udat[idx + 1]) << (16))), 1));
+                    dat.push(this._decodeAvg(udat[idx] + (((((udat[idx + 1]) ^ (0x8000))) << (16))), 1));
                     this._values.push(dat.slice());
                     idx = idx + 2;
                 }
@@ -4522,10 +4713,14 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
     {
         var val;                    // float;
         val = w;
-        if (this._isScal) {
-            val = (val - this._offset) / this._scale;
+        if (this._isScal32) {
+            val = val / 1000.0;
         } else {
-            val = YAPI._decimalToDouble(w);
+            if (this._isScal) {
+                val = (val - this._offset) / this._scale;
+            } else {
+                val = YAPI._decimalToDouble(w);
+            }
         }
         if (this._caltyp != 0) {
             val = this._calhdl(val, this._caltyp, this._calpar, this._calraw, this._calref);
@@ -4537,10 +4732,14 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
     {
         var val;                    // float;
         val = dw;
-        if (this._isScal) {
-            val = (val / (100 * count) - this._offset) / this._scale;
+        if (this._isScal32) {
+            val = val / 1000.0;
         } else {
-            val = val / (count * this._decexp);
+            if (this._isScal) {
+                val = (val / (100 * count) - this._offset) / this._scale;
+            } else {
+                val = val / (count * this._decexp);
+            }
         }
         if (this._caltyp != 0) {
             val = this._calhdl(val, this._caltyp, this._calpar, this._calraw, this._calref);
@@ -4845,7 +5044,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
  * YDataSet objects make it possible to retrieve a set of recorded measures
  * for a given sensor and a specified time interval. They can be used
  * to load data points with a progress report. When the YDataSet object is
- * instanciated by the get_recordedData()  function, no data is
+ * instantiated by the get_recordedData()  function, no data is
  * yet loaded from the module. It is only when the loadMore()
  * method is called over and over than data will be effectively loaded
  * from the dataLogger.
@@ -4941,6 +5140,9 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
         }
         tim = stream.get_startTimeUTC();
         itv = stream.get_dataSamplesInterval();
+        if (tim < itv) {
+            tim = itv;
+        }
         nCols = dataRows[0].length;
         minCol = 0;
         if (nCols > 2) {
@@ -4957,8 +5159,8 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
         for (ii in dataRows) {
             if ((tim >= this._startTime) && ((this._endTime == 0) || (tim <= this._endTime))) {
                 this._measures.push(new YMeasure(tim - itv, tim, dataRows[ii][minCol], dataRows[ii][avgCol], dataRows[ii][maxCol]));
-                tim = tim + itv;
             }
+            tim = tim + itv;
         }
         
         return this.get_progress();
@@ -5049,7 +5251,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
 
     /**
      * Returns the progress of the downloads of the measures from the data logger,
-     * on a scale from 0 to 100. When the object is instanciated by get_dataSet,
+     * on a scale from 0 to 100. When the object is instantiated by get_dataSet,
      * the progress is zero. Each time loadMore() is invoked, the progress
      * is updated, to reach the value 100 only once all measures have been loaded.
      * 
@@ -5178,7 +5380,12 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
 
         this._functionId = loadval.id;
         this._unit       = loadval.unit;
-        this._calib      = YAPI._decodeWords(loadval.cal);
+        if(loadval.calib) {
+            this._calib  = YAPI._decodeFloats(loadval.calib);
+            this._calib[0] = parseInt(this._calib[0] / 1000);
+        } else {
+            this._calib  = YAPI._decodeWords(loadval.cal);
+        }
         this._summary    = new YMeasure(0,0,0,0,0);
         this._streams    = [];
         this._preview    = [];
@@ -5306,14 +5513,14 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
         this._className = 'Sensor';
 
         this._unit                           = Y_UNIT_INVALID;             // Text
-        this._currentValue                   = Y_CURRENTVALUE_INVALID;     // Decimal
-        this._lowestValue                    = Y_LOWESTVALUE_INVALID;      // Decimal
-        this._highestValue                   = Y_HIGHESTVALUE_INVALID;     // Decimal
-        this._currentRawValue                = Y_CURRENTRAWVALUE_INVALID;  // Precimal
+        this._currentValue                   = Y_CURRENTVALUE_INVALID;     // MeasureVal
+        this._lowestValue                    = Y_LOWESTVALUE_INVALID;      // MeasureVal
+        this._highestValue                   = Y_HIGHESTVALUE_INVALID;     // MeasureVal
+        this._currentRawValue                = Y_CURRENTRAWVALUE_INVALID;  // MeasureVal
         this._logFrequency                   = Y_LOGFREQUENCY_INVALID;     // YFrequency
         this._reportFrequency                = Y_REPORTFREQUENCY_INVALID;  // YFrequency
-        this._calibrationParam               = Y_CALIBRATIONPARAM_INVALID; // WordArray
-        this._resolution                     = Y_RESOLUTION_INVALID;       // Fractional
+        this._calibrationParam               = Y_CALIBRATIONPARAM_INVALID; // CalibParams
+        this._resolution                     = Y_RESOLUTION_INVALID;       // MeasureVal
         this._timedReportCallbackSensor      = null;                       // YSensorTimedReportCallback
         this._prevTimedReport                = 0;                          // float
         this._iresol                         = 0;                          // float
@@ -5321,6 +5528,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
         this._scale                          = 0;                          // float
         this._decexp                         = 0;                          // float
         this._isScal                         = 0;                          // bool
+        this._isScal32                       = 0;                          // bool
         this._caltyp                         = 0;                          // int
         this._calpar                         = [];                         // intArr
         this._calraw                         = [];                         // floatArr
@@ -5338,16 +5546,16 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
             this._unit = val;
             return 1;
         case "currentValue":
-            this._currentValue = val/65536;
+            this._currentValue = Math.round(val * 1000.0 / 65536.0) / 1000.0;
             return 1;
         case "lowestValue":
-            this._lowestValue = val/65536;
+            this._lowestValue = Math.round(val * 1000.0 / 65536.0) / 1000.0;
             return 1;
         case "highestValue":
-            this._highestValue = val/65536;
+            this._highestValue = Math.round(val * 1000.0 / 65536.0) / 1000.0;
             return 1;
         case "currentRawValue":
-            this._currentRawValue = val/65536;
+            this._currentRawValue = Math.round(val * 1000.0 / 65536.0) / 1000.0;
             return 1;
         case "logFrequency":
             this._logFrequency = val;
@@ -5359,7 +5567,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
             this._calibrationParam = val;
             return 1;
         case "resolution":
-            this._resolution = (val > 100 ? 1.0 / Math.round(65536.0/val) : 0.001 / Math.round(67.0/val));
+            this._resolution = Math.round(val * 1000.0 / 65536.0) / 1000.0;
             return 1;
         }
         return _super._parseAttr.call(this, name, val, _super._super);
@@ -5414,9 +5622,10 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
     }
 
     /**
-     * Returns the current value of the measure.
+     * Returns the current value of the measure, in the specified unit, as a floating point number.
      * 
-     * @return a floating point number corresponding to the current value of the measure
+     * @return a floating point number corresponding to the current value of the measure, in the specified
+     * unit, as a floating point number
      * 
      * On failure, throws an exception or returns Y_CURRENTVALUE_INVALID.
      */
@@ -5437,13 +5646,14 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
     }
 
     /**
-     * Gets the current value of the measure.
+     * Gets the current value of the measure, in the specified unit, as a floating point number.
      * 
      * @param callback : callback function that is invoked when the result is known.
      *         The callback function receives three arguments:
      *         - the user-specific context object
      *         - the YSensor object that invoked the callback
-     *         - the result:a floating point number corresponding to the current value of the measure
+     *         - the result:a floating point number corresponding to the current value of the measure, in the
+     *         specified unit, as a floating point number
      * @param context : user-specific object that is passed as-is to the callback function
      * 
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
@@ -5484,7 +5694,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
      */
     function YSensor_set_lowestValue(newval)
     {   var rest_val;
-        rest_val = String(Math.round(newval*65536.0));
+        rest_val = String(Math.round(newval * 65536.0));
         return this._setAttr('lowestValue',rest_val);
     }
 
@@ -5553,7 +5763,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
      */
     function YSensor_set_highestValue(newval)
     {   var rest_val;
-        rest_val = String(Math.round(newval*65536.0));
+        rest_val = String(Math.round(newval * 65536.0));
         return this._setAttr('highestValue',rest_val);
     }
 
@@ -5612,9 +5822,11 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
     }
 
     /**
-     * Returns the uncalibrated, unrounded raw value returned by the sensor.
+     * Returns the uncalibrated, unrounded raw value returned by the sensor, in the specified unit, as a
+     * floating point number.
      * 
-     * @return a floating point number corresponding to the uncalibrated, unrounded raw value returned by the sensor
+     * @return a floating point number corresponding to the uncalibrated, unrounded raw value returned by
+     * the sensor, in the specified unit, as a floating point number
      * 
      * On failure, throws an exception or returns Y_CURRENTRAWVALUE_INVALID.
      */
@@ -5629,14 +5841,15 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
     }
 
     /**
-     * Gets the uncalibrated, unrounded raw value returned by the sensor.
+     * Gets the uncalibrated, unrounded raw value returned by the sensor, in the specified unit, as a
+     * floating point number.
      * 
      * @param callback : callback function that is invoked when the result is known.
      *         The callback function receives three arguments:
      *         - the user-specific context object
      *         - the YSensor object that invoked the callback
      *         - the result:a floating point number corresponding to the uncalibrated, unrounded raw value
-     *         returned by the sensor
+     *         returned by the sensor, in the specified unit, as a floating point number
      * @param context : user-specific object that is passed as-is to the callback function
      * 
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
@@ -5858,7 +6071,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
      */
     function YSensor_set_resolution(newval)
     {   var rest_val;
-        rest_val = String(Math.round(newval*65536.0));
+        rest_val = String(Math.round(newval * 65536.0));
         return this._setAttr('resolution',rest_val);
     }
 
@@ -5955,103 +6168,127 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
         var iRef;                   // int;
         var fRaw;                   // float;
         var fRef;                   // float;
+        this._caltyp = -1;
+        this._scale = -1;
+        this._isScal32 = false;
+        this._calpar.length = 0;
+        this._calraw.length = 0;
+        this._calref.length = 0;
         // Store inverted resolution, to provide better rounding
         if (this._resolution > 0) {
             this._iresol = Math.round(1.0 / this._resolution);
         } else {
-            return 0;
+            this._iresol = 10000;
+            this._resolution = 0.0001;
         }
-        
-        this._scale = -1;
-        this._calpar.length = 0;
-        this._calraw.length = 0;
-        this._calref.length = 0;
-        
         // Old format: supported when there is no calibration
         if (this._calibrationParam == "" || this._calibrationParam == "0") {
             this._caltyp = 0;
             return 0;
         }
-        // Old format: calibrated value will be provided by the device
         if ((this._calibrationParam).indexOf(",") >= 0) {
-            this._caltyp = -1;
-            return 0;
-        }
-        // New format, decode parameters
-        iCalib = YAPI._decodeWords(this._calibrationParam);
-        // In case of unknown format, calibrated value will be provided by the device
-        if (iCalib.length < 2) {
-            this._caltyp = -1;
-            return 0;
-        }
-        
-        // Save variable format (scale for scalar, or decimal exponent)
-        this._isScal = (iCalib[1] > 0);
-        if (this._isScal) {
-            this._offset = iCalib[0];
-            if (this._offset > 32767) {
-                this._offset = this._offset - 65536;
+            iCalib = YAPI._decodeFloats(this._calibrationParam);
+            this._caltyp = parseInt((iCalib[0]) / (1000));
+            if (this._caltyp > 0) {
+                if (this._caltyp < YOCTO_CALIB_TYPE_OFS) {
+                    this._caltyp = -1;
+                    return 0;
+                }
+                this._calhdl = YAPI._getCalibrationHandler(this._caltyp);
+                if (!(this._calhdl != null)) {
+                    this._caltyp = -1;
+                    return 0;
+                }
             }
-            this._scale = iCalib[1];
-            this._decexp = 0;
-        } else {
+            this._isScal = true;
+            this._isScal32 = true;
             this._offset = 0;
-            this._scale = 1;
-            this._decexp = 1.0;
-            position = iCalib[0];
-            while (position > 0) {
-                this._decexp = this._decexp * 10;
-                position = position - 1;
-            }
-        }
-        
-        // Shortcut when there is no calibration parameter
-        if (iCalib.length == 2) {
-            this._caltyp = 0;
-            return 0;
-        }
-        
-        this._caltyp = iCalib[2];
-        this._calhdl = YAPI._getCalibrationHandler(this._caltyp);
-        // parse calibration points
-        position = 3;
-        if (this._caltyp <= 10) {
-            maxpos = this._caltyp;
-        } else {
-            if (this._caltyp <= 20) {
-                maxpos = this._caltyp - 10;
-            } else {
-                maxpos = 5;
-            }
-        }
-        maxpos = 3 + 2 * maxpos;
-        if (maxpos > iCalib.length) {
+            this._scale = 1000;
             maxpos = iCalib.length;
-        }
-        this._calpar.length = 0;
-        this._calraw.length = 0;
-        this._calref.length = 0;
-        while (position + 1 < maxpos) {
-            iRaw = iCalib[position];
-            iRef = iCalib[position + 1];
-            this._calpar.push(iRaw);
-            this._calpar.push(iRef);
-            if (this._isScal) {
-                fRaw = iRaw;
-                fRaw = (fRaw - this._offset) / this._scale;
-                fRef = iRef;
-                fRef = (fRef - this._offset) / this._scale;
+            this._calpar.length = 0;
+            position = 1;
+            while (position < maxpos) {
+                this._calpar.push(iCalib[position]);
+                position = position + 1;
+            }
+            this._calraw.length = 0;
+            this._calref.length = 0;
+            position = 1;
+            while (position + 1 < maxpos) {
+                fRaw = iCalib[position];
+                fRaw = fRaw / 1000.0;
+                fRef = iCalib[position + 1];
+                fRef = fRef / 1000.0;
                 this._calraw.push(fRaw);
                 this._calref.push(fRef);
-            } else {
-                this._calraw.push(YAPI._decimalToDouble(iRaw));
-                this._calref.push(YAPI._decimalToDouble(iRef));
+                position = position + 2;
             }
-            position = position + 2;
+        } else {
+            iCalib = YAPI._decodeWords(this._calibrationParam);
+            if (iCalib.length < 2) {
+                this._caltyp = -1;
+                return 0;
+            }
+            this._isScal = (iCalib[1] > 0);
+            if (this._isScal) {
+                this._offset = iCalib[0];
+                if (this._offset > 32767) {
+                    this._offset = this._offset - 65536;
+                }
+                this._scale = iCalib[1];
+                this._decexp = 0;
+            } else {
+                this._offset = 0;
+                this._scale = 1;
+                this._decexp = 1.0;
+                position = iCalib[0];
+                while (position > 0) {
+                    this._decexp = this._decexp * 10;
+                    position = position - 1;
+                }
+            }
+            if (iCalib.length == 2) {
+                this._caltyp = 0;
+                return 0;
+            }
+            this._caltyp = iCalib[2];
+            this._calhdl = YAPI._getCalibrationHandler(this._caltyp);
+            if (this._caltyp <= 10) {
+                maxpos = this._caltyp;
+            } else {
+                if (this._caltyp <= 20) {
+                    maxpos = this._caltyp - 10;
+                } else {
+                    maxpos = 5;
+                }
+            }
+            maxpos = 3 + 2 * maxpos;
+            if (maxpos > iCalib.length) {
+                maxpos = iCalib.length;
+            }
+            this._calpar.length = 0;
+            this._calraw.length = 0;
+            this._calref.length = 0;
+            position = 3;
+            while (position + 1 < maxpos) {
+                iRaw = iCalib[position];
+                iRef = iCalib[position + 1];
+                this._calpar.push(iRaw);
+                this._calpar.push(iRef);
+                if (this._isScal) {
+                    fRaw = iRaw;
+                    fRaw = (fRaw - this._offset) / this._scale;
+                    fRef = iRef;
+                    fRef = (fRef - this._offset) / this._scale;
+                    this._calraw.push(fRaw);
+                    this._calref.push(fRef);
+                } else {
+                    this._calraw.push(YAPI._decimalToDouble(iRaw));
+                    this._calref.push(YAPI._decimalToDouble(iRef));
+                }
+                position = position + 2;
+            }
         }
-        
-        
-        
         return 0;
     }
 
@@ -6169,16 +6406,14 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
         var ii; // iterator
         rawValues.length = 0;
         refValues.length = 0;
-        
         // Load function parameters if not yet loaded
         if (this._scale == 0) {
             if (this.load(YAPI.defaultCacheValidity) != YAPI_SUCCESS) {
                 return YAPI_DEVICE_NOT_FOUND;
             }
         }
-        
         if (this._caltyp < 0) {
-            this._throw(YAPI_NOT_SUPPORTED, "Device does not support new calibration parameters. Please upgrade your firmware");
+            this._throw(YAPI_NOT_SUPPORTED, "Calibration parameters format mismatch. Please upgrade your library or firmware.");
             return YAPI_NOT_SUPPORTED;
         }
         rawValues.length = 0;
@@ -6199,47 +6434,52 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
         var idx;                    // int;
         var iRaw;                   // int;
         var iRef;                   // int;
-        
         npt = rawValues.length;
         if (npt != refValues.length) {
             this._throw(YAPI_INVALID_ARGUMENT, "Invalid calibration parameters (size mismatch)");
             return YAPI_INVALID_STRING;
         }
-        
         // Shortcut when building empty calibration parameters
         if (npt == 0) {
             return "0";
         }
-        
         // Load function parameters if not yet loaded
         if (this._scale == 0) {
             if (this.load(YAPI.defaultCacheValidity) != YAPI_SUCCESS) {
                 return YAPI_INVALID_STRING;
             }
         }
-        
         // Detect old firmware
         if ((this._caltyp < 0) || (this._scale < 0)) {
-            this._throw(YAPI_NOT_SUPPORTED, "Device does not support new calibration parameters. Please upgrade your firmware");
+            this._throw(YAPI_NOT_SUPPORTED, "Calibration parameters format mismatch. Please upgrade your library or firmware.");
             return "0";
         }
-        if (this._isScal) {
-            res = ""+String(Math.round(npt));
+        if (this._isScal32) {
+            res = ""+String(Math.round(YOCTO_CALIB_TYPE_OFS));
             idx = 0;
             while (idx < npt) {
-                iRaw = Math.round(rawValues[idx] * this._scale + this._offset);
-                iRef = Math.round(refValues[idx] * this._scale + this._offset);
-                res = ""+res+","+String(Math.round(iRaw))+","+String(Math.round(iRef));
+                res = ""+res+","+String(Math.round(rawValues[idx]*1000)/1000)+","+String(Math.round(refValues[idx]*1000)/1000);
                 idx = idx + 1;
             }
         } else {
-            res = ""+String(Math.round(10 + npt));
-            idx = 0;
-            while (idx < npt) {
-                iRaw = YAPI._doubleToDecimal(rawValues[idx]);
-                iRef = YAPI._doubleToDecimal(refValues[idx]);
-                res = ""+res+","+String(Math.round(iRaw))+","+String(Math.round(iRef));
-                idx = idx + 1;
+            if (this._isScal) {
+                res = ""+String(Math.round(npt));
+                idx = 0;
+                while (idx < npt) {
+                    iRaw = Math.round(rawValues[idx] * this._scale + this._offset);
+                    iRef = Math.round(refValues[idx] * this._scale + this._offset);
+                    res = ""+res+","+String(Math.round(iRaw))+","+String(Math.round(iRef));
+                    idx = idx + 1;
+                }
+            } else {
+                res = ""+String(Math.round(10 + npt));
+                idx = 0;
+                while (idx < npt) {
+                    iRaw = YAPI._doubleToDecimal(rawValues[idx]);
+                    iRef = YAPI._doubleToDecimal(refValues[idx]);
+                    res = ""+res+","+String(Math.round(iRaw))+","+String(Math.round(iRef));
+                    idx = idx + 1;
+                }
             }
         }
         return res;
@@ -6270,54 +6510,128 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
         var minRaw;                 // int;
         var avgRaw;                 // int;
         var maxRaw;                 // int;
+        var sublen;                 // int;
+        var difRaw;                 // int;
         var startTime;              // float;
         var endTime;                // float;
         var minVal;                 // float;
         var avgVal;                 // float;
         var maxVal;                 // float;
-        
         startTime = this._prevTimedReport;
         endTime = timestamp;
         this._prevTimedReport = endTime;
         if (startTime == 0) {
             startTime = endTime;
         }
-        if (report[0] > 0) {
-            minRaw = report[1] + 0x100 * report[2];
-            maxRaw = report[3] + 0x100 * report[4];
-            avgRaw = report[5] + 0x100 * report[6] + 0x10000 * report[7];
-            byteVal = report[8];
-            if (((byteVal) & (0x80)) == 0) {
-                avgRaw = avgRaw + 0x1000000 * byteVal;
-            } else {
-                avgRaw = avgRaw - 0x1000000 * (0x100 - byteVal);
-            }
-            minVal = this._decodeVal(minRaw);
-            avgVal = this._decodeAvg(avgRaw);
-            maxVal = this._decodeVal(maxRaw);
-        } else {
-            poww = 1;
-            avgRaw = 0;
-            byteVal = 0;
-            i = 1;
-            while (i < report.length) {
-                byteVal = report[i];
-                avgRaw = avgRaw + poww * byteVal;
-                poww = poww * 0x100;
-                i = i + 1;
-            }
-            if (this._isScal) {
-                avgVal = this._decodeVal(avgRaw);
-            } else {
+        if (report[0] == 2) {
+            if (report.length <= 5) {
+                poww = 1;
+                avgRaw = 0;
+                byteVal = 0;
+                i = 1;
+                while (i < report.length) {
+                    byteVal = report[i];
+                    avgRaw = avgRaw + poww * byteVal;
+                    poww = poww * 0x100;
+                    i = i + 1;
+                }
                 if (((byteVal) & (0x80)) != 0) {
                     avgRaw = avgRaw - poww;
                 }
-                avgVal = this._decodeAvg(avgRaw);
+                avgVal = avgRaw / 1000.0;
+                if (this._caltyp != 0) {
+                    if (this._calhdl != null) {
+                        avgVal = this._calhdl(avgVal, this._caltyp, this._calpar, this._calraw, this._calref);
+                    }
+                }
+                minVal = avgVal;
+                maxVal = avgVal;
+            } else {
+                sublen = 1 + ((report[1]) & (3));
+                poww = 1;
+                avgRaw = 0;
+                byteVal = 0;
+                i = 2;
+                while ((sublen > 0) && (i < report.length)) {
+                    byteVal = report[i];
+                    avgRaw = avgRaw + poww * byteVal;
+                    poww = poww * 0x100;
+                    i = i + 1;
+                    sublen = sublen - 1;
+                }
+                if (((byteVal) & (0x80)) != 0) {
+                    avgRaw = avgRaw - poww;
+                }
+                sublen = 1 + ((((report[1]) >> (2))) & (3));
+                poww = 1;
+                difRaw = 0;
+                while ((sublen > 0) && (i < report.length)) {
+                    byteVal = report[i];
+                    difRaw = avgRaw + poww * byteVal;
+                    poww = poww * 0x100;
+                    i = i + 1;
+                    sublen = sublen - 1;
+                }
+                minRaw = avgRaw - difRaw;
+                sublen = 1 + ((((report[1]) >> (4))) & (3));
+                poww = 1;
+                difRaw = 0;
+                while ((sublen > 0) && (i < report.length)) {
+                    byteVal = report[i];
+                    difRaw = avgRaw + poww * byteVal;
+                    poww = poww * 0x100;
+                    i = i + 1;
+                    sublen = sublen - 1;
+                }
+                maxRaw = avgRaw + difRaw;
+                avgVal = avgRaw / 1000.0;
+                minVal = minRaw / 1000.0;
+                maxVal = maxRaw / 1000.0;
+                if (this._caltyp != 0) {
+                    if (this._calhdl != null) {
+                        avgVal = this._calhdl(avgVal, this._caltyp, this._calpar, this._calraw, this._calref);
+                        minVal = this._calhdl(minVal, this._caltyp, this._calpar, this._calraw, this._calref);
+                        maxVal = this._calhdl(maxVal, this._caltyp, this._calpar, this._calraw, this._calref);
+                    }
+                }
             }
-            minVal = avgVal;
-            maxVal = avgVal;
+        } else {
+            if (report[0] == 0) {
+                poww = 1;
+                avgRaw = 0;
+                byteVal = 0;
+                i = 1;
+                while (i < report.length) {
+                    byteVal = report[i];
+                    avgRaw = avgRaw + poww * byteVal;
+                    poww = poww * 0x100;
+                    i = i + 1;
+                }
+                if (this._isScal) {
+                    avgVal = this._decodeVal(avgRaw);
+                } else {
+                    if (((byteVal) & (0x80)) != 0) {
+                        avgRaw = avgRaw - poww;
+                    }
+                    avgVal = this._decodeAvg(avgRaw);
+                }
+                minVal = avgVal;
+                maxVal = avgVal;
+            } else {
+                minRaw = report[1] + 0x100 * report[2];
+                maxRaw = report[3] + 0x100 * report[4];
+                avgRaw = report[5] + 0x100 * report[6] + 0x10000 * report[7];
+                byteVal = report[8];
+                if (((byteVal) & (0x80)) == 0) {
+                    avgRaw = avgRaw + 0x1000000 * byteVal;
+                } else {
+                    avgRaw = avgRaw - 0x1000000 * (0x100 - byteVal);
+                }
+                minVal = this._decodeVal(minRaw);
+                avgVal = this._decodeAvg(avgRaw);
+                maxVal = this._decodeVal(maxRaw);
+            }
         }
-        
         return new YMeasure(startTime, endTime, minVal, avgVal, maxVal);
     }
 
@@ -6331,7 +6645,9 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
             val = YAPI._decimalToDouble(w);
         }
         if (this._caltyp != 0) {
-            val = this._calhdl(val, this._caltyp, this._calpar, this._calraw, this._calref);
+            if (this._calhdl != null) {
+                val = this._calhdl(val, this._caltyp, this._calpar, this._calraw, this._calref);
+            }
         }
         return val;
     }
@@ -6346,7 +6662,9 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
             val = val / this._decexp;
         }
         if (this._caltyp != 0) {
-            val = this._calhdl(val, this._caltyp, this._calpar, this._calraw, this._calref);
+            if (this._calhdl != null) {
+                val = this._calhdl(val, this._caltyp, this._calpar, this._calraw, this._calref);
+            }
         }
         return val;
     }
@@ -6495,7 +6813,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
         this._upTime                         = Y_UPTIME_INVALID;           // Time
         this._usbCurrent                     = Y_USBCURRENT_INVALID;       // UsedCurrent
         this._rebootCountdown                = Y_REBOOTCOUNTDOWN_INVALID;  // Int
-        this._usbBandwidth                   = Y_USBBANDWIDTH_INVALID;     // UsbBandwidth
+        this._userVar                        = Y_USERVAR_INVALID;          // Int
         this._logCallback                    = null;                       // YModuleLogCallback
         //--- (end of generated code: YModule constructor)
 
@@ -6637,6 +6955,34 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
     function YModule_get_logicalName_async(callback, context)
     {   callback(context, this, this.get_logicalName());   }
 
+    /**
+     * Test if the byn file is valid for this module. This method is useful to test if the module need to be updated.
+     * It's possible to pass an directory instead of a file. In this case this method return the path of
+     * the most recent
+     * appropriate byn file. If the parameter onlynew is true the function will discard firmware that are
+     * older or equal to
+     * the installed firmware.
+     * 
+     * @param path    : the path of a byn file or a directory that contain byn files
+     * @param onlynew : return only files that are strictly newer
+     * 
+     * @return : the path of the byn file to use or a empty string if no byn files match the requirement
+     * 
+     * On failure, throws an exception or returns a string that start with "error:".
+     */
+    function YModule_checkFirmware(path, onlynew)
+    {
+        // FIXME: to be implemented
+        return "";
+    }
+
+    function YModule_flattenJsonStruct(jsoncomplex)
+    {
+        // FIXME: to be implemented
+        return "";
+    }
+
+
     //--- (generated code: YModule implementation)
 
     function YModule_parseAttr(name, val, _super)
@@ -6675,8 +7021,8 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
         case "rebootCountdown":
             this._rebootCountdown = parseInt(val);
             return 1;
-        case "usbBandwidth":
-            this._usbBandwidth = parseInt(val);
+        case "userVar":
+            this._userVar = parseInt(val);
             return 1;
         }
         return _super._parseAttr.call(this, name, val, _super._super);
@@ -7287,46 +7633,46 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
     }
 
     /**
-     * Returns the number of USB interfaces used by the module.
+     * Returns the value previously stored in this attribute.
+     * On startup and after a device reboot, the value is always reset to zero.
      * 
-     * @return either Y_USBBANDWIDTH_SIMPLE or Y_USBBANDWIDTH_DOUBLE, according to the number of USB
-     * interfaces used by the module
+     * @return an integer corresponding to the value previously stored in this attribute
      * 
-     * On failure, throws an exception or returns Y_USBBANDWIDTH_INVALID.
+     * On failure, throws an exception or returns Y_USERVAR_INVALID.
      */
-    function YModule_get_usbBandwidth()
+    function YModule_get_userVar()
     {
         if (this._cacheExpiration <= YAPI.GetTickCount()) {
             if (this.load(YAPI.defaultCacheValidity) != YAPI_SUCCESS) {
-                return Y_USBBANDWIDTH_INVALID;
+                return Y_USERVAR_INVALID;
             }
         }
-        return this._usbBandwidth;
+        return this._userVar;
     }
 
     /**
-     * Gets the number of USB interfaces used by the module.
+     * Gets the value previously stored in this attribute.
+     * On startup and after a device reboot, the value is always reset to zero.
      * 
      * @param callback : callback function that is invoked when the result is known.
      *         The callback function receives three arguments:
      *         - the user-specific context object
      *         - the YModule object that invoked the callback
-     *         - the result:either Y_USBBANDWIDTH_SIMPLE or Y_USBBANDWIDTH_DOUBLE, according to the number of USB
-     *         interfaces used by the module
+     *         - the result:an integer corresponding to the value previously stored in this attribute
      * @param context : user-specific object that is passed as-is to the callback function
      * 
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      * 
-     * On failure, throws an exception or returns Y_USBBANDWIDTH_INVALID.
+     * On failure, throws an exception or returns Y_USERVAR_INVALID.
      */
-    function YModule_get_usbBandwidth_async(callback,context)
+    function YModule_get_userVar_async(callback,context)
     {
         var loadcb;                 // func;
         loadcb = function(ctx,obj,res) {
             if (res != YAPI_SUCCESS) {
-                callback(context, obj, Y_USBBANDWIDTH_INVALID);
+                callback(context, obj, Y_USERVAR_INVALID);
             } else {
-                callback(context, obj, obj._usbBandwidth);
+                callback(context, obj, obj._userVar);
             }
         };
         if (this._cacheExpiration <= YAPI.GetTickCount()) {
@@ -7334,6 +7680,22 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
         } else {
             loadcb(null, this, YAPI_SUCCESS);
         }
+    }
+
+    /**
+     * Returns the value previously stored in this attribute.
+     * On startup and after a device reboot, the value is always reset to zero.
+     * 
+     * @param newval : an integer
+     * 
+     * @return YAPI_SUCCESS if the call succeeds.
+     * 
+     * On failure, throws an exception or returns a negative error code.
+     */
+    function YModule_set_userVar(newval)
+    {   var rest_val;
+        rest_val = String(newval);
+        return this._setAttr('userVar',rest_val);
     }
 
     /**
@@ -7419,6 +7781,521 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
         return this.set_rebootCountdown(-secBeforeReboot);
     }
 
+    //cannot be generated for JS:
+    //function YModule_checkFirmware(path,onlynew)
+
+    /**
+     * Prepare a firmware upgrade of the module. This method return a object YFirmwareUpdate which
+     * will handle the firmware upgrade process.
+     * 
+     * @param path : the path of the byn file to use.
+     * 
+     * @return : A object YFirmwareUpdate.
+     */
+    function YModule_updateFirmware(path)
+    {
+        var serial;                 // str;
+        var settings;               // bin;
+        // may throw an exception
+        serial = this.get_serialNumber();
+        settings = this.get_allSettings();
+        return new YFirmwareUpdate(serial, path, settings);
+    }
+
+    /**
+     * Returns all the setting of the module. Useful to backup all the logical name and calibrations parameters
+     * of a connected module.
+     * 
+     * @return a binary buffer with all settings.
+     * 
+     * On failure, throws an exception or returns  YAPI_INVALID_STRING.
+     */
+    function YModule_get_allSettings()
+    {
+        return this._download("api.json");
+    }
+
+    //cannot be generated for JS:
+    //function YModule_flattenJsonStruct(jsoncomplex)
+
+    function YModule_calibVersion(cparams)
+    {
+        if (cparams == "0,") {
+            return 3;
+        }
+        if ((cparams).indexOf(",") >= 0) {
+            if ((cparams).indexOf(" ") > 0) {
+                return 3;
+            } else {
+                return 1;
+            }
+        }
+        if (cparams == "" || cparams == "0") {
+            return 1;
+        }
+        if (((cparams).length < 2) || ((cparams).indexOf(".") >= 0)) {
+            return 0;
+        } else {
+            return 2;
+        }
+    }
+
+    function YModule_calibScale(unit_name,sensorType)
+    {
+        if (unit_name == "g" || unit_name == "gauss" || unit_name == "W") {
+            return 1000;
+        }
+        if (unit_name == "C") {
+            if (sensorType == "") {
+                return 16;
+            }
+            if (parseInt(sensorType) < 8) {
+                return 16;
+            } else {
+                return 100;
+            }
+        }
+        if (unit_name == "m" || unit_name == "deg") {
+            return 10;
+        }
+        return 1;
+    }
+
+    function YModule_calibOffset(unit_name)
+    {
+        if (unit_name == "% RH" || unit_name == "mbar" || unit_name == "lx") {
+            return 0;
+        }
+        return 32767;
+    }
+
+    function YModule_calibConvert(param,calibrationParam,unit_name,sensorType)
+    {
+        var ii; // iterator
+        var paramVer;               // int;
+        var funVer;                 // int;
+        var funScale;               // int;
+        var funOffset;              // int;
+        var paramScale;             // int;
+        var paramOffset;            // int;
+        var words = [];             // intArr;
+        var words_str = [];         // strArr;
+        var calibData = [];         // floatArr;
+        var iCalib = [];            // intArr;
+        var calibType;              // int;
+        var i;                      // int;
+        var maxSize;                // int;
+        var ratio;                  // float;
+        var nPoints;                // int;
+        var wordVal;                // float;
+        // Initial guess for parameter encoding
+        paramVer = this.calibVersion(param);
+        funVer = this.calibVersion(calibrationParam);
+        funScale = this.calibScale(unit_name, sensorType);
+        funOffset = this.calibOffset(unit_name);
+        paramScale = funScale;
+        paramOffset = funOffset;
+        if (funVer < 3) {
+            if (funVer == 2) {
+                words = YAPI._decodeWords(calibrationParam);
+                if ((words[0] == 1366) && (words[1] == 12500)) {
+                    funScale = 1;
+                    funOffset = 0;
+                } else {
+                    funScale = words[1];
+                    funOffset = words[0];
+                }
+            } else {
+                if (funVer == 1) {
+                    if (calibrationParam == "" || (parseInt(calibrationParam) > 10)) {
+                        funScale = 0;
+                    }
+                }
+            }
+        }
+        calibData.length = 0;
+        calibType = 0;
+        if (paramVer < 3) {
+            if (paramVer == 2) {
+                words = YAPI._decodeWords(param);
+                if ((words[0] == 1366) && (words[1] == 12500)) {
+                    paramScale = 1;
+                    paramOffset = 0;
+                } else {
+                    paramScale = words[1];
+                    paramOffset = words[0];
+                }
+                if ((words.length >= 3) && (words[2] > 0)) {
+                    maxSize = 3 + 2 * ((words[2]) % (10));
+                    if (maxSize > words.length) {
+                        maxSize = words.length;
+                    }
+                    i = 3;
+                    while (i < maxSize) {
+                        calibData.push(words[i]);
+                        i = i + 1;
+                    }
+                }
+            } else {
+                if (paramVer == 1) {
+                    words_str = (param).split(',');
+                    for (ii in words_str) {
+                        words.push(parseInt(words_str[ii]));
+                    }
+                    if (param == "" || (words[0] > 10)) {
+                        paramScale = 0;
+                    }
+                    if ((words.length > 0) && (words[0] > 0)) {
+                        maxSize = 1 + 2 * ((words[0]) % (10));
+                        if (maxSize > words.length) {
+                            maxSize = words.length;
+                        }
+                        i = 1;
+                        while (i < maxSize) {
+                            calibData.push(words[i]);
+                            i = i + 1;
+                        }
+                    }
+                } else {
+                    if (paramVer == 0) {
+                        ratio = parseFloat(param);
+                        if (ratio > 0) {
+                            calibData.push(0.0);
+                            calibData.push(0.0);
+                            calibData.push(Math.round(65535 / ratio));
+                            calibData.push(65535.0);
+                        }
+                    }
+                }
+            }
+            i = 0;
+            while (i < calibData.length) {
+                if (paramScale > 0) {
+                    calibData[i] = (calibData[i] - paramOffset) / paramScale;
+                } else {
+                    calibData[i] = YAPI._decimalToDouble(Math.round(calibData[i]));
+                }
+                i = i + 1;
+            }
+        } else {
+            iCalib = YAPI._decodeFloats(param);
+            calibType = Math.round(iCalib[0] / 1000.0);
+            if (calibType >= 30) {
+                calibType = calibType - 30;
+            }
+            i = 1;
+            while (i < iCalib.length) {
+                calibData.push(iCalib[i] / 1000.0);
+                i = i + 1;
+            }
+        }
+        if (funVer >= 3) {
+            if (calibData.length == 0) {
+                param = "0,";
+            } else {
+                param = 30 + calibType;
+                i = 0;
+                while (i < calibData.length) {
+                    if (((i) & (1)) > 0) {
+                        param = param + ":";
+                    } else {
+                        param = param + " ";
+                    }
+                    param = param + Math.round(calibData[i] * 1000.0 / 1000.0);
+                    i = i + 1;
+                }
+                param = param + ",";
+            }
+        } else {
+            if (funVer >= 1) {
+                nPoints = parseInt((calibData.length) / (2));
+                param = nPoints;
+                i = 0;
+                while (i < 2 * nPoints) {
+                    if (funScale == 0) {
+                        wordVal = YAPI._doubleToDecimal(Math.round(calibData[i]));
+                    } else {
+                        wordVal = calibData[i] * funScale + funOffset;
+                    }
+                    param = param + "," + Math.round(wordVal);
+                    i = i + 1;
+                }
+            } else {
+                if (calibData.length == 4) {
+                    param = Math.round(1000 * (calibData[3] - calibData[1]) / calibData[2] - calibData[0]);
+                }
+            }
+        }
+        return param;
+    }
+
+    /**
+     * Restore all the setting of the module. Useful to restore all the logical name and calibrations parameters
+     * of a module from a backup.
+     * 
+     * @param settings : a binary buffer with all settings.
+     * 
+     * @return YAPI_SUCCESS when the call succeeds.
+     * 
+     * On failure, throws an exception or returns a negative error code.
+     */
+    function YModule_set_allSettings(settings)
+    {
+        var ii; // iterator
+        var restoreLast = [];       // strArr;
+        var old_json_flat;          // bin;
+        var old_dslist = [];        // strArr;
+        var old_jpath = [];         // strArr;
+        var old_jpath_len = [];     // intArr;
+        var old_val = [];           // strArr;
+        var actualSettings;         // bin;
+        var new_dslist = [];        // strArr;
+        var new_jpath = [];         // strArr;
+        var new_jpath_len = [];     // intArr;
+        var new_val = [];           // strArr;
+        var cpos;                   // int;
+        var eqpos;                  // int;
+        var leng;                   // int;
+        var i;                      // int;
+        var j;                      // int;
+        var njpath;                 // str;
+        var jpath;                  // str;
+        var fun;                    // str;
+        var attr;                   // str;
+        var value;                  // str;
+        var url;                    // str;
+        var tmp;                    // str;
+        var new_calib;              // str;
+        var sensorType;             // str;
+        var unit_name;              // str;
+        var newval;                 // str;
+        var old_calib;              // str;
+        var do_update;              // bool;
+        var found;                  // bool;
+        old_json_flat = this._flattenJsonStruct(settings);
+        old_dslist = this._json_get_array(old_json_flat);
+        for (ii in old_dslist) {
+            leng = (old_dslist[ii]).length;
+            old_dslist[ii] = (old_dslist[ii]).substr( 1, leng - 2);
+            leng = (old_dslist[ii]).length;
+            eqpos = (old_dslist[ii]).indexOf("=");
+            if ((eqpos < 0) || (leng == 0)) {
+                this._throw(YAPI_INVALID_ARGUMENT, "Invalid settings");
+                return YAPI_INVALID_ARGUMENT;
+            }
+            jpath = (old_dslist[ii]).substr( 0, eqpos);
+            eqpos = eqpos + 1;
+            value = (old_dslist[ii]).substr( eqpos, leng - eqpos);
+            old_jpath.push(jpath);
+            old_jpath_len.push((jpath).length);
+            old_val.push(value);;
+        }
+        // may throw an exception
+        actualSettings = this._download("api.json");
+        actualSettings = this._flattenJsonStruct(actualSettings);
+        new_dslist = this._json_get_array(actualSettings);
+        for (ii in new_dslist) {
+            leng = (new_dslist[ii]).length;
+            new_dslist[ii] = (new_dslist[ii]).substr( 1, leng - 2);
+            leng = (new_dslist[ii]).length;
+            eqpos = (new_dslist[ii]).indexOf("=");
+            if ((eqpos < 0) || (leng == 0)) {
+                this._throw(YAPI_INVALID_ARGUMENT, "Invalid settings");
+                return YAPI_INVALID_ARGUMENT;
+            }
+            jpath = (new_dslist[ii]).substr( 0, eqpos);
+            eqpos = eqpos + 1;
+            value = (new_dslist[ii]).substr( eqpos, leng - eqpos);
+            new_jpath.push(jpath);
+            new_jpath_len.push((jpath).length);
+            new_val.push(value);;
+        }
+        i = 0;
+        while (i < new_jpath.length) {
+            njpath = new_jpath[i];
+            leng = (njpath).length;
+            cpos = (njpath).indexOf("/");
+            if ((cpos < 0) || (leng == 0)) {
+                continue;
+            }
+            fun = (njpath).substr( 0, cpos);
+            cpos = cpos + 1;
+            attr = (njpath).substr( cpos, leng - cpos);
+            do_update = true;
+            if (fun == "services") {
+                do_update = false;
+            }
+            if ((do_update) && (attr == "firmwareRelease")) {
+                do_update = false;
+            }
+            if ((do_update) && (attr == "usbCurrent")) {
+                do_update = false;
+            }
+            if ((do_update) && (attr == "upTime")) {
+                do_update = false;
+            }
+            if ((do_update) && (attr == "persistentSettings")) {
+                do_update = false;
+            }
+            if ((do_update) && (attr == "adminPassword")) {
+                do_update = false;
+            }
+            if ((do_update) && (attr == "userPassword")) {
+                do_update = false;
+            }
+            if ((do_update) && (attr == "rebootCountdown")) {
+                do_update = false;
+            }
+            if ((do_update) && (attr == "advertisedValue")) {
+                do_update = false;
+            }
+            if ((do_update) && (attr == "poeCurrent")) {
+                do_update = false;
+            }
+            if ((do_update) && (attr == "readiness")) {
+                do_update = false;
+            }
+            if ((do_update) && (attr == "ipAddress")) {
+                do_update = false;
+            }
+            if ((do_update) && (attr == "subnetMask")) {
+                do_update = false;
+            }
+            if ((do_update) && (attr == "router")) {
+                do_update = false;
+            }
+            if ((do_update) && (attr == "linkQuality")) {
+                do_update = false;
+            }
+            if ((do_update) && (attr == "ssid")) {
+                do_update = false;
+            }
+            if ((do_update) && (attr == "channel")) {
+                do_update = false;
+            }
+            if ((do_update) && (attr == "security")) {
+                do_update = false;
+            }
+            if ((do_update) && (attr == "message")) {
+                do_update = false;
+            }
+            if ((do_update) && (attr == "currentValue")) {
+                do_update = false;
+            }
+            if ((do_update) && (attr == "currentRawValue")) {
+                do_update = false;
+            }
+            if ((do_update) && (attr == "currentRunIndex")) {
+                do_update = false;
+            }
+            if ((do_update) && (attr == "pulseTimer")) {
+                do_update = false;
+            }
+            if ((do_update) && (attr == "lastTimePressed")) {
+                do_update = false;
+            }
+            if ((do_update) && (attr == "lastTimeReleased")) {
+                do_update = false;
+            }
+            if ((do_update) && (attr == "filesCount")) {
+                do_update = false;
+            }
+            if ((do_update) && (attr == "freeSpace")) {
+                do_update = false;
+            }
+            if ((do_update) && (attr == "timeUTC")) {
+                do_update = false;
+            }
+            if ((do_update) && (attr == "rtcTime")) {
+                do_update = false;
+            }
+            if ((do_update) && (attr == "unixTime")) {
+                do_update = false;
+            }
+            if ((do_update) && (attr == "dateTime")) {
+                do_update = false;
+            }
+            if ((do_update) && (attr == "rawValue")) {
+                do_update = false;
+            }
+            if ((do_update) && (attr == "lastMsg")) {
+                do_update = false;
+            }
+            if ((do_update) && (attr == "delayedPulseTimer")) {
+                do_update = false;
+            }
+            if ((do_update) && (attr == "rxCount")) {
+                do_update = false;
+            }
+            if ((do_update) && (attr == "txCount")) {
+                do_update = false;
+            }
+            if ((do_update) && (attr == "msgCount")) {
+                do_update = false;
+            }
+            if (do_update) {
+                if (attr == "calibrationParam") {
+                    old_calib = "";
+                    unit_name = "";
+                    sensorType = "";
+                    new_calib = new_val[i];
+                    j = 0;
+                    found = false;
+                    while ((j < old_jpath.length) && !(found)) {
+                        if ((new_jpath_len[i] == old_jpath_len[j]) && (new_jpath[i] == old_jpath[j])) {
+                            found = true;
+                            old_calib = old_val[j];
+                        }
+                        j = j + 1;
+                    }
+                    tmp = fun + "/unit";
+                    j = 0;
+                    found = false;
+                    while ((j < new_jpath.length) && !(found)) {
+                        if (tmp == new_jpath[j]) {
+                            found = true;
+                            unit_name = new_jpath[j];
+                        }
+                        j = j + 1;
+                    }
+                    tmp = fun + "/sensorType";
+                    j = 0;
+                    found = false;
+                    while ((j < new_jpath.length) && !(found)) {
+                        if (tmp == new_jpath[j]) {
+                            found = true;
+                            sensorType = new_jpath[j];
+                        }
+                        j = j + 1;
+                    }
+                    newval = this.calibConvert(new_val[i], old_calib, unit_name, sensorType);
+                    url = "api/" + fun + ".json?" + attr + "=" + newval;
+                    this._download(url);
+                } else {
+                    j = 0;
+                    found = false;
+                    while ((j < old_jpath_len.length) && !(found)) {
+                        if ((new_jpath_len[i] == old_jpath_len[j]) && (new_jpath[i] == old_jpath[j])) {
+                            found = true;
+                            url = "api/" + fun + ".json?" + attr + "=" + old_val[j];
+                            if (attr == "resolution") {
+                                restoreLast.push(url);
+                            } else {
+                                this._download(url);
+                            }
+                        }
+                        j = j + 1;
+                    }
+                }
+            }
+            i = i + 1;
+        }
+        for (ii in restoreLast) {
+            this._download(restoreLast[ii]);;
+        }
+        return YAPI_SUCCESS;
+    }
+
     /**
      * Downloads the specified built-in file and returns a binary buffer with its content.
      * 
@@ -7426,7 +8303,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
      * 
      * @return a binary buffer with the file content
      * 
-     * On failure, throws an exception or returns an empty content.
+     * On failure, throws an exception or returns  YAPI_INVALID_STRING.
      */
     function YModule_download(pathname)
     {
@@ -7438,6 +8315,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
      * exceeds 1536 bytes.
      * 
      * @return a binary buffer with module icon, in png format.
+     *         On failure, throws an exception or returns  YAPI_INVALID_STRING.
      */
     function YModule_get_icon2d()
     {
@@ -7449,6 +8327,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
      * logs that are still in the module.
      * 
      * @return a string with last logs of the module.
+     *         On failure, throws an exception or returns  YAPI_INVALID_STRING.
      */
     function YModule_get_lastLogs()
     {
@@ -7510,9 +8389,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
         UPTIME_INVALID              : YAPI_INVALID_LONG,
         USBCURRENT_INVALID          : YAPI_INVALID_UINT,
         REBOOTCOUNTDOWN_INVALID     : YAPI_INVALID_INT,
-        USBBANDWIDTH_SIMPLE         : 0,
-        USBBANDWIDTH_DOUBLE         : 1,
-        USBBANDWIDTH_INVALID        : -1
+        USERVAR_INVALID             : YAPI_INVALID_INT
     }, {
         // Class methods
         FindModule                  : YModule_FindModule,
@@ -7571,14 +8448,27 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
         rebootCountdown_async       : YModule_get_rebootCountdown_async,
         set_rebootCountdown         : YModule_set_rebootCountdown,
         setRebootCountdown          : YModule_set_rebootCountdown,
-        get_usbBandwidth            : YModule_get_usbBandwidth,
-        usbBandwidth                : YModule_get_usbBandwidth,
-        get_usbBandwidth_async      : YModule_get_usbBandwidth_async,
-        usbBandwidth_async          : YModule_get_usbBandwidth_async,
+        get_userVar                 : YModule_get_userVar,
+        userVar                     : YModule_get_userVar,
+        get_userVar_async           : YModule_get_userVar_async,
+        userVar_async               : YModule_get_userVar_async,
+        set_userVar                 : YModule_set_userVar,
+        setUserVar                  : YModule_set_userVar,
         saveToFlash                 : YModule_saveToFlash,
         revertFromFlash             : YModule_revertFromFlash,
         reboot                      : YModule_reboot,
         triggerFirmwareUpdate       : YModule_triggerFirmwareUpdate,
+        checkFirmware               : YModule_checkFirmware,
+        updateFirmware              : YModule_updateFirmware,
+        get_allSettings             : YModule_get_allSettings,
+        allSettings                 : YModule_get_allSettings,
+        _flattenJsonStruct          : YModule_flattenJsonStruct,
+        calibVersion                : YModule_calibVersion,
+        calibScale                  : YModule_calibScale,
+        calibOffset                 : YModule_calibOffset,
+        calibConvert                : YModule_calibConvert,
+        set_allSettings             : YModule_set_allSettings,
+        setAllSettings              : YModule_set_allSettings,
         download                    : YModule_download,
         get_icon2d                  : YModule_get_icon2d,
         icon2d                      : YModule_get_icon2d,
@@ -7606,7 +8496,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
  * an object constructor pointed by YAPI.newFunction
  */
 
-    // for backward-compatibility
+    // for backward-compatibility with older devices
     YAPI.newFunction = function(str_classname,str_func) {
         // Assume all old functions inherit from YSensor,
         // too much is better than not enough
@@ -7615,7 +8505,9 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
         }
         YSensor.call(this, str_func);
         this._className = str_classname;
-    }
+        // prevent calibration code to fail on non-Sensor devices
+        this._calibrationParam = ""; 
+    };
 })();
 
 /**
@@ -7732,7 +8624,7 @@ function yEnableExceptions()
  * If access control has been activated on the hub, virtual or not, you want to
  * reach, the URL parameter should look like:
  * 
- * http://username:password@adresse:port
+ * http://username:password@address:port
  * 
  * You can call <i>RegisterHub</i> several times to connect to several machines.
  * 

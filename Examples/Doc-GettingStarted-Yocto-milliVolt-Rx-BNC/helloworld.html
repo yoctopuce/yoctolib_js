@@ -1,0 +1,45 @@
+<HTML>
+<HEAD>
+ <TITLE> Hello World</TITLE>
+ <SCRIPT type="text/javascript" src="../../Sources/yocto_api.js"></SCRIPT>
+ <SCRIPT type="text/javascript" src="../../Sources/yocto_genericSensor.js"></SCRIPT>
+ <SCRIPT language='javascript1.5'  type='text/JavaScript'>
+ <!--
+
+ // Setup the API to use the VirtualHub on local machine
+ if(yRegisterHub('http://127.0.0.1:4444/') != YAPI_SUCCESS) {
+     alert("Cannot contact VirtualHub on 127.0.0.1");
+ }
+
+ function refresh()
+ { 
+     var sensor, serial = document.getElementById('serial').value;
+
+     if(serial == '') {
+         // or use any conected module suitable for the demo
+         sensor = yFirstGenericSensor();
+         if(sensor) {
+             serial = sensor.module().get_serialNumber();
+             document.getElementById('serial').value = serial;
+         }
+     }
+
+     sensor1  = yFindGenericSensor(serial+".genericSensor1");   
+     
+     if ((sensor1.isOnline()) ) {
+         document.getElementById('msg').value = '';
+         document.getElementById("sensor-val1").value = sensor1.get_currentValue() + sensor1.get_unit() ;
+      } else {
+         document.getElementById('msg').value = 'Module not connected';         
+     }
+     setTimeout('refresh()',500);
+ }
+ -->
+ </SCRIPT>
+</HEAD>  
+<BODY onload='refresh();'>
+ Module to use:       <input id='serial'>
+ <input id='msg' style='color:red;border:none;' readonly><br>
+ Voltage : <input id='sensor-val1' readonly><br>
+</BODY>
+</HTML> 

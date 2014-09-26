@@ -14,7 +14,7 @@
  var watchdog;
 
  function refresh()
- { 
+ {
      var serial = document.getElementById('serial').value;
      if(serial == '') {
          // Detect any conected module suitable for the demo
@@ -29,7 +29,7 @@
      if(watchdog.isOnline()) {
          document.getElementById('msg').value = '';
      } else {
-         document.getElementById('msg').value = 'Module not connected';         
+         document.getElementById('msg').value = 'Module not connected';
      }
      setTimeout('refresh()',500);
  }
@@ -39,31 +39,31 @@
      if (state) watchdog.set_running(Y_RUNNING_ON);
            else watchdog.set_running(Y_RUNNING_OFF);
  }
- 
+
  function resetIt()
- {   
+ {
       watchdog.resetWatchdog();
  }
- 
+
  function cut()
  {watchdog.set_output(Y_OUTPUT_OFF);}
 
  function restore()
  {watchdog.set_output(Y_OUTPUT_ON);}
- 
- 
- 
+
+
+
  -->
  </SCRIPT>
-</HEAD>  
+</HEAD>
 <BODY onload='refresh();'>
- Module to use: <input id='serial'>
- <input id='msg' style='color:red;border:none;' readonly><br>
- <a href='javascript:switchIt(true);'>Start watchdog</a><br>
- <a href='javascript:resetIt();'>Reset watchdog</a><br>
- <a href='javascript:switchIt(false);'>Stop watchdog</a><br>
+  Module to use: <input id='serial'>
+  <input id='msg' style='color:red;border:none;' readonly><br>
+  <a href='javascript:switchIt(true);'>Start watchdog</a><br>
+  <a href='javascript:resetIt();'>Reset watchdog</a><br>
+  <a href='javascript:switchIt(false);'>Stop watchdog</a><br>
   <a href='javascript:cut();'>cut</a><br>
   <a href='javascript:restore(false);'>restore</a><br>
-  
+
 </BODY>
-</HTML> 
+</HTML>

@@ -1,0 +1,55 @@
+<HTML>
+<HEAD>
+ <TITLE>Hello World</TITLE>
+ <SCRIPT type="text/javascript" src="../../Sources/yocto_api.js"></SCRIPT>
+ <SCRIPT type="text/javascript" src="../../Sources/yocto_pwminput.js"></SCRIPT>
+ <SCRIPT language='javascript1.5' type='text/JavaScript'>
+ <!--
+
+ // Setup the API to use the VirtualHub on local machine
+ if(yRegisterHub('http://127.0.0.1:4444/') != YAPI_SUCCESS) {
+     alert("Cannot contact VirtualHub on 127.0.0.1");
+ }
+
+ function refresh()
+ { 
+     var pwm,pwm1,pwm2; 
+     var serial = document.getElementById('serial').value;
+
+     if(serial == '') {
+         // or use any connected module suitable for the demo
+         pwm = yFirstPwmInput();
+         if(pwm) {
+             serial = pwm.module().get_serialNumber();
+             document.getElementById('serial').value = serial;
+         }
+     }
+  
+     pwm1 = yFindPwmInput(serial+".pwmInput1");
+     pwm2 = yFindPwmInput(serial+".pwmInput2");
+     
+     if (pwm1.isOnline()) {
+         document.getElementById('msg').value = '';
+         document.getElementById("freq1").value = pwm1.get_frequency();
+         document.getElementById("dcycle1").value = pwm1.get_dutyCycle();
+         document.getElementById("count1").value = pwm1.get_pulseCounter();
+         document.getElementById("freq2").value = pwm2.get_frequency();
+         document.getElementById("dcycle2").value = pwm2.get_dutyCycle();
+         document.getElementById("count2").value = pwm2.get_pulseCounter();
+         
+     } else {
+         document.getElementById('msg').value = 'Module not connected';         
+     }
+     setTimeout('refresh()',500);
+ }
+ -->
+ </SCRIPT>
+</HEAD>  
+<BODY onload='refresh();'>
+ Module to use:    <input id='serial'>
+ <input id='msg' style='color:red;border:none;' readonly><br>
+ Current values:<br>  
+   PWM1: <input id='freq1' size=5 readonly>Hz <input id='dcycle1' size=5 readonly>%   <input id='count1' size=9 readonly>pulse edges<br>  
+   PWM2: <input id='freq2' size=5 readonly>Hz <input id='dcycle2' size=5 readonly>%   <input id='count2' size=9 readonly>pulse edges   
+</BODY>
+</HTML> 
