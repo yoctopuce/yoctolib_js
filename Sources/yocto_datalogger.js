@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_datalogger.js 17698 2014-09-18 14:43:15Z mvuilleu $
+ * $Id: yocto_datalogger.js 18573 2014-11-28 07:01:24Z mvuilleu $
  *
  * Implements yFindDataLogger(), the high-level API for DataLogger functions
  *
@@ -826,6 +826,7 @@ var YDataLogger; // definition below
         dslist = this._json_get_array(json);
         res.length = 0;
         for (ii in dslist) {
+            if(ii=='indexOf') continue; // IE8 Don'tEnum bug
             res.push(new YDataSet(this, dslist[ii]));
         }
         return res;
