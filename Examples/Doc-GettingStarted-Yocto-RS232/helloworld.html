@@ -1,0 +1,51 @@
+<HTML>
+<HEAD>
+    <TITLE>MODBUS javascript demo</TITLE>
+    <SCRIPT type="text/javascript" src="../../../../../../yoctolib/v1.0/Public/js/Sources/yocto_api.js"></SCRIPT>
+    <SCRIPT type="text/javascript" src="../../../../../../yoctolib/v1.0/Public/js/Sources/yocto_serialport.js"></SCRIPT>
+    <SCRIPT language='javascript1.5' type='text/JavaScript'>
+        <!--
+        var slave;
+        var reg;
+        var serialport;
+
+        function init(addr) {
+            if (yRegisterHub(addr) != YAPI_SUCCESS)
+                alert("Cannot contact VirtualHub on " + addr);
+
+            serialport = yFirstSerialPort();
+
+            if (serialport == null) {
+                document.write('No Yocto-SerialPort  found on ' + addr);
+            } else {
+                document.getElementById('main').style.display = '';
+                serialport.set_serialMode("9600,8N1");
+                serialport.set_protocol("Line");
+                serialport.reset();
+            }
+        }
+
+        function send_data() {
+            var tosend = document.getElementById('line_input').value;
+            serialport.writeLine(tosend);
+            setTimeout(read_data, 500)
+        }
+
+        function read_data() {
+            var line = serialport.readLine();
+            console.log("return :" + line);
+            document.getElementById('returned_value').innerHTML = line;
+        }
+
+
+        -->
+    </SCRIPT>
+</HEAD>
+<BODY onload='init("127.0.0.1")'>
+<span id='main' style='display:none'>
+ Type line to send<br>
+ slave:<input id="line_input" onchange='javascript:send_data()'><br>
+ <span id="returned_value"></span><br>
+ </span>
+</BODY>
+</HTML>
