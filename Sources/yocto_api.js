@@ -2308,7 +2308,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
      */
     function YAPI_GetAPIVersion()
     {
-        return "1.10.19854";
+        return "1.10.19938";
     }
 
     /**
