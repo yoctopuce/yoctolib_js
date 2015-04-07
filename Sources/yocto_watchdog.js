@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_watchdog.js 15434 2014-03-14 06:37:47Z mvuilleu $
+ * $Id: yocto_watchdog.js 19607 2015-03-05 10:36:54Z seb $
  *
  * Implements the high-level API for Watchdog functions
  *
@@ -70,7 +70,7 @@ var Y_TRIGGERDURATION_INVALID       = YAPI_INVALID_LONG;
 //--- (YWatchdog class start)
 /**
  * YWatchdog Class: Watchdog function interface
- * 
+ *
  * The watchog function works like a relay and can cause a brief power cut
  * to an appliance after a preset delay to force this appliance to
  * reset. The Watchdog must be called from time to time to reset the
@@ -152,10 +152,10 @@ var YWatchdog; // definition below
 
     /**
      * Returns the state of the watchdog (A for the idle position, B for the active position).
-     * 
+     *
      * @return either Y_STATE_A or Y_STATE_B, according to the state of the watchdog (A for the idle
      * position, B for the active position)
-     * 
+     *
      * On failure, throws an exception or returns Y_STATE_INVALID.
      */
     function YWatchdog_get_state()
@@ -170,7 +170,7 @@ var YWatchdog; // definition below
 
     /**
      * Gets the state of the watchdog (A for the idle position, B for the active position).
-     * 
+     *
      * @param callback : callback function that is invoked when the result is known.
      *         The callback function receives three arguments:
      *         - the user-specific context object
@@ -178,9 +178,9 @@ var YWatchdog; // definition below
      *         - the result:either Y_STATE_A or Y_STATE_B, according to the state of the watchdog (A for the idle
      *         position, B for the active position)
      * @param context : user-specific object that is passed as-is to the callback function
-     * 
+     *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
-     * 
+     *
      * On failure, throws an exception or returns Y_STATE_INVALID.
      */
     function YWatchdog_get_state_async(callback,context)
@@ -202,12 +202,12 @@ var YWatchdog; // definition below
 
     /**
      * Changes the state of the watchdog (A for the idle position, B for the active position).
-     * 
+     *
      * @param newval : either Y_STATE_A or Y_STATE_B, according to the state of the watchdog (A for the
      * idle position, B for the active position)
-     * 
+     *
      * @return YAPI_SUCCESS if the call succeeds.
-     * 
+     *
      * On failure, throws an exception or returns a negative error code.
      */
     function YWatchdog_set_state(newval)
@@ -219,11 +219,11 @@ var YWatchdog; // definition below
     /**
      * Returns the state of the watchdog at device startup (A for the idle position, B for the active
      * position, UNCHANGED for no change).
-     * 
+     *
      * @return a value among Y_STATEATPOWERON_UNCHANGED, Y_STATEATPOWERON_A and Y_STATEATPOWERON_B
      * corresponding to the state of the watchdog at device startup (A for the idle position, B for the
      * active position, UNCHANGED for no change)
-     * 
+     *
      * On failure, throws an exception or returns Y_STATEATPOWERON_INVALID.
      */
     function YWatchdog_get_stateAtPowerOn()
@@ -239,7 +239,7 @@ var YWatchdog; // definition below
     /**
      * Gets the state of the watchdog at device startup (A for the idle position, B for the active
      * position, UNCHANGED for no change).
-     * 
+     *
      * @param callback : callback function that is invoked when the result is known.
      *         The callback function receives three arguments:
      *         - the user-specific context object
@@ -248,9 +248,9 @@ var YWatchdog; // definition below
      *         corresponding to the state of the watchdog at device startup (A for the idle position, B for the
      *         active position, UNCHANGED for no change)
      * @param context : user-specific object that is passed as-is to the callback function
-     * 
+     *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
-     * 
+     *
      * On failure, throws an exception or returns Y_STATEATPOWERON_INVALID.
      */
     function YWatchdog_get_stateAtPowerOn_async(callback,context)
@@ -274,11 +274,11 @@ var YWatchdog; // definition below
      * Preset the state of the watchdog at device startup (A for the idle position,
      * B for the active position, UNCHANGED for no modification). Remember to call the matching module saveToFlash()
      * method, otherwise this call will have no effect.
-     * 
+     *
      * @param newval : a value among Y_STATEATPOWERON_UNCHANGED, Y_STATEATPOWERON_A and Y_STATEATPOWERON_B
-     * 
+     *
      * @return YAPI_SUCCESS if the call succeeds.
-     * 
+     *
      * On failure, throws an exception or returns a negative error code.
      */
     function YWatchdog_set_stateAtPowerOn(newval)
@@ -290,9 +290,9 @@ var YWatchdog; // definition below
     /**
      * Retourne the maximum time (ms) allowed for $THEFUNCTIONS$ to stay in state A before automatically
      * switching back in to B state. Zero means no maximum time.
-     * 
+     *
      * @return an integer
-     * 
+     *
      * On failure, throws an exception or returns Y_MAXTIMEONSTATEA_INVALID.
      */
     function YWatchdog_get_maxTimeOnStateA()
@@ -308,16 +308,16 @@ var YWatchdog; // definition below
     /**
      * Retourne the maximum time (ms) allowed for $THEFUNCTIONS$ to stay in state A before automatically
      * switching back in to B state. Zero means no maximum time.
-     * 
+     *
      * @param callback : callback function that is invoked when the result is known.
      *         The callback function receives three arguments:
      *         - the user-specific context object
      *         - the YWatchdog object that invoked the callback
      *         - the result:an integer
      * @param context : user-specific object that is passed as-is to the callback function
-     * 
+     *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
-     * 
+     *
      * On failure, throws an exception or returns Y_MAXTIMEONSTATEA_INVALID.
      */
     function YWatchdog_get_maxTimeOnStateA_async(callback,context)
@@ -340,11 +340,11 @@ var YWatchdog; // definition below
     /**
      * Sets the maximum time (ms) allowed for $THEFUNCTIONS$ to stay in state A before automatically
      * switching back in to B state. Use zero for no maximum time.
-     * 
+     *
      * @param newval : an integer
-     * 
+     *
      * @return YAPI_SUCCESS if the call succeeds.
-     * 
+     *
      * On failure, throws an exception or returns a negative error code.
      */
     function YWatchdog_set_maxTimeOnStateA(newval)
@@ -356,9 +356,9 @@ var YWatchdog; // definition below
     /**
      * Retourne the maximum time (ms) allowed for $THEFUNCTIONS$ to stay in state B before automatically
      * switching back in to A state. Zero means no maximum time.
-     * 
+     *
      * @return an integer
-     * 
+     *
      * On failure, throws an exception or returns Y_MAXTIMEONSTATEB_INVALID.
      */
     function YWatchdog_get_maxTimeOnStateB()
@@ -374,16 +374,16 @@ var YWatchdog; // definition below
     /**
      * Retourne the maximum time (ms) allowed for $THEFUNCTIONS$ to stay in state B before automatically
      * switching back in to A state. Zero means no maximum time.
-     * 
+     *
      * @param callback : callback function that is invoked when the result is known.
      *         The callback function receives three arguments:
      *         - the user-specific context object
      *         - the YWatchdog object that invoked the callback
      *         - the result:an integer
      * @param context : user-specific object that is passed as-is to the callback function
-     * 
+     *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
-     * 
+     *
      * On failure, throws an exception or returns Y_MAXTIMEONSTATEB_INVALID.
      */
     function YWatchdog_get_maxTimeOnStateB_async(callback,context)
@@ -406,11 +406,11 @@ var YWatchdog; // definition below
     /**
      * Sets the maximum time (ms) allowed for $THEFUNCTIONS$ to stay in state B before automatically
      * switching back in to A state. Use zero for no maximum time.
-     * 
+     *
      * @param newval : an integer
-     * 
+     *
      * @return YAPI_SUCCESS if the call succeeds.
-     * 
+     *
      * On failure, throws an exception or returns a negative error code.
      */
     function YWatchdog_set_maxTimeOnStateB(newval)
@@ -421,10 +421,10 @@ var YWatchdog; // definition below
 
     /**
      * Returns the output state of the watchdog, when used as a simple switch (single throw).
-     * 
+     *
      * @return either Y_OUTPUT_OFF or Y_OUTPUT_ON, according to the output state of the watchdog, when
      * used as a simple switch (single throw)
-     * 
+     *
      * On failure, throws an exception or returns Y_OUTPUT_INVALID.
      */
     function YWatchdog_get_output()
@@ -439,7 +439,7 @@ var YWatchdog; // definition below
 
     /**
      * Gets the output state of the watchdog, when used as a simple switch (single throw).
-     * 
+     *
      * @param callback : callback function that is invoked when the result is known.
      *         The callback function receives three arguments:
      *         - the user-specific context object
@@ -447,9 +447,9 @@ var YWatchdog; // definition below
      *         - the result:either Y_OUTPUT_OFF or Y_OUTPUT_ON, according to the output state of the watchdog,
      *         when used as a simple switch (single throw)
      * @param context : user-specific object that is passed as-is to the callback function
-     * 
+     *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
-     * 
+     *
      * On failure, throws an exception or returns Y_OUTPUT_INVALID.
      */
     function YWatchdog_get_output_async(callback,context)
@@ -471,12 +471,12 @@ var YWatchdog; // definition below
 
     /**
      * Changes the output state of the watchdog, when used as a simple switch (single throw).
-     * 
+     *
      * @param newval : either Y_OUTPUT_OFF or Y_OUTPUT_ON, according to the output state of the watchdog,
      * when used as a simple switch (single throw)
-     * 
+     *
      * @return YAPI_SUCCESS if the call succeeds.
-     * 
+     *
      * On failure, throws an exception or returns a negative error code.
      */
     function YWatchdog_set_output(newval)
@@ -488,11 +488,11 @@ var YWatchdog; // definition below
     /**
      * Returns the number of milliseconds remaining before the watchdog is returned to idle position
      * (state A), during a measured pulse generation. When there is no ongoing pulse, returns zero.
-     * 
+     *
      * @return an integer corresponding to the number of milliseconds remaining before the watchdog is
      * returned to idle position
      *         (state A), during a measured pulse generation
-     * 
+     *
      * On failure, throws an exception or returns Y_PULSETIMER_INVALID.
      */
     function YWatchdog_get_pulseTimer()
@@ -508,7 +508,7 @@ var YWatchdog; // definition below
     /**
      * Gets the number of milliseconds remaining before the watchdog is returned to idle position
      * (state A), during a measured pulse generation. When there is no ongoing pulse, returns zero.
-     * 
+     *
      * @param callback : callback function that is invoked when the result is known.
      *         The callback function receives three arguments:
      *         - the user-specific context object
@@ -517,9 +517,9 @@ var YWatchdog; // definition below
      *         is returned to idle position
      *         (state A), during a measured pulse generation
      * @param context : user-specific object that is passed as-is to the callback function
-     * 
+     *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
-     * 
+     *
      * On failure, throws an exception or returns Y_PULSETIMER_INVALID.
      */
     function YWatchdog_get_pulseTimer_async(callback,context)
@@ -548,11 +548,11 @@ var YWatchdog; // definition below
     /**
      * Sets the relay to output B (active) for a specified duration, then brings it
      * automatically back to output A (idle state).
-     * 
+     *
      * @param ms_duration : pulse duration, in millisecondes
-     * 
+     *
      * @return YAPI_SUCCESS if the call succeeds.
-     * 
+     *
      * On failure, throws an exception or returns a negative error code.
      */
     function YWatchdog_pulse(ms_duration)
@@ -572,14 +572,14 @@ var YWatchdog; // definition below
     }
 
     /**
-     * 
+     *
      * @param callback : callback function that is invoked when the result is known.
      *         The callback function receives three arguments:
      *         - the user-specific context object
      *         - the YWatchdog object that invoked the callback
      *         - the result:
      * @param context : user-specific object that is passed as-is to the callback function
-     * 
+     *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      */
     function YWatchdog_get_delayedPulseTimer_async(callback,context)
@@ -607,12 +607,12 @@ var YWatchdog; // definition below
 
     /**
      * Schedules a pulse.
-     * 
+     *
      * @param ms_delay : waiting time before the pulse, in millisecondes
      * @param ms_duration : pulse duration, in millisecondes
-     * 
+     *
      * @return YAPI_SUCCESS if the call succeeds.
-     * 
+     *
      * On failure, throws an exception or returns a negative error code.
      */
     function YWatchdog_delayedPulse(ms_delay,ms_duration)
@@ -624,10 +624,10 @@ var YWatchdog; // definition below
     /**
      * Returns the number of milliseconds remaining before a pulse (delayedPulse() call)
      * When there is no scheduled pulse, returns zero.
-     * 
+     *
      * @return an integer corresponding to the number of milliseconds remaining before a pulse (delayedPulse() call)
      *         When there is no scheduled pulse, returns zero
-     * 
+     *
      * On failure, throws an exception or returns Y_COUNTDOWN_INVALID.
      */
     function YWatchdog_get_countdown()
@@ -643,7 +643,7 @@ var YWatchdog; // definition below
     /**
      * Gets the number of milliseconds remaining before a pulse (delayedPulse() call)
      * When there is no scheduled pulse, returns zero.
-     * 
+     *
      * @param callback : callback function that is invoked when the result is known.
      *         The callback function receives three arguments:
      *         - the user-specific context object
@@ -652,9 +652,9 @@ var YWatchdog; // definition below
      *         (delayedPulse() call)
      *         When there is no scheduled pulse, returns zero
      * @param context : user-specific object that is passed as-is to the callback function
-     * 
+     *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
-     * 
+     *
      * On failure, throws an exception or returns Y_COUNTDOWN_INVALID.
      */
     function YWatchdog_get_countdown_async(callback,context)
@@ -676,9 +676,9 @@ var YWatchdog; // definition below
 
     /**
      * Returns the watchdog runing state at module power on.
-     * 
+     *
      * @return either Y_AUTOSTART_OFF or Y_AUTOSTART_ON, according to the watchdog runing state at module power on
-     * 
+     *
      * On failure, throws an exception or returns Y_AUTOSTART_INVALID.
      */
     function YWatchdog_get_autoStart()
@@ -693,16 +693,16 @@ var YWatchdog; // definition below
 
     /**
      * Gets the watchdog runing state at module power on.
-     * 
+     *
      * @param callback : callback function that is invoked when the result is known.
      *         The callback function receives three arguments:
      *         - the user-specific context object
      *         - the YWatchdog object that invoked the callback
      *         - the result:either Y_AUTOSTART_OFF or Y_AUTOSTART_ON, according to the watchdog runing state at module power on
      * @param context : user-specific object that is passed as-is to the callback function
-     * 
+     *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
-     * 
+     *
      * On failure, throws an exception or returns Y_AUTOSTART_INVALID.
      */
     function YWatchdog_get_autoStart_async(callback,context)
@@ -725,12 +725,12 @@ var YWatchdog; // definition below
     /**
      * Changes the watchdog runningsttae at module power on. Remember to call the
      * saveToFlash() method and then to reboot the module to apply this setting.
-     * 
+     *
      * @param newval : either Y_AUTOSTART_OFF or Y_AUTOSTART_ON, according to the watchdog runningsttae at
      * module power on
-     * 
+     *
      * @return YAPI_SUCCESS if the call succeeds.
-     * 
+     *
      * On failure, throws an exception or returns a negative error code.
      */
     function YWatchdog_set_autoStart(newval)
@@ -741,9 +741,9 @@ var YWatchdog; // definition below
 
     /**
      * Returns the watchdog running state.
-     * 
+     *
      * @return either Y_RUNNING_OFF or Y_RUNNING_ON, according to the watchdog running state
-     * 
+     *
      * On failure, throws an exception or returns Y_RUNNING_INVALID.
      */
     function YWatchdog_get_running()
@@ -758,16 +758,16 @@ var YWatchdog; // definition below
 
     /**
      * Gets the watchdog running state.
-     * 
+     *
      * @param callback : callback function that is invoked when the result is known.
      *         The callback function receives three arguments:
      *         - the user-specific context object
      *         - the YWatchdog object that invoked the callback
      *         - the result:either Y_RUNNING_OFF or Y_RUNNING_ON, according to the watchdog running state
      * @param context : user-specific object that is passed as-is to the callback function
-     * 
+     *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
-     * 
+     *
      * On failure, throws an exception or returns Y_RUNNING_INVALID.
      */
     function YWatchdog_get_running_async(callback,context)
@@ -789,11 +789,11 @@ var YWatchdog; // definition below
 
     /**
      * Changes the running state of the watchdog.
-     * 
+     *
      * @param newval : either Y_RUNNING_OFF or Y_RUNNING_ON, according to the running state of the watchdog
-     * 
+     *
      * @return YAPI_SUCCESS if the call succeeds.
-     * 
+     *
      * On failure, throws an exception or returns a negative error code.
      */
     function YWatchdog_set_running(newval)
@@ -806,9 +806,9 @@ var YWatchdog; // definition below
      * Resets the watchdog. When the watchdog is running, this function
      * must be called on a regular basis to prevent the watchog to
      * trigger
-     * 
+     *
      * @return YAPI_SUCCESS if the call succeeds.
-     * 
+     *
      * On failure, throws an exception or returns a negative error code.
      */
     function YWatchdog_resetWatchdog()
@@ -819,10 +819,10 @@ var YWatchdog; // definition below
 
     /**
      * Returns  the waiting duration before a reset is automatically triggered by the watchdog, in milliseconds.
-     * 
+     *
      * @return an integer corresponding to  the waiting duration before a reset is automatically triggered
      * by the watchdog, in milliseconds
-     * 
+     *
      * On failure, throws an exception or returns Y_TRIGGERDELAY_INVALID.
      */
     function YWatchdog_get_triggerDelay()
@@ -837,7 +837,7 @@ var YWatchdog; // definition below
 
     /**
      * Gets  the waiting duration before a reset is automatically triggered by the watchdog, in milliseconds.
-     * 
+     *
      * @param callback : callback function that is invoked when the result is known.
      *         The callback function receives three arguments:
      *         - the user-specific context object
@@ -845,9 +845,9 @@ var YWatchdog; // definition below
      *         - the result:an integer corresponding to  the waiting duration before a reset is automatically
      *         triggered by the watchdog, in milliseconds
      * @param context : user-specific object that is passed as-is to the callback function
-     * 
+     *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
-     * 
+     *
      * On failure, throws an exception or returns Y_TRIGGERDELAY_INVALID.
      */
     function YWatchdog_get_triggerDelay_async(callback,context)
@@ -869,12 +869,12 @@ var YWatchdog; // definition below
 
     /**
      * Changes the waiting delay before a reset is triggered by the watchdog, in milliseconds.
-     * 
+     *
      * @param newval : an integer corresponding to the waiting delay before a reset is triggered by the
      * watchdog, in milliseconds
-     * 
+     *
      * @return YAPI_SUCCESS if the call succeeds.
-     * 
+     *
      * On failure, throws an exception or returns a negative error code.
      */
     function YWatchdog_set_triggerDelay(newval)
@@ -885,9 +885,9 @@ var YWatchdog; // definition below
 
     /**
      * Returns the duration of resets caused by the watchdog, in milliseconds.
-     * 
+     *
      * @return an integer corresponding to the duration of resets caused by the watchdog, in milliseconds
-     * 
+     *
      * On failure, throws an exception or returns Y_TRIGGERDURATION_INVALID.
      */
     function YWatchdog_get_triggerDuration()
@@ -902,16 +902,16 @@ var YWatchdog; // definition below
 
     /**
      * Gets the duration of resets caused by the watchdog, in milliseconds.
-     * 
+     *
      * @param callback : callback function that is invoked when the result is known.
      *         The callback function receives three arguments:
      *         - the user-specific context object
      *         - the YWatchdog object that invoked the callback
      *         - the result:an integer corresponding to the duration of resets caused by the watchdog, in milliseconds
      * @param context : user-specific object that is passed as-is to the callback function
-     * 
+     *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
-     * 
+     *
      * On failure, throws an exception or returns Y_TRIGGERDURATION_INVALID.
      */
     function YWatchdog_get_triggerDuration_async(callback,context)
@@ -933,11 +933,11 @@ var YWatchdog; // definition below
 
     /**
      * Changes the duration of resets caused by the watchdog, in milliseconds.
-     * 
+     *
      * @param newval : an integer corresponding to the duration of resets caused by the watchdog, in milliseconds
-     * 
+     *
      * @return YAPI_SUCCESS if the call succeeds.
-     * 
+     *
      * On failure, throws an exception or returns a negative error code.
      */
     function YWatchdog_set_triggerDuration(newval)
@@ -956,7 +956,7 @@ var YWatchdog; // definition below
      * <li>ModuleLogicalName.FunctionIdentifier</li>
      * <li>ModuleLogicalName.FunctionLogicalName</li>
      * </ul>
-     * 
+     *
      * This function does not require that the watchdog is online at the time
      * it is invoked. The returned object is nevertheless valid.
      * Use the method YWatchdog.isOnline() to test if the watchdog is
@@ -964,9 +964,9 @@ var YWatchdog; // definition below
      * a watchdog by logical name, no error is notified: the first instance
      * found is returned. The search is performed first by hardware name,
      * then by logical name.
-     * 
+     *
      * @param func : a string that uniquely characterizes the watchdog
-     * 
+     *
      * @return a YWatchdog object allowing you to drive the watchdog.
      */
     function YWatchdog_FindWatchdog(func)                       // class method
@@ -982,7 +982,7 @@ var YWatchdog; // definition below
 
     /**
      * Continues the enumeration of watchdog started using yFirstWatchdog().
-     * 
+     *
      * @return a pointer to a YWatchdog object, corresponding to
      *         a watchdog currently online, or a null pointer
      *         if there are no more watchdog to enumerate.
@@ -999,7 +999,7 @@ var YWatchdog; // definition below
      * Starts the enumeration of watchdog currently accessible.
      * Use the method YWatchdog.nextWatchdog() to iterate on
      * next watchdog.
-     * 
+     *
      * @return a pointer to a YWatchdog object, corresponding to
      *         the first watchdog currently online, or a null pointer
      *         if there are none.
@@ -1135,7 +1135,7 @@ var YWatchdog; // definition below
  * <li>ModuleLogicalName.FunctionIdentifier</li>
  * <li>ModuleLogicalName.FunctionLogicalName</li>
  * </ul>
- * 
+ *
  * This function does not require that the watchdog is online at the time
  * it is invoked. The returned object is nevertheless valid.
  * Use the method YWatchdog.isOnline() to test if the watchdog is
@@ -1143,9 +1143,9 @@ var YWatchdog; // definition below
  * a watchdog by logical name, no error is notified: the first instance
  * found is returned. The search is performed first by hardware name,
  * then by logical name.
- * 
+ *
  * @param func : a string that uniquely characterizes the watchdog
- * 
+ *
  * @return a YWatchdog object allowing you to drive the watchdog.
  */
 function yFindWatchdog(func)
@@ -1157,7 +1157,7 @@ function yFindWatchdog(func)
  * Starts the enumeration of watchdog currently accessible.
  * Use the method YWatchdog.nextWatchdog() to iterate on
  * next watchdog.
- * 
+ *
  * @return a pointer to a YWatchdog object, corresponding to
  *         the first watchdog currently online, or a null pointer
  *         if there are none.

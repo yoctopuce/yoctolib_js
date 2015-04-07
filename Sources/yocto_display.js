@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_display.js 17498 2014-09-03 19:21:24Z mvuilleu $
+ * $Id: yocto_display.js 19607 2015-03-05 10:36:54Z seb $
  *
  * Implements yFindDisplay(), the high-level API for Display functions
  *
@@ -84,7 +84,7 @@ var Y_ALIGN_BOTTOM_RIGHT            = 15;
 //--- (generated code: YDisplayLayer class start)
 /**
  * YDisplayLayer Class: DisplayLayer object interface
- * 
+ *
  * A DisplayLayer is an image layer containing objects to display
  * (bitmaps, text, etc.). The content is displayed only when
  * the layer is active on the screen (and not masked by other
@@ -150,9 +150,9 @@ var YDisplayLayer; // definition below
      * Reinitializes the drawing pointer to the upper left position,
      * and selects the most visible pen color. If you only want to erase the layer
      * content, use the method clear() instead.
-     * 
+     *
      * @return YAPI_SUCCESS if the call succeeds.
-     * 
+     *
      * On failure, throws an exception or returns a negative error code.
      */
     function YDisplayLayer_reset()
@@ -166,9 +166,9 @@ var YDisplayLayer; // definition below
      * This method does not change any other attribute of the layer.
      * To reinitialize the layer attributes to defaults settings, use the method
      * reset() instead.
-     * 
+     *
      * @return YAPI_SUCCESS if the call succeeds.
-     * 
+     *
      * On failure, throws an exception or returns a negative error code.
      */
     function YDisplayLayer_clear()
@@ -181,11 +181,11 @@ var YDisplayLayer; // definition below
      * including text drawing. The pen color is provided as an RGB value.
      * For grayscale or monochrome displays, the value is
      * automatically converted to the proper range.
-     * 
+     *
      * @param color : the desired pen color, as a 24-bit RGB value
-     * 
+     *
      * @return YAPI_SUCCESS if the call succeeds.
-     * 
+     *
      * On failure, throws an exception or returns a negative error code.
      */
     function YDisplayLayer_selectColorPen(color)
@@ -200,11 +200,11 @@ var YDisplayLayer; // definition below
      * For monochrome displays (without gray levels), any value
      * lower than 128 is rendered as black, and any value equal
      * or above to 128 is non-black.
-     * 
+     *
      * @param graylevel : the desired gray level, from 0 to 255
-     * 
+     *
      * @return YAPI_SUCCESS if the call succeeds.
-     * 
+     *
      * On failure, throws an exception or returns a negative error code.
      */
     function YDisplayLayer_selectGrayPen(graylevel)
@@ -217,9 +217,9 @@ var YDisplayLayer; // definition below
      * except for bitmap copy functions. Any point drawn using the eraser
      * becomes transparent (as when the layer is empty), showing the other
      * layers beneath it.
-     * 
+     *
      * @return YAPI_SUCCESS if the call succeeds.
-     * 
+     *
      * On failure, throws an exception or returns a negative error code.
      */
     function YDisplayLayer_selectEraser()
@@ -235,12 +235,12 @@ var YDisplayLayer; // definition below
      * Anti-aliasing is enabled by default on grayscale and color displays,
      * but you can disable it if you prefer. This setting has no effect
      * on monochrome displays.
-     * 
+     *
      * @param mode : <t>true</t> to enable antialiasing, <t>false</t> to
      *         disable it.
-     * 
+     *
      * @return YAPI_SUCCESS if the call succeeds.
-     * 
+     *
      * On failure, throws an exception or returns a negative error code.
      */
     function YDisplayLayer_setAntialiasingMode(mode)
@@ -250,12 +250,12 @@ var YDisplayLayer; // definition below
 
     /**
      * Draws a single pixel at the specified position.
-     * 
+     *
      * @param x : the distance from left of layer, in pixels
      * @param y : the distance from top of layer, in pixels
-     * 
+     *
      * @return YAPI_SUCCESS if the call succeeds.
-     * 
+     *
      * On failure, throws an exception or returns a negative error code.
      */
     function YDisplayLayer_drawPixel(x,y)
@@ -265,14 +265,14 @@ var YDisplayLayer; // definition below
 
     /**
      * Draws an empty rectangle at a specified position.
-     * 
+     *
      * @param x1 : the distance from left of layer to the left border of the rectangle, in pixels
      * @param y1 : the distance from top of layer to the top border of the rectangle, in pixels
      * @param x2 : the distance from left of layer to the right border of the rectangle, in pixels
      * @param y2 : the distance from top of layer to the bottom border of the rectangle, in pixels
-     * 
+     *
      * @return YAPI_SUCCESS if the call succeeds.
-     * 
+     *
      * On failure, throws an exception or returns a negative error code.
      */
     function YDisplayLayer_drawRect(x1,y1,x2,y2)
@@ -282,14 +282,14 @@ var YDisplayLayer; // definition below
 
     /**
      * Draws a filled rectangular bar at a specified position.
-     * 
+     *
      * @param x1 : the distance from left of layer to the left border of the rectangle, in pixels
      * @param y1 : the distance from top of layer to the top border of the rectangle, in pixels
      * @param x2 : the distance from left of layer to the right border of the rectangle, in pixels
      * @param y2 : the distance from top of layer to the bottom border of the rectangle, in pixels
-     * 
+     *
      * @return YAPI_SUCCESS if the call succeeds.
-     * 
+     *
      * On failure, throws an exception or returns a negative error code.
      */
     function YDisplayLayer_drawBar(x1,y1,x2,y2)
@@ -299,13 +299,13 @@ var YDisplayLayer; // definition below
 
     /**
      * Draws an empty circle at a specified position.
-     * 
+     *
      * @param x : the distance from left of layer to the center of the circle, in pixels
      * @param y : the distance from top of layer to the center of the circle, in pixels
      * @param r : the radius of the circle, in pixels
-     * 
+     *
      * @return YAPI_SUCCESS if the call succeeds.
-     * 
+     *
      * On failure, throws an exception or returns a negative error code.
      */
     function YDisplayLayer_drawCircle(x,y,r)
@@ -315,13 +315,13 @@ var YDisplayLayer; // definition below
 
     /**
      * Draws a filled disc at a given position.
-     * 
+     *
      * @param x : the distance from left of layer to the center of the disc, in pixels
      * @param y : the distance from top of layer to the center of the disc, in pixels
      * @param r : the radius of the disc, in pixels
-     * 
+     *
      * @return YAPI_SUCCESS if the call succeeds.
-     * 
+     *
      * On failure, throws an exception or returns a negative error code.
      */
     function YDisplayLayer_drawDisc(x,y,r)
@@ -335,11 +335,11 @@ var YDisplayLayer; // definition below
      * uploaded to the device built-in memory. If you experience problems selecting a font
      * file, check the device logs for any error message such as missing font file or bad font
      * file format.
-     * 
+     *
      * @param fontname : the font file name
-     * 
+     *
      * @return YAPI_SUCCESS if the call succeeds.
-     * 
+     *
      * On failure, throws an exception or returns a negative error code.
      */
     function YDisplayLayer_selectFont(fontname)
@@ -351,7 +351,7 @@ var YDisplayLayer; // definition below
      * Draws a text string at the specified position. The point of the text that is aligned
      * to the specified pixel position is called the anchor point, and can be chosen among
      * several options. Text is rendered from left to right, without implicit wrapping.
-     * 
+     *
      * @param x : the distance from left of layer to the text anchor point, in pixels
      * @param y : the distance from top of layer to the text anchor point, in pixels
      * @param anchor : the text anchor point, chosen among the Y_ALIGN enumeration:
@@ -360,9 +360,9 @@ var YDisplayLayer; // definition below
      *         Y_ALIGN_TOP_DECIMAL, Y_ALIGN_CENTER_DECIMAL, Y_ALIGN_BASELINE_DECIMAL, Y_ALIGN_BOTTOM_DECIMAL,
      *         Y_ALIGN_TOP_RIGHT,   Y_ALIGN_CENTER_RIGHT,   Y_ALIGN_BASELINE_RIGHT,   Y_ALIGN_BOTTOM_RIGHT.
      * @param text : the text string to draw
-     * 
+     *
      * @return YAPI_SUCCESS if the call succeeds.
-     * 
+     *
      * On failure, throws an exception or returns a negative error code.
      */
     function YDisplayLayer_drawText(x,y,anchor,text)
@@ -375,13 +375,13 @@ var YDisplayLayer; // definition below
      * uploaded to the device built-in memory. If you experience problems using an image
      * file, check the device logs for any error message such as missing image file or bad
      * image file format.
-     * 
+     *
      * @param x : the distance from left of layer to the left of the image, in pixels
      * @param y : the distance from top of layer to the top of the image, in pixels
      * @param imagename : the GIF file name
-     * 
+     *
      * @return YAPI_SUCCESS if the call succeeds.
-     * 
+     *
      * On failure, throws an exception or returns a negative error code.
      */
     function YDisplayLayer_drawImage(x,y,imagename)
@@ -397,16 +397,16 @@ var YDisplayLayer; // definition below
      * layer selected pen color. Bits set to 0 are drawn using the specified background
      * gray level, unless -1 is specified, in which case they are not drawn at all
      * (as if transparent).
-     * 
+     *
      * @param x : the distance from left of layer to the left of the bitmap, in pixels
      * @param y : the distance from top of layer to the top of the bitmap, in pixels
      * @param w : the width of the bitmap, in pixels
      * @param bitmap : a binary object
      * @param bgcol : the background gray level to use for zero bits (0 = black,
      *         255 = white), or -1 to leave the pixels unchanged
-     * 
+     *
      * @return YAPI_SUCCESS if the call succeeds.
-     * 
+     *
      * On failure, throws an exception or returns a negative error code.
      */
     function YDisplayLayer_drawBitmap(x,y,w,bitmap,bgcol)
@@ -418,12 +418,12 @@ var YDisplayLayer; // definition below
 
     /**
      * Moves the drawing pointer of this layer to the specified position.
-     * 
+     *
      * @param x : the distance from left of layer, in pixels
      * @param y : the distance from top of layer, in pixels
-     * 
+     *
      * @return YAPI_SUCCESS if the call succeeds.
-     * 
+     *
      * On failure, throws an exception or returns a negative error code.
      */
     function YDisplayLayer_moveTo(x,y)
@@ -435,12 +435,12 @@ var YDisplayLayer; // definition below
      * Draws a line from current drawing pointer position to the specified position.
      * The specified destination pixel is included in the line. The pointer position
      * is then moved to the end point of the line.
-     * 
+     *
      * @param x : the distance from left of layer to the end point of the line, in pixels
      * @param y : the distance from top of layer to the end point of the line, in pixels
-     * 
+     *
      * @return YAPI_SUCCESS if the call succeeds.
-     * 
+     *
      * On failure, throws an exception or returns a negative error code.
      */
     function YDisplayLayer_lineTo(x,y)
@@ -454,11 +454,11 @@ var YDisplayLayer; // definition below
      * of the next line when a newline character is met, or when the right margin
      * is hit. When the new text to display extends below the lower margin, the
      * console area is automatically scrolled up.
-     * 
+     *
      * @param text : the message to display
-     * 
+     *
      * @return YAPI_SUCCESS if the call succeeds.
-     * 
+     *
      * On failure, throws an exception or returns a negative error code.
      */
     function YDisplayLayer_consoleOut(text)
@@ -468,14 +468,14 @@ var YDisplayLayer; // definition below
 
     /**
      * Sets up display margins for the consoleOut function.
-     * 
+     *
      * @param x1 : the distance from left of layer to the left margin, in pixels
      * @param y1 : the distance from top of layer to the top margin, in pixels
      * @param x2 : the distance from left of layer to the right margin, in pixels
      * @param y2 : the distance from top of layer to the bottom margin, in pixels
-     * 
+     *
      * @return YAPI_SUCCESS if the call succeeds.
-     * 
+     *
      * On failure, throws an exception or returns a negative error code.
      */
     function YDisplayLayer_setConsoleMargins(x1,y1,x2,y2)
@@ -486,12 +486,12 @@ var YDisplayLayer; // definition below
     /**
      * Sets up the background color used by the clearConsole function and by
      * the console scrolling feature.
-     * 
+     *
      * @param bgcol : the background gray level to use when scrolling (0 = black,
      *         255 = white), or -1 for transparent
-     * 
+     *
      * @return YAPI_SUCCESS if the call succeeds.
-     * 
+     *
      * On failure, throws an exception or returns a negative error code.
      */
     function YDisplayLayer_setConsoleBackground(bgcol)
@@ -501,12 +501,12 @@ var YDisplayLayer; // definition below
 
     /**
      * Sets up the wrapping behaviour used by the consoleOut function.
-     * 
+     *
      * @param wordwrap : true to wrap only between words,
      *         false to wrap on the last column anyway.
-     * 
+     *
      * @return YAPI_SUCCESS if the call succeeds.
-     * 
+     *
      * On failure, throws an exception or returns a negative error code.
      */
     function YDisplayLayer_setConsoleWordWrap(wordwrap)
@@ -517,9 +517,9 @@ var YDisplayLayer; // definition below
     /**
      * Blanks the console area within console margins, and resets the console pointer
      * to the upper left corner of the console.
-     * 
+     *
      * @return YAPI_SUCCESS if the call succeeds.
-     * 
+     *
      * On failure, throws an exception or returns a negative error code.
      */
     function YDisplayLayer_clearConsole()
@@ -531,14 +531,14 @@ var YDisplayLayer; // definition below
      * Sets the position of the layer relative to the display upper left corner.
      * When smooth scrolling is used, the display offset of the layer is
      * automatically updated during the next milliseconds to animate the move of the layer.
-     * 
+     *
      * @param x : the distance from left of display to the upper left corner of the layer
      * @param y : the distance from top of display to the upper left corner of the layer
      * @param scrollTime : number of milliseconds to use for smooth scrolling, or
      *         0 if the scrolling should be immediate.
-     * 
+     *
      * @return YAPI_SUCCESS if the call succeeds.
-     * 
+     *
      * On failure, throws an exception or returns a negative error code.
      */
     function YDisplayLayer_setLayerPosition(x,y,scrollTime)
@@ -551,9 +551,9 @@ var YDisplayLayer; // definition below
      * on the screen until the next call to unhide(). Hiding the layer can positively
      * affect the drawing speed, since it postpones the rendering until all operations are
      * completed (double-buffering).
-     * 
+     *
      * @return YAPI_SUCCESS if the call succeeds.
-     * 
+     *
      * On failure, throws an exception or returns a negative error code.
      */
     function YDisplayLayer_hide()
@@ -565,9 +565,9 @@ var YDisplayLayer; // definition below
 
     /**
      * Shows the layer. Shows the layer again after a hide command.
-     * 
+     *
      * @return YAPI_SUCCESS if the call succeeds.
-     * 
+     *
      * On failure, throws an exception or returns a negative error code.
      */
     function YDisplayLayer_unhide()
@@ -578,7 +578,7 @@ var YDisplayLayer; // definition below
 
     /**
      * Gets parent YDisplay. Returns the parent YDisplay object of the current YDisplayLayer.
-     * 
+     *
      * @return an YDisplay object
      */
     function YDisplayLayer_get_display()
@@ -588,9 +588,9 @@ var YDisplayLayer; // definition below
 
     /**
      * Returns the display width, in pixels.
-     * 
+     *
      * @return an integer corresponding to the display width, in pixels
-     * 
+     *
      * On failure, throws an exception or returns Y_DISPLAYWIDTH_INVALID.
      */
     function YDisplayLayer_get_displayWidth()
@@ -600,9 +600,9 @@ var YDisplayLayer; // definition below
 
     /**
      * Returns the display height, in pixels.
-     * 
+     *
      * @return an integer corresponding to the display height, in pixels
-     * 
+     *
      * On failure, throws an exception or returns Y_DISPLAYHEIGHT_INVALID.
      */
     function YDisplayLayer_get_displayHeight()
@@ -612,9 +612,9 @@ var YDisplayLayer; // definition below
 
     /**
      * Returns the width of the layers to draw on, in pixels.
-     * 
+     *
      * @return an integer corresponding to the width of the layers to draw on, in pixels
-     * 
+     *
      * On failure, throws an exception or returns Y_LAYERWIDTH_INVALID.
      */
     function YDisplayLayer_get_layerWidth()
@@ -624,9 +624,9 @@ var YDisplayLayer; // definition below
 
     /**
      * Returns the height of the layers to draw on, in pixels.
-     * 
+     *
      * @return an integer corresponding to the height of the layers to draw on, in pixels
-     * 
+     *
      * On failure, throws an exception or returns Y_LAYERHEIGHT_INVALID.
      */
     function YDisplayLayer_get_layerHeight()
@@ -724,7 +724,7 @@ var YDisplayLayer; // definition below
 //--- (generated code: YDisplay class start)
 /**
  * YDisplay Class: Display function interface
- * 
+ *
  * Yoctopuce display interface has been designed to easily
  * show information and images. The device provides built-in
  * multi-layer rendering. Layers can be drawn offline, individually,
@@ -805,9 +805,9 @@ var YDisplay; // definition below
 
     /**
      * Returns true if the screen is powered, false otherwise.
-     * 
+     *
      * @return either Y_ENABLED_FALSE or Y_ENABLED_TRUE, according to true if the screen is powered, false otherwise
-     * 
+     *
      * On failure, throws an exception or returns Y_ENABLED_INVALID.
      */
     function YDisplay_get_enabled()
@@ -822,7 +822,7 @@ var YDisplay; // definition below
 
     /**
      * Gets true if the screen is powered, false otherwise.
-     * 
+     *
      * @param callback : callback function that is invoked when the result is known.
      *         The callback function receives three arguments:
      *         - the user-specific context object
@@ -830,9 +830,9 @@ var YDisplay; // definition below
      *         - the result:either Y_ENABLED_FALSE or Y_ENABLED_TRUE, according to true if the screen is powered,
      *         false otherwise
      * @param context : user-specific object that is passed as-is to the callback function
-     * 
+     *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
-     * 
+     *
      * On failure, throws an exception or returns Y_ENABLED_INVALID.
      */
     function YDisplay_get_enabled_async(callback,context)
@@ -854,11 +854,11 @@ var YDisplay; // definition below
 
     /**
      * Changes the power state of the display.
-     * 
+     *
      * @param newval : either Y_ENABLED_FALSE or Y_ENABLED_TRUE, according to the power state of the display
-     * 
+     *
      * @return YAPI_SUCCESS if the call succeeds.
-     * 
+     *
      * On failure, throws an exception or returns a negative error code.
      */
     function YDisplay_set_enabled(newval)
@@ -869,9 +869,9 @@ var YDisplay; // definition below
 
     /**
      * Returns the name of the sequence to play when the displayed is powered on.
-     * 
+     *
      * @return a string corresponding to the name of the sequence to play when the displayed is powered on
-     * 
+     *
      * On failure, throws an exception or returns Y_STARTUPSEQ_INVALID.
      */
     function YDisplay_get_startupSeq()
@@ -886,16 +886,16 @@ var YDisplay; // definition below
 
     /**
      * Gets the name of the sequence to play when the displayed is powered on.
-     * 
+     *
      * @param callback : callback function that is invoked when the result is known.
      *         The callback function receives three arguments:
      *         - the user-specific context object
      *         - the YDisplay object that invoked the callback
      *         - the result:a string corresponding to the name of the sequence to play when the displayed is powered on
      * @param context : user-specific object that is passed as-is to the callback function
-     * 
+     *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
-     * 
+     *
      * On failure, throws an exception or returns Y_STARTUPSEQ_INVALID.
      */
     function YDisplay_get_startupSeq_async(callback,context)
@@ -919,11 +919,11 @@ var YDisplay; // definition below
      * Changes the name of the sequence to play when the displayed is powered on.
      * Remember to call the saveToFlash() method of the module if the
      * modification must be kept.
-     * 
+     *
      * @param newval : a string corresponding to the name of the sequence to play when the displayed is powered on
-     * 
+     *
      * @return YAPI_SUCCESS if the call succeeds.
-     * 
+     *
      * On failure, throws an exception or returns a negative error code.
      */
     function YDisplay_set_startupSeq(newval)
@@ -934,9 +934,9 @@ var YDisplay; // definition below
 
     /**
      * Returns the luminosity of the  module informative leds (from 0 to 100).
-     * 
+     *
      * @return an integer corresponding to the luminosity of the  module informative leds (from 0 to 100)
-     * 
+     *
      * On failure, throws an exception or returns Y_BRIGHTNESS_INVALID.
      */
     function YDisplay_get_brightness()
@@ -951,16 +951,16 @@ var YDisplay; // definition below
 
     /**
      * Gets the luminosity of the  module informative leds (from 0 to 100).
-     * 
+     *
      * @param callback : callback function that is invoked when the result is known.
      *         The callback function receives three arguments:
      *         - the user-specific context object
      *         - the YDisplay object that invoked the callback
      *         - the result:an integer corresponding to the luminosity of the  module informative leds (from 0 to 100)
      * @param context : user-specific object that is passed as-is to the callback function
-     * 
+     *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
-     * 
+     *
      * On failure, throws an exception or returns Y_BRIGHTNESS_INVALID.
      */
     function YDisplay_get_brightness_async(callback,context)
@@ -984,11 +984,11 @@ var YDisplay; // definition below
      * Changes the brightness of the display. The parameter is a value between 0 and
      * 100. Remember to call the saveToFlash() method of the module if the
      * modification must be kept.
-     * 
+     *
      * @param newval : an integer corresponding to the brightness of the display
-     * 
+     *
      * @return YAPI_SUCCESS if the call succeeds.
-     * 
+     *
      * On failure, throws an exception or returns a negative error code.
      */
     function YDisplay_set_brightness(newval)
@@ -999,10 +999,10 @@ var YDisplay; // definition below
 
     /**
      * Returns the currently selected display orientation.
-     * 
+     *
      * @return a value among Y_ORIENTATION_LEFT, Y_ORIENTATION_UP, Y_ORIENTATION_RIGHT and
      * Y_ORIENTATION_DOWN corresponding to the currently selected display orientation
-     * 
+     *
      * On failure, throws an exception or returns Y_ORIENTATION_INVALID.
      */
     function YDisplay_get_orientation()
@@ -1017,7 +1017,7 @@ var YDisplay; // definition below
 
     /**
      * Gets the currently selected display orientation.
-     * 
+     *
      * @param callback : callback function that is invoked when the result is known.
      *         The callback function receives three arguments:
      *         - the user-specific context object
@@ -1025,9 +1025,9 @@ var YDisplay; // definition below
      *         - the result:a value among Y_ORIENTATION_LEFT, Y_ORIENTATION_UP, Y_ORIENTATION_RIGHT and
      *         Y_ORIENTATION_DOWN corresponding to the currently selected display orientation
      * @param context : user-specific object that is passed as-is to the callback function
-     * 
+     *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
-     * 
+     *
      * On failure, throws an exception or returns Y_ORIENTATION_INVALID.
      */
     function YDisplay_get_orientation_async(callback,context)
@@ -1050,12 +1050,12 @@ var YDisplay; // definition below
     /**
      * Changes the display orientation. Remember to call the saveToFlash()
      * method of the module if the modification must be kept.
-     * 
+     *
      * @param newval : a value among Y_ORIENTATION_LEFT, Y_ORIENTATION_UP, Y_ORIENTATION_RIGHT and
      * Y_ORIENTATION_DOWN corresponding to the display orientation
-     * 
+     *
      * @return YAPI_SUCCESS if the call succeeds.
-     * 
+     *
      * On failure, throws an exception or returns a negative error code.
      */
     function YDisplay_set_orientation(newval)
@@ -1066,9 +1066,9 @@ var YDisplay; // definition below
 
     /**
      * Returns the display width, in pixels.
-     * 
+     *
      * @return an integer corresponding to the display width, in pixels
-     * 
+     *
      * On failure, throws an exception or returns Y_DISPLAYWIDTH_INVALID.
      */
     function YDisplay_get_displayWidth()
@@ -1083,16 +1083,16 @@ var YDisplay; // definition below
 
     /**
      * Gets the display width, in pixels.
-     * 
+     *
      * @param callback : callback function that is invoked when the result is known.
      *         The callback function receives three arguments:
      *         - the user-specific context object
      *         - the YDisplay object that invoked the callback
      *         - the result:an integer corresponding to the display width, in pixels
      * @param context : user-specific object that is passed as-is to the callback function
-     * 
+     *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
-     * 
+     *
      * On failure, throws an exception or returns Y_DISPLAYWIDTH_INVALID.
      */
     function YDisplay_get_displayWidth_async(callback,context)
@@ -1114,9 +1114,9 @@ var YDisplay; // definition below
 
     /**
      * Returns the display height, in pixels.
-     * 
+     *
      * @return an integer corresponding to the display height, in pixels
-     * 
+     *
      * On failure, throws an exception or returns Y_DISPLAYHEIGHT_INVALID.
      */
     function YDisplay_get_displayHeight()
@@ -1131,16 +1131,16 @@ var YDisplay; // definition below
 
     /**
      * Gets the display height, in pixels.
-     * 
+     *
      * @param callback : callback function that is invoked when the result is known.
      *         The callback function receives three arguments:
      *         - the user-specific context object
      *         - the YDisplay object that invoked the callback
      *         - the result:an integer corresponding to the display height, in pixels
      * @param context : user-specific object that is passed as-is to the callback function
-     * 
+     *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
-     * 
+     *
      * On failure, throws an exception or returns Y_DISPLAYHEIGHT_INVALID.
      */
     function YDisplay_get_displayHeight_async(callback,context)
@@ -1162,10 +1162,10 @@ var YDisplay; // definition below
 
     /**
      * Returns the display type: monochrome, gray levels or full color.
-     * 
+     *
      * @return a value among Y_DISPLAYTYPE_MONO, Y_DISPLAYTYPE_GRAY and Y_DISPLAYTYPE_RGB corresponding to
      * the display type: monochrome, gray levels or full color
-     * 
+     *
      * On failure, throws an exception or returns Y_DISPLAYTYPE_INVALID.
      */
     function YDisplay_get_displayType()
@@ -1180,7 +1180,7 @@ var YDisplay; // definition below
 
     /**
      * Gets the display type: monochrome, gray levels or full color.
-     * 
+     *
      * @param callback : callback function that is invoked when the result is known.
      *         The callback function receives three arguments:
      *         - the user-specific context object
@@ -1188,9 +1188,9 @@ var YDisplay; // definition below
      *         - the result:a value among Y_DISPLAYTYPE_MONO, Y_DISPLAYTYPE_GRAY and Y_DISPLAYTYPE_RGB
      *         corresponding to the display type: monochrome, gray levels or full color
      * @param context : user-specific object that is passed as-is to the callback function
-     * 
+     *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
-     * 
+     *
      * On failure, throws an exception or returns Y_DISPLAYTYPE_INVALID.
      */
     function YDisplay_get_displayType_async(callback,context)
@@ -1212,9 +1212,9 @@ var YDisplay; // definition below
 
     /**
      * Returns the width of the layers to draw on, in pixels.
-     * 
+     *
      * @return an integer corresponding to the width of the layers to draw on, in pixels
-     * 
+     *
      * On failure, throws an exception or returns Y_LAYERWIDTH_INVALID.
      */
     function YDisplay_get_layerWidth()
@@ -1229,16 +1229,16 @@ var YDisplay; // definition below
 
     /**
      * Gets the width of the layers to draw on, in pixels.
-     * 
+     *
      * @param callback : callback function that is invoked when the result is known.
      *         The callback function receives three arguments:
      *         - the user-specific context object
      *         - the YDisplay object that invoked the callback
      *         - the result:an integer corresponding to the width of the layers to draw on, in pixels
      * @param context : user-specific object that is passed as-is to the callback function
-     * 
+     *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
-     * 
+     *
      * On failure, throws an exception or returns Y_LAYERWIDTH_INVALID.
      */
     function YDisplay_get_layerWidth_async(callback,context)
@@ -1260,9 +1260,9 @@ var YDisplay; // definition below
 
     /**
      * Returns the height of the layers to draw on, in pixels.
-     * 
+     *
      * @return an integer corresponding to the height of the layers to draw on, in pixels
-     * 
+     *
      * On failure, throws an exception or returns Y_LAYERHEIGHT_INVALID.
      */
     function YDisplay_get_layerHeight()
@@ -1277,16 +1277,16 @@ var YDisplay; // definition below
 
     /**
      * Gets the height of the layers to draw on, in pixels.
-     * 
+     *
      * @param callback : callback function that is invoked when the result is known.
      *         The callback function receives three arguments:
      *         - the user-specific context object
      *         - the YDisplay object that invoked the callback
      *         - the result:an integer corresponding to the height of the layers to draw on, in pixels
      * @param context : user-specific object that is passed as-is to the callback function
-     * 
+     *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
-     * 
+     *
      * On failure, throws an exception or returns Y_LAYERHEIGHT_INVALID.
      */
     function YDisplay_get_layerHeight_async(callback,context)
@@ -1308,9 +1308,9 @@ var YDisplay; // definition below
 
     /**
      * Returns the number of available layers to draw on.
-     * 
+     *
      * @return an integer corresponding to the number of available layers to draw on
-     * 
+     *
      * On failure, throws an exception or returns Y_LAYERCOUNT_INVALID.
      */
     function YDisplay_get_layerCount()
@@ -1325,16 +1325,16 @@ var YDisplay; // definition below
 
     /**
      * Gets the number of available layers to draw on.
-     * 
+     *
      * @param callback : callback function that is invoked when the result is known.
      *         The callback function receives three arguments:
      *         - the user-specific context object
      *         - the YDisplay object that invoked the callback
      *         - the result:an integer corresponding to the number of available layers to draw on
      * @param context : user-specific object that is passed as-is to the callback function
-     * 
+     *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
-     * 
+     *
      * On failure, throws an exception or returns Y_LAYERCOUNT_INVALID.
      */
     function YDisplay_get_layerCount_async(callback,context)
@@ -1365,14 +1365,14 @@ var YDisplay; // definition below
     }
 
     /**
-     * 
+     *
      * @param callback : callback function that is invoked when the result is known.
      *         The callback function receives three arguments:
      *         - the user-specific context object
      *         - the YDisplay object that invoked the callback
      *         - the result:
      * @param context : user-specific object that is passed as-is to the callback function
-     * 
+     *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      */
     function YDisplay_get_command_async(callback,context)
@@ -1408,7 +1408,7 @@ var YDisplay; // definition below
      * <li>ModuleLogicalName.FunctionIdentifier</li>
      * <li>ModuleLogicalName.FunctionLogicalName</li>
      * </ul>
-     * 
+     *
      * This function does not require that the display is online at the time
      * it is invoked. The returned object is nevertheless valid.
      * Use the method YDisplay.isOnline() to test if the display is
@@ -1416,9 +1416,9 @@ var YDisplay; // definition below
      * a display by logical name, no error is notified: the first instance
      * found is returned. The search is performed first by hardware name,
      * then by logical name.
-     * 
+     *
      * @param func : a string that uniquely characterizes the display
-     * 
+     *
      * @return a YDisplay object allowing you to drive the display.
      */
     function YDisplay_FindDisplay(func)                         // class method
@@ -1436,9 +1436,9 @@ var YDisplay; // definition below
      * Clears the display screen and resets all display layers to their default state.
      * Using this function in a sequence will kill the sequence play-back. Don't use that
      * function to reset the display at sequence start-up.
-     * 
+     *
      * @return YAPI_SUCCESS if the call succeeds.
-     * 
+     *
      * On failure, throws an exception or returns a negative error code.
      */
     function YDisplay_resetAll()
@@ -1451,12 +1451,12 @@ var YDisplay; // definition below
     /**
      * Smoothly changes the brightness of the screen to produce a fade-in or fade-out
      * effect.
-     * 
+     *
      * @param brightness : the new screen brightness
      * @param duration : duration of the brightness transition, in milliseconds.
-     * 
+     *
      * @return YAPI_SUCCESS if the call succeeds.
-     * 
+     *
      * On failure, throws an exception or returns a negative error code.
      */
     function YDisplay_fade(brightness,duration)
@@ -1469,9 +1469,9 @@ var YDisplay; // definition below
      * Starts to record all display commands into a sequence, for later replay.
      * The name used to store the sequence is specified when calling
      * saveSequence(), once the recording is complete.
-     * 
+     *
      * @return YAPI_SUCCESS if the call succeeds.
-     * 
+     *
      * On failure, throws an exception or returns a negative error code.
      */
     function YDisplay_newSequence()
@@ -1486,11 +1486,11 @@ var YDisplay; // definition below
      * Stops recording display commands and saves the sequence into the specified
      * file on the display internal memory. The sequence can be later replayed
      * using playSequence().
-     * 
+     *
      * @param sequenceName : the name of the newly created sequence
-     * 
+     *
      * @return YAPI_SUCCESS if the call succeeds.
-     * 
+     *
      * On failure, throws an exception or returns a negative error code.
      */
     function YDisplay_saveSequence(sequenceName)
@@ -1506,11 +1506,11 @@ var YDisplay; // definition below
     /**
      * Replays a display sequence previously recorded using
      * newSequence() and saveSequence().
-     * 
+     *
      * @param sequenceName : the name of the newly created sequence
-     * 
+     *
      * @return YAPI_SUCCESS if the call succeeds.
-     * 
+     *
      * On failure, throws an exception or returns a negative error code.
      */
     function YDisplay_playSequence(sequenceName)
@@ -1526,11 +1526,11 @@ var YDisplay; // definition below
      * (without any immediate effect). It can also be used dynamically while
      * playing a pre-recorded sequence, to suspend or resume the execution of
      * the sequence. To cancel a delay, call the same method with a zero delay.
-     * 
+     *
      * @param delay_ms : the duration to wait, in milliseconds
-     * 
+     *
      * @return YAPI_SUCCESS if the call succeeds.
-     * 
+     *
      * On failure, throws an exception or returns a negative error code.
      */
     function YDisplay_pauseSequence(delay_ms)
@@ -1542,9 +1542,9 @@ var YDisplay; // definition below
     /**
      * Stops immediately any ongoing sequence replay.
      * The display is left as is.
-     * 
+     *
      * @return YAPI_SUCCESS if the call succeeds.
-     * 
+     *
      * On failure, throws an exception or returns a negative error code.
      */
     function YDisplay_stopSequence()
@@ -1557,12 +1557,12 @@ var YDisplay; // definition below
      * Uploads an arbitrary file (for instance a GIF file) to the display, to the
      * specified full path name. If a file already exists with the same path name,
      * its content is overwritten.
-     * 
+     *
      * @param pathname : path and name of the new file to create
      * @param content : binary buffer with the content to set
-     * 
+     *
      * @return YAPI_SUCCESS if the call succeeds.
-     * 
+     *
      * On failure, throws an exception or returns a negative error code.
      */
     function YDisplay_upload(pathname,content)
@@ -1576,12 +1576,12 @@ var YDisplay; // definition below
      * This method only affects the displayed content, but does not change any
      * property of the layer object.
      * Note that layer 0 has no transparency support (it is always completely opaque).
-     * 
+     *
      * @param srcLayerId : the identifier of the source layer (a number in range 0..layerCount-1)
      * @param dstLayerId : the identifier of the destination layer (a number in range 0..layerCount-1)
-     * 
+     *
      * @return YAPI_SUCCESS if the call succeeds.
-     * 
+     *
      * On failure, throws an exception or returns a negative error code.
      */
     function YDisplay_copyLayerContent(srcLayerId,dstLayerId)
@@ -1597,12 +1597,12 @@ var YDisplay; // definition below
      * layer stays unchanged. When used between onae hidden layer and a visible layer,
      * this method makes it possible to easily implement double-buffering.
      * Note that layer 0 has no transparency support (it is always completely opaque).
-     * 
+     *
      * @param layerIdA : the first layer (a number in range 0..layerCount-1)
      * @param layerIdB : the second layer (a number in range 0..layerCount-1)
-     * 
+     *
      * @return YAPI_SUCCESS if the call succeeds.
-     * 
+     *
      * On failure, throws an exception or returns a negative error code.
      */
     function YDisplay_swapLayerContent(layerIdA,layerIdB)
@@ -1613,7 +1613,7 @@ var YDisplay; // definition below
 
     /**
      * Continues the enumeration of displays started using yFirstDisplay().
-     * 
+     *
      * @return a pointer to a YDisplay object, corresponding to
      *         a display currently online, or a null pointer
      *         if there are no more displays to enumerate.
@@ -1630,7 +1630,7 @@ var YDisplay; // definition below
      * Starts the enumeration of displays currently accessible.
      * Use the method YDisplay.nextDisplay() to iterate on
      * next displays.
-     * 
+     *
      * @return a pointer to a YDisplay object, corresponding to
      *         the first display currently online, or a null pointer
      *         if there are none.
@@ -1648,11 +1648,11 @@ var YDisplay; // definition below
      * Returns a YDisplayLayer object that can be used to draw on the specified
      * layer. The content is displayed only when the layer is active on the
      * screen (and not masked by other overlapping layers).
-     * 
+     *
      * @param layerId : the identifier of the layer (a number in range 0..layerCount-1)
-     * 
+     *
      * @return an YDisplayLayer object
-     * 
+     *
      * On failure, throws an exception or returns null.
      */
     function YDisplay_get_displayLayer(layerId)
@@ -1814,7 +1814,7 @@ var YDisplay; // definition below
  * <li>ModuleLogicalName.FunctionIdentifier</li>
  * <li>ModuleLogicalName.FunctionLogicalName</li>
  * </ul>
- * 
+ *
  * This function does not require that the display is online at the time
  * it is invoked. The returned object is nevertheless valid.
  * Use the method YDisplay.isOnline() to test if the display is
@@ -1822,9 +1822,9 @@ var YDisplay; // definition below
  * a display by logical name, no error is notified: the first instance
  * found is returned. The search is performed first by hardware name,
  * then by logical name.
- * 
+ *
  * @param func : a string that uniquely characterizes the display
- * 
+ *
  * @return a YDisplay object allowing you to drive the display.
  */
 function yFindDisplay(func)
@@ -1836,7 +1836,7 @@ function yFindDisplay(func)
  * Starts the enumeration of displays currently accessible.
  * Use the method YDisplay.nextDisplay() to iterate on
  * next displays.
- * 
+ *
  * @return a pointer to a YDisplay object, corresponding to
  *         the first display currently online, or a null pointer
  *         if there are none.

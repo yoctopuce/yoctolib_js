@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_wakeupmonitor.js 17249 2014-08-21 14:40:17Z seb $
+ * $Id: yocto_wakeupmonitor.js 19607 2015-03-05 10:36:54Z seb $
  *
  * Implements the high-level API for WakeUpMonitor functions
  *
@@ -61,7 +61,7 @@ var Y_RTCTIME_INVALID               = YAPI_INVALID_LONG;
 //--- (YWakeUpMonitor class start)
 /**
  * YWakeUpMonitor Class: WakeUpMonitor function interface
- * 
+ *
  * The WakeUpMonitor function handles globally all wake-up sources, as well
  * as automated sleep mode.
  */
@@ -116,9 +116,9 @@ var YWakeUpMonitor; // definition below
 
     /**
      * Returns the maximal wake up time (in seconds) before automatically going to sleep.
-     * 
+     *
      * @return an integer corresponding to the maximal wake up time (in seconds) before automatically going to sleep
-     * 
+     *
      * On failure, throws an exception or returns Y_POWERDURATION_INVALID.
      */
     function YWakeUpMonitor_get_powerDuration()
@@ -133,7 +133,7 @@ var YWakeUpMonitor; // definition below
 
     /**
      * Gets the maximal wake up time (in seconds) before automatically going to sleep.
-     * 
+     *
      * @param callback : callback function that is invoked when the result is known.
      *         The callback function receives three arguments:
      *         - the user-specific context object
@@ -141,9 +141,9 @@ var YWakeUpMonitor; // definition below
      *         - the result:an integer corresponding to the maximal wake up time (in seconds) before automatically
      *         going to sleep
      * @param context : user-specific object that is passed as-is to the callback function
-     * 
+     *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
-     * 
+     *
      * On failure, throws an exception or returns Y_POWERDURATION_INVALID.
      */
     function YWakeUpMonitor_get_powerDuration_async(callback,context)
@@ -165,12 +165,12 @@ var YWakeUpMonitor; // definition below
 
     /**
      * Changes the maximal wake up time (seconds) before automatically going to sleep.
-     * 
+     *
      * @param newval : an integer corresponding to the maximal wake up time (seconds) before automatically
      * going to sleep
-     * 
+     *
      * @return YAPI_SUCCESS if the call succeeds.
-     * 
+     *
      * On failure, throws an exception or returns a negative error code.
      */
     function YWakeUpMonitor_set_powerDuration(newval)
@@ -181,9 +181,9 @@ var YWakeUpMonitor; // definition below
 
     /**
      * Returns the delay before the  next sleep period.
-     * 
+     *
      * @return an integer corresponding to the delay before the  next sleep period
-     * 
+     *
      * On failure, throws an exception or returns Y_SLEEPCOUNTDOWN_INVALID.
      */
     function YWakeUpMonitor_get_sleepCountdown()
@@ -198,16 +198,16 @@ var YWakeUpMonitor; // definition below
 
     /**
      * Gets the delay before the  next sleep period.
-     * 
+     *
      * @param callback : callback function that is invoked when the result is known.
      *         The callback function receives three arguments:
      *         - the user-specific context object
      *         - the YWakeUpMonitor object that invoked the callback
      *         - the result:an integer corresponding to the delay before the  next sleep period
      * @param context : user-specific object that is passed as-is to the callback function
-     * 
+     *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
-     * 
+     *
      * On failure, throws an exception or returns Y_SLEEPCOUNTDOWN_INVALID.
      */
     function YWakeUpMonitor_get_sleepCountdown_async(callback,context)
@@ -229,11 +229,11 @@ var YWakeUpMonitor; // definition below
 
     /**
      * Changes the delay before the next sleep period.
-     * 
+     *
      * @param newval : an integer corresponding to the delay before the next sleep period
-     * 
+     *
      * @return YAPI_SUCCESS if the call succeeds.
-     * 
+     *
      * On failure, throws an exception or returns a negative error code.
      */
     function YWakeUpMonitor_set_sleepCountdown(newval)
@@ -244,9 +244,9 @@ var YWakeUpMonitor; // definition below
 
     /**
      * Returns the next scheduled wake up date/time (UNIX format)
-     * 
+     *
      * @return an integer corresponding to the next scheduled wake up date/time (UNIX format)
-     * 
+     *
      * On failure, throws an exception or returns Y_NEXTWAKEUP_INVALID.
      */
     function YWakeUpMonitor_get_nextWakeUp()
@@ -261,16 +261,16 @@ var YWakeUpMonitor; // definition below
 
     /**
      * Gets the next scheduled wake up date/time (UNIX format)
-     * 
+     *
      * @param callback : callback function that is invoked when the result is known.
      *         The callback function receives three arguments:
      *         - the user-specific context object
      *         - the YWakeUpMonitor object that invoked the callback
      *         - the result:an integer corresponding to the next scheduled wake up date/time (UNIX format)
      * @param context : user-specific object that is passed as-is to the callback function
-     * 
+     *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
-     * 
+     *
      * On failure, throws an exception or returns Y_NEXTWAKEUP_INVALID.
      */
     function YWakeUpMonitor_get_nextWakeUp_async(callback,context)
@@ -292,11 +292,11 @@ var YWakeUpMonitor; // definition below
 
     /**
      * Changes the days of the week when a wake up must take place.
-     * 
+     *
      * @param newval : an integer corresponding to the days of the week when a wake up must take place
-     * 
+     *
      * @return YAPI_SUCCESS if the call succeeds.
-     * 
+     *
      * On failure, throws an exception or returns a negative error code.
      */
     function YWakeUpMonitor_set_nextWakeUp(newval)
@@ -307,11 +307,11 @@ var YWakeUpMonitor; // definition below
 
     /**
      * Returns the latest wake up reason.
-     * 
+     *
      * @return a value among Y_WAKEUPREASON_USBPOWER, Y_WAKEUPREASON_EXTPOWER, Y_WAKEUPREASON_ENDOFSLEEP,
      * Y_WAKEUPREASON_EXTSIG1, Y_WAKEUPREASON_SCHEDULE1 and Y_WAKEUPREASON_SCHEDULE2 corresponding to the
      * latest wake up reason
-     * 
+     *
      * On failure, throws an exception or returns Y_WAKEUPREASON_INVALID.
      */
     function YWakeUpMonitor_get_wakeUpReason()
@@ -326,7 +326,7 @@ var YWakeUpMonitor; // definition below
 
     /**
      * Gets the latest wake up reason.
-     * 
+     *
      * @param callback : callback function that is invoked when the result is known.
      *         The callback function receives three arguments:
      *         - the user-specific context object
@@ -335,9 +335,9 @@ var YWakeUpMonitor; // definition below
      *         Y_WAKEUPREASON_ENDOFSLEEP, Y_WAKEUPREASON_EXTSIG1, Y_WAKEUPREASON_SCHEDULE1 and
      *         Y_WAKEUPREASON_SCHEDULE2 corresponding to the latest wake up reason
      * @param context : user-specific object that is passed as-is to the callback function
-     * 
+     *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
-     * 
+     *
      * On failure, throws an exception or returns Y_WAKEUPREASON_INVALID.
      */
     function YWakeUpMonitor_get_wakeUpReason_async(callback,context)
@@ -359,9 +359,9 @@ var YWakeUpMonitor; // definition below
 
     /**
      * Returns  the current state of the monitor
-     * 
+     *
      * @return either Y_WAKEUPSTATE_SLEEPING or Y_WAKEUPSTATE_AWAKE, according to  the current state of the monitor
-     * 
+     *
      * On failure, throws an exception or returns Y_WAKEUPSTATE_INVALID.
      */
     function YWakeUpMonitor_get_wakeUpState()
@@ -376,7 +376,7 @@ var YWakeUpMonitor; // definition below
 
     /**
      * Gets  the current state of the monitor
-     * 
+     *
      * @param callback : callback function that is invoked when the result is known.
      *         The callback function receives three arguments:
      *         - the user-specific context object
@@ -384,9 +384,9 @@ var YWakeUpMonitor; // definition below
      *         - the result:either Y_WAKEUPSTATE_SLEEPING or Y_WAKEUPSTATE_AWAKE, according to  the current state
      *         of the monitor
      * @param context : user-specific object that is passed as-is to the callback function
-     * 
+     *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
-     * 
+     *
      * On failure, throws an exception or returns Y_WAKEUPSTATE_INVALID.
      */
     function YWakeUpMonitor_get_wakeUpState_async(callback,context)
@@ -423,14 +423,14 @@ var YWakeUpMonitor; // definition below
     }
 
     /**
-     * 
+     *
      * @param callback : callback function that is invoked when the result is known.
      *         The callback function receives three arguments:
      *         - the user-specific context object
      *         - the YWakeUpMonitor object that invoked the callback
      *         - the result:
      * @param context : user-specific object that is passed as-is to the callback function
-     * 
+     *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      */
     function YWakeUpMonitor_get_rtcTime_async(callback,context)
@@ -460,7 +460,7 @@ var YWakeUpMonitor; // definition below
      * <li>ModuleLogicalName.FunctionIdentifier</li>
      * <li>ModuleLogicalName.FunctionLogicalName</li>
      * </ul>
-     * 
+     *
      * This function does not require that the monitor is online at the time
      * it is invoked. The returned object is nevertheless valid.
      * Use the method YWakeUpMonitor.isOnline() to test if the monitor is
@@ -468,9 +468,9 @@ var YWakeUpMonitor; // definition below
      * a monitor by logical name, no error is notified: the first instance
      * found is returned. The search is performed first by hardware name,
      * then by logical name.
-     * 
+     *
      * @param func : a string that uniquely characterizes the monitor
-     * 
+     *
      * @return a YWakeUpMonitor object allowing you to drive the monitor.
      */
     function YWakeUpMonitor_FindWakeUpMonitor(func)             // class method
@@ -495,11 +495,11 @@ var YWakeUpMonitor; // definition below
     /**
      * Goes to sleep until the next wake up condition is met,  the
      * RTC time must have been set before calling this function.
-     * 
+     *
      * @param secBeforeSleep : number of seconds before going into sleep mode,
-     * 
+     *
      * @return YAPI_SUCCESS if the call succeeds.
-     * 
+     *
      * On failure, throws an exception or returns a negative error code.
      */
     function YWakeUpMonitor_sleep(secBeforeSleep)
@@ -518,12 +518,12 @@ var YWakeUpMonitor; // definition below
      * Goes to sleep for a specific duration or until the next wake up condition is met, the
      * RTC time must have been set before calling this function. The count down before sleep
      * can be canceled with resetSleepCountDown.
-     * 
+     *
      * @param secUntilWakeUp : number of seconds before next wake up
      * @param secBeforeSleep : number of seconds before going into sleep mode
-     * 
+     *
      * @return YAPI_SUCCESS if the call succeeds.
-     * 
+     *
      * On failure, throws an exception or returns a negative error code.
      */
     function YWakeUpMonitor_sleepFor(secUntilWakeUp,secBeforeSleep)
@@ -542,12 +542,12 @@ var YWakeUpMonitor; // definition below
      * Go to sleep until a specific date is reached or until the next wake up condition is met, the
      * RTC time must have been set before calling this function. The count down before sleep
      * can be canceled with resetSleepCountDown.
-     * 
+     *
      * @param wakeUpTime : wake-up datetime (UNIX format)
      * @param secBeforeSleep : number of seconds before going into sleep mode
-     * 
+     *
      * @return YAPI_SUCCESS if the call succeeds.
-     * 
+     *
      * On failure, throws an exception or returns a negative error code.
      */
     function YWakeUpMonitor_sleepUntil(wakeUpTime,secBeforeSleep)
@@ -564,7 +564,7 @@ var YWakeUpMonitor; // definition below
 
     /**
      * Resets the sleep countdown.
-     * 
+     *
      * @return YAPI_SUCCESS if the call succeeds.
      *         On failure, throws an exception or returns a negative error code.
      */
@@ -577,7 +577,7 @@ var YWakeUpMonitor; // definition below
 
     /**
      * Continues the enumeration of monitors started using yFirstWakeUpMonitor().
-     * 
+     *
      * @return a pointer to a YWakeUpMonitor object, corresponding to
      *         a monitor currently online, or a null pointer
      *         if there are no more monitors to enumerate.
@@ -594,7 +594,7 @@ var YWakeUpMonitor; // definition below
      * Starts the enumeration of monitors currently accessible.
      * Use the method YWakeUpMonitor.nextWakeUpMonitor() to iterate on
      * next monitors.
-     * 
+     *
      * @return a pointer to a YWakeUpMonitor object, corresponding to
      *         the first monitor currently online, or a null pointer
      *         if there are none.
@@ -686,7 +686,7 @@ var YWakeUpMonitor; // definition below
  * <li>ModuleLogicalName.FunctionIdentifier</li>
  * <li>ModuleLogicalName.FunctionLogicalName</li>
  * </ul>
- * 
+ *
  * This function does not require that the monitor is online at the time
  * it is invoked. The returned object is nevertheless valid.
  * Use the method YWakeUpMonitor.isOnline() to test if the monitor is
@@ -694,9 +694,9 @@ var YWakeUpMonitor; // definition below
  * a monitor by logical name, no error is notified: the first instance
  * found is returned. The search is performed first by hardware name,
  * then by logical name.
- * 
+ *
  * @param func : a string that uniquely characterizes the monitor
- * 
+ *
  * @return a YWakeUpMonitor object allowing you to drive the monitor.
  */
 function yFindWakeUpMonitor(func)
@@ -708,7 +708,7 @@ function yFindWakeUpMonitor(func)
  * Starts the enumeration of monitors currently accessible.
  * Use the method YWakeUpMonitor.nextWakeUpMonitor() to iterate on
  * next monitors.
- * 
+ *
  * @return a pointer to a YWakeUpMonitor object, corresponding to
  *         the first monitor currently online, or a null pointer
  *         if there are none.

@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_lightsensor.js 17655 2014-09-16 12:24:27Z mvuilleu $
+ * $Id: yocto_lightsensor.js 19607 2015-03-05 10:36:54Z seb $
  *
  * Implements the high-level API for LightSensor functions
  *
@@ -53,9 +53,14 @@ var Y_MEASURETYPE_INVALID           = -1;
 //--- (YLightSensor class start)
 /**
  * YLightSensor Class: LightSensor function interface
- * 
- * The Yoctopuce application programming interface allows you to read an instant
- * measure of the sensor, as well as the minimal and maximal values observed.
+ *
+ * The Yoctopuce class YLightSensor allows you to read and configure Yoctopuce light
+ * sensors. It inherits from YSensor class the core functions to read measurements,
+ * register callback functions, access to the autonomous datalogger.
+ * This class adds the ability to easily perform a one-point linear calibration
+ * to compensate the effect of a glass or filter placed in front of the sensor.
+ * For some light sensors with several working modes, this class can select the
+ * desired working mode.
  */
 //--- (end of YLightSensor class start)
 
@@ -94,14 +99,14 @@ var YLightSensor; // definition below
     /**
      * Changes the sensor-specific calibration parameter so that the current value
      * matches a desired target (linear scaling).
-     * 
+     *
      * @param calibratedVal : the desired target value.
-     * 
+     *
      * Remember to call the saveToFlash() method of the module if the
      * modification must be kept.
-     * 
+     *
      * @return YAPI_SUCCESS if the call succeeds.
-     * 
+     *
      * On failure, throws an exception or returns a negative error code.
      */
     function YLightSensor_calibrate(calibratedVal)
@@ -112,10 +117,10 @@ var YLightSensor; // definition below
 
     /**
      * Returns the type of light measure.
-     * 
+     *
      * @return a value among Y_MEASURETYPE_HUMAN_EYE, Y_MEASURETYPE_WIDE_SPECTRUM, Y_MEASURETYPE_INFRARED,
      * Y_MEASURETYPE_HIGH_RATE and Y_MEASURETYPE_HIGH_ENERGY corresponding to the type of light measure
-     * 
+     *
      * On failure, throws an exception or returns Y_MEASURETYPE_INVALID.
      */
     function YLightSensor_get_measureType()
@@ -130,7 +135,7 @@ var YLightSensor; // definition below
 
     /**
      * Gets the type of light measure.
-     * 
+     *
      * @param callback : callback function that is invoked when the result is known.
      *         The callback function receives three arguments:
      *         - the user-specific context object
@@ -139,9 +144,9 @@ var YLightSensor; // definition below
      *         Y_MEASURETYPE_INFRARED, Y_MEASURETYPE_HIGH_RATE and Y_MEASURETYPE_HIGH_ENERGY corresponding to the
      *         type of light measure
      * @param context : user-specific object that is passed as-is to the callback function
-     * 
+     *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
-     * 
+     *
      * On failure, throws an exception or returns Y_MEASURETYPE_INVALID.
      */
     function YLightSensor_get_measureType_async(callback,context)
@@ -167,12 +172,12 @@ var YLightSensor; // definition below
      * spectrum, depending on the capabilities of the light-sensitive cell.
      * Remember to call the saveToFlash() method of the module if the
      * modification must be kept.
-     * 
+     *
      * @param newval : a value among Y_MEASURETYPE_HUMAN_EYE, Y_MEASURETYPE_WIDE_SPECTRUM,
      * Y_MEASURETYPE_INFRARED, Y_MEASURETYPE_HIGH_RATE and Y_MEASURETYPE_HIGH_ENERGY
-     * 
+     *
      * @return YAPI_SUCCESS if the call succeeds.
-     * 
+     *
      * On failure, throws an exception or returns a negative error code.
      */
     function YLightSensor_set_measureType(newval)
@@ -191,7 +196,7 @@ var YLightSensor; // definition below
      * <li>ModuleLogicalName.FunctionIdentifier</li>
      * <li>ModuleLogicalName.FunctionLogicalName</li>
      * </ul>
-     * 
+     *
      * This function does not require that the light sensor is online at the time
      * it is invoked. The returned object is nevertheless valid.
      * Use the method YLightSensor.isOnline() to test if the light sensor is
@@ -199,9 +204,9 @@ var YLightSensor; // definition below
      * a light sensor by logical name, no error is notified: the first instance
      * found is returned. The search is performed first by hardware name,
      * then by logical name.
-     * 
+     *
      * @param func : a string that uniquely characterizes the light sensor
-     * 
+     *
      * @return a YLightSensor object allowing you to drive the light sensor.
      */
     function YLightSensor_FindLightSensor(func)                 // class method
@@ -217,7 +222,7 @@ var YLightSensor; // definition below
 
     /**
      * Continues the enumeration of light sensors started using yFirstLightSensor().
-     * 
+     *
      * @return a pointer to a YLightSensor object, corresponding to
      *         a light sensor currently online, or a null pointer
      *         if there are no more light sensors to enumerate.
@@ -234,7 +239,7 @@ var YLightSensor; // definition below
      * Starts the enumeration of light sensors currently accessible.
      * Use the method YLightSensor.nextLightSensor() to iterate on
      * next light sensors.
-     * 
+     *
      * @return a pointer to a YLightSensor object, corresponding to
      *         the first light sensor currently online, or a null pointer
      *         if there are none.
@@ -290,7 +295,7 @@ var YLightSensor; // definition below
  * <li>ModuleLogicalName.FunctionIdentifier</li>
  * <li>ModuleLogicalName.FunctionLogicalName</li>
  * </ul>
- * 
+ *
  * This function does not require that the light sensor is online at the time
  * it is invoked. The returned object is nevertheless valid.
  * Use the method YLightSensor.isOnline() to test if the light sensor is
@@ -298,9 +303,9 @@ var YLightSensor; // definition below
  * a light sensor by logical name, no error is notified: the first instance
  * found is returned. The search is performed first by hardware name,
  * then by logical name.
- * 
+ *
  * @param func : a string that uniquely characterizes the light sensor
- * 
+ *
  * @return a YLightSensor object allowing you to drive the light sensor.
  */
 function yFindLightSensor(func)
@@ -312,7 +317,7 @@ function yFindLightSensor(func)
  * Starts the enumeration of light sensors currently accessible.
  * Use the method YLightSensor.nextLightSensor() to iterate on
  * next light sensors.
- * 
+ *
  * @return a pointer to a YLightSensor object, corresponding to
  *         the first light sensor currently online, or a null pointer
  *         if there are none.

@@ -1,0 +1,88 @@
+<HTML>
+<HEAD>
+    <TITLE>MODBUS javascript demo</TITLE>
+    <SCRIPT type="text/javascript" src="../../../Sources/yocto_api.js"></SCRIPT>
+    <SCRIPT type="text/javascript" src="../../../Sources/yocto_serialport.js"></SCRIPT>
+    <SCRIPT language='javascript1.5' type='text/JavaScript'>
+        <!--
+        var slave;
+        var reg;
+        var serialport;
+
+        function init(addr) {
+            if (yRegisterHub(addr) != YAPI_SUCCESS)
+                alert("Cannot contact VirtualHub on " + addr);
+
+            serialport = yFirstSerialPort();
+
+            if (serialport == null)
+                document.write('No Yocto-SerialPort  found on ' + addr);
+            else
+                document.getElementById('main').style.display = '';
+        }
+
+        function slavechanged() {
+            slave = parseInt(document.getElementById('slaveinput').value);
+            if (slave > 0) {
+                document.getElementById('slaveinput').style.display = 'none';
+                document.getElementById('slavevalue').innerHTML = slave;
+                document.getElementById('regspan').style.display = '';
+            }
+        }
+
+        function modbus_readvalue(slave, reg) {
+            if (reg >= 40001)  res = serialport.modbusReadInputRegisters(slave, reg - 40001, 1);
+            else if (reg >= 30001) res = serialport.modbusReadRegisters(slave, reg - 30001, 1);
+            else if (reg >= 10001) res = serialport.modbusReadInputBits(slave, reg - 10001, 1);
+            else res = serialport.modbusReadBits(slave, reg - 1, 1);
+            return res[0];
+        }
+
+        function regchanged() {
+            reg = parseInt(document.getElementById('reginput').value);
+            var res;
+            if (reg > 0) {
+                value = modbus_readvalue(slave, reg);
+                document.getElementById('reginput').style.display = 'none';
+                document.getElementById('regvalue').innerHTML = reg;
+                document.getElementById('valuespan').style.display = '';
+                document.getElementById('value').innerHTML = value;
+                if ((reg % 30000) < 10000) {
+                    document.getElementById('newvaluespan').style.display = '';
+                }
+            }
+        }
+
+        function newValuechanged() {
+            newvalue = parseInt(document.getElementById('newvalue').value);
+            if (reg >= 30001)
+                serialport.modbusWriteRegister(slave, reg - 30001, newvalue);
+            else
+                serialport.modbusWriteBit(slave, reg - 1, newvalue);
+            document.getElementById('value').innerHTML = modbus_readvalue(slave, reg);
+        }
+
+        -->
+    </SCRIPT>
+</HEAD>
+<BODY onload='init("127.0.0.1")'>
+<span id='main' style='display:none'>
+ Please enter the MODBUS slave address (1...255)<br>
+ slave:<input id='slaveinput' onchange='javascript:slavechanged()'>
+ <span id='slavevalue'></span><br>
+ <span id='regspan' style='display:none'>
+ Please select a Coil No (>=1), Input Bit No (>=10001+)<br>
+ Register No (>=30001) or Input Register No (>=40001)<br>
+ No: <input id='reginput' onchange='javascript:regchanged()'>
+ <span id='regvalue'></span><br>
+ </span>
+ <span id='valuespan' style='display:none'>
+ CurrentValue: <span id='value'></span><br>
+ </span>
+ <span id='newvaluespan' style='display:none'>
+ New value: <input id='newvalue' onchange='javascript:newValuechanged()'>
+ </span>
+
+ </span>
+</BODY>
+</HTML>

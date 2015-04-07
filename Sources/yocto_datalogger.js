@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_datalogger.js 18573 2014-11-28 07:01:24Z mvuilleu $
+ * $Id: yocto_datalogger.js 19607 2015-03-05 10:36:54Z seb $
  *
  * Implements yFindDataLogger(), the high-level API for DataLogger functions
  *
@@ -275,7 +275,7 @@ var YOldDataStream; // definition below
 //--- (generated code: YDataLogger class start)
 /**
  * YDataLogger Class: DataLogger function interface
- * 
+ *
  * Yoctopuce sensors include a non-volatile memory capable of storing ongoing measured
  * data automatically, without requiring a permanent connection to a computer.
  * The DataLogger function controls the global parameters of the internal data
@@ -322,16 +322,16 @@ var YDataLogger; // definition below
      * The caller must pass by reference an empty array to hold YDataStream
      * objects, and the function fills it with objects describing available
      * data sequences.
-     * 
+     *
      * This is the old way to retrieve data from the DataLogger.
      * For new applications, you should rather use get_dataSets()
      * method, or call directly get_recordedData() on the
      * sensor object.
-     * 
+     *
      * @param v : an array of YDataStream objects to be filled in
-     * 
+     *
      * @return YAPI_SUCCESS if the call succeeds.
-     * 
+     *
      * On failure, throws an exception or returns a negative error code.
      */
     function YDataLogger_get_dataStreams(v)
@@ -397,10 +397,10 @@ var YDataLogger; // definition below
     /**
      * Returns the current run number, corresponding to the number of times the module was
      * powered on with the dataLogger enabled at some point.
-     * 
+     *
      * @return an integer corresponding to the current run number, corresponding to the number of times the module was
      *         powered on with the dataLogger enabled at some point
-     * 
+     *
      * On failure, throws an exception or returns Y_CURRENTRUNINDEX_INVALID.
      */
     function YDataLogger_get_currentRunIndex()
@@ -416,7 +416,7 @@ var YDataLogger; // definition below
     /**
      * Gets the current run number, corresponding to the number of times the module was
      * powered on with the dataLogger enabled at some point.
-     * 
+     *
      * @param callback : callback function that is invoked when the result is known.
      *         The callback function receives three arguments:
      *         - the user-specific context object
@@ -425,9 +425,9 @@ var YDataLogger; // definition below
      *         times the module was
      *         powered on with the dataLogger enabled at some point
      * @param context : user-specific object that is passed as-is to the callback function
-     * 
+     *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
-     * 
+     *
      * On failure, throws an exception or returns Y_CURRENTRUNINDEX_INVALID.
      */
     function YDataLogger_get_currentRunIndex_async(callback,context)
@@ -449,9 +449,9 @@ var YDataLogger; // definition below
 
     /**
      * Returns the Unix timestamp for current UTC time, if known.
-     * 
+     *
      * @return an integer corresponding to the Unix timestamp for current UTC time, if known
-     * 
+     *
      * On failure, throws an exception or returns Y_TIMEUTC_INVALID.
      */
     function YDataLogger_get_timeUTC()
@@ -466,16 +466,16 @@ var YDataLogger; // definition below
 
     /**
      * Gets the Unix timestamp for current UTC time, if known.
-     * 
+     *
      * @param callback : callback function that is invoked when the result is known.
      *         The callback function receives three arguments:
      *         - the user-specific context object
      *         - the YDataLogger object that invoked the callback
      *         - the result:an integer corresponding to the Unix timestamp for current UTC time, if known
      * @param context : user-specific object that is passed as-is to the callback function
-     * 
+     *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
-     * 
+     *
      * On failure, throws an exception or returns Y_TIMEUTC_INVALID.
      */
     function YDataLogger_get_timeUTC_async(callback,context)
@@ -497,11 +497,11 @@ var YDataLogger; // definition below
 
     /**
      * Changes the current UTC time reference used for recorded data.
-     * 
+     *
      * @param newval : an integer corresponding to the current UTC time reference used for recorded data
-     * 
+     *
      * @return YAPI_SUCCESS if the call succeeds.
-     * 
+     *
      * On failure, throws an exception or returns a negative error code.
      */
     function YDataLogger_set_timeUTC(newval)
@@ -512,9 +512,9 @@ var YDataLogger; // definition below
 
     /**
      * Returns the current activation state of the data logger.
-     * 
+     *
      * @return either Y_RECORDING_OFF or Y_RECORDING_ON, according to the current activation state of the data logger
-     * 
+     *
      * On failure, throws an exception or returns Y_RECORDING_INVALID.
      */
     function YDataLogger_get_recording()
@@ -529,7 +529,7 @@ var YDataLogger; // definition below
 
     /**
      * Gets the current activation state of the data logger.
-     * 
+     *
      * @param callback : callback function that is invoked when the result is known.
      *         The callback function receives three arguments:
      *         - the user-specific context object
@@ -537,9 +537,9 @@ var YDataLogger; // definition below
      *         - the result:either Y_RECORDING_OFF or Y_RECORDING_ON, according to the current activation state of
      *         the data logger
      * @param context : user-specific object that is passed as-is to the callback function
-     * 
+     *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
-     * 
+     *
      * On failure, throws an exception or returns Y_RECORDING_INVALID.
      */
     function YDataLogger_get_recording_async(callback,context)
@@ -561,12 +561,12 @@ var YDataLogger; // definition below
 
     /**
      * Changes the activation state of the data logger to start/stop recording data.
-     * 
+     *
      * @param newval : either Y_RECORDING_OFF or Y_RECORDING_ON, according to the activation state of the
      * data logger to start/stop recording data
-     * 
+     *
      * @return YAPI_SUCCESS if the call succeeds.
-     * 
+     *
      * On failure, throws an exception or returns a negative error code.
      */
     function YDataLogger_set_recording(newval)
@@ -577,10 +577,10 @@ var YDataLogger; // definition below
 
     /**
      * Returns the default activation state of the data logger on power up.
-     * 
+     *
      * @return either Y_AUTOSTART_OFF or Y_AUTOSTART_ON, according to the default activation state of the
      * data logger on power up
-     * 
+     *
      * On failure, throws an exception or returns Y_AUTOSTART_INVALID.
      */
     function YDataLogger_get_autoStart()
@@ -595,7 +595,7 @@ var YDataLogger; // definition below
 
     /**
      * Gets the default activation state of the data logger on power up.
-     * 
+     *
      * @param callback : callback function that is invoked when the result is known.
      *         The callback function receives three arguments:
      *         - the user-specific context object
@@ -603,9 +603,9 @@ var YDataLogger; // definition below
      *         - the result:either Y_AUTOSTART_OFF or Y_AUTOSTART_ON, according to the default activation state of
      *         the data logger on power up
      * @param context : user-specific object that is passed as-is to the callback function
-     * 
+     *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
-     * 
+     *
      * On failure, throws an exception or returns Y_AUTOSTART_INVALID.
      */
     function YDataLogger_get_autoStart_async(callback,context)
@@ -629,12 +629,12 @@ var YDataLogger; // definition below
      * Changes the default activation state of the data logger on power up.
      * Remember to call the saveToFlash() method of the module if the
      * modification must be kept.
-     * 
+     *
      * @param newval : either Y_AUTOSTART_OFF or Y_AUTOSTART_ON, according to the default activation state
      * of the data logger on power up
-     * 
+     *
      * @return YAPI_SUCCESS if the call succeeds.
-     * 
+     *
      * On failure, throws an exception or returns a negative error code.
      */
     function YDataLogger_set_autoStart(newval)
@@ -645,9 +645,9 @@ var YDataLogger; // definition below
 
     /**
      * Return true if the data logger is synchronised with the localization beacon.
-     * 
+     *
      * @return either Y_BEACONDRIVEN_OFF or Y_BEACONDRIVEN_ON
-     * 
+     *
      * On failure, throws an exception or returns Y_BEACONDRIVEN_INVALID.
      */
     function YDataLogger_get_beaconDriven()
@@ -662,16 +662,16 @@ var YDataLogger; // definition below
 
     /**
      * Return true if the data logger is synchronised with the localization beacon.
-     * 
+     *
      * @param callback : callback function that is invoked when the result is known.
      *         The callback function receives three arguments:
      *         - the user-specific context object
      *         - the YDataLogger object that invoked the callback
      *         - the result:either Y_BEACONDRIVEN_OFF or Y_BEACONDRIVEN_ON
      * @param context : user-specific object that is passed as-is to the callback function
-     * 
+     *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
-     * 
+     *
      * On failure, throws an exception or returns Y_BEACONDRIVEN_INVALID.
      */
     function YDataLogger_get_beaconDriven_async(callback,context)
@@ -695,12 +695,12 @@ var YDataLogger; // definition below
      * Changes the type of synchronisation of the data logger.
      * Remember to call the saveToFlash() method of the module if the
      * modification must be kept.
-     * 
+     *
      * @param newval : either Y_BEACONDRIVEN_OFF or Y_BEACONDRIVEN_ON, according to the type of
      * synchronisation of the data logger
-     * 
+     *
      * @return YAPI_SUCCESS if the call succeeds.
-     * 
+     *
      * On failure, throws an exception or returns a negative error code.
      */
     function YDataLogger_set_beaconDriven(newval)
@@ -720,14 +720,14 @@ var YDataLogger; // definition below
     }
 
     /**
-     * 
+     *
      * @param callback : callback function that is invoked when the result is known.
      *         The callback function receives three arguments:
      *         - the user-specific context object
      *         - the YDataLogger object that invoked the callback
      *         - the result:
      * @param context : user-specific object that is passed as-is to the callback function
-     * 
+     *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      */
     function YDataLogger_get_clearHistory_async(callback,context)
@@ -763,7 +763,7 @@ var YDataLogger; // definition below
      * <li>ModuleLogicalName.FunctionIdentifier</li>
      * <li>ModuleLogicalName.FunctionLogicalName</li>
      * </ul>
-     * 
+     *
      * This function does not require that the data logger is online at the time
      * it is invoked. The returned object is nevertheless valid.
      * Use the method YDataLogger.isOnline() to test if the data logger is
@@ -771,9 +771,9 @@ var YDataLogger; // definition below
      * a data logger by logical name, no error is notified: the first instance
      * found is returned. The search is performed first by hardware name,
      * then by logical name.
-     * 
+     *
      * @param func : a string that uniquely characterizes the data logger
-     * 
+     *
      * @return a YDataLogger object allowing you to drive the data logger.
      */
     function YDataLogger_FindDataLogger(func)                   // class method
@@ -790,9 +790,9 @@ var YDataLogger; // definition below
     /**
      * Clears the data logger memory and discards all recorded data streams.
      * This method also resets the current run index to zero.
-     * 
+     *
      * @return YAPI_SUCCESS if the call succeeds.
-     * 
+     *
      * On failure, throws an exception or returns a negative error code.
      */
     function YDataLogger_forgetAllDataStreams()
@@ -803,13 +803,13 @@ var YDataLogger; // definition below
     /**
      * Returns a list of YDataSet objects that can be used to retrieve
      * all measures stored by the data logger.
-     * 
+     *
      * This function only works if the device uses a recent firmware,
      * as YDataSet objects are not supported by firmwares older than
      * version 13000.
-     * 
+     *
      * @return a list of YDataSet object.
-     * 
+     *
      * On failure, throws an exception or returns an empty list.
      */
     function YDataLogger_get_dataSets()
@@ -834,7 +834,7 @@ var YDataLogger; // definition below
 
     /**
      * Continues the enumeration of data loggers started using yFirstDataLogger().
-     * 
+     *
      * @return a pointer to a YDataLogger object, corresponding to
      *         a data logger currently online, or a null pointer
      *         if there are no more data loggers to enumerate.
@@ -851,7 +851,7 @@ var YDataLogger; // definition below
      * Starts the enumeration of data loggers currently accessible.
      * Use the method YDataLogger.nextDataLogger() to iterate on
      * next data loggers.
-     * 
+     *
      * @return a pointer to a YDataLogger object, corresponding to
      *         the first data logger currently online, or a null pointer
      *         if there are none.
@@ -965,7 +965,7 @@ var YDataLogger; // definition below
  * <li>ModuleLogicalName.FunctionIdentifier</li>
  * <li>ModuleLogicalName.FunctionLogicalName</li>
  * </ul>
- * 
+ *
  * This function does not require that the data logger is online at the time
  * it is invoked. The returned object is nevertheless valid.
  * Use the method YDataLogger.isOnline() to test if the data logger is
@@ -973,9 +973,9 @@ var YDataLogger; // definition below
  * a data logger by logical name, no error is notified: the first instance
  * found is returned. The search is performed first by hardware name,
  * then by logical name.
- * 
+ *
  * @param func : a string that uniquely characterizes the data logger
- * 
+ *
  * @return a YDataLogger object allowing you to drive the data logger.
  */
 function yFindDataLogger(func)
@@ -987,7 +987,7 @@ function yFindDataLogger(func)
  * Starts the enumeration of data loggers currently accessible.
  * Use the method YDataLogger.nextDataLogger() to iterate on
  * next data loggers.
- * 
+ *
  * @return a pointer to a YDataLogger object, corresponding to
  *         the first data logger currently online, or a null pointer
  *         if there are none.

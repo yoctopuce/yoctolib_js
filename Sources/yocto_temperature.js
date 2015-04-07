@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_temperature.js 18298 2014-11-07 12:49:15Z mvuilleu $
+ * $Id: yocto_temperature.js 19619 2015-03-05 18:11:23Z mvuilleu $
  *
  * Implements the high-level API for Temperature functions
  *
@@ -63,9 +63,12 @@ var Y_COMMAND_INVALID               = YAPI_INVALID_STRING;
 //--- (YTemperature class start)
 /**
  * YTemperature Class: Temperature function interface
- * 
- * The Yoctopuce application programming interface allows you to read an instant
- * measure of the sensor, as well as the minimal and maximal values observed.
+ *
+ * The Yoctopuce class YTemperature allows you to read and configure Yoctopuce temperature
+ * sensors. It inherits from YSensor class the core functions to read measurements,
+ * register callback functions, access to the autonomous datalogger.
+ * This class adds the ability to configure some specific parameters for some
+ * sensors (connection type, temperature mapping table).
  */
 //--- (end of YTemperature class start)
 
@@ -100,14 +103,37 @@ var YTemperature; // definition below
     }
 
     /**
+     * Changes the measuring unit for the measured temperature. That unit is a string.
+     * If that strings end with the letter F all temperatures values will returned in
+     * Fahrenheit degrees. If that String ends with the letter K all values will be
+     * returned in Kelvin degrees. If that String ends with the letter C all values will be
+     * returned in Celsius degrees.  If the string ends with any other character the
+     * change will be ignored. Remember to call the
+     * saveToFlash() method of the module if the modification must be kept.
+     * WARNING: if a specific calibration is defined for the temperature function, a
+     * unit system change will probably break it.
+     *
+     * @param newval : a string corresponding to the measuring unit for the measured temperature
+     *
+     * @return YAPI_SUCCESS if the call succeeds.
+     *
+     * On failure, throws an exception or returns a negative error code.
+     */
+    function YTemperature_set_unit(newval)
+    {   var rest_val;
+        rest_val = newval;
+        return this._setAttr('unit',rest_val);
+    }
+
+    /**
      * Returns the temperature sensor type.
-     * 
+     *
      * @return a value among Y_SENSORTYPE_DIGITAL, Y_SENSORTYPE_TYPE_K, Y_SENSORTYPE_TYPE_E,
      * Y_SENSORTYPE_TYPE_J, Y_SENSORTYPE_TYPE_N, Y_SENSORTYPE_TYPE_R, Y_SENSORTYPE_TYPE_S,
      * Y_SENSORTYPE_TYPE_T, Y_SENSORTYPE_PT100_4WIRES, Y_SENSORTYPE_PT100_3WIRES,
      * Y_SENSORTYPE_PT100_2WIRES, Y_SENSORTYPE_RES_OHM, Y_SENSORTYPE_RES_NTC and Y_SENSORTYPE_RES_LINEAR
      * corresponding to the temperature sensor type
-     * 
+     *
      * On failure, throws an exception or returns Y_SENSORTYPE_INVALID.
      */
     function YTemperature_get_sensorType()
@@ -122,7 +148,7 @@ var YTemperature; // definition below
 
     /**
      * Gets the temperature sensor type.
-     * 
+     *
      * @param callback : callback function that is invoked when the result is known.
      *         The callback function receives three arguments:
      *         - the user-specific context object
@@ -133,9 +159,9 @@ var YTemperature; // definition below
      *         Y_SENSORTYPE_PT100_2WIRES, Y_SENSORTYPE_RES_OHM, Y_SENSORTYPE_RES_NTC and Y_SENSORTYPE_RES_LINEAR
      *         corresponding to the temperature sensor type
      * @param context : user-specific object that is passed as-is to the callback function
-     * 
+     *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
-     * 
+     *
      * On failure, throws an exception or returns Y_SENSORTYPE_INVALID.
      */
     function YTemperature_get_sensorType_async(callback,context)
@@ -156,19 +182,19 @@ var YTemperature; // definition below
     }
 
     /**
-     * Modify the temperature sensor type.  This function is used to
+     * Modifies the temperature sensor type.  This function is used
      * to define the type of thermocouple (K,E...) used with the device.
-     * This will have no effect if module is using a digital sensor.
+     * It has no effect if module is using a digital sensor or a thermistor.
      * Remember to call the saveToFlash() method of the module if the
      * modification must be kept.
-     * 
+     *
      * @param newval : a value among Y_SENSORTYPE_DIGITAL, Y_SENSORTYPE_TYPE_K, Y_SENSORTYPE_TYPE_E,
      * Y_SENSORTYPE_TYPE_J, Y_SENSORTYPE_TYPE_N, Y_SENSORTYPE_TYPE_R, Y_SENSORTYPE_TYPE_S,
      * Y_SENSORTYPE_TYPE_T, Y_SENSORTYPE_PT100_4WIRES, Y_SENSORTYPE_PT100_3WIRES,
      * Y_SENSORTYPE_PT100_2WIRES, Y_SENSORTYPE_RES_OHM, Y_SENSORTYPE_RES_NTC and Y_SENSORTYPE_RES_LINEAR
-     * 
+     *
      * @return YAPI_SUCCESS if the call succeeds.
-     * 
+     *
      * On failure, throws an exception or returns a negative error code.
      */
     function YTemperature_set_sensorType(newval)
@@ -188,14 +214,14 @@ var YTemperature; // definition below
     }
 
     /**
-     * 
+     *
      * @param callback : callback function that is invoked when the result is known.
      *         The callback function receives three arguments:
      *         - the user-specific context object
      *         - the YTemperature object that invoked the callback
      *         - the result:
      * @param context : user-specific object that is passed as-is to the callback function
-     * 
+     *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      */
     function YTemperature_get_command_async(callback,context)
@@ -231,7 +257,7 @@ var YTemperature; // definition below
      * <li>ModuleLogicalName.FunctionIdentifier</li>
      * <li>ModuleLogicalName.FunctionLogicalName</li>
      * </ul>
-     * 
+     *
      * This function does not require that the temperature sensor is online at the time
      * it is invoked. The returned object is nevertheless valid.
      * Use the method YTemperature.isOnline() to test if the temperature sensor is
@@ -239,9 +265,9 @@ var YTemperature; // definition below
      * a temperature sensor by logical name, no error is notified: the first instance
      * found is returned. The search is performed first by hardware name,
      * then by logical name.
-     * 
+     *
      * @param func : a string that uniquely characterizes the temperature sensor
-     * 
+     *
      * @return a YTemperature object allowing you to drive the temperature sensor.
      */
     function YTemperature_FindTemperature(func)                 // class method
@@ -256,19 +282,19 @@ var YTemperature; // definition below
     }
 
     /**
-     * Record a thermistor response table, for interpolating the temperature from
-     * the measured resistance. This function can only be used with temperature
+     * Records a thermistor response table, in order to interpolate the temperature from
+     * the measured resistance. This function can only be used with a temperature
      * sensor based on thermistors.
-     * 
+     *
      * @param tempValues : array of floating point numbers, corresponding to all
      *         temperatures (in degrees Celcius) for which the resistance of the
      *         thermistor is specified.
      * @param resValues : array of floating point numbers, corresponding to the resistance
      *         values (in Ohms) for each of the temperature included in the first
      *         argument, index by index.
-     * 
+     *
      * @return YAPI_SUCCESS if the call succeeds.
-     * 
+     *
      * On failure, throws an exception or returns a negative error code.
      */
     function YTemperature_set_thermistorResponseTable(tempValues,resValues)
@@ -324,19 +350,19 @@ var YTemperature; // definition below
     }
 
     /**
-     * Retrieves the thermistor response table previously configured using function
-     * set_thermistorResponseTable. This function can only be used with
+     * Retrieves the thermistor response table previously configured using the
+     * set_thermistorResponseTable function. This function can only be used with a
      * temperature sensor based on thermistors.
-     * 
-     * @param tempValues : array of floating point numbers, that will be filled by the function
+     *
+     * @param tempValues : array of floating point numbers, that is filled by the function
      *         with all temperatures (in degrees Celcius) for which the resistance
      *         of the thermistor is specified.
-     * @param resValues : array of floating point numbers, that will be filled by the function
+     * @param resValues : array of floating point numbers, that is filled by the function
      *         with the value (in Ohms) for each of the temperature included in the
      *         first argument, index by index.
-     * 
+     *
      * @return YAPI_SUCCESS if the call succeeds.
-     * 
+     *
      * On failure, throws an exception or returns a negative error code.
      */
     function YTemperature_loadThermistorResponseTable(tempValues,resValues)
@@ -401,7 +427,7 @@ var YTemperature; // definition below
 
     /**
      * Continues the enumeration of temperature sensors started using yFirstTemperature().
-     * 
+     *
      * @return a pointer to a YTemperature object, corresponding to
      *         a temperature sensor currently online, or a null pointer
      *         if there are no more temperature sensors to enumerate.
@@ -418,7 +444,7 @@ var YTemperature; // definition below
      * Starts the enumeration of temperature sensors currently accessible.
      * Use the method YTemperature.nextTemperature() to iterate on
      * next temperature sensors.
-     * 
+     *
      * @return a pointer to a YTemperature object, corresponding to
      *         the first temperature sensor currently online, or a null pointer
      *         if there are none.
@@ -457,6 +483,8 @@ var YTemperature; // definition below
         FirstTemperature            : YTemperature_FirstTemperature
     }, {
         // Methods
+        set_unit                    : YTemperature_set_unit,
+        setUnit                     : YTemperature_set_unit,
         get_sensorType              : YTemperature_get_sensorType,
         sensorType                  : YTemperature_get_sensorType,
         get_sensorType_async        : YTemperature_get_sensorType_async,
@@ -490,7 +518,7 @@ var YTemperature; // definition below
  * <li>ModuleLogicalName.FunctionIdentifier</li>
  * <li>ModuleLogicalName.FunctionLogicalName</li>
  * </ul>
- * 
+ *
  * This function does not require that the temperature sensor is online at the time
  * it is invoked. The returned object is nevertheless valid.
  * Use the method YTemperature.isOnline() to test if the temperature sensor is
@@ -498,9 +526,9 @@ var YTemperature; // definition below
  * a temperature sensor by logical name, no error is notified: the first instance
  * found is returned. The search is performed first by hardware name,
  * then by logical name.
- * 
+ *
  * @param func : a string that uniquely characterizes the temperature sensor
- * 
+ *
  * @return a YTemperature object allowing you to drive the temperature sensor.
  */
 function yFindTemperature(func)
@@ -512,7 +540,7 @@ function yFindTemperature(func)
  * Starts the enumeration of temperature sensors currently accessible.
  * Use the method YTemperature.nextTemperature() to iterate on
  * next temperature sensors.
- * 
+ *
  * @return a pointer to a YTemperature object, corresponding to
  *         the first temperature sensor currently online, or a null pointer
  *         if there are none.

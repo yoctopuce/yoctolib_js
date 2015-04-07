@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_network.js 17582 2014-09-10 17:12:40Z mvuilleu $
+ * $Id: yocto_network.js 19607 2015-03-05 10:36:54Z seb $
  *
  * Implements the high-level API for Network functions
  *
@@ -81,7 +81,7 @@ var Y_POECURRENT_INVALID            = YAPI_INVALID_UINT;
 //--- (YNetwork class start)
 /**
  * YNetwork Class: Network function interface
- * 
+ *
  * YNetwork objects provide access to TCP/IP parameters of Yoctopuce
  * modules that include a built-in network interface.
  */
@@ -200,10 +200,10 @@ var YNetwork; // definition below
      * Level 4 (DNS_4) is reached when the DNS server is reachable on the network.
      * Level 5 (WWW_5) is reached when global connectivity is demonstrated by properly loading the
      * current time from an NTP server.
-     * 
+     *
      * @return a value among Y_READINESS_DOWN, Y_READINESS_EXISTS, Y_READINESS_LINKED, Y_READINESS_LAN_OK
      * and Y_READINESS_WWW_OK corresponding to the current established working mode of the network interface
-     * 
+     *
      * On failure, throws an exception or returns Y_READINESS_INVALID.
      */
     function YNetwork_get_readiness()
@@ -231,7 +231,7 @@ var YNetwork; // definition below
      * Level 4 (DNS_4) is reached when the DNS server is reachable on the network.
      * Level 5 (WWW_5) is reached when global connectivity is demonstrated by properly loading the
      * current time from an NTP server.
-     * 
+     *
      * @param callback : callback function that is invoked when the result is known.
      *         The callback function receives three arguments:
      *         - the user-specific context object
@@ -240,9 +240,9 @@ var YNetwork; // definition below
      *         Y_READINESS_LAN_OK and Y_READINESS_WWW_OK corresponding to the current established working mode of
      *         the network interface
      * @param context : user-specific object that is passed as-is to the callback function
-     * 
+     *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
-     * 
+     *
      * On failure, throws an exception or returns Y_READINESS_INVALID.
      */
     function YNetwork_get_readiness_async(callback,context)
@@ -265,9 +265,9 @@ var YNetwork; // definition below
     /**
      * Returns the MAC address of the network interface. The MAC address is also available on a sticker
      * on the module, in both numeric and barcode forms.
-     * 
+     *
      * @return a string corresponding to the MAC address of the network interface
-     * 
+     *
      * On failure, throws an exception or returns Y_MACADDRESS_INVALID.
      */
     function YNetwork_get_macAddress()
@@ -283,16 +283,16 @@ var YNetwork; // definition below
     /**
      * Gets the MAC address of the network interface. The MAC address is also available on a sticker
      * on the module, in both numeric and barcode forms.
-     * 
+     *
      * @param callback : callback function that is invoked when the result is known.
      *         The callback function receives three arguments:
      *         - the user-specific context object
      *         - the YNetwork object that invoked the callback
      *         - the result:a string corresponding to the MAC address of the network interface
      * @param context : user-specific object that is passed as-is to the callback function
-     * 
+     *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
-     * 
+     *
      * On failure, throws an exception or returns Y_MACADDRESS_INVALID.
      */
     function YNetwork_get_macAddress_async(callback,context)
@@ -315,9 +315,9 @@ var YNetwork; // definition below
     /**
      * Returns the IP address currently in use by the device. The address may have been configured
      * statically, or provided by a DHCP server.
-     * 
+     *
      * @return a string corresponding to the IP address currently in use by the device
-     * 
+     *
      * On failure, throws an exception or returns Y_IPADDRESS_INVALID.
      */
     function YNetwork_get_ipAddress()
@@ -333,16 +333,16 @@ var YNetwork; // definition below
     /**
      * Gets the IP address currently in use by the device. The address may have been configured
      * statically, or provided by a DHCP server.
-     * 
+     *
      * @param callback : callback function that is invoked when the result is known.
      *         The callback function receives three arguments:
      *         - the user-specific context object
      *         - the YNetwork object that invoked the callback
      *         - the result:a string corresponding to the IP address currently in use by the device
      * @param context : user-specific object that is passed as-is to the callback function
-     * 
+     *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
-     * 
+     *
      * On failure, throws an exception or returns Y_IPADDRESS_INVALID.
      */
     function YNetwork_get_ipAddress_async(callback,context)
@@ -364,9 +364,9 @@ var YNetwork; // definition below
 
     /**
      * Returns the subnet mask currently used by the device.
-     * 
+     *
      * @return a string corresponding to the subnet mask currently used by the device
-     * 
+     *
      * On failure, throws an exception or returns Y_SUBNETMASK_INVALID.
      */
     function YNetwork_get_subnetMask()
@@ -381,16 +381,16 @@ var YNetwork; // definition below
 
     /**
      * Gets the subnet mask currently used by the device.
-     * 
+     *
      * @param callback : callback function that is invoked when the result is known.
      *         The callback function receives three arguments:
      *         - the user-specific context object
      *         - the YNetwork object that invoked the callback
      *         - the result:a string corresponding to the subnet mask currently used by the device
      * @param context : user-specific object that is passed as-is to the callback function
-     * 
+     *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
-     * 
+     *
      * On failure, throws an exception or returns Y_SUBNETMASK_INVALID.
      */
     function YNetwork_get_subnetMask_async(callback,context)
@@ -412,9 +412,9 @@ var YNetwork; // definition below
 
     /**
      * Returns the IP address of the router on the device subnet (default gateway).
-     * 
+     *
      * @return a string corresponding to the IP address of the router on the device subnet (default gateway)
-     * 
+     *
      * On failure, throws an exception or returns Y_ROUTER_INVALID.
      */
     function YNetwork_get_router()
@@ -429,16 +429,16 @@ var YNetwork; // definition below
 
     /**
      * Gets the IP address of the router on the device subnet (default gateway).
-     * 
+     *
      * @param callback : callback function that is invoked when the result is known.
      *         The callback function receives three arguments:
      *         - the user-specific context object
      *         - the YNetwork object that invoked the callback
      *         - the result:a string corresponding to the IP address of the router on the device subnet (default gateway)
      * @param context : user-specific object that is passed as-is to the callback function
-     * 
+     *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
-     * 
+     *
      * On failure, throws an exception or returns Y_ROUTER_INVALID.
      */
     function YNetwork_get_router_async(callback,context)
@@ -469,14 +469,14 @@ var YNetwork; // definition below
     }
 
     /**
-     * 
+     *
      * @param callback : callback function that is invoked when the result is known.
      *         The callback function receives three arguments:
      *         - the user-specific context object
      *         - the YNetwork object that invoked the callback
      *         - the result:
      * @param context : user-specific object that is passed as-is to the callback function
-     * 
+     *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      */
     function YNetwork_get_ipConfig_async(callback,context)
@@ -504,9 +504,9 @@ var YNetwork; // definition below
 
     /**
      * Returns the IP address of the primary name server to be used by the module.
-     * 
+     *
      * @return a string corresponding to the IP address of the primary name server to be used by the module
-     * 
+     *
      * On failure, throws an exception or returns Y_PRIMARYDNS_INVALID.
      */
     function YNetwork_get_primaryDNS()
@@ -521,16 +521,16 @@ var YNetwork; // definition below
 
     /**
      * Gets the IP address of the primary name server to be used by the module.
-     * 
+     *
      * @param callback : callback function that is invoked when the result is known.
      *         The callback function receives three arguments:
      *         - the user-specific context object
      *         - the YNetwork object that invoked the callback
      *         - the result:a string corresponding to the IP address of the primary name server to be used by the module
      * @param context : user-specific object that is passed as-is to the callback function
-     * 
+     *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
-     * 
+     *
      * On failure, throws an exception or returns Y_PRIMARYDNS_INVALID.
      */
     function YNetwork_get_primaryDNS_async(callback,context)
@@ -554,11 +554,11 @@ var YNetwork; // definition below
      * Changes the IP address of the primary name server to be used by the module.
      * When using DHCP, if a value is specified, it overrides the value received from the DHCP server.
      * Remember to call the saveToFlash() method and then to reboot the module to apply this setting.
-     * 
+     *
      * @param newval : a string corresponding to the IP address of the primary name server to be used by the module
-     * 
+     *
      * @return YAPI_SUCCESS if the call succeeds.
-     * 
+     *
      * On failure, throws an exception or returns a negative error code.
      */
     function YNetwork_set_primaryDNS(newval)
@@ -569,9 +569,9 @@ var YNetwork; // definition below
 
     /**
      * Returns the IP address of the secondary name server to be used by the module.
-     * 
+     *
      * @return a string corresponding to the IP address of the secondary name server to be used by the module
-     * 
+     *
      * On failure, throws an exception or returns Y_SECONDARYDNS_INVALID.
      */
     function YNetwork_get_secondaryDNS()
@@ -586,16 +586,16 @@ var YNetwork; // definition below
 
     /**
      * Gets the IP address of the secondary name server to be used by the module.
-     * 
+     *
      * @param callback : callback function that is invoked when the result is known.
      *         The callback function receives three arguments:
      *         - the user-specific context object
      *         - the YNetwork object that invoked the callback
      *         - the result:a string corresponding to the IP address of the secondary name server to be used by the module
      * @param context : user-specific object that is passed as-is to the callback function
-     * 
+     *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
-     * 
+     *
      * On failure, throws an exception or returns Y_SECONDARYDNS_INVALID.
      */
     function YNetwork_get_secondaryDNS_async(callback,context)
@@ -619,11 +619,11 @@ var YNetwork; // definition below
      * Changes the IP address of the secondary name server to be used by the module.
      * When using DHCP, if a value is specified, it overrides the value received from the DHCP server.
      * Remember to call the saveToFlash() method and then to reboot the module to apply this setting.
-     * 
+     *
      * @param newval : a string corresponding to the IP address of the secondary name server to be used by the module
-     * 
+     *
      * @return YAPI_SUCCESS if the call succeeds.
-     * 
+     *
      * On failure, throws an exception or returns a negative error code.
      */
     function YNetwork_set_secondaryDNS(newval)
@@ -635,10 +635,10 @@ var YNetwork; // definition below
     /**
      * Returns a hash string if a password has been set for "user" user,
      * or an empty string otherwise.
-     * 
+     *
      * @return a string corresponding to a hash string if a password has been set for "user" user,
      *         or an empty string otherwise
-     * 
+     *
      * On failure, throws an exception or returns Y_USERPASSWORD_INVALID.
      */
     function YNetwork_get_userPassword()
@@ -654,7 +654,7 @@ var YNetwork; // definition below
     /**
      * Gets a hash string if a password has been set for "user" user,
      * or an empty string otherwise.
-     * 
+     *
      * @param callback : callback function that is invoked when the result is known.
      *         The callback function receives three arguments:
      *         - the user-specific context object
@@ -662,9 +662,9 @@ var YNetwork; // definition below
      *         - the result:a string corresponding to a hash string if a password has been set for "user" user,
      *         or an empty string otherwise
      * @param context : user-specific object that is passed as-is to the callback function
-     * 
+     *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
-     * 
+     *
      * On failure, throws an exception or returns Y_USERPASSWORD_INVALID.
      */
     function YNetwork_get_userPassword_async(callback,context)
@@ -690,11 +690,11 @@ var YNetwork; // definition below
      * empty string, a password is not required anymore.
      * Remember to call the saveToFlash() method of the module if the
      * modification must be kept.
-     * 
+     *
      * @param newval : a string corresponding to the password for the "user" user
-     * 
+     *
      * @return YAPI_SUCCESS if the call succeeds.
-     * 
+     *
      * On failure, throws an exception or returns a negative error code.
      */
     function YNetwork_set_userPassword(newval)
@@ -706,10 +706,10 @@ var YNetwork; // definition below
     /**
      * Returns a hash string if a password has been set for user "admin",
      * or an empty string otherwise.
-     * 
+     *
      * @return a string corresponding to a hash string if a password has been set for user "admin",
      *         or an empty string otherwise
-     * 
+     *
      * On failure, throws an exception or returns Y_ADMINPASSWORD_INVALID.
      */
     function YNetwork_get_adminPassword()
@@ -725,7 +725,7 @@ var YNetwork; // definition below
     /**
      * Gets a hash string if a password has been set for user "admin",
      * or an empty string otherwise.
-     * 
+     *
      * @param callback : callback function that is invoked when the result is known.
      *         The callback function receives three arguments:
      *         - the user-specific context object
@@ -733,9 +733,9 @@ var YNetwork; // definition below
      *         - the result:a string corresponding to a hash string if a password has been set for user "admin",
      *         or an empty string otherwise
      * @param context : user-specific object that is passed as-is to the callback function
-     * 
+     *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
-     * 
+     *
      * On failure, throws an exception or returns Y_ADMINPASSWORD_INVALID.
      */
     function YNetwork_get_adminPassword_async(callback,context)
@@ -761,11 +761,11 @@ var YNetwork; // definition below
      * empty string, a password is not required anymore.
      * Remember to call the saveToFlash() method of the module if the
      * modification must be kept.
-     * 
+     *
      * @param newval : a string corresponding to the password for the "admin" user
-     * 
+     *
      * @return YAPI_SUCCESS if the call succeeds.
-     * 
+     *
      * On failure, throws an exception or returns a negative error code.
      */
     function YNetwork_set_adminPassword(newval)
@@ -777,11 +777,11 @@ var YNetwork; // definition below
     /**
      * Returns the activation state of the multicast announce protocols to allow easy
      * discovery of the module in the network neighborhood (uPnP/Bonjour protocol).
-     * 
+     *
      * @return either Y_DISCOVERABLE_FALSE or Y_DISCOVERABLE_TRUE, according to the activation state of
      * the multicast announce protocols to allow easy
      *         discovery of the module in the network neighborhood (uPnP/Bonjour protocol)
-     * 
+     *
      * On failure, throws an exception or returns Y_DISCOVERABLE_INVALID.
      */
     function YNetwork_get_discoverable()
@@ -797,7 +797,7 @@ var YNetwork; // definition below
     /**
      * Gets the activation state of the multicast announce protocols to allow easy
      * discovery of the module in the network neighborhood (uPnP/Bonjour protocol).
-     * 
+     *
      * @param callback : callback function that is invoked when the result is known.
      *         The callback function receives three arguments:
      *         - the user-specific context object
@@ -806,9 +806,9 @@ var YNetwork; // definition below
      *         of the multicast announce protocols to allow easy
      *         discovery of the module in the network neighborhood (uPnP/Bonjour protocol)
      * @param context : user-specific object that is passed as-is to the callback function
-     * 
+     *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
-     * 
+     *
      * On failure, throws an exception or returns Y_DISCOVERABLE_INVALID.
      */
     function YNetwork_get_discoverable_async(callback,context)
@@ -831,13 +831,13 @@ var YNetwork; // definition below
     /**
      * Changes the activation state of the multicast announce protocols to allow easy
      * discovery of the module in the network neighborhood (uPnP/Bonjour protocol).
-     * 
+     *
      * @param newval : either Y_DISCOVERABLE_FALSE or Y_DISCOVERABLE_TRUE, according to the activation
      * state of the multicast announce protocols to allow easy
      *         discovery of the module in the network neighborhood (uPnP/Bonjour protocol)
-     * 
+     *
      * @return YAPI_SUCCESS if the call succeeds.
-     * 
+     *
      * On failure, throws an exception or returns a negative error code.
      */
     function YNetwork_set_discoverable(newval)
@@ -850,11 +850,11 @@ var YNetwork; // definition below
      * Returns the allowed downtime of the WWW link (in seconds) before triggering an automated
      * reboot to try to recover Internet connectivity. A zero value disables automated reboot
      * in case of Internet connectivity loss.
-     * 
+     *
      * @return an integer corresponding to the allowed downtime of the WWW link (in seconds) before
      * triggering an automated
      *         reboot to try to recover Internet connectivity
-     * 
+     *
      * On failure, throws an exception or returns Y_WWWWATCHDOGDELAY_INVALID.
      */
     function YNetwork_get_wwwWatchdogDelay()
@@ -871,7 +871,7 @@ var YNetwork; // definition below
      * Gets the allowed downtime of the WWW link (in seconds) before triggering an automated
      * reboot to try to recover Internet connectivity. A zero value disables automated reboot
      * in case of Internet connectivity loss.
-     * 
+     *
      * @param callback : callback function that is invoked when the result is known.
      *         The callback function receives three arguments:
      *         - the user-specific context object
@@ -880,9 +880,9 @@ var YNetwork; // definition below
      *         triggering an automated
      *         reboot to try to recover Internet connectivity
      * @param context : user-specific object that is passed as-is to the callback function
-     * 
+     *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
-     * 
+     *
      * On failure, throws an exception or returns Y_WWWWATCHDOGDELAY_INVALID.
      */
     function YNetwork_get_wwwWatchdogDelay_async(callback,context)
@@ -907,13 +907,13 @@ var YNetwork; // definition below
      * reboot to try to recover Internet connectivity. A zero value disables automated reboot
      * in case of Internet connectivity loss. The smallest valid non-zero timeout is
      * 90 seconds.
-     * 
+     *
      * @param newval : an integer corresponding to the allowed downtime of the WWW link (in seconds)
      * before triggering an automated
      *         reboot to try to recover Internet connectivity
-     * 
+     *
      * @return YAPI_SUCCESS if the call succeeds.
-     * 
+     *
      * On failure, throws an exception or returns a negative error code.
      */
     function YNetwork_set_wwwWatchdogDelay(newval)
@@ -924,9 +924,9 @@ var YNetwork; // definition below
 
     /**
      * Returns the callback URL to notify of significant state changes.
-     * 
+     *
      * @return a string corresponding to the callback URL to notify of significant state changes
-     * 
+     *
      * On failure, throws an exception or returns Y_CALLBACKURL_INVALID.
      */
     function YNetwork_get_callbackUrl()
@@ -941,16 +941,16 @@ var YNetwork; // definition below
 
     /**
      * Gets the callback URL to notify of significant state changes.
-     * 
+     *
      * @param callback : callback function that is invoked when the result is known.
      *         The callback function receives three arguments:
      *         - the user-specific context object
      *         - the YNetwork object that invoked the callback
      *         - the result:a string corresponding to the callback URL to notify of significant state changes
      * @param context : user-specific object that is passed as-is to the callback function
-     * 
+     *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
-     * 
+     *
      * On failure, throws an exception or returns Y_CALLBACKURL_INVALID.
      */
     function YNetwork_get_callbackUrl_async(callback,context)
@@ -973,11 +973,11 @@ var YNetwork; // definition below
     /**
      * Changes the callback URL to notify significant state changes. Remember to call the
      * saveToFlash() method of the module if the modification must be kept.
-     * 
+     *
      * @param newval : a string corresponding to the callback URL to notify significant state changes
-     * 
+     *
      * @return YAPI_SUCCESS if the call succeeds.
-     * 
+     *
      * On failure, throws an exception or returns a negative error code.
      */
     function YNetwork_set_callbackUrl(newval)
@@ -988,10 +988,10 @@ var YNetwork; // definition below
 
     /**
      * Returns the HTTP method used to notify callbacks for significant state changes.
-     * 
+     *
      * @return a value among Y_CALLBACKMETHOD_POST, Y_CALLBACKMETHOD_GET and Y_CALLBACKMETHOD_PUT
      * corresponding to the HTTP method used to notify callbacks for significant state changes
-     * 
+     *
      * On failure, throws an exception or returns Y_CALLBACKMETHOD_INVALID.
      */
     function YNetwork_get_callbackMethod()
@@ -1006,7 +1006,7 @@ var YNetwork; // definition below
 
     /**
      * Gets the HTTP method used to notify callbacks for significant state changes.
-     * 
+     *
      * @param callback : callback function that is invoked when the result is known.
      *         The callback function receives three arguments:
      *         - the user-specific context object
@@ -1014,9 +1014,9 @@ var YNetwork; // definition below
      *         - the result:a value among Y_CALLBACKMETHOD_POST, Y_CALLBACKMETHOD_GET and Y_CALLBACKMETHOD_PUT
      *         corresponding to the HTTP method used to notify callbacks for significant state changes
      * @param context : user-specific object that is passed as-is to the callback function
-     * 
+     *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
-     * 
+     *
      * On failure, throws an exception or returns Y_CALLBACKMETHOD_INVALID.
      */
     function YNetwork_get_callbackMethod_async(callback,context)
@@ -1038,12 +1038,12 @@ var YNetwork; // definition below
 
     /**
      * Changes the HTTP method used to notify callbacks for significant state changes.
-     * 
+     *
      * @param newval : a value among Y_CALLBACKMETHOD_POST, Y_CALLBACKMETHOD_GET and Y_CALLBACKMETHOD_PUT
      * corresponding to the HTTP method used to notify callbacks for significant state changes
-     * 
+     *
      * @return YAPI_SUCCESS if the call succeeds.
-     * 
+     *
      * On failure, throws an exception or returns a negative error code.
      */
     function YNetwork_set_callbackMethod(newval)
@@ -1054,11 +1054,11 @@ var YNetwork; // definition below
 
     /**
      * Returns the encoding standard to use for representing notification values.
-     * 
+     *
      * @return a value among Y_CALLBACKENCODING_FORM, Y_CALLBACKENCODING_JSON,
      * Y_CALLBACKENCODING_JSON_ARRAY, Y_CALLBACKENCODING_CSV and Y_CALLBACKENCODING_YOCTO_API
      * corresponding to the encoding standard to use for representing notification values
-     * 
+     *
      * On failure, throws an exception or returns Y_CALLBACKENCODING_INVALID.
      */
     function YNetwork_get_callbackEncoding()
@@ -1073,7 +1073,7 @@ var YNetwork; // definition below
 
     /**
      * Gets the encoding standard to use for representing notification values.
-     * 
+     *
      * @param callback : callback function that is invoked when the result is known.
      *         The callback function receives three arguments:
      *         - the user-specific context object
@@ -1082,9 +1082,9 @@ var YNetwork; // definition below
      *         Y_CALLBACKENCODING_JSON_ARRAY, Y_CALLBACKENCODING_CSV and Y_CALLBACKENCODING_YOCTO_API
      *         corresponding to the encoding standard to use for representing notification values
      * @param context : user-specific object that is passed as-is to the callback function
-     * 
+     *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
-     * 
+     *
      * On failure, throws an exception or returns Y_CALLBACKENCODING_INVALID.
      */
     function YNetwork_get_callbackEncoding_async(callback,context)
@@ -1106,13 +1106,13 @@ var YNetwork; // definition below
 
     /**
      * Changes the encoding standard to use for representing notification values.
-     * 
+     *
      * @param newval : a value among Y_CALLBACKENCODING_FORM, Y_CALLBACKENCODING_JSON,
      * Y_CALLBACKENCODING_JSON_ARRAY, Y_CALLBACKENCODING_CSV and Y_CALLBACKENCODING_YOCTO_API
      * corresponding to the encoding standard to use for representing notification values
-     * 
+     *
      * @return YAPI_SUCCESS if the call succeeds.
-     * 
+     *
      * On failure, throws an exception or returns a negative error code.
      */
     function YNetwork_set_callbackEncoding(newval)
@@ -1124,10 +1124,10 @@ var YNetwork; // definition below
     /**
      * Returns a hashed version of the notification callback credentials if set,
      * or an empty string otherwise.
-     * 
+     *
      * @return a string corresponding to a hashed version of the notification callback credentials if set,
      *         or an empty string otherwise
-     * 
+     *
      * On failure, throws an exception or returns Y_CALLBACKCREDENTIALS_INVALID.
      */
     function YNetwork_get_callbackCredentials()
@@ -1143,7 +1143,7 @@ var YNetwork; // definition below
     /**
      * Gets a hashed version of the notification callback credentials if set,
      * or an empty string otherwise.
-     * 
+     *
      * @param callback : callback function that is invoked when the result is known.
      *         The callback function receives three arguments:
      *         - the user-specific context object
@@ -1151,9 +1151,9 @@ var YNetwork; // definition below
      *         - the result:a string corresponding to a hashed version of the notification callback credentials if set,
      *         or an empty string otherwise
      * @param context : user-specific object that is passed as-is to the callback function
-     * 
+     *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
-     * 
+     *
      * On failure, throws an exception or returns Y_CALLBACKCREDENTIALS_INVALID.
      */
     function YNetwork_get_callbackCredentials_async(callback,context)
@@ -1183,11 +1183,11 @@ var YNetwork; // definition below
      * way to configure callback credentials, use function callbackLogin instead.
      * Remember to call the saveToFlash() method of the module if the
      * modification must be kept.
-     * 
+     *
      * @param newval : a string corresponding to the credentials required to connect to the callback address
-     * 
+     *
      * @return YAPI_SUCCESS if the call succeeds.
-     * 
+     *
      * On failure, throws an exception or returns a negative error code.
      */
     function YNetwork_set_callbackCredentials(newval)
@@ -1201,12 +1201,12 @@ var YNetwork; // definition below
      * log into it. The password is not stored into the module, only a hashed
      * copy of the credentials are saved. Remember to call the
      * saveToFlash() method of the module if the modification must be kept.
-     * 
+     *
      * @param username : username required to log to the callback
      * @param password : password required to log to the callback
-     * 
+     *
      * @return YAPI_SUCCESS if the call succeeds.
-     * 
+     *
      * On failure, throws an exception or returns a negative error code.
      */
     function YNetwork_callbackLogin(username,password)
@@ -1217,9 +1217,9 @@ var YNetwork; // definition below
 
     /**
      * Returns the minimum waiting time between two callback notifications, in seconds.
-     * 
+     *
      * @return an integer corresponding to the minimum waiting time between two callback notifications, in seconds
-     * 
+     *
      * On failure, throws an exception or returns Y_CALLBACKMINDELAY_INVALID.
      */
     function YNetwork_get_callbackMinDelay()
@@ -1234,16 +1234,16 @@ var YNetwork; // definition below
 
     /**
      * Gets the minimum waiting time between two callback notifications, in seconds.
-     * 
+     *
      * @param callback : callback function that is invoked when the result is known.
      *         The callback function receives three arguments:
      *         - the user-specific context object
      *         - the YNetwork object that invoked the callback
      *         - the result:an integer corresponding to the minimum waiting time between two callback notifications, in seconds
      * @param context : user-specific object that is passed as-is to the callback function
-     * 
+     *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
-     * 
+     *
      * On failure, throws an exception or returns Y_CALLBACKMINDELAY_INVALID.
      */
     function YNetwork_get_callbackMinDelay_async(callback,context)
@@ -1265,12 +1265,12 @@ var YNetwork; // definition below
 
     /**
      * Changes the minimum waiting time between two callback notifications, in seconds.
-     * 
+     *
      * @param newval : an integer corresponding to the minimum waiting time between two callback
      * notifications, in seconds
-     * 
+     *
      * @return YAPI_SUCCESS if the call succeeds.
-     * 
+     *
      * On failure, throws an exception or returns a negative error code.
      */
     function YNetwork_set_callbackMinDelay(newval)
@@ -1281,9 +1281,9 @@ var YNetwork; // definition below
 
     /**
      * Returns the maximum waiting time between two callback notifications, in seconds.
-     * 
+     *
      * @return an integer corresponding to the maximum waiting time between two callback notifications, in seconds
-     * 
+     *
      * On failure, throws an exception or returns Y_CALLBACKMAXDELAY_INVALID.
      */
     function YNetwork_get_callbackMaxDelay()
@@ -1298,16 +1298,16 @@ var YNetwork; // definition below
 
     /**
      * Gets the maximum waiting time between two callback notifications, in seconds.
-     * 
+     *
      * @param callback : callback function that is invoked when the result is known.
      *         The callback function receives three arguments:
      *         - the user-specific context object
      *         - the YNetwork object that invoked the callback
      *         - the result:an integer corresponding to the maximum waiting time between two callback notifications, in seconds
      * @param context : user-specific object that is passed as-is to the callback function
-     * 
+     *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
-     * 
+     *
      * On failure, throws an exception or returns Y_CALLBACKMAXDELAY_INVALID.
      */
     function YNetwork_get_callbackMaxDelay_async(callback,context)
@@ -1329,12 +1329,12 @@ var YNetwork; // definition below
 
     /**
      * Changes the maximum waiting time between two callback notifications, in seconds.
-     * 
+     *
      * @param newval : an integer corresponding to the maximum waiting time between two callback
      * notifications, in seconds
-     * 
+     *
      * @return YAPI_SUCCESS if the call succeeds.
-     * 
+     *
      * On failure, throws an exception or returns a negative error code.
      */
     function YNetwork_set_callbackMaxDelay(newval)
@@ -1347,10 +1347,10 @@ var YNetwork; // definition below
      * Returns the current consumed by the module from Power-over-Ethernet (PoE), in milli-amps.
      * The current consumption is measured after converting PoE source to 5 Volt, and should
      * never exceed 1800 mA.
-     * 
+     *
      * @return an integer corresponding to the current consumed by the module from Power-over-Ethernet
      * (PoE), in milli-amps
-     * 
+     *
      * On failure, throws an exception or returns Y_POECURRENT_INVALID.
      */
     function YNetwork_get_poeCurrent()
@@ -1367,7 +1367,7 @@ var YNetwork; // definition below
      * Gets the current consumed by the module from Power-over-Ethernet (PoE), in milli-amps.
      * The current consumption is measured after converting PoE source to 5 Volt, and should
      * never exceed 1800 mA.
-     * 
+     *
      * @param callback : callback function that is invoked when the result is known.
      *         The callback function receives three arguments:
      *         - the user-specific context object
@@ -1375,9 +1375,9 @@ var YNetwork; // definition below
      *         - the result:an integer corresponding to the current consumed by the module from
      *         Power-over-Ethernet (PoE), in milli-amps
      * @param context : user-specific object that is passed as-is to the callback function
-     * 
+     *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
-     * 
+     *
      * On failure, throws an exception or returns Y_POECURRENT_INVALID.
      */
     function YNetwork_get_poeCurrent_async(callback,context)
@@ -1407,7 +1407,7 @@ var YNetwork; // definition below
      * <li>ModuleLogicalName.FunctionIdentifier</li>
      * <li>ModuleLogicalName.FunctionLogicalName</li>
      * </ul>
-     * 
+     *
      * This function does not require that the network interface is online at the time
      * it is invoked. The returned object is nevertheless valid.
      * Use the method YNetwork.isOnline() to test if the network interface is
@@ -1415,9 +1415,9 @@ var YNetwork; // definition below
      * a network interface by logical name, no error is notified: the first instance
      * found is returned. The search is performed first by hardware name,
      * then by logical name.
-     * 
+     *
      * @param func : a string that uniquely characterizes the network interface
-     * 
+     *
      * @return a YNetwork object allowing you to drive the network interface.
      */
     function YNetwork_FindNetwork(func)                         // class method
@@ -1436,14 +1436,14 @@ var YNetwork; // definition below
      * IP address received from a DHCP server. Until an address is received from a DHCP
      * server, the module uses the IP parameters specified to this function.
      * Remember to call the saveToFlash() method and then to reboot the module to apply this setting.
-     * 
+     *
      * @param fallbackIpAddr : fallback IP address, to be used when no DHCP reply is received
      * @param fallbackSubnetMaskLen : fallback subnet mask length when no DHCP reply is received, as an
      *         integer (eg. 24 means 255.255.255.0)
      * @param fallbackRouter : fallback router IP address, to be used when no DHCP reply is received
-     * 
+     *
      * @return YAPI_SUCCESS when the call succeeds.
-     * 
+     *
      * On failure, throws an exception or returns a negative error code.
      */
     function YNetwork_useDHCP(fallbackIpAddr,fallbackSubnetMaskLen,fallbackRouter)
@@ -1454,13 +1454,13 @@ var YNetwork; // definition below
     /**
      * Changes the configuration of the network interface to use a static IP address.
      * Remember to call the saveToFlash() method and then to reboot the module to apply this setting.
-     * 
+     *
      * @param ipAddress : device IP address
      * @param subnetMaskLen : subnet mask length, as an integer (eg. 24 means 255.255.255.0)
      * @param router : router IP address (default gateway)
-     * 
+     *
      * @return YAPI_SUCCESS when the call succeeds.
-     * 
+     *
      * On failure, throws an exception or returns a negative error code.
      */
     function YNetwork_useStaticIP(ipAddress,subnetMaskLen,router)
@@ -1472,9 +1472,9 @@ var YNetwork; // definition below
      * Pings str_host to test the network connectivity. Sends four ICMP ECHO_REQUEST requests from the
      * module to the target str_host. This method returns a string with the result of the
      * 4 ICMP ECHO_REQUEST requests.
-     * 
+     *
      * @param host : the hostname or the IP address of the target
-     * 
+     *
      * @return a string with the result of the ping.
      */
     function YNetwork_ping(host)
@@ -1487,7 +1487,7 @@ var YNetwork; // definition below
 
     /**
      * Continues the enumeration of network interfaces started using yFirstNetwork().
-     * 
+     *
      * @return a pointer to a YNetwork object, corresponding to
      *         a network interface currently online, or a null pointer
      *         if there are no more network interfaces to enumerate.
@@ -1504,7 +1504,7 @@ var YNetwork; // definition below
      * Starts the enumeration of network interfaces currently accessible.
      * Use the method YNetwork.nextNetwork() to iterate on
      * next network interfaces.
-     * 
+     *
      * @return a pointer to a YNetwork object, corresponding to
      *         the first network interface currently online, or a null pointer
      *         if there are none.
@@ -1685,7 +1685,7 @@ var YNetwork; // definition below
  * <li>ModuleLogicalName.FunctionIdentifier</li>
  * <li>ModuleLogicalName.FunctionLogicalName</li>
  * </ul>
- * 
+ *
  * This function does not require that the network interface is online at the time
  * it is invoked. The returned object is nevertheless valid.
  * Use the method YNetwork.isOnline() to test if the network interface is
@@ -1693,9 +1693,9 @@ var YNetwork; // definition below
  * a network interface by logical name, no error is notified: the first instance
  * found is returned. The search is performed first by hardware name,
  * then by logical name.
- * 
+ *
  * @param func : a string that uniquely characterizes the network interface
- * 
+ *
  * @return a YNetwork object allowing you to drive the network interface.
  */
 function yFindNetwork(func)
@@ -1707,7 +1707,7 @@ function yFindNetwork(func)
  * Starts the enumeration of network interfaces currently accessible.
  * Use the method YNetwork.nextNetwork() to iterate on
  * next network interfaces.
- * 
+ *
  * @return a pointer to a YNetwork object, corresponding to
  *         the first network interface currently online, or a null pointer
  *         if there are none.

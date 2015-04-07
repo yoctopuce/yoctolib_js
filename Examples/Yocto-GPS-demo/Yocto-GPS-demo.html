@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <style type="text/css">
+      html, body, #map-canvas 
+      { height: 100%; 
+        margin: 0; 
+        padding: 0;
+        font-family:Arial,Helvetica Neue,Helvetica,sans-serif;
+      }
+    </style>
+    <script type="text/javascript"  src="https://maps.googleapis.com/maps/api/js?key="></SCRIPT>
+    <script type="text/javascript"  src=" ../../Sources/yocto_api.js"></SCRIPT>
+    <script type="text/javascript"  src=" ../../Sources/yocto_gps.js"></SCRIPT>
+    <script type="text/javascript"  src=" ../../Sources/yocto_latitude.js"></SCRIPT>  
+    <script type="text/javascript"  src=" ../../Sources/yocto_longitude.js"></SCRIPT>
+    <script type="text/javascript">
+      var currentPosition = new google.maps.LatLng(46.207388, 6.155904);
+      var marker = null;
+      var map = null;
+      var currentGps = null;
+      var currentLat = null;
+      var currentLon = null;
+      var MustCenter = false;
+      
+    
+      function deviceArrival(m)
+        { 
+          var serial = m.get_serialNumber();
+          if  (serial.substring(0,8) ==  'YGNSSMK1')
+           {  var list = document.getElementById('gpslist');
+              var option = document.createElement('option');
+              option.text = serial;
+              option.value = serial;
+              list.add(option, 0);
+           }
+          gpsChange() 
+        }
+      function deviceRemoval(m)
+        {  var serial = m.get_serialNumber();
+           var list = document.getElementById('gpslist');
+           for (i=0;i<list.length;  i++) 
+             if (list.options[i].value==serial) 
+              list.remove(i);
+           gpsChange()   
+        }
+        
+      function gpsChange()
+        {var list = document.getElementById('gpslist');
+          if (list.value=='')
+           { currentGps = null;
+             currentLat = null;
+             currentLon = null;
+           }
+           else
+           { currentGps = yFindGps(list.value+'.gps');
+             currentLat = yFindLatitude(list.value+'.latitude');
+             currentLon = yFindLongitude(list.value+'.longitude');
+           }
+          MustCenter = true;
+        }
+      function disableUI(reason)
+       {   document.getElementById("lon").innerHTML='N/A';
+           document.getElementById("lat").innerHTML='N/A';
+           document.getElementById("speed").innerHTML='N/A';
+           document.getElementById("dir").innerHTML='N/A';
+           document.getElementById("status").innerHTML=reason;
+           MustCenter = true;
+           marker.setVisible(false);    
+       } 
+       
+      function refreshUI()
+       { //  refresh the UI 3 times per second
+         if (currentGps!=null)
+          { if  (currentGps.get_isFixed()==Y_ISFIXED_TRUE)     
+             { 
+               var lat = currentLat.get_currentValue()/1000;
+               var lon = currentLon.get_currentValue()/1000;
+               marker.setPosition(new google.maps.LatLng(lat,lon));
+               document.getElementById("lon").innerHTML=currentGps.get_longitude();
+               document.getElementById("lat").innerHTML=currentGps.get_latitude();
+               document.getElementById("speed").innerHTML=currentGps.get_groundSpeed()+'km/h';
+               document.getElementById("dir").innerHTML=currentGps.get_direction()+'&deg;';
+               document.getElementById("status").innerHTML=currentGps.get_satCount()+' SAT';
+               marker.setVisible(true);
+               if (MustCenter) map.panTo(new google.maps.LatLng(lat,lon));
+               MustCenter = false;
+             }  
+             else  disableUI('Fixing..');
+          } else disableUI('No Yocto-GPS connected');
+          YAPI.SetTimeout("refreshUI()",330);
+       }
+       
+      function handleHotPlug()
+        { // handle plug / unplug envent once per second
+         YAPI.SetTimeout("handleHotPlug()",1000);
+        }      
+      
+      function initialize() 
+        { // google map init
+         var mapOptions = {center: currentPosition,zoom: 10};
+         map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
+         marker = new google.maps.Marker({position: currentPosition});
+         marker.setMap(map);
+         marker.setVisible(false);
+         // yoctopuce init
+         yRegisterHub("127.0.0.1");
+         yRegisterDeviceArrivalCallback(deviceArrival);
+         yRegisterDeviceRemovalCallback(deviceRemoval);
+         handleHotPlug();
+         refreshUI();
+        }
+      google.maps.event.addDomListener(window, 'load', initialize);
+     
+    </script>
+  </head>
+  <body>
+  
+<select id='gpslist' style='width:100%' onchange='gpsChange'></select>  
+<table style='width:100%'>
+<tr><td style='text-align:right'>longitude:</td><td id='lon'>N/A</td><td rowspan=2 style='text-align:center' id='speed'>N/A</td><td style='text-align:right' id='dir'> N/A</td></tr>
+<tr><td style='text-align:right'>latitude:</td><td id='lat'>N/A</td><td style='text-align:right' id='status'>No Yocto-GPS device connected</td></tr>
+</table>
+<div id="map-canvas" ></div>
+</body>
+</html>
