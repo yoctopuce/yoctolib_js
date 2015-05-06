@@ -118,7 +118,7 @@ function drawChart(fct, dataSet, progress)
 function liveCallback(fct, measure)
 {
     // Update text value of measures
-    var hwid = measure.get_hardwareId();
+    var hwid = fct.get_hardwareId();
     var timestr = measure.get_endTimeUTC_asDate().toTimeString().split(" ")[0];
     document.getElementById(hwid+':stamp').innerHTML = "At "+timestr;
     document.getElementById(hwid+':min').innerHTML = measure.get_minValue();
