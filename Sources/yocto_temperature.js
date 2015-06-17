@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_temperature.js 20383 2015-05-19 23:44:31Z mvuilleu $
+ * $Id: yocto_temperature.js 20410 2015-05-22 08:30:27Z seb $
  *
  * Implements the high-level API for Temperature functions
  *
@@ -310,8 +310,6 @@ var YTemperature; // definition below
         resValues.push(res25);
         tempValues.push(100.0);
         resValues.push(res100);
-        
-        
         return this.set_thermistorResponseTable(tempValues, resValues);
     }
 
@@ -348,13 +346,11 @@ var YTemperature; // definition below
         if (!(siz == resValues.length)) {
             return this._throw(YAPI_INVALID_ARGUMENT,"table sizes mismatch",YAPI_INVALID_ARGUMENT);
         }
-        
         // may throw an exception
         res = this.set_command("Z");
         if (!(res==YAPI_SUCCESS)) {
             return this._throw(YAPI_IO_ERROR,"unable to reset thermistor parameters",YAPI_IO_ERROR);
         }
-        
         // add records in growing resistance value
         found = 1;
         prev = 0.0;
@@ -412,10 +408,8 @@ var YTemperature; // definition below
         var prev;                   // float;
         var curr;                   // float;
         var currRes;                // float;
-        
         tempValues.length = 0;
         resValues.length = 0;
-        
         // may throw an exception
         id = this.get_functionId();
         id = (id).substr( 11, (id).length-1);
@@ -455,7 +449,6 @@ var YTemperature; // definition below
                 prev = curr;
             }
         }
-        
         return YAPI_SUCCESS;
     }
 

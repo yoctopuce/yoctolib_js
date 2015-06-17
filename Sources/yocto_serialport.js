@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_serialport.js 19817 2015-03-23 16:49:57Z seb $
+ * $Id: yocto_serialport.js 20508 2015-06-01 16:32:48Z seb $
  *
  * Implements the high-level API for SerialPort functions
  *
@@ -1344,7 +1344,7 @@ var YSerialPort; // definition below
         }
         // last element of array is the new position
         msglen = msglen - 1;
-        this._rxptr = parseInt(msgarr[msglen]);
+        this._rxptr = YAPI._atoi(msgarr[msglen]);
         if (msglen == 0) {
             return "";
         }
@@ -1391,7 +1391,7 @@ var YSerialPort; // definition below
         }
         // last element of array is the new position
         msglen = msglen - 1;
-        this._rxptr = parseInt(msgarr[msglen]);
+        this._rxptr = YAPI._atoi(msgarr[msglen]);
         idx = 0;
         while (idx < msglen) {
             res.push(this._json_get_string(msgarr[idx]));
@@ -1442,7 +1442,7 @@ var YSerialPort; // definition below
         while ((bufflen > 0) && ((buff).charCodeAt(bufflen) != 64)) {
             bufflen = bufflen - 1;
         }
-        res = parseInt((buff).substr( 0, bufflen));
+        res = YAPI._atoi((buff).substr( 0, bufflen));
         return res;
     }
 
@@ -1475,7 +1475,7 @@ var YSerialPort; // definition below
         }
         // last element of array is the new position
         msglen = msglen - 1;
-        this._rxptr = parseInt(msgarr[msglen]);
+        this._rxptr = YAPI._atoi(msgarr[msglen]);
         if (msglen == 0) {
             return "";
         }
