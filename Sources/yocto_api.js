@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_api.js 20719 2015-06-23 16:24:47Z mvuilleu $
+ * $Id: yocto_api.js 20945 2015-07-29 17:24:05Z mvuilleu $
  *
  * High-level programming interface, common to all modules
  *
@@ -885,6 +885,22 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
         return "";
     }
 
+    // Retrieve the type of the nth function (beside "module") in the device
+    function YDevice_functionType(int_idx)
+    {
+        if(int_idx < this._functions.length) {
+            var funid = this._functions[int_idx][0];
+            var i;
+            for (i = 0; i < funid.length; i++) {
+                if (funid[i] >= '0' && funid[i] <= '9') {
+                    break;
+                }
+            }
+            return funid[0].toUpperCase() + funid.substr(1, i - 1);
+        }
+        return "";
+    }
+
     // Retrieve the logical name of the nth function (beside "module") in the device
     function YDevice_functionName(int_idx)
     {
@@ -922,6 +938,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
     YDevice.prototype.dropCache        = YDevice_dropCache;
     YDevice.prototype.functionCount    = YDevice_functionCount;
     YDevice.prototype.functionId       = YDevice_functionId;
+    YDevice.prototype.functionType     = YDevice_functionType;
     YDevice.prototype.functionName     = YDevice_functionName;
     YDevice.prototype.functionValue    = YDevice_functionValue;
 
@@ -1629,7 +1646,6 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
         }
         return idata;
     }
-
     function YAPI_atoi(str_data)
     {
         var num = parseInt(str_data);
@@ -1638,6 +1654,36 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
         }
         return Math.floor(num);
     }
+
+
+    function YAPI_bytesToHexStr(str_data)
+    {
+        var i, len, res = '', n;
+        len = str_data.length;
+        str_data += '';
+        for (i = 0; i < len; i++) {
+            n = str_data.charCodeAt(i)
+                .toString(16);
+            res += n.length < 2 ? '0' + n : n;
+        }
+
+        res = res.toUpperCase();
+        return res;
+
+    }
+
+
+    function YAPI_hexStrToBin(str_data)
+    {
+        var res = [], str;
+
+        for (var i = 0; i < str_data.length - 1; i += 2) {
+            res.push(parseInt(str_data.substr(i, 2), 16));
+        }
+
+        return String.fromCharCode.apply(String, res);
+    }
+
 
 
     // Return a Device object for a specified URL, serial number or logical device name
@@ -2322,7 +2368,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
      */
     function YAPI_GetAPIVersion()
     {
-        return "1.10.20773";
+        return "1.10.20971";
     }
 
     /**
@@ -3224,6 +3270,8 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
     _YAPI.prototype._decodeWords               = YAPI_decodeWords;
     _YAPI.prototype._decodeFloats              = YAPI_decodeFloats;
     _YAPI.prototype._atoi                      = YAPI_atoi;
+    _YAPI.prototype._bytesToHexStr             = YAPI_bytesToHexStr;
+    _YAPI.prototype._hexStrToBin               = YAPI_hexStrToBin;
 
     // Internal functions
     _YAPI.prototype.getDevice             = YAPI_getDevice;
@@ -3734,6 +3782,8 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
         var pos =resolve.result.indexOf(".");
         return resolve.result.substr(pos+1);
     }
+
+
 
     /**
      * Returns a global identifier of the function in the format MODULE_NAME&#46;FUNCTION_NAME.
@@ -4980,6 +5030,10 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
         var idx;                    // int;
         var udat = [];              // intArr;
         var dat = [];               // floatArr;
+        if ((sdata).length == 0) {
+            this._nRows = 0;
+            return YAPI_SUCCESS;
+        }
         // may throw an exception
         udat = YAPI._decodeWords(this._parent._json_get_string(sdata));
         this._values.length = 0;
@@ -5402,6 +5456,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
         //--- (end of generated code: YDataSet constructor)
         this._parse                          = YDataSet_parse;
         this.loadMore_async                  = YDataSet_loadMore_async;
+        this.get_measuresAt_async            = YDataSet_get_measuresAt_async;
         // init _summary with dummy value
         this._summary = new YMeasure(0, 0, 0, 0, 0);
         if(typeof str_unit === "undefined") {
@@ -5664,6 +5719,77 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
     }
 
     /**
+     * Returns the detailed set of measures for the time interval corresponding
+     * to a given condensed measures previously returned by get_preview().
+     * The result is provided as a list of YMeasure objects.
+     *
+     * @param measure : condensed measure from the list previously returned by
+     *         get_preview().
+     *
+     * @return a table of records, where each record depicts the
+     *         measured values during a time interval
+     *
+     * On failure, throws an exception or returns an empty array.
+     */
+    function YDataSet_get_measuresAt(measure)
+    {
+        var ii; // iterator
+        var startUtc;               // u32;
+        var stream;                 // YDataStream;
+        var dataRows = [];          // floatArrArr;
+        var measures = [];          // YMeasureArr;
+        var tim;                    // float;
+        var itv;                    // float;
+        var nCols;                  // int;
+        var minCol;                 // int;
+        var avgCol;                 // int;
+        var maxCol;                 // int;
+        // may throw an exception
+        startUtc = Math.round(measure.get_startTimeUTC());
+        stream = null;
+        for (ii in this._streams) {
+            if(ii=='indexOf') continue; // IE8 Don'tEnum bug
+            if (this._streams[ii].get_startTimeUTC() == startUtc) {
+                stream = this._streams[ii];
+            }
+            ;;
+        }
+        if (stream == null) {
+            return measures;
+        }
+        dataRows = stream.get_dataRows();
+        if (dataRows.length == 0) {
+            return measures;
+        }
+        tim = stream.get_startTimeUTC();
+        itv = stream.get_dataSamplesInterval();
+        if (tim < itv) {
+            tim = itv;
+        }
+        nCols = dataRows[0].length;
+        minCol = 0;
+        if (nCols > 2) {
+            avgCol = 1;
+        } else {
+            avgCol = 0;
+        }
+        if (nCols > 2) {
+            maxCol = 2;
+        } else {
+            maxCol = 0;
+        }
+        
+        for (ii in dataRows) {
+            if(ii=='indexOf') continue; // IE8 Don'tEnum bug
+            if ((tim >= this._startTime) && ((this._endTime == 0) || (tim <= this._endTime))) {
+                measures.push(new YMeasure(tim - itv, tim, dataRows[ii][minCol], dataRows[ii][avgCol], dataRows[ii][maxCol]));
+            }
+            tim = tim + itv;;
+        }
+        return measures;
+    }
+
+    /**
      * Returns all measured values currently available for this DataSet,
      * as a list of YMeasure objects. Each item includes:
      * - the start of the measure time interval
@@ -5807,6 +5933,71 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
         }, { progress:this._progress, dataset:this, usercb:callback, userctx:context });
     }
 
+    /**
+     * Loads the the next block of measures from the dataLogger asynchronously.
+     *
+     * @param measure : condensed measure from the list previously returned by get_preview().
+     * @param callback : callback function that is invoked when the w
+     *         The callback function receives three arguments:
+     *         - the user-specific context object
+     *         - the YDataSet object whose get_measuresAt_async was invoked
+     *         - the result: an array of measures, or an empty array in case of failure.
+     * @param context : user-specific object that is passed as-is to the callback function
+     *
+     * @return nothing.
+     */
+    function YDataSet_get_measuresAt_async(measure, callback, context)
+    {
+        var startUtc = Math.round(measure.get_startTimeUTC());
+        var stream = null;
+        for (var ii in this._streams) {
+            if(ii=='indexOf') continue; // IE8 Don'tEnum bug
+            if (this._streams[ii].get_startTimeUTC() == startUtc) {
+                stream = this._streams[ii];
+            }
+        }
+        if (stream == null) {
+            callback(context, this, []);
+            return;
+        }
+
+        this._parent._download_async(stream.get_url(), function(ctx, parent, data) {
+            var measures = [];          // YMeasureArr;
+            stream.parse(data);
+            var dataRows = stream.get_dataRows();
+            if (dataRows.length == 0) {
+                return measures;
+            }
+            var tim = stream.get_startTimeUTC();
+            var itv = stream.get_dataSamplesInterval();
+            if (tim < itv) {
+                tim = itv;
+            }
+            var nCols = dataRows[0].length;
+            var minCol = 0;
+            var avgCol, maxCol;
+            if (nCols > 2) {
+                avgCol = 1;
+            } else {
+                avgCol = 0;
+            }
+            if (nCols > 2) {
+                maxCol = 2;
+            } else {
+                maxCol = 0;
+            }
+
+            for (ii in dataRows) {
+                if(ii=='indexOf') continue; // IE8 Don'tEnum bug
+                if ((tim >= ctx.dataset._startTime) && ((ctx.dataset._endTime == 0) || (tim <= ctx.dataset._endTime))) {
+                    measures.push(new YMeasure(tim - itv, tim, dataRows[ii][minCol], dataRows[ii][avgCol], dataRows[ii][maxCol]));
+                }
+                tim = tim + itv;;
+            }
+            ctx.usercb(ctx.userctx, ctx.dataset, measures);
+        }, { progress:this._progress, dataset:this, usercb:callback, userctx:context });
+    }
+
     //--- (generated code: YDataSet initialization)
     YDataSet = _YDataSet;
     // Methods
@@ -5832,6 +6023,8 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
     YDataSet.prototype.summary                     = YDataSet_get_summary;
     YDataSet.prototype.get_preview                 = YDataSet_get_preview;
     YDataSet.prototype.preview                     = YDataSet_get_preview;
+    YDataSet.prototype.get_measuresAt              = YDataSet_get_measuresAt;
+    YDataSet.prototype.measuresAt                  = YDataSet_get_measuresAt;
     YDataSet.prototype.get_measures                = YDataSet_get_measures;
     YDataSet.prototype.measures                    = YDataSet_get_measures;
     //--- (end of generated code: YDataSet initialization)
@@ -7344,6 +7537,23 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
     }
 
     /**
+     * Retrieves the type of the <i>n</i>th function on the module.
+     *
+     * @param functionIndex : the index of the function for which the information is desired, starting at
+     * 0 for the first function.
+     *
+     * @return a the type of the function
+     *
+     * On failure, throws an exception or returns an empty string.
+     */
+    function YModule_functionType(functionIndex)
+    {
+        var dev = this._getDev();
+        if(!dev) return "";
+        return dev.functionType(functionIndex);
+    }
+
+    /**
      * Retrieves the logical name of the <i>n</i>th function on the module.
      *
      * @param functionIndex : the index of the function for which the information is desired, starting at
@@ -8310,6 +8520,43 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
         return this._download("api.json");
     }
 
+    function YModule_hasFunction(funcId)
+    {
+        var count;                  // int;
+        var i;                      // int;
+        var fid;                    // str;
+        // may throw an exception
+        count  = this.functionCount();
+        i = 0;
+        while (i < count) {
+            fid  = this.functionId(i);
+            if (fid == funcId) {
+                return true;
+            }
+            i = i + 1;
+        }
+        return false;
+    }
+
+    function YModule_get_functionIds(funType)
+    {
+        var count;                  // int;
+        var i;                      // int;
+        var ftype;                  // str;
+        var res = [];               // strArr;
+        // may throw an exception
+        count = this.functionCount();
+        i = 0;
+        while (i < count) {
+            ftype  = this.functionType(i);
+            if (ftype == funType) {
+                res.push(this.functionId(i));
+            }
+            i = i + 1;
+        }
+        return res;
+    }
+
     //cannot be generated for JS:
     //function YModule_flattenJsonStruct(jsoncomplex)
 
@@ -8972,6 +9219,9 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
         updateFirmware              : YModule_updateFirmware,
         get_allSettings             : YModule_get_allSettings,
         allSettings                 : YModule_get_allSettings,
+        hasFunction                 : YModule_hasFunction,
+        get_functionIds             : YModule_get_functionIds,
+        functionIds                 : YModule_get_functionIds,
         _flattenJsonStruct          : YModule_flattenJsonStruct,
         calibVersion                : YModule_calibVersion,
         calibScale                  : YModule_calibScale,
@@ -8991,6 +9241,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
     YModule.prototype._getDev               = YModule_getDev;
     YModule.prototype.functionCount         = YModule_functionCount;
     YModule.prototype.functionId            = YModule_functionId;
+    YModule.prototype.functionType          = YModule_functionType;
     YModule.prototype.functionName          = YModule_functionName;
     YModule.prototype.functionValue         = YModule_functionValue;
     YModule.prototype.loadUrl               = YModule_loadUrl;
