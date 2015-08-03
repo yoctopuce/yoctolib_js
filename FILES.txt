@@ -3,7 +3,7 @@
 /Documentation/yoctolib-js-FR.pdf (modif:Mon Jul 27 19:10:41 2015 size:4981512)
 /Documentation/yoctolib-js-FR.html (modif:Mon Jul 27 19:10:41 2015 size:1903673)
 /Documentation/yoctolib-js-EN.pdf (modif:Mon Jul 27 19:10:41 2015 size:4878556)
-/Sources/yocto_api.js (modif:Sun Aug  2 16:41:55 2015 size:399968)
+/Sources/yocto_api.js (modif:Mon Aug  3 01:55:39 2015 size:399968)
 /Sources/yocto_current.js (modif:Mon Jul 27 19:10:40 2015 size:7261)
 /Sources/yocto_display.js (modif:Mon Jul 27 19:10:40 2015 size:74239)
 /Sources/yocto_longitude.js (modif:Mon Jul 27 19:10:40 2015 size:7442)
