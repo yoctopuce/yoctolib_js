@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_api.js 20945 2015-07-29 17:24:05Z mvuilleu $
+ * $Id: yocto_api.js 21188 2015-08-19 06:25:36Z mvuilleu $
  *
  * High-level programming interface, common to all modules
  *
@@ -1382,7 +1382,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
     //
     function YAPI_decodeNetFuncValV2(p) {
         var p_ofs = 0;
-        var ch = p.charCodeAt(p_ofs);
+        var ch = p.charCodeAt(p_ofs) & 0xff;
         var len = 0;
         var funcVal = [0,0,0,0,0,0,0];
 
@@ -1398,7 +1398,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
             p_ofs++;
             if (p_ofs >= p.length)
                 break;
-            var newCh = p.charCodeAt(p_ofs);;
+            var newCh = p.charCodeAt(p_ofs) & 0xff;
             if (newCh == NOTIFY_NETPKT_STOP) {
                 break;
             }
@@ -1977,6 +1977,9 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
             httpRequest.open(method,baseUrl+devUrl,async,'','');
             if(!obj_body) {
                 obj_body = '';
+                if(devUrl.substr(0,7) == 'not.byn') {
+                    httpRequest.overrideMimeType("text/plain; charset=x-user-defined");
+                }
             } else if(typeof FormData == "undefined" && obj_body.length > 4 && obj_body.slice(0,2) == '--') {
                 // Add form-encoding header
                 var boundary = obj_body.slice(2, obj_body.indexOf('\r'));
@@ -2368,7 +2371,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
      */
     function YAPI_GetAPIVersion()
     {
-        return "1.10.20993";
+        return "1.10.21242";
     }
 
     /**
@@ -4145,6 +4148,23 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
         return res;
     }
 
+    function YFunction_get_json_path(str_json, str_path)
+    {
+        var json = JSON.parse(str_json);
+        var paths = str_path.split('|');
+        for (var i = 0; i < paths.length; i++){
+            var tmp = paths[i];
+            json = json[tmp];
+        }
+        return JSON.stringify(json);
+
+    }
+
+    function YFunction_decode_json_string(str_json)
+    {
+        return JSON.parse(str_json);
+    }
+
     // Method used to cache DataStream objects (new DataLogger)
     //
     function YFunction_findDataStream(obj_dataset, str_def)
@@ -4156,6 +4176,12 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
         var newDataStream = new YDataStream(this, obj_dataset, YAPI._decodeWords(str_def));
         this._dataStreams[key] = newDataStream;
         return newDataStream;
+    }
+
+    // Method used to clear cache of DataStream object (undocumented)
+    function YFunction_clearDataStreamCache()
+    {
+        this._dataStreams = {};
     }
 
     /**
@@ -4547,7 +4573,10 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
     YFunction.prototype._json_get_key               = YFunction_json_get_key;
     YFunction.prototype._json_get_string            = YFunction_json_get_string;
     YFunction.prototype._json_get_array             = YFunction_json_get_array;
+    YFunction.prototype._get_json_path              = YFunction_get_json_path;
+    YFunction.prototype._decode_json_string         = YFunction_decode_json_string;
     YFunction.prototype._findDataStream             = YFunction_findDataStream;
+    YFunction.prototype._clearDataStreamCache       = YFunction_clearDataStreamCache;
     YFunction.prototype.describe                    = YFunction_describe;
     YFunction.prototype.isOnline                    = YFunction_isOnline;
     YFunction.prototype.isOnline_async              = YFunction_isOnline_async;
@@ -8520,6 +8549,94 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
         return this._download("api.json");
     }
 
+    function YModule_get_allSettings_dev()
+    {
+        var ii; // iterator
+        var settings;               // bin;
+        var json;                   // bin;
+        var res;                    // bin;
+        var sep;                    // str;
+        var name;                   // str;
+        var file_data;              // str;
+        var file_data_bin;          // bin;
+        var all_file_data;          // str;
+        var filelist = [];          // strArr;
+        // may throw an exception
+        settings = this._download("api.json");
+        all_file_data = ", \"files\":[";
+        if (this.hasFunction("files")) {
+            json = this._download("files.json?a=dir&f=");
+            filelist = this._json_get_array(json);
+            sep = "";
+            for (ii in  filelist) {
+                if(ii=='indexOf') continue; // IE8 Don'tEnum bug
+                name = this._json_get_key( filelist[ii], "name");
+                file_data_bin = this._download(this._escapeAttr(name));
+                file_data = YAPI._bytesToHexStr(file_data_bin);
+                file_data = ""+sep+"{\"name\":\""+name+"\", \"data\":\""+file_data+"\"}\n";
+                sep = ",";
+                all_file_data = all_file_data + file_data;;
+            }
+        }
+        all_file_data = all_file_data + "]}";
+        res = "{ \"api\":" + settings + all_file_data;
+        return res;
+    }
+
+    /**
+     * Restores all the settings of the module. Useful to restore all the logical names and calibrations parameters
+     * of a module from a backup.Remember to call the saveToFlash() method of the module if the
+     * modifications must be kept.
+     *
+     * @param settings : a binary buffer with all the settings.
+     *
+     * @return YAPI_SUCCESS when the call succeeds.
+     *
+     * On failure, throws an exception or returns a negative error code.
+     */
+    function YModule_set_allSettings_dev(settings)
+    {
+        var ii; // iterator
+        var down;                   // bin;
+        var json;                   // str;
+        var json_api;               // str;
+        var json_files;             // str;
+        json = settings;
+        json_api = this._get_json_path(json, "api");
+        this.set_allSettings(json_api);
+        if (this.hasFunction("files")) {
+            var files = [];             // strArr;
+            var res;                    // str;
+            var name;                   // str;
+            var data;                   // str;
+            down = this._download("files.json?a=format");
+            res = this._get_json_path(down, "res");
+            res = this._decode_json_string(res);
+            if (!(res == "ok")) {
+                return this._throw(YAPI_IO_ERROR,"format failed",YAPI_IO_ERROR);
+            }
+            json_files = this._get_json_path(json, "files");
+            files = this._json_get_array(json_files);
+            for (ii in  files) {
+                if(ii=='indexOf') continue; // IE8 Don'tEnum bug
+                name = this._get_json_path( files[ii], "name");
+                name = this._decode_json_string(name);
+                data = this._get_json_path( files[ii], "data");
+                data = this._decode_json_string(data);
+                this._upload(name, YAPI._hexStrToBin(data));;
+            }
+        }
+        return YAPI_SUCCESS;
+    }
+
+    /**
+     * Test if the device has a specific function. This method took an function identifier
+     * and return a boolean.
+     *
+     * @param funcId : the requested function identifier
+     *
+     * @return : true if the device has the function identifier
+     */
     function YModule_hasFunction(funcId)
     {
         var count;                  // int;
@@ -8538,6 +8655,13 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
         return false;
     }
 
+    /**
+     * Retrieve all hardware identifier that match the type passed in argument.
+     *
+     * @param funType : The type of function (Relay, LightSensor, Voltage,...)
+     *
+     * @return : A array of string.
+     */
     function YModule_get_functionIds(funType)
     {
         var count;                  // int;
@@ -9219,6 +9343,10 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
         updateFirmware              : YModule_updateFirmware,
         get_allSettings             : YModule_get_allSettings,
         allSettings                 : YModule_get_allSettings,
+        get_allSettings_dev         : YModule_get_allSettings_dev,
+        allSettings_dev             : YModule_get_allSettings_dev,
+        set_allSettings_dev         : YModule_set_allSettings_dev,
+        setAllSettings_dev          : YModule_set_allSettings_dev,
         hasFunction                 : YModule_hasFunction,
         get_functionIds             : YModule_get_functionIds,
         functionIds                 : YModule_get_functionIds,
