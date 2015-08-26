@@ -1,1 +1,2 @@
-- Fix missing value change callbacks for some values on Yocto-Serial and Yocto-GPS
+releasenoteforJS
+line2
