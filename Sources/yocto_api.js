@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_api.js 21188 2015-08-19 06:25:36Z mvuilleu $
+ * $Id: yocto_api.js 21483 2015-09-11 14:08:40Z seb $
  *
  * High-level programming interface, common to all modules
  *
@@ -2371,7 +2371,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
      */
     function YAPI_GetAPIVersion()
     {
-        return "1.10.21297";
+        return "1.10.21486";
     }
 
     /**
@@ -4152,9 +4152,12 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
     {
         var json = JSON.parse(str_json);
         var paths = str_path.split('|');
-        for (var i = 0; i < paths.length; i++){
+        for (var i = 0; i < paths.length; i++) {
             var tmp = paths[i];
             json = json[tmp];
+            if (json == undefined) {
+                return "";
+            }
         }
         return JSON.stringify(json);
 
@@ -8537,19 +8540,15 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
     }
 
     /**
-     * Returns all the settings of the module. Useful to backup all the logical names and calibrations parameters
-     * of a connected module.
+     * Returns all the settings and uploaded files of the module. Useful to backup all the logical names,
+     * calibrations parameters,
+     * and uploaded files of a connected module.
      *
      * @return a binary buffer with all the settings.
      *
      * On failure, throws an exception or returns  YAPI_INVALID_STRING.
      */
     function YModule_get_allSettings()
-    {
-        return this._download("api.json");
-    }
-
-    function YModule_get_allSettings_dev()
     {
         var ii; // iterator
         var settings;               // bin;
@@ -8584,8 +8583,9 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
     }
 
     /**
-     * Restores all the settings of the module. Useful to restore all the logical names and calibrations parameters
-     * of a module from a backup.Remember to call the saveToFlash() method of the module if the
+     * Restores all the settings and uploaded files of the module. Useful to restore all the logical names
+     * and calibrations parameters, uploaded
+     * files etc.. of a module from a backup.Remember to call the saveToFlash() method of the module if the
      * modifications must be kept.
      *
      * @param settings : a binary buffer with all the settings.
@@ -8594,7 +8594,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
      *
      * On failure, throws an exception or returns a negative error code.
      */
-    function YModule_set_allSettings_dev(settings)
+    function YModule_set_allSettingsAndFiles(settings)
     {
         var ii; // iterator
         var down;                   // bin;
@@ -8603,6 +8603,9 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
         var json_files;             // str;
         json = settings;
         json_api = this._get_json_path(json, "api");
+        if (json_api == "") {
+            return this.set_allSettings(settings);
+        }
         this.set_allSettings(json_api);
         if (this.hasFunction("files")) {
             var files = [];             // strArr;
@@ -8942,6 +8945,11 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
         var each_str;               // str;
         var do_update;              // bool;
         var found;                  // bool;
+        tmp = settings;
+        tmp = this._get_json_path(tmp, "api");
+        if (!(tmp == "")) {
+            settings = tmp;
+        }
         oldval = "";
         newval = "";
         old_json_flat = this._flattenJsonStruct(settings);
@@ -9343,10 +9351,8 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
         updateFirmware              : YModule_updateFirmware,
         get_allSettings             : YModule_get_allSettings,
         allSettings                 : YModule_get_allSettings,
-        get_allSettings_dev         : YModule_get_allSettings_dev,
-        allSettings_dev             : YModule_get_allSettings_dev,
-        set_allSettings_dev         : YModule_set_allSettings_dev,
-        setAllSettings_dev          : YModule_set_allSettings_dev,
+        set_allSettingsAndFiles     : YModule_set_allSettingsAndFiles,
+        setAllSettingsAndFiles      : YModule_set_allSettingsAndFiles,
         hasFunction                 : YModule_hasFunction,
         get_functionIds             : YModule_get_functionIds,
         functionIds                 : YModule_get_functionIds,
