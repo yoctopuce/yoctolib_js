@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_api.js 21483 2015-09-11 14:08:40Z seb $
+ * $Id: yocto_api.js 21680 2015-10-02 13:42:44Z seb $
  *
  * High-level programming interface, common to all modules
  *
@@ -2371,7 +2371,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
      */
     function YAPI_GetAPIVersion()
     {
-        return "1.10.21486";
+        return "1.10.21701";
     }
 
     /**
@@ -3951,8 +3951,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
     //         function parameters, in milliseconds
     // @param callback : callback function that is invoked when the result is known.
     //         The callback function  receives three arguments: the caller-specific
-    //         context object, the receiving function object and the error code
-    //         (or YAPI.SUCCESS)
+    //         context object, the receiving function object and the downloaded data
     // @param context : caller-specific object that is passed as-is to the callback function
     //
     // @return nothing : the result is provided to the callback.
@@ -4306,6 +4305,25 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
         return YAPI_SUCCESS;
     }
 
+     /**
+      * Invalidate the cache. Invalidate the cache of the function attributes. Force the
+      * next call to get_xxx() or loadxxx() to use value that come from the device..
+      *
+      * @noreturn
+      */
+    function YFunction_clearCache()
+    {
+
+        var devreq = YAPI._funcDev(this._className, this._func);
+        if(devreq.errorType != YAPI_SUCCESS) {
+            return;
+        }
+        devreq.result.device.dropCache();
+        if (this._cacheExpiration > 0) {
+            this._cacheExpiration = YAPI.GetTickCount();
+        }
+    }
+
     /**
      * Preloads the function cache with a specified validity duration (asynchronous version).
      * By default, whenever accessing a device, all function attributes
@@ -4591,6 +4609,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
     YFunction.prototype.errMessage                  = YFunction_get_errorMessage;
     YFunction.prototype.load                        = YFunction_load;
     YFunction.prototype.load_async                  = YFunction_load_async;
+    YFunction.prototype.clearCache                  = YFunction_clearCache;
     YFunction.prototype.get_module                  = YFunction_get_module;
     YFunction.prototype.module                      = YFunction_get_module;
     YFunction.prototype.get_module_async            = YFunction_get_module_async;
@@ -4826,7 +4845,9 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
      */
     function YFirmwareUpdate_get_progress()
     {
-        this._processMore(0);
+        if (this._progress >= 0) {
+            this._processMore(0);
+        }
         return this._progress;
     }
 
@@ -4853,9 +4874,18 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
      */
     function YFirmwareUpdate_startUpdate()
     {
-        this._progress = 0;
-        this._progress_c = 0;
-        this._processMore(1);
+        var err;                    // str;
+        var leng;                   // int;
+        err = this._settings;
+        leng = (err).length;
+        if (( leng >= 6) && ("error:" == (err).substr(0, 6))) {
+            this._progress = -1;
+            this._progress_msg = (err).substr( 6, leng - 6);
+        } else {
+            this._progress = 0;
+            this._progress_c = 0;
+            this._processMore(1);
+        }
         return this._progress;
     }
 
@@ -8527,7 +8557,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
      *
      * @param path : the path of the byn file to use.
      *
-     * @return : A YFirmwareUpdate object.
+     * @return : A YFirmwareUpdate object or NULL on error.
      */
     function YModule_updateFirmware(path)
     {
@@ -8536,6 +8566,10 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
         // may throw an exception
         serial = this.get_serialNumber();
         settings = this.get_allSettings();
+        if ((settings).length == 0) {
+            this._throw(YAPI_IO_ERROR, "Unable to get device settings");
+            settings = "error:Unable to get device settings";
+        }
         return new YFirmwareUpdate(serial, path, settings);
     }
 
@@ -8546,7 +8580,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
      *
      * @return a binary buffer with all the settings.
      *
-     * On failure, throws an exception or returns  YAPI_INVALID_STRING.
+     * On failure, throws an exception or returns an binary object of size 0.
      */
     function YModule_get_allSettings()
     {
@@ -8556,30 +8590,109 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
         var res;                    // bin;
         var sep;                    // str;
         var name;                   // str;
+        var item;                   // str;
+        var t_type;                 // str;
+        var id;                     // str;
+        var url;                    // str;
         var file_data;              // str;
         var file_data_bin;          // bin;
-        var all_file_data;          // str;
+        var temp_data_bin;          // bin;
+        var ext_settings;           // str;
         var filelist = [];          // strArr;
+        var templist = [];          // strArr;
         // may throw an exception
         settings = this._download("api.json");
-        all_file_data = ", \"files\":[";
+        if ((settings).length == 0) {
+            return settings;
+        }
+        ext_settings = ", \"extras\":[";
+        templist = this.get_functionIds("Temperature");
+        sep = "";
+        for (ii in  templist) {
+            if(ii=='indexOf') continue; // IE8 Don'tEnum bug
+            if (YAPI._atoi(this.get_firmwareRelease()) > 9000) {
+                url = "api/"+ templist[ii]+"/sensorType";
+                t_type = this._download(url);
+                if (t_type == "RES_NTC") {
+                    id = ( templist[ii]).substr( 11, ( templist[ii]).length - 11);
+                    temp_data_bin = this._download("extra.json?page="+id);
+                    if ((temp_data_bin).length == 0) {
+                        return temp_data_bin;
+                    }
+                    item = ""+sep+"{\"fid\":\""+ templist[ii]+"\", \"json\":"+temp_data_bin+"}\n";
+                    ext_settings = ext_settings + item;
+                    sep = ",";
+                }
+            }
+        }
+        ext_settings =  ext_settings + "],\n\"files\":[";
         if (this.hasFunction("files")) {
             json = this._download("files.json?a=dir&f=");
+            if ((json).length == 0) {
+                return json;
+            }
             filelist = this._json_get_array(json);
             sep = "";
             for (ii in  filelist) {
                 if(ii=='indexOf') continue; // IE8 Don'tEnum bug
                 name = this._json_get_key( filelist[ii], "name");
+                if ((name).length == 0) {
+                    return name;
+                }
                 file_data_bin = this._download(this._escapeAttr(name));
                 file_data = YAPI._bytesToHexStr(file_data_bin);
-                file_data = ""+sep+"{\"name\":\""+name+"\", \"data\":\""+file_data+"\"}\n";
-                sep = ",";
-                all_file_data = all_file_data + file_data;;
+                item = ""+sep+"{\"name\":\""+name+"\", \"data\":\""+file_data+"\"}\n";
+                ext_settings = ext_settings + item;
+                sep = ",";;
             }
         }
-        all_file_data = all_file_data + "]}";
-        res = "{ \"api\":" + settings + all_file_data;
+        ext_settings = ext_settings + "]}";
+        res = "{ \"api\":" + settings + ext_settings;
         return res;
+    }
+
+    function YModule_loadThermistorExtra(funcId,jsonExtra)
+    {
+        var values = [];            // strArr;
+        var url;                    // str;
+        var curr;                   // str;
+        var currTemp;               // str;
+        var ofs;                    // int;
+        var size;                   // int;
+        url = "api/" + funcId + ".json?command=Z";
+        // may throw an exception
+        this._download(url);
+        // add records in growing resistance value
+        values = this._json_get_array(jsonExtra);
+        ofs = 0;
+        size = values.length;
+        while (ofs + 1 < size) {
+            curr = values[ofs];
+            currTemp = values[ofs + 1];
+            url = "api/"+funcId+"/.json?command=m"+curr+":"+currTemp;
+            this._download(url);
+            ofs = ofs + 2;
+        }
+        return YAPI_SUCCESS;
+    }
+
+    function YModule_set_extraSettings(jsonExtra)
+    {
+        var ii; // iterator
+        var extras = [];            // strArr;
+        var functionId;             // str;
+        var data;                   // str;
+        extras = this._json_get_array(jsonExtra);
+        for (ii in  extras) {
+            if(ii=='indexOf') continue; // IE8 Don'tEnum bug
+            functionId = this._get_json_path( extras[ii], "fid");
+            functionId = this._decode_json_string(functionId);
+            data = this._get_json_path( extras[ii], "json");
+            if (this.hasFunction(functionId)) {
+                this.loadThermistorExtra(functionId, data);
+            }
+        }
+        return YAPI_SUCCESS;
     }
 
     /**
@@ -8601,10 +8714,15 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
         var json;                   // str;
         var json_api;               // str;
         var json_files;             // str;
+        var json_extra;             // str;
         json = settings;
         json_api = this._get_json_path(json, "api");
         if (json_api == "") {
             return this.set_allSettings(settings);
+        }
+        json_extra = this._get_json_path(json, "extras");
+        if (!(json_extra == "")) {
+            this.set_extraSettings(json_extra);
         }
         this.set_allSettings(json_api);
         if (this.hasFunction("files")) {
@@ -9351,6 +9469,9 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
         updateFirmware              : YModule_updateFirmware,
         get_allSettings             : YModule_get_allSettings,
         allSettings                 : YModule_get_allSettings,
+        loadThermistorExtra         : YModule_loadThermistorExtra,
+        set_extraSettings           : YModule_set_extraSettings,
+        setExtraSettings            : YModule_set_extraSettings,
         set_allSettingsAndFiles     : YModule_set_allSettingsAndFiles,
         setAllSettingsAndFiles      : YModule_set_allSettingsAndFiles,
         hasFunction                 : YModule_hasFunction,

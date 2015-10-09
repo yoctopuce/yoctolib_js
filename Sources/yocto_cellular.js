@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_cellular.js 21485 2015-09-11 14:10:22Z seb $
+ * $Id: yocto_cellular.js 21680 2015-10-02 13:42:44Z seb $
  *
  * Implements the high-level API for Cellular functions
  *
@@ -180,7 +180,7 @@ var YCellular; // definition below
         this._cellOperator                   = Y_CELLOPERATOR_INVALID;     // Text
         this._cellIdentifier                 = Y_CELLIDENTIFIER_INVALID;   // Text
         this._imsi                           = Y_IMSI_INVALID;             // IMSI
-        this._message                        = Y_MESSAGE_INVALID;          // Text
+        this._message                        = Y_MESSAGE_INVALID;          // YFSText
         this._pin                            = Y_PIN_INVALID;              // PinPassword
         this._lockedOperator                 = Y_LOCKEDOPERATOR_INVALID;   // Text
         this._enableData                     = Y_ENABLEDATA_INVALID;       // ServiceScope
@@ -974,7 +974,14 @@ var YCellular; // definition below
     {
         var chrPos;                 // int;
         var cmdLen;                 // int;
-        var content;                // bin;
+        var waitMore;               // int;
+        var res;                    // str;
+        var buff;                   // bin;
+        var bufflen;                // int;
+        var buffstr;                // str;
+        var buffstrlen;             // int;
+        var idx;                    // int;
+        var suffixlen;              // int;
         // quote dangerous characters used in AT commands
         cmdLen = (cmd).length;
         chrPos = (cmd).indexOf("#");
@@ -995,9 +1002,67 @@ var YCellular; // definition below
             cmdLen = cmdLen + 2;
             chrPos = (cmd).indexOf("=");
         }
+        cmd = "at.txt?cmd="+cmd;
+        res = "";
+        // max 2 minutes (each iteration may take up to 5 seconds if waiting)
+        waitMore = 24;
+        while (waitMore > 0) {
+            buff = this._download(cmd);
+            bufflen = (buff).length;
+            buffstr = buff;
+            buffstrlen = (buffstr).length;
+            idx = bufflen - 1;
+            while ((idx > 0) && ((buff).charCodeAt(idx) != 64) && ((buff).charCodeAt(idx) != 10) && ((buff).charCodeAt(idx) != 13)) {
+                idx = idx - 1;
+            }
+            if ((buff).charCodeAt(idx) == 64) {
+                suffixlen = bufflen - idx;
+                cmd = "at.txt?cmd="+(buffstr).substr( buffstrlen - suffixlen, suffixlen);
+                buffstr = (buffstr).substr( 0, buffstrlen - suffixlen);
+                waitMore = waitMore - 1;
+            } else {
+                waitMore = 0;
+            }
+            res = ""+res+""+buffstr;
+        }
+        return res;
+    }
+
+    /**
+     * Returns the list detected cell operators in the neighborhood.
+     * This function will typically take between 30 seconds to 1 minute to
+     * return. Note that any SIM card can usually only connect to specific
+     * operators. All networks returned by this function might therefore
+     * not be available for connection.
+     *
+     * @return a list of string (cell operator names).
+     */
+    function YCellular_get_availableOperators()
+    {
+        var cops;                   // str;
+        var idx;                    // int;
+        var slen;                   // int;
+        var res = [];               // strArr;
         // may throw an exception
-        content = this._download("at.txt?cmd="+cmd);
-        return content;
+        cops = this._AT("+COPS=?");
+        slen = (cops).length;
+        res.length = 0;
+        idx = (cops).indexOf("(");
+        while (idx >= 0) {
+            slen = slen - (idx+1);
+            cops = (cops).substr( idx+1, slen);
+            idx = (cops).indexOf("\"");
+            if (idx > 0) {
+                slen = slen - (idx+1);
+                cops = (cops).substr( idx+1, slen);
+                idx = (cops).indexOf("\"");
+                if (idx > 0) {
+                    res.push((cops).substr( 0, idx));
+                }
+            }
+            idx = (cops).indexOf("(");
+        }
+        return res;
     }
 
     /**
@@ -1113,6 +1178,202 @@ var YCellular; // definition below
 
     //--- (end of generated code: YCellular implementation)
 
+    function YCellular_AT_async_internal(ctx, cellular, buff)
+    {
+        if(ctx.waitMore > 0) {
+            var bufflen = buff.length;
+            var idx = bufflen - 1;
+            while ((idx > 0) && (buff.charCodeAt(idx) != 64) && (buff.charCodeAt(idx) != 10) && (buff.charCodeAt(idx) != 13)) {
+                idx--;
+            }
+            if (buff.charCodeAt(idx) == 64) {
+                var suffixlen = bufflen - idx;
+                var cmd = "at.txt?cmd="+buff.substr( bufflen - suffixlen, suffixlen);
+                buff = buff.substr( 0, bufflen - suffixlen);
+                ctx.res += buff;
+                ctx.waitMore = ctx.waitMore - 1;                
+                return cellular._download_async(cmd, cellular._AT_async_internal, ctx);
+            }           
+        }
+        ctx.res += buff;
+        ctx.usercb(ctx.userctx, cellular, ctx.res);
+    }
+
+    /**
+     * Sends an AT command to the GSM module and returns the command output.
+     * The command will only execute when the GSM module is in standard
+     * command state, and should leave it in the exact same state.
+     * Use this function with great care !
+     *
+     * @param cmd : the AT command to execute, like for instance: "+CCLK?".
+     * @param callback : callback function that is invoked when the result is known.
+     *         The callback function receives three arguments:
+     *         - the user-specific context object
+     *         - the YCellular object that invoked the callback
+     *         - the result, as a string
+     * @param context : user-specific object that is passed as-is to the callback function
+     *
+     * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
+     */
+    function YCellular_AT_async(cmd, callback, context)
+    {
+        var chrPos;                 // int;
+        var cmdLen;                 // int;
+        
+        // quote dangerous characters used in AT commands
+        cmdLen = (cmd).length;
+        chrPos = (cmd).indexOf("#");
+        while (chrPos >= 0) {
+            cmd = ""+(cmd).substr( 0, chrPos)+""+String.fromCharCode(37)+"23"+(cmd).substr( chrPos+1, cmdLen-chrPos-1);
+            cmdLen = cmdLen + 2;
+            chrPos = (cmd).indexOf("#");
+        }
+        chrPos = (cmd).indexOf("+");
+        while (chrPos >= 0) {
+            cmd = ""+(cmd).substr( 0, chrPos)+""+String.fromCharCode(37)+"2B"+(cmd).substr( chrPos+1, cmdLen-chrPos-1);
+            cmdLen = cmdLen + 2;
+            chrPos = (cmd).indexOf("+");
+        }
+        chrPos = (cmd).indexOf("=");
+        while (chrPos >= 0) {
+            cmd = ""+(cmd).substr( 0, chrPos)+""+String.fromCharCode(37)+"3D"+(cmd).substr( chrPos+1, cmdLen-chrPos-1);
+            cmdLen = cmdLen + 2;
+            chrPos = (cmd).indexOf("=");
+        }
+        cmd = "at.txt?cmd="+cmd;
+        // max 2 minutes (each iteration may take up to 5 seconds if waiting)
+        this._download_async(cmd, this._AT_async_internal, { res: "", waitMore: 24, usercb: callback, userctx: context });
+    }
+
+    /**
+     * Returns the list detected cell operators in the neighborhood.
+     * This function will typically take between 30 seconds to 1 minute to
+     * return. Note that any SIM card can usually only connect to specific
+     * operators. All networks returned by this function might therefore
+     * not be available for connection.
+     *
+     * @param callback : callback function that is invoked when the result is known.
+     *         The callback function receives three arguments:
+     *         - the user-specific context object
+     *         - the YCellular object that invoked the callback
+     *         - the result: an array of operator names
+     * @param context : user-specific object that is passed as-is to the callback function
+     *
+     * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
+     */
+    function YCellular_get_availableOperators_async(callback, context)
+    {
+        // may throw an exception
+        this._AT_async("+COPS=?", function(ctx, cellular, cops) {
+            var res = [];
+            var slen = cops.length;
+            var idx = cops.indexOf("(");
+            while (idx >= 0) {
+                slen = slen - (idx+1);
+                cops = cops.substr( idx+1, slen);
+                idx = cops.indexOf("\"");
+                if (idx > 0) {
+                    slen = slen - (idx+1);
+                    cops = cops.substr( idx+1, slen);
+                    idx = cops.indexOf("\"");
+                    if (idx > 0) {
+                        res.push(cops.substr( 0, idx));
+                    }
+                }
+                idx = cops.indexOf("(");
+            }
+            callback(context, cellular, res);
+        }, null);
+    }
+
+    /**
+     * Returns a list of nearby cellular antennas, as required for quick
+     * geolocation of the device. The first cell listed is the serving
+     * cell, and the next ones are the neighboor cells reported by the
+     * serving cell.
+     *
+     * @param callback : callback function that is invoked when the result is known.
+     *         The callback function receives three arguments:
+     *         - the user-specific context object
+     *         - the YCellular object that invoked the callback
+     *         - the result: an array of YCellRecord objects
+     * @param context : user-specific object that is passed as-is to the callback function
+     *
+     * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
+     */
+    function YCellular_quickCellSurvey_async(callback,context)
+    {
+        // may throw an exception
+        this._AT_async("+CCED=0;#MONI=7;#MONI", function(ctx, cellular, moni) {
+            var ii;                     // iterator
+            var recs = [];              // strArr;
+            var llen;                   // int;
+            var mccs;                   // str;
+            var mcc;                    // int;
+            var mncs;                   // str;
+            var mnc;                    // int;
+            var lac;                    // int;
+            var cellId;                 // int;
+            var dbms;                   // str;
+            var dbm;                    // int;
+            var tads;                   // str;
+            var tad;                    // int;
+            var oper;                   // str;
+            var res = [];               // YCellRecordArr;
+            
+            mccs = (moni).substr(7, 3);
+            if ((mccs).substr(0, 1) == "0") {
+                mccs = (mccs).substr(1, 2);
+            }
+            if ((mccs).substr(0, 1) == "0") {
+                mccs = (mccs).substr(1, 1);
+            }
+            mcc = YAPI._atoi(mccs);
+            mncs = (moni).substr(11, 3);
+            if ((mncs).substr(2, 1) == ",") {
+                mncs = (mncs).substr(0, 2);
+            }
+            if ((mncs).substr(0, 1) == "0") {
+                mncs = (mncs).substr(1, (mncs).length-1);
+            }
+            mnc = YAPI._atoi(mncs);
+            recs = (moni).split('#');
+            // process each line in turn
+            res.length = 0;
+            for (ii in recs) {
+                if(ii=='indexOf') continue; // IE8 Don'tEnum bug
+                llen = (recs[ii]).length - 2;
+                if (llen >= 44) {
+                    if ((recs[ii]).substr(41, 3) == "dbm") {
+                        lac = parseInt((recs[ii]).substr(16, 4), 16);
+                        cellId = parseInt((recs[ii]).substr(23, 4), 16);
+                        dbms = (recs[ii]).substr(37, 4);
+                        if ((dbms).substr(0, 1) == " ") {
+                            dbms = (dbms).substr(1, 3);
+                        }
+                        dbm = YAPI._atoi(dbms);
+                        if (llen > 66) {
+                            tads = (recs[ii]).substr(54, 2);
+                            if ((tads).substr(0, 1) == " ") {
+                                tads = (tads).substr(1, 3);
+                            }
+                            tad = YAPI._atoi(tads);
+                            oper = (recs[ii]).substr(66, llen-66);
+                        } else {
+                            tad = -1;
+                            oper = "";
+                        }
+                        if (lac < 65535) {
+                            res.push(new YCellRecord(mcc, mnc, lac, cellId, dbm, tad, oper));
+                        }
+                    }
+                }
+            }
+            callback(context, cellular, res);
+        }, null);
+    }
+
+
     //--- (generated code: YCellular initialization)
     YCellular = YFunction._Subclass(_YCellular, {
         // Constants
@@ -1196,11 +1457,17 @@ var YCellular; // definition below
         set_apnAuth                 : YCellular_set_apnAuth,
         setApnAuth                  : YCellular_set_apnAuth,
         _AT                         : YCellular_AT,
+        get_availableOperators      : YCellular_get_availableOperators,
+        availableOperators          : YCellular_get_availableOperators,
         quickCellSurvey             : YCellular_quickCellSurvey,
         nextCellular                : YCellular_nextCellular,
         _parseAttr                  : YCellular_parseAttr
     });
     //--- (end of generated code: YCellular initialization)
+    YCellular.prototype._AT_async_internal           = YCellular_AT_async_internal;
+    YCellular.prototype._AT_async                    = YCellular_AT_async;
+    YCellular.prototype.get_availableOperators_async = YCellular_get_availableOperators_async;
+    YCellular.prototype.quickCellSurvey_async        = YCellular_quickCellSurvey_async;
 })();
 
 //--- (generated code: Cellular functions)
