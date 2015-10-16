@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_api.js 21680 2015-10-02 13:42:44Z seb $
+ * $Id: yocto_api.js 21757 2015-10-13 22:47:39Z mvuilleu $
  *
  * High-level programming interface, common to all modules
  *
@@ -1208,6 +1208,118 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
                  result:YAPI_SUCCESS};
     }
 
+    function YAPI_getHub(str_rootUrl)
+    {
+        var i, hubUrl;
+        
+        for(i = 0; i < this._hubs.length; i++) {
+            hubUrl = this._hubs[i].urlInfo.url;
+            if(str_rootUrl.slice(0,hubUrl.length) == hubUrl) {
+                return this._hubs[i];
+            }
+        }
+        return null;
+    }
+
+    function YAPI_parseEvents(hub, str_lines)
+    {
+        hub.devListValidity = 10000; // 10s validity when notification are working properly
+        
+        var rows = str_lines.split("\n");
+        var nrows = rows.length;
+        var value;
+        // in continuous mode, last line is either empty or a partial event
+        nrows--;
+        for(var idx = 0; idx < nrows; idx++) {
+            var ev = rows[idx];
+            if(ev.length == 0) continue;
+            var firstCode = ev.charAt(0);
+            if(ev.length >= 3 && firstCode >= NOTIFY_NETPKT_FLUSHV2YDX && firstCode <= NOTIFY_NETPKT_TIMEAVGYDX) {
+                hub.retryDelay = 15;
+                if(hub.notifPos>=0) hub.notifPos += ev.length+1;
+                var devydx = ev.charCodeAt(1) - 65; // from 'A'
+                var funydx = ev.charCodeAt(2) - 48; // from '0'
+                if(funydx >= 64) { // high bit of devydx is on second character
+                    funydx -= 64;
+                    devydx += 128;
+                }
+                var serial = hub.serialByYdx[devydx];
+                if(serial && YAPI._devs[serial]) {
+                    var funcid = (funydx == 0xf ? 'time' : YAPI._devs[serial].functionId(funydx));
+                    if(funcid != "") {
+                        value = ev.slice(3);
+                        switch (firstCode) {
+                            case NOTIFY_NETPKT_FUNCVALYDX:
+                                if (value != "") value = value.split("\0")[0];
+                                // function value ydx (tiny notification)
+                                YAPI.setFunctionValue(serial + "." + funcid, value);
+                                break;
+                            case NOTIFY_NETPKT_DEVLOGYDX:
+                                // log notification
+                                break;
+                            case NOTIFY_NETPKT_TIMEVALYDX:
+                            case NOTIFY_NETPKT_TIMEAVGYDX:
+                            case NOTIFY_NETPKT_TIMEV2YDX:
+
+                                // timed value report
+                                var pos, arr = [(firstCode == 'x' ? 0 : (firstCode == 'z' ? 1 : 2))];
+                                for (pos = 0; pos < value.length; pos += 2) {
+                                    arr.push(parseInt(value.substr(pos, 2), 16));
+                                }
+                                var dev = YAPI._devs[serial];
+                                if (funcid == 'time') {
+                                    var time = arr[1] + 0x100 * arr[2] + 0x10000 * arr[3] + 0x1000000 * arr[4];
+                                    dev.setDeviceTime(time + arr[5] / 250.0);
+                                } else {
+                                    YAPI.setTimedReport(serial + "." + funcid, dev.getDeviceTime(), arr);
+                                }
+                                break;
+                            case NOTIFY_NETPKT_FUNCV2YDX:
+                                var rawval = YAPI.decodeNetFuncValV2(value);
+                                if (rawval != null) {
+                                    var decodedval = YAPI.decodePubVal(rawval[0], rawval, 1, 6);
+                                    YAPI.setFunctionValue(serial + "." + funcid, decodedval);
+                                }
+                                break;
+                            case NOTIFY_NETPKT_FLUSHV2YDX:
+                            // To be implemented later
+                            default:
+                                break;
+                        }
+                    }
+                }
+            } else if(ev.length > 5 && ev.substr(0,4) == 'YN01') {
+                hub.retryDelay = 15;
+                if(hub.notifPos>=0) hub.notifPos += ev.length+1;
+                var notype = ev.substr(4,1);
+                if(notype == '@') {
+                    hub.notifPos = parseInt(ev.slice(5));
+                } else switch(parseInt(notype)) {
+                case 0: // device name change, or arrival
+                case 2: // device plug/unplug
+                case 4: // function name change
+                case 8: // function name change (ydx)
+                    hub.devListExpires = 0;
+                    break;
+                case 5: // function value (long notification)
+                    var parts = ev.slice(5).split(",");
+                    if(parts.length > 2) {
+                        value = parts[2].split("\0");
+                        YAPI.setFunctionValue(parts[0]+"."+parts[1], value[0]);
+                    }
+                    break;
+                }
+            } else {
+                // oops, bad notification ? be safe until a good one comes
+                hub.devListValidity = 500;
+                hub.devListExpires = 0;
+                //alert('bad event on line '+idx+'/'+nrows+' : '+ev);
+                hub.notifPos = -1;
+            }
+            hub.currPos += ev.length + 1;
+        }        
+    }
+
     // Handle the event-monitoring work on a registered hub
     // Called initially with a context containing just the 'rooturl'
     // of the hub to monitor
@@ -1240,7 +1352,6 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
                         }
                     } else {
                         // receiving data properly
-                        var value;
                         var newlen;
                         if(httpRequest.readyState == 3) {
                             // when using reconnection mode, ignore state 3
@@ -1266,99 +1377,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
                             newlen = httpRequest.responseText.length;
                         }
                         if(newlen > hub.currPos) {
-                            hub.devListValidity = 10000; // 10s validity when notification are working properly
-                            var rows = httpRequest.responseText.substr(hub.currPos,newlen-hub.currPos).split("\n");
-                            var nrows = rows.length;
-                            // in continuous mode, last line is either empty or a partial event
-                            nrows--;
-                            for(var idx = 0; idx < nrows; idx++) {
-                                var ev = rows[idx];
-                                if(ev.length == 0) continue;
-                                var firstCode = ev.charAt(0);
-                                if(ev.length >= 3 && firstCode >= NOTIFY_NETPKT_FLUSHV2YDX && firstCode <= NOTIFY_NETPKT_TIMEAVGYDX) {
-                                    hub.retryDelay = 15;
-                                    if(hub.notifPos>=0) hub.notifPos += ev.length+1;
-                                    var devydx = ev.charCodeAt(1) - 65; // from 'A'
-                                    var funydx = ev.charCodeAt(2) - 48; // from '0'
-                                    if(funydx >= 64) { // high bit of devydx is on second character
-                                        funydx -= 64;
-                                        devydx += 128;
-                                    }
-                                    var serial = hub.serialByYdx[devydx];
-                                    if(serial && YAPI._devs[serial]) {
-                                        var funcid = (funydx == 0xf ? 'time' : YAPI._devs[serial].functionId(funydx));
-                                        if(funcid != "") {
-                                            value = ev.slice(3);
-                                            switch (firstCode) {
-                                                case NOTIFY_NETPKT_FUNCVALYDX:
-                                                    if (value != "") value = value.split("\0")[0];
-                                                    // function value ydx (tiny notification)
-                                                    YAPI.setFunctionValue(serial + "." + funcid, value);
-                                                    break;
-                                                case NOTIFY_NETPKT_DEVLOGYDX:
-                                                    // log notification
-                                                    break;
-                                                case NOTIFY_NETPKT_TIMEVALYDX:
-                                                case NOTIFY_NETPKT_TIMEAVGYDX:
-                                                case NOTIFY_NETPKT_TIMEV2YDX:
-
-                                                    // timed value report
-                                                    var pos, arr = [(firstCode == 'x' ? 0 : (firstCode == 'z' ? 1 : 2))];
-                                                    for (pos = 0; pos < value.length; pos += 2) {
-                                                        arr.push(parseInt(value.substr(pos, 2), 16));
-                                                    }
-                                                    var dev = YAPI._devs[serial];
-                                                    if (funcid == 'time') {
-                                                        var time = arr[1] + 0x100 * arr[2] + 0x10000 * arr[3] + 0x1000000 * arr[4];
-                                                        dev.setDeviceTime(time + arr[5] / 250.0);
-                                                    } else {
-                                                        YAPI.setTimedReport(serial + "." + funcid, dev.getDeviceTime(), arr);
-                                                    }
-                                                    break;
-                                                case NOTIFY_NETPKT_FUNCV2YDX:
-                                                    var rawval = YAPI.decodeNetFuncValV2(value);
-                                                    if (rawval != null) {
-                                                        var decodedval = YAPI.decodePubVal(rawval[0], rawval, 1, 6);
-                                                        YAPI.setFunctionValue(serial + "." + funcid, decodedval);
-                                                    }
-                                                    break;
-                                                case NOTIFY_NETPKT_FLUSHV2YDX:
-                                                // To be implemented later
-                                                default:
-                                                    break;
-                                            }
-                                        }
-                                    }
-                                } else if(ev.length > 5 && ev.substr(0,4) == 'YN01') {
-                                    hub.retryDelay = 15;
-                                    if(hub.notifPos>=0) hub.notifPos += ev.length+1;
-                                    var notype = ev.substr(4,1);
-                                    if(notype == '@') {
-                                        hub.notifPos = parseInt(ev.slice(5));
-                                    } else switch(parseInt(notype)) {
-                                    case 0: // device name change, or arrival
-                                    case 2: // device plug/unplug
-                                    case 4: // function name change
-                                    case 8: // function name change (ydx)
-                                        hub.devListExpires = 0;
-                                        break;
-                                    case 5: // function value (long notification)
-                                        var parts = ev.slice(5).split(",");
-                                        if(parts.length > 2) {
-                                            value = parts[2].split("\0");
-                                            YAPI.setFunctionValue(parts[0]+"."+parts[1], value[0]);
-                                        }
-                                        break;
-                                    }
-                                } else {
-                                    // oops, bad notification ? be safe until a good one comes
-                                    hub.devListValidity = 500;
-                                    hub.devListExpires = 0;
-                                    //alert('bad event on line '+idx+'/'+nrows+' : '+ev);
-                                    hub.notifPos = -1;
-                                }
-                                hub.currPos += ev.length + 1;
-                            }
+                            YAPI.parseEvents(hub, httpRequest.responseText.substr(hub.currPos,newlen-hub.currPos));
                         }
                         // trigger immediately a new connection if closed in success
                         if(httpRequest.readyState == 4 && parseInt(httpRequest.status) != 0) {
@@ -1693,7 +1712,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
         var dev = null;
         var serial;
 
-        if(str_device.substr(0,7) == "http://") {
+        if(str_device.substr(0,7) == "http://" || str_device.substr(0,5) == "ws://") {
             // lookup by url
             serial = this._snByUrl[str_device];
             if(serial != undefined) dev = this._devs[serial];
@@ -1914,6 +1933,27 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
         return null;
     }
 
+    function YAPI_webSocketMsg(obj_hub, arr_bytes)
+    {
+        if(arr_bytes[0] == 8) {
+            var text = '';
+            for(var i = 1; i < arr_bytes.length; i++) {
+                text += String.fromCharCode(arr_bytes[i]);
+            }
+            YAPI.parseEvents(obj_hub, text);
+            return;
+        }
+        // Other types of messages
+        console.log("FIXME MSG: ", obj_hub, arr_bytes);
+    }
+
+    function YAPI_webSocketReq(obj_hub, obj_request, str_body)
+    {
+        var relUrl = obj_request.reqUrl.slice(obj_hub.urlInfo.url.length-1);
+        var subReq = obj_request.method+" "+relUrl+" \r\n";
+        console.log("FIXME REQ: ", obj_hub, subReq, str_body);
+    }
+
     // Perform an HTTP request on a device, by URL or identifier.
     // When loading the REST API from a device by identifier, the device cache will be used.
     // The 3rd argument of the function is optional, and used for implementing the asynchronous
@@ -1930,7 +1970,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
         }
         var lines = str_request.split("\n");
         var lockdev, baseUrl;
-        if(str_device.substr(0,7) == "http://") {
+        if(str_device.substr(0,7) == "http://" || str_device.substr(0,5) == "ws://") {
             baseUrl = str_device;
             if (baseUrl.slice(-1) != "/") baseUrl = baseUrl + "/";
             if(lines[0].substr(0,12) != "GET /not.byn") {
@@ -1942,7 +1982,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
         } else {
             lockdev = this.getDevice(str_device);
             if(!lockdev) {
-                return {errorType:YAPI_DEVICE_NOT_FOUND,
+                return { errorType:YAPI_DEVICE_NOT_FOUND,
                          errorMsg:"Device ["+str_device+"] not online",
                          result:null};
             }
@@ -1955,11 +1995,11 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
         // map str_device to a URL
         var words = lines[0].split(" ");
         if(words.length < 2) {
-            return {errorType:YAPI_INVALID_ARGUMENT,
+            return { errorType:YAPI_INVALID_ARGUMENT,
                      errorMsg: "Invalid request, not enough words; expected a method name and a URL",
                      result: null};
         } else if(words.length > 2) {
-            return {errorType:YAPI_INVALID_ARGUMENT,
+            return { errorType:YAPI_INVALID_ARGUMENT,
                      errorMsg: "Invalid request, too many words; make sure the URL is URI-encoded",
                      result: null};
         }
@@ -1970,6 +2010,63 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
             baseUrl = baseUrl.slice(baseUrl.indexOf('/',16));
             return this._httpCallbackRequest(method, baseUrl+devUrl, func_statechanged, obj_body);
         }
+        // Synchronous queries are always HTTP (there is no synchronous WebSocket API)
+        var isWebSocket = baseUrl.slice(0,5) == "ws://";
+        if(isWebSocket && !async) {
+            isWebSocket = false;
+            baseUrl = "http://" + baseUrl.slice(5);
+        }
+        if(isWebSocket) {
+            var hub = YAPI.getHub(baseUrl);
+            if(!hub.websocket) {
+                // Open WebSocket connection if not yet done
+                var ws = new WebSocket(hub.urlInfo.url+'not.byn');
+                ws.binaryType = "arraybuffer";
+                ws.onopen    = function(evt) { console.log("WebSocket open !"); }; 
+                ws.onerror   = function(evt) { console.log("WebSocket error: ", evt); }; 
+                ws.onclose   = function(evt) { console.log("WebSocket close !"); };             
+                ws.onmessage = function(evt) { YAPI.webSocketMsg(hub, new Uint8Array(evt.data)); }
+                hub.websocket = ws;
+            }
+            if(!obj_body) obj_body = '';
+            var pseudoRequest = {};
+            pseudoRequest.method = method;
+            pseudoRequest.reqUrl = baseUrl+devUrl;
+            pseudoRequest.onComplete = function() {
+                if(lockdev) {
+                    lockdev._runningQuery = null;
+                    lockdev._busy--;
+                    func_statechanged(pseudoRequest);
+                    while(lockdev._busy == 0 && lockdev._pendingQueries.length > 0) {
+                        var pq = lockdev._pendingQueries.shift();
+                        if(pq.xhr) {
+                            // send pending query
+                            lockdev._busy++;
+                            lockdev._runningQuery = pq.xhr;
+                            YAPI.webSocketReq(hub, pq.xhr, pq.body);
+                        } else if(pq.cb) {
+                            // notify queued callback
+                            pq.cb(pq.ctx, pq.obj);
+                        }
+                    }
+                } else {
+                    func_statechanged(pseudoRequest);
+                }
+            };
+            if(lockdev && (lockdev._busy > 0 || lockdev._pendingQueries.length > 0)) {
+                lockdev._pendingQueries.push({xhr:pseudoRequest,body:obj_body});
+            } else {
+                if(lockdev) {
+                    lockdev._busy++;
+                    lockdev._runningQuery = pseudoRequest;
+                }
+                YAPI.webSocketReq(hub, pseudoRequest, obj_body);
+            }
+            return { errorType:YAPI_SUCCESS,
+                     errorMsg:"no error",
+                     result:pseudoRequest};
+        }
+        
         // FOR BROWSERS ONLY:
         var httpRequest = (window.XMLHttpRequest) ? new XMLHttpRequest() : new ActiveXObject("Microsoft.XMLHTTP");
         try {
@@ -2037,7 +2134,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
             }
         } catch(err) {
             //alert('http error:'+(err.message || err.description));
-            return {errorType:YAPI_IO_ERROR,
+            return { errorType:YAPI_IO_ERROR,
                      errorMsg:"HTTP request raised an exception: "+(err.message || err.description || err.name),
                      result:null};
         }
@@ -2045,7 +2142,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
             // called in blocking mode
             var status = parseInt(httpRequest.status);
             if(status != 200 && status != 304) {
-                return {errorType:YAPI_IO_ERROR,
+                return { errorType:YAPI_IO_ERROR,
                          errorMsg:"Received HTTP status "+status+" ("+httpRequest.responseText+") for "+baseUrl+devUrl,
                          result:null};
             }
@@ -2054,7 +2151,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
                      result:String(httpRequest.responseText)};
         } else {
             // called in asynchronous mode
-            return {errorType:YAPI_SUCCESS,
+            return { errorType:YAPI_SUCCESS,
                      errorMsg:"no error",
                      result:httpRequest};
         }
@@ -2371,7 +2468,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
      */
     function YAPI_GetAPIVersion()
     {
-        return "1.10.21735";
+        return "1.10.21816";
     }
 
     /**
@@ -2449,10 +2546,13 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
         var pass = '';
         var port = '4444';
         var host;
-        var url="http://";
+        var url = "http://";
 
         if(str_url.slice(0,7) == 'http://') {
             str_url = str_url.slice(7);
+        } else if(str_url.slice(0,5) == 'ws://') {
+            url = "ws://";
+            str_url = str_url.slice(5);
         }
         var pos = str_url.indexOf('/');
         if (pos > 0) {
@@ -2480,7 +2580,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
             port = str_url.slice(pos + 1);
         }
         if (host == 'callback')
-            url ="http://callback:4444/";
+            url = "http://callback:4444/";
         else
             url += host + ':' + port + "/";
         var res = {'user':user, 'pass':pass, 'host':host, 'port':port, 'url':url};
@@ -2499,6 +2599,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
         var newhub = {
             hubidx          : this._hubs.length,   // index of hub in array
             urlInfo         : var_urlInfo,         // structure that describe the root URL of the hub
+            websocket       : null,                // websocket connection, if active
             notiflen        : 32000,               // notification message length before forced disconnection
             notifTrigger    : 0,                   // timestamp of next manual updateDeviceList that would open not.byn
             devListValidity : 500,                 // default validity of updateDeviceList
@@ -3292,10 +3393,14 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
     _YAPI.prototype.addTimedReportEvent   = YAPI_addTimedReportEvent;
     _YAPI.prototype.getFirstHardwareId    = YAPI_getFirstHardwareId;
     _YAPI.prototype.getNextHardwareId     = YAPI_getNextHardwareId;
+    _YAPI.prototype.webSocketMsg          = YAPI_webSocketMsg;
+    _YAPI.prototype.webSocketReq          = YAPI_webSocketReq;
     _YAPI.prototype.devRequest            = YAPI_devRequest;
     _YAPI.prototype.devRequest_async      = YAPI_devRequest_async;
     _YAPI.prototype.funcRequest           = YAPI_funcRequest;
     _YAPI.prototype.funcRequest_async     = YAPI_funcRequest_async;
+    _YAPI.prototype.getHub                = YAPI_getHub;
+    _YAPI.prototype.parseEvents           = YAPI_parseEvents;
     _YAPI.prototype.monitorEvents         = YAPI_monitorEvents;
     _YAPI.prototype.decodeNetFuncValV2    = YAPI_decodeNetFuncValV2;
     _YAPI.prototype.decodePubVal          = YAPI_decodePubVal;
