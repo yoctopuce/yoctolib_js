@@ -1,0 +1,58 @@
+<HTML>
+<HEAD>
+ <TITLE> Hello World</TITLE>
+ <SCRIPT type="text/javascript" src="../../Sources/yocto_api.js"></SCRIPT>
+ <SCRIPT type="text/javascript" src="../../Sources/yocto_currentloopoutput.js"></SCRIPT>
+ <SCRIPT language='javascript1.5'  type='text/JavaScript'>
+ <!--
+
+ // Setup the API to use the VirtualHub on local machine
+ if(yRegisterHub('http://127.0.0.1:4444/') != YAPI_SUCCESS) {
+     alert("Cannot contact VirtualHub on 127.0.0.1");
+ }
+
+ function refresh()
+ { 
+     var loop, serial = document.getElementById('serial').value;
+
+     if(serial == '') {
+         // or use any conected module suitable for the demo
+         loop = yFirstCurrentLoopOutput();
+         if(loop) {
+             serial = loop.module().get_serialNumber();
+             document.getElementById('serial').value = serial;
+         }
+     }
+     loop  = yFindCurrentLoopOutput(serial+".currentLoopOutput");   
+     
+     if ((loop.isOnline()) ) {
+  		 document.getElementById('msg').innerHTML = '';
+		 var pwrState = '';
+		 switch (loop.get_loopPower())
+		  { case Y_LOOPPOWER_POWEROK:  pwrState = 'Loop is powered'; break;  
+            case Y_LOOPPOWER_LOWPWR :  pwrState = 'Insufficient loop Voltage';  break;
+            default : pwrState = 'Loop is not Powered'; break;
+		  }
+		 document.getElementById('loopPwr').innerHTML=pwrState;
+		 var input = document.getElementById('current');
+		 if (document.activeElement == input)
+		    loop.set_current(parseFloat(input.value));
+	     else
+            input.value= loop.get_current();		          
+     } else {
+         document.getElementById('msg').innerHTML = 'Module not connected';         
+     }
+     setTimeout('refresh()',500);
+ }
+  
+ -->
+</SCRIPT>
+</HEAD>  
+<BODY onload='refresh();'>
+ Module to use:     <input id='serial'><br>
+ Loop power state:  <span id='loopPwr'></span><br>
+ Loop current:      <input id='current'>mA<br>
+ <span id='msg'></span><br>
+</BODY>
+</HTML> 
+

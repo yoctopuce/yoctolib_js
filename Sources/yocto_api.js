@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_api.js 21757 2015-10-13 22:47:39Z mvuilleu $
+ * $Id: yocto_api.js 22191 2015-12-02 06:49:31Z mvuilleu $
  *
  * High-level programming interface, common to all modules
  *
@@ -458,7 +458,8 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
             var pos = resolved.result.indexOf(".");
             var str_serialMod = resolved.result.substr(0,pos);
             var str_friendModFull = YAPI.getFriendlyNameFunction("Module",str_serialMod).result;
-            var str_friendMod = str_friendModFull.substr(0,str_friendModFull.indexOf("."));
+            var int_friendModDot = str_friendModFull.indexOf(".");
+            var str_friendMod = (int_friendModDot > 0 ? str_friendModFull.substr(0,int_friendModDot) : str_friendModFull);
             var str_friendFunc = resolved.result.substr(pos+1);
             name = this._nameByHwId[resolved.result];
             if(name != undefined && name!="") {
@@ -885,6 +886,20 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
         return "";
     }
 
+    // Retrieve the base type of the nth function (beside "module") in the device
+    function YDevice_functionBaseType(int_idx)
+    {
+        if(int_idx < this._functions.length) {
+            var ftype = YAPI.getFunctionBaseType(this._serialNumber+"."+this._functions[int_idx][0]);
+            for (var name in Y_BASETYPES) {
+                if (Y_BASETYPES[name] == ftype){
+                    return name;
+                }
+            }
+        }
+        return "Function";
+    }
+
     // Retrieve the type of the nth function (beside "module") in the device
     function YDevice_functionType(int_idx)
     {
@@ -939,6 +954,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
     YDevice.prototype.functionCount    = YDevice_functionCount;
     YDevice.prototype.functionId       = YDevice_functionId;
     YDevice.prototype.functionType     = YDevice_functionType;
+    YDevice.prototype.functionBaseType = YDevice_functionBaseType;
     YDevice.prototype.functionName     = YDevice_functionName;
     YDevice.prototype.functionValue    = YDevice_functionValue;
 
@@ -1211,7 +1227,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
     function YAPI_getHub(str_rootUrl)
     {
         var i, hubUrl;
-        
+
         for(i = 0; i < this._hubs.length; i++) {
             hubUrl = this._hubs[i].urlInfo.url;
             if(str_rootUrl.slice(0,hubUrl.length) == hubUrl) {
@@ -1328,6 +1344,9 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
         var yhub = YAPI._hubs[int_hubidx];
         if(yhub.urlInfo.host == 'callback') {
             return; // no event monitoring in callback mode
+        }
+        if(yhub.websocket) {
+            return; // no need for additional request, websocket running
         }
         var args = "?len="+yhub.notiflen.toString();
         if(yhub.notifPos > 0) {
@@ -1868,6 +1887,13 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
         return this._fnByType[classname].getFunctionValue(str_hwid);
     }
 
+    // Retrieve a function advertised value by hardware id
+    function YAPI_getFunctionBaseType(str_hwid)
+    {
+        var classname = this.functionClass(str_hwid);
+        return this._fnByType[classname].getBaseType();
+    }
+
     // Queue a function value event
     function YAPI_addValueEvent(obj_func, str_newval)
     {
@@ -1935,8 +1961,8 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
 
     function YAPI_webSocketMsg(obj_hub, arr_bytes)
     {
-        if(arr_bytes[0] == 8) {
-            var text = '';
+        var text = '';
+        if(arr_bytes[0] == 8*8) { // YSTREAM_TCP_NOTIF
             for(var i = 1; i < arr_bytes.length; i++) {
                 text += String.fromCharCode(arr_bytes[i]);
             }
@@ -1944,14 +1970,79 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
             return;
         }
         // Other types of messages
-        console.log("FIXME MSG: ", obj_hub, arr_bytes);
+        var ws = obj_hub.websocket;
+        var ystream = arr_bytes[0] >> 3;
+        var tcpchan = arr_bytes[0] & 7;
+        if(ystream == 1 || ystream == 2) { // YSTREAM_TCP or YSTREAM_TCP_CLOSE
+            if(!ws.tcpChan[tcpchan]) {
+                console.log("WS: Drop frame for closed tcpChan "+tcpchan);
+                return;
+            }
+            for(var i = 1; i < arr_bytes.length; i++) {
+                text += String.fromCharCode(arr_bytes[i]);
+            }
+            ws.tcpChan[tcpchan].responseText += text;
+            if(ystream == 2) { // YSTREAM_TCP_CLOSE
+                // send YSTREAM_TCP_CLOSE
+                var frame = new Uint8Array(1);
+                frame[0] = 8*2 + tcpchan;
+                obj_hub.websocket.send(frame);
+                // free tcp channel
+                var pseudoReq = ws.tcpChan[tcpchan];
+                ws.tcpChan[tcpchan] = null;
+                // process incoming reply
+                var pos = pseudoReq.responseText.indexOf("\r");
+                var words = pseudoReq.responseText.slice(0,pos).split(" ");
+                if(words[0] == 'OK') {
+                    pseudoReq.status = 200;
+                } else if(words[0] == '0K') {
+                    console.log("WS: Unexpected persistent connection!")
+                    pseudoReq.status = 200;
+                } else {
+                    pseudoReq.status = words[1];
+                }
+                pseudoReq.readyState = 4;
+                pseudoReq.responseText = pseudoReq.responseText.slice(pos+4);
+                pseudoReq.onComplete();
+            }
+            return;
+        }
+        console.log("WS: Unsupported message", arr_bytes);
     }
 
     function YAPI_webSocketReq(obj_hub, obj_request, str_body)
     {
         var relUrl = obj_request.reqUrl.slice(obj_hub.urlInfo.url.length-1);
-        var subReq = obj_request.method+" "+relUrl+" \r\n";
-        console.log("FIXME REQ: ", obj_hub, subReq, str_body);
+        var subReq = obj_request.method+" "+relUrl+" \r\n\r\n";
+        var ws = obj_hub.websocket;
+        var tcpchan = 0;
+
+        while(ws.tcpChan[tcpchan]) {
+            tcpchan++;
+        }
+        if(tcpchan > 2) { 
+            // For now, limit to 2 channels (up to 8 could be possible)
+            console.log("WebSocket: TOO MANY CONCURRENT TCP CHANNELS");
+            return;
+        }
+        ws.tcpChan[tcpchan] = obj_request;
+
+        var pos = 0;
+        while(pos < subReq.length) {
+            var framelen = 1 + subReq.length - pos;
+            if(framelen > 125) framelen = 125;
+            var datalen = framelen - 1;
+            var i, frame = new Uint8Array(framelen);
+            
+            // use YSTREAM_TCP
+            frame[0] = 8 + tcpchan;
+            for (i = 0; i < datalen; i++) {
+                frame[1+i] = subReq.charCodeAt(pos+i);
+            }
+            pos += framelen-1;
+            obj_hub.websocket.send(frame);            
+        }
+        // FIXME: send body as well !
     }
 
     // Perform an HTTP request on a device, by URL or identifier.
@@ -2022,16 +2113,24 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
                 // Open WebSocket connection if not yet done
                 var ws = new WebSocket(hub.urlInfo.url+'not.byn');
                 ws.binaryType = "arraybuffer";
-                ws.onopen    = function(evt) { console.log("WebSocket open !"); }; 
-                ws.onerror   = function(evt) { console.log("WebSocket error: ", evt); }; 
-                ws.onclose   = function(evt) { console.log("WebSocket close !"); };             
+                ws.onopen    = function(evt) { 
+                    while(ws.openQueue.length > 0) {
+                        (ws.openQueue.shift())();
+                    }
+                }; 
+                ws.onerror   = function(evt) { console.log("WebSocket error: ", evt); hub.websocket=null; }; 
+                ws.onclose   = function(evt) { console.log("WebSocket close !"); hub.websocket=null; };             
                 ws.onmessage = function(evt) { YAPI.webSocketMsg(hub, new Uint8Array(evt.data)); }
+                // Add our own custom context fields to the websocket
+                ws.openQueue = [];
+                ws.tcpChan = [];
                 hub.websocket = ws;
             }
             if(!obj_body) obj_body = '';
             var pseudoRequest = {};
             pseudoRequest.method = method;
             pseudoRequest.reqUrl = baseUrl+devUrl;
+            pseudoRequest.responseText = '';
             pseudoRequest.onComplete = function() {
                 if(lockdev) {
                     lockdev._runningQuery = null;
@@ -2060,7 +2159,16 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
                     lockdev._busy++;
                     lockdev._runningQuery = pseudoRequest;
                 }
-                YAPI.webSocketReq(hub, pseudoRequest, obj_body);
+                if(hub.websocket.readyState != 1) {
+                    // websocket not yet ready
+                    if(devUrl.slice(0,7) != 'not.byn') {
+                        ws.openQueue.push(function() {
+                            YAPI.webSocketReq(hub, pseudoRequest, obj_body);
+                        });                
+                    }
+                } else {
+                    YAPI.webSocketReq(hub, pseudoRequest, obj_body);
+                }
             }
             return { errorType:YAPI_SUCCESS,
                      errorMsg:"no error",
@@ -2468,7 +2576,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
      */
     function YAPI_GetAPIVersion()
     {
-        return "1.10.21816";
+        return "1.10.22324";
     }
 
     /**
@@ -3388,6 +3496,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
     _YAPI.prototype.getFunction           = YAPI_getFunction;
     _YAPI.prototype.setFunctionValue      = YAPI_setFunctionValue;
     _YAPI.prototype.getFunctionValue      = YAPI_getFunctionValue;
+    _YAPI.prototype.getFunctionBaseType   = YAPI_getFunctionBaseType;
     _YAPI.prototype.setTimedReport        = YAPI_setTimedReport;
     _YAPI.prototype.addValueEvent         = YAPI_addValueEvent;
     _YAPI.prototype.addTimedReportEvent   = YAPI_addTimedReportEvent;
@@ -3641,6 +3750,12 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
         }
     }
 
+    function YFunction_set_advertisedValue(newval)
+    {   var rest_val;
+        rest_val = newval;
+        return this._setAttr('advertisedValue',rest_val);
+    }
+
     /**
      * Retrieves a function for a given identifier.
      * The identifier can be specified using several formats:
@@ -3712,6 +3827,37 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
         } else {
         }
         return 0;
+    }
+
+    /**
+     * Disable the propagation of every new advertised value to the parent hub.
+     * You can use this function to save bandwidth and CPU on computers with limited
+     * resources, or to prevent unwanted invocations of the HTTP callback.
+     * Remember to call the saveToFlash() method of the module if the
+     * modification must be kept.
+     *
+     * @return YAPI_SUCCESS when the call succeeds.
+     *
+     * On failure, throws an exception or returns a negative error code.
+     */
+    function YFunction_muteValueCallbacks()
+    {
+        return this.set_advertisedValue("SILENT");
+    }
+
+    /**
+     * Re-enable the propagation of every new advertised value to the parent hub.
+     * This function reverts the effect of a previous call to muteValueCallbacks().
+     * Remember to call the saveToFlash() method of the module if the
+     * modification must be kept.
+     *
+     * @return YAPI_SUCCESS when the call succeeds.
+     *
+     * On failure, throws an exception or returns a negative error code.
+     */
+    function YFunction_unmuteValueCallbacks()
+    {
+        return this.set_advertisedValue("");
     }
 
     function YFunction_parserHelper()
@@ -4411,8 +4557,8 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
     }
 
      /**
-      * Invalidate the cache. Invalidate the cache of the function attributes. Force the
-      * next call to get_xxx() or loadxxx() to use value that come from the device..
+      * Invalidates the cache. Invalidates the cache of the function attributes. Forces the
+      * next call to get_xxx() or loadxxx() to use values that come from the device.
       *
       * @noreturn
       */
@@ -4670,8 +4816,12 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
     YFunction.prototype.advertisedValue             = YFunction_get_advertisedValue;
     YFunction.prototype.get_advertisedValue_async   = YFunction_get_advertisedValue_async;
     YFunction.prototype.advertisedValue_async       = YFunction_get_advertisedValue_async;
+    YFunction.prototype.set_advertisedValue         = YFunction_set_advertisedValue;
+    YFunction.prototype.setAdvertisedValue          = YFunction_set_advertisedValue;
     YFunction.prototype.registerValueCallback       = YFunction_registerValueCallback;
     YFunction.prototype._invokeValueCallback        = YFunction_invokeValueCallback;
+    YFunction.prototype.muteValueCallbacks          = YFunction_muteValueCallbacks;
+    YFunction.prototype.unmuteValueCallbacks        = YFunction_unmuteValueCallbacks;
     YFunction.prototype._parserHelper               = YFunction_parserHelper;
     YFunction.prototype.nextFunction                = YFunction_nextFunction;
     YFunction.prototype._parseAttr                  = YFunction_parseAttr;
@@ -5118,7 +5268,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
                 i = i + 1;
             }
         }
-        iCalib = dataset.get_calibration();
+        iCalib = dataset._get_calibration();
         this._caltyp = iCalib[0];
         if (this._caltyp != 0) {
             this._calhdl = YAPI._getCalibrationHandler(this._caltyp);
@@ -5192,7 +5342,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
         return 0;
     }
 
-    function YDataStream_parse(sdata)
+    function YDataStream_parseStream(sdata)
     {
         var idx;                    // int;
         var udat = [];              // intArr;
@@ -5252,7 +5402,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
 
     function YDataStream_loadStream()
     {
-        return this.parse(this._parent._download(this.get_url()));
+        return this._parseStream(this._parent._download(this._get_url()));
     }
 
     function YDataStream_decodeVal(w)
@@ -5546,9 +5696,8 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
     YDataStream = _YDataStream;
     // Methods
     YDataStream.prototype._initFromDataSet            = YDataStream_initFromDataSet;
-    YDataStream.prototype.parse                       = YDataStream_parse;
-    YDataStream.prototype.get_url                     = YDataStream_get_url;
-    YDataStream.prototype.url                         = YDataStream_get_url;
+    YDataStream.prototype._parseStream                = YDataStream_parseStream;
+    YDataStream.prototype._get_url                    = YDataStream_get_url;
     YDataStream.prototype.loadStream                  = YDataStream_loadStream;
     YDataStream.prototype._decodeVal                  = YDataStream_decodeVal;
     YDataStream.prototype._decodeAvg                  = YDataStream_decodeAvg;
@@ -5605,7 +5754,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
  */
 //--- (end of generated code: YDataSet class start)
 
-    function _YDataSet(obj_parent, str_vararg, str_unit, u32_startTime, u32_endTime)
+    function _YDataSet(obj_parent, str_functionId, str_unit, u32_startTime, u32_endTime)
     {
         //--- (generated code: YDataSet constructor)
         this._parent                         = null;                       // YFunction
@@ -5628,16 +5777,11 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
         this._summary = new YMeasure(0, 0, 0, 0, 0);
         if(typeof str_unit === "undefined") {
             // 1st version of constructor, called from YDataLogger
-            var str_json = str_vararg;
-
             this._parent     = obj_parent;
             this._startTime = 0;
             this._endTime   = 0;
-            this._parse(str_json);
         } else {
             // 2nd version of constructor, called from YFunction
-            var str_functionId = str_vararg;
-
             this._parent     = obj_parent;
             this._functionId = str_functionId;
             this._unit       = str_unit;
@@ -5679,7 +5823,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
             return this._parse(strdata);
         }
         stream = this._streams[this._progress];
-        stream.parse(data);
+        stream._parseStream(data);
         dataRows = stream.get_dataRows();
         this._progress = this._progress + 1;
         if (dataRows.length == 0) {
@@ -5837,7 +5981,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
                 return 100;
             } else {
                 stream = this._streams[this._progress];
-                url = stream.get_url();
+                url = stream._get_url();
             }
         }
         return this.processMore(this._progress, this._parent._download(url));
@@ -6168,8 +6312,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
     //--- (generated code: YDataSet initialization)
     YDataSet = _YDataSet;
     // Methods
-    YDataSet.prototype.get_calibration             = YDataSet_get_calibration;
-    YDataSet.prototype.calibration                 = YDataSet_get_calibration;
+    YDataSet.prototype._get_calibration            = YDataSet_get_calibration;
     YDataSet.prototype.processMore                 = YDataSet_processMore;
     YDataSet.prototype.get_privateDataStreams      = YDataSet_get_privateDataStreams;
     YDataSet.prototype.privateDataStreams          = YDataSet_get_privateDataStreams;
@@ -7721,6 +7864,23 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
     }
 
     /**
+     * Retrieves the base type of the <i>n</i>th function on the module.
+     *
+     * @param functionIndex : the index of the function for which the information is desired, starting at
+     * 0 for the first function.
+     *
+     * @return a the base type of the function
+     *
+     * On failure, throws an exception or returns an empty string.
+     */
+    function YModule_functionBaseType(functionIndex)
+    {
+        var dev = this._getDev();
+        if(!dev) return "";
+        return dev.functionBaseType(functionIndex);
+    }
+
+    /**
      * Retrieves the logical name of the <i>n</i>th function on the module.
      *
      * @param functionIndex : the index of the function for which the information is desired, starting at
@@ -8898,9 +9058,14 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
         count = this.functionCount();
         i = 0;
         while (i < count) {
-            ftype  = this.functionType(i);
+            ftype = this.functionType(i);
             if (ftype == funType) {
                 res.push(this.functionId(i));
+            } else {
+                ftype = this.functionBaseType(i);
+                if (ftype == funType) {
+                    res.push(this.functionId(i));
+                }
             }
             i = i + 1;
         }
@@ -9602,6 +9767,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
     YModule.prototype.functionCount         = YModule_functionCount;
     YModule.prototype.functionId            = YModule_functionId;
     YModule.prototype.functionType          = YModule_functionType;
+    YModule.prototype.functionBaseType      = YModule_functionBaseType;
     YModule.prototype.functionName          = YModule_functionName;
     YModule.prototype.functionValue         = YModule_functionValue;
     YModule.prototype.loadUrl               = YModule_loadUrl;

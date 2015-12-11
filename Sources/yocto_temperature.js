@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_temperature.js 21576 2015-09-21 13:17:28Z seb $
+ * $Id: yocto_temperature.js 22101 2015-11-24 10:10:45Z seb $
  *
  * Implements the high-level API for Temperature functions
  *
