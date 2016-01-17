@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_api.js 22191 2015-12-02 06:49:31Z mvuilleu $
+ * $Id: yocto_api.js 22790 2016-01-15 17:11:18Z mvuilleu $
  *
  * High-level programming interface, common to all modules
  *
@@ -1240,7 +1240,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
     function YAPI_parseEvents(hub, str_lines)
     {
         hub.devListValidity = 10000; // 10s validity when notification are working properly
-        
+
         var rows = str_lines.split("\n");
         var nrows = rows.length;
         var value;
@@ -1333,7 +1333,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
                 hub.notifPos = -1;
             }
             hub.currPos += ev.length + 1;
-        }        
+        }
     }
 
     // Handle the event-monitoring work on a registered hub
@@ -2020,7 +2020,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
         while(ws.tcpChan[tcpchan]) {
             tcpchan++;
         }
-        if(tcpchan > 2) { 
+        if(tcpchan > 2) {
             // For now, limit to 2 channels (up to 8 could be possible)
             console.log("WebSocket: TOO MANY CONCURRENT TCP CHANNELS");
             return;
@@ -2033,14 +2033,14 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
             if(framelen > 125) framelen = 125;
             var datalen = framelen - 1;
             var i, frame = new Uint8Array(framelen);
-            
+
             // use YSTREAM_TCP
             frame[0] = 8 + tcpchan;
             for (i = 0; i < datalen; i++) {
                 frame[1+i] = subReq.charCodeAt(pos+i);
             }
             pos += framelen-1;
-            obj_hub.websocket.send(frame);            
+            obj_hub.websocket.send(frame);
         }
         // FIXME: send body as well !
     }
@@ -2113,13 +2113,13 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
                 // Open WebSocket connection if not yet done
                 var ws = new WebSocket(hub.urlInfo.url+'not.byn');
                 ws.binaryType = "arraybuffer";
-                ws.onopen    = function(evt) { 
+                ws.onopen    = function(evt) {
                     while(ws.openQueue.length > 0) {
                         (ws.openQueue.shift())();
                     }
-                }; 
-                ws.onerror   = function(evt) { console.log("WebSocket error: ", evt); hub.websocket=null; }; 
-                ws.onclose   = function(evt) { console.log("WebSocket close !"); hub.websocket=null; };             
+                };
+                ws.onerror   = function(evt) { console.log("WebSocket error: ", evt); hub.websocket=null; };
+                ws.onclose   = function(evt) { console.log("WebSocket close !"); hub.websocket=null; };
                 ws.onmessage = function(evt) { YAPI.webSocketMsg(hub, new Uint8Array(evt.data)); }
                 // Add our own custom context fields to the websocket
                 ws.openQueue = [];
@@ -2164,7 +2164,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
                     if(devUrl.slice(0,7) != 'not.byn') {
                         ws.openQueue.push(function() {
                             YAPI.webSocketReq(hub, pseudoRequest, obj_body);
-                        });                
+                        });
                     }
                 } else {
                     YAPI.webSocketReq(hub, pseudoRequest, obj_body);
@@ -2174,7 +2174,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
                      errorMsg:"no error",
                      result:pseudoRequest};
         }
-        
+
         // FOR BROWSERS ONLY:
         var httpRequest = (window.XMLHttpRequest) ? new XMLHttpRequest() : new ActiveXObject("Microsoft.XMLHTTP");
         try {
@@ -2436,6 +2436,57 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
         return this._funcDev_internal({className: str_className, func: str_func}, YAPI_SUCCESS);
     }
 
+
+    function YAPI_getSubDevicesFrom(str_device)
+    {
+        var dev = this.getDevice(str_device);
+        if (!dev) {
+            return [];
+        }
+        var baseUrl = dev.getRootUrl();
+        baseUrl = baseUrl.replace('http://', '');
+        var pos = baseUrl.indexOf('/');
+        if(pos >= 0) {
+            baseUrl = baseUrl.substr(0,pos)
+        }
+        var rooturl = "http://"+baseUrl+"/";
+        for(var i = 0; i < this._hubs.length; i++) {
+            if(this._hubs[i].urlInfo.url == rooturl) {
+                if ( this._hubs[i].serialByYdx[0] == str_device) {
+                    return this._hubs[i].serialByYdx.slice(1);
+                }
+                break;
+            }
+        }
+        return [];
+    }
+
+    /**
+     * @return {string}
+     */
+    function YAPI_getHubSerialFrom(str_device)
+    {
+
+        var dev = this.getDevice(str_device);
+        if (!dev) {
+            return '';
+        }
+        var baseUrl = dev.getRootUrl();
+        baseUrl = baseUrl.replace('http://', '');
+        var pos = baseUrl.indexOf('/');
+        if(pos >= 0) {
+            baseUrl = baseUrl.substr(0,pos)
+        }
+        var rooturl = "http://"+baseUrl+"/";
+        for(var i = 0; i < this._hubs.length; i++) {
+            if(this._hubs[i].urlInfo.url == rooturl) {
+                return this._hubs[i].serialByYdx[0];
+            }
+        }
+        return '';
+    }
+
+
     // Load and parse the REST API for a function given by class name and identifier, possibly applying changes
     // Device cache will be preloaded when loading function "module" and leveraged for other modules
     // Return a strucure including errorType, errorMsg and result
@@ -2576,7 +2627,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
      */
     function YAPI_GetAPIVersion()
     {
-        return "1.10.22324";
+        return "1.10.22835";
     }
 
     /**
@@ -3506,6 +3557,8 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
     _YAPI.prototype.webSocketReq          = YAPI_webSocketReq;
     _YAPI.prototype.devRequest            = YAPI_devRequest;
     _YAPI.prototype.devRequest_async      = YAPI_devRequest_async;
+    _YAPI.prototype.getHubSerialFrom      = YAPI_getHubSerialFrom;
+    _YAPI.prototype.getSubDevicesFrom     = YAPI_getSubDevicesFrom;
     _YAPI.prototype.funcRequest           = YAPI_funcRequest;
     _YAPI.prototype.funcRequest_async     = YAPI_funcRequest_async;
     _YAPI.prototype.getHub                = YAPI_getHub;
@@ -5051,11 +5104,11 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
      * In this case this method return the path of the most recent appropriate byn file. This method will
      * ignore firmware that are older than mintrelase.
      *
-     * @param serial  : the serial number of the module to update
-     * @param path    : the path of a byn file or a directory that contain byn files
-     * @param minrelease : an positif integer
+     * @param serial : the serial number of the module to update
+     * @param path : the path of a byn file or a directory that contains byn files
+     * @param minrelease : a positive integer
      *
-     * @return : the path of the byn file to use or a empty string if no byn files match the requirement
+     * @return : the path of the byn file to use or an empty string if no byn files match the requirement
      *
      * On failure, returns a string that start with "error:".
      */
@@ -6235,7 +6288,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
                 callback(context, this, 100);
             } else {
                 stream = this._streams[this._progress];
-                url = stream.get_url();
+                url = stream._get_url();
             }
         }
         this._parent._download_async(url, function(ctx, parent, data) {
@@ -7302,10 +7355,12 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
      */
     function YSensor_registerTimedReportCallback(callback)
     {
+        var sensor;                 // YSensor;
+        sensor = this;
         if (callback != null) {
-            YFunction._UpdateTimedReportCallbackList(this, true);
+            YFunction._UpdateTimedReportCallbackList(sensor, true);
         } else {
-            YFunction._UpdateTimedReportCallbackList(this, false);
+            YFunction._UpdateTimedReportCallbackList(sensor, false);
         }
         this._timedReportCallbackSensor = callback;
         return 0;
@@ -7981,6 +8036,52 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
         }
         return JSON.stringify(attrs);
     }
+
+
+    /**
+     * Returns a list of all the modules that are plugged into the current module. This
+     * method is only useful on a YoctoHub/VirtualHub. This method return the serial number of all
+     * module connected to a YoctoHub. Calling this method on a standard device is not an
+     * error, and an empty array will be returned.
+     *
+     * @return an array of strings containing the sub modules.
+     */
+    function YModule_get_subDevices()
+    {
+        var serial = this.get_serialNumber();
+        return YAPI.getSubDevicesFrom(serial);
+    }
+
+    /**
+     * Returns the serial number of the YoctoHub on which this module is connected.
+     * If the module is connected by USB or if the module is the root YoctoHub an
+     * empty string is returned.
+     *
+     * @return a string with the serial number of the YoctoHub or an empty string
+     */
+    function YModule_get_parentHub()
+    {
+        var serial = this.get_serialNumber();
+        var hubserial = YAPI.getHubSerialFrom(serial);
+        if (hubserial == serial)
+            return '';
+        return hubserial;
+    }
+
+    /**
+     * Returns the URL used to access the module. If the module is connected by USB the
+     * string 'usb' is returned.
+     *
+     * @return a string with the URL of the module.
+     */
+   function YModule_get_url()
+   {
+       var dev = this._getDev();
+       if (!(dev == null)) {
+           return dev.getRootUrl();
+       }
+       return "";
+   }
 
 
     //--- (generated code: YModule implementation)
@@ -8790,7 +8891,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
      * older or equal to
      * the installed firmware.
      *
-     * @param path    : the path of a byn file or a directory that contains byn files
+     * @param path : the path of a byn file or a directory that contains byn files
      * @param onlynew : returns only files that are strictly newer
      *
      * @return : the path of the byn file to use or a empty string if no byn files matches the requirement
@@ -9614,6 +9715,15 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
         return content;
     }
 
+    //cannot be generated for JS:
+    //function YModule_get_subDevices()
+
+    //cannot be generated for JS:
+    //function YModule_get_parentHub()
+
+    //cannot be generated for JS:
+    //function YModule_get_url()
+
     /**
      * Continues the module enumeration started using yFirstModule().
      *
@@ -9759,6 +9869,12 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
         icon2d                      : YModule_get_icon2d,
         get_lastLogs                : YModule_get_lastLogs,
         lastLogs                    : YModule_get_lastLogs,
+        get_subDevices              : YModule_get_subDevices,
+        subDevices                  : YModule_get_subDevices,
+        get_parentHub               : YModule_get_parentHub,
+        parentHub                   : YModule_get_parentHub,
+        get_url                     : YModule_get_url,
+        url                         : YModule_get_url,
         nextModule                  : YModule_nextModule,
         _parseAttr                  : YModule_parseAttr
     });
