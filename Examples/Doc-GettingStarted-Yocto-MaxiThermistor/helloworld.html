@@ -1,0 +1,60 @@
+<HTML>
+<HEAD>
+ <TITLE> Hello World</TITLE>
+ <SCRIPT type="text/javascript" src="../../Sources/yocto_api.js"></SCRIPT>
+ <SCRIPT type="text/javascript" src="../../Sources/yocto_temperature.js"></SCRIPT>
+ <SCRIPT language='javascript1.5'  type='text/JavaScript'>
+ <!--
+
+ // Setup the API to use the VirtualHub on local machine
+ if(yRegisterHub('http://127.0.0.1:4444/') != YAPI_SUCCESS) {
+     alert("Cannot contact VirtualHub on 127.0.0.1");
+ }
+
+ function refresh()
+ {
+     var temp, serial = document.getElementById('serial').value;
+
+     if(serial == '') {
+         // or use any conected module suitable for the demo
+         temp = yFirstTemperature();
+         if(temp) {
+             serial = temp.module().get_serialNumber();
+             document.getElementById('serial').value = serial;
+         }
+     }
+
+     temp1  = yFindTemperature(serial+".temperature1");
+     temp2  = yFindTemperature(serial+".temperature2");
+     temp3  = yFindTemperature(serial+".temperature3");
+     temp4  = yFindTemperature(serial+".temperature4");
+     temp5  = yFindTemperature(serial+".temperature5");
+     temp6  = yFindTemperature(serial+".temperature6");
+
+     if (temp1.isOnline()) {
+         document.getElementById('msg').value = '';
+         document.getElementById("temp-val1").value = temp1.get_currentValue();
+         document.getElementById("temp-val2").value = temp2.get_currentValue();
+         document.getElementById("temp-val3").value = temp3.get_currentValue();
+         document.getElementById("temp-val4").value = temp4.get_currentValue();
+         document.getElementById("temp-val5").value = temp5.get_currentValue();
+         document.getElementById("temp-val6").value = temp6.get_currentValue();
+     } else {
+         document.getElementById('msg').value = 'Module not connected';
+     }
+     setTimeout('refresh()',500);
+ }
+ -->
+ </SCRIPT>
+</HEAD>
+<BODY onload='refresh();'>
+ Module to use:       <input id='serial'>
+ <input id='msg' style='color:red;border:none;' readonly><br>
+ channel 1 temperature: <input id='temp-val1' readonly> &deg;C<br>
+ channel 2 temperature: <input id='temp-val2' readonly> &deg;C<br>
+ channel 3 temperature: <input id='temp-val3' readonly> &deg;C<br>
+ channel 4 temperature: <input id='temp-val4' readonly> &deg;C<br>
+ channel 5 temperature: <input id='temp-val5' readonly> &deg;C<br>
+ channel 6 temperature: <input id='temp-val6' readonly> &deg;C<br>
+</BODY>
+</HTML>
