@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_spiport.js 24086 2016-04-21 15:43:42Z seb $
+ * $Id: yocto_spiport.js 24252 2016-04-26 13:39:30Z seb $
  *
  * Implements the high-level API for SpiPort functions
  *
@@ -71,12 +71,12 @@ var Y_SPIMODE_INVALID               = YAPI_INVALID_STRING;
 
 //--- (YSpiPort class start)
 /**
- * YSpiPort Class: SerialPort function interface
+ * YSpiPort Class: SPI Port function interface
  *
- * The SerialPort function interface allows you to fully drive a Yoctopuce
- * serial port, to send and receive data, and to configure communication
+ * The SpiPort function interface allows you to fully drive a Yoctopuce
+ * SPI port, to send and receive data, and to configure communication
  * parameters (baud rate, bit count, parity, flow control and protocol).
- * Note that Yoctopuce serial ports are not exposed as virtual COM ports.
+ * Note that Yoctopuce SPI ports are not exposed as virtual COM ports.
  * They are meant to be used in the same way as all Yoctopuce devices.
  */
 //--- (end of YSpiPort class start)
@@ -773,11 +773,11 @@ var YSpiPort; // definition below
     }
 
     /**
-     * Returns the serial port communication parameters, as a string such as
+     * Returns the SPI port communication parameters, as a string such as
      * "125000,0,msb". The string includes the baud rate, the SPI mode (between
      * 0 and 3) and the bit order.
      *
-     * @return a string corresponding to the serial port communication parameters, as a string such as
+     * @return a string corresponding to the SPI port communication parameters, as a string such as
      *         "125000,0,msb"
      *
      * On failure, throws an exception or returns Y_SPIMODE_INVALID.
@@ -793,7 +793,7 @@ var YSpiPort; // definition below
     }
 
     /**
-     * Gets the serial port communication parameters, as a string such as
+     * Gets the SPI port communication parameters, as a string such as
      * "125000,0,msb". The string includes the baud rate, the SPI mode (between
      * 0 and 3) and the bit order.
      *
@@ -801,7 +801,7 @@ var YSpiPort; // definition below
      *         The callback function receives three arguments:
      *         - the user-specific context object
      *         - the YSpiPort object that invoked the callback
-     *         - the result:a string corresponding to the serial port communication parameters, as a string such as
+     *         - the result:a string corresponding to the SPI port communication parameters, as a string such as
      *         "125000,0,msb"
      * @param context : user-specific object that is passed as-is to the callback function
      *
@@ -827,11 +827,11 @@ var YSpiPort; // definition below
     }
 
     /**
-     * Changes the serial port communication parameters, with a string such as
+     * Changes the SPI port communication parameters, with a string such as
      * "125000,0,msb". The string includes the baud rate, the SPI mode (between
      * 0 and 3) and the bit order.
      *
-     * @param newval : a string corresponding to the serial port communication parameters, with a string such as
+     * @param newval : a string corresponding to the SPI port communication parameters, with a string such as
      *         "125000,0,msb"
      *
      * @return YAPI_SUCCESS if the call succeeds.
@@ -908,10 +908,10 @@ var YSpiPort; // definition below
     }
 
     /**
-     * Returns true when SDI line phase is shifted with regards to SDO line.
+     * Returns true when the SDI line phase is shifted with regards to the SDO line.
      *
-     * @return either Y_SHITFTSAMPLING_OFF or Y_SHITFTSAMPLING_ON, according to true when SDI line phase
-     * is shifted with regards to SDO line
+     * @return either Y_SHITFTSAMPLING_OFF or Y_SHITFTSAMPLING_ON, according to true when the SDI line
+     * phase is shifted with regards to the SDO line
      *
      * On failure, throws an exception or returns Y_SHITFTSAMPLING_INVALID.
      */
@@ -926,14 +926,14 @@ var YSpiPort; // definition below
     }
 
     /**
-     * Gets true when SDI line phase is shifted with regards to SDO line.
+     * Gets true when the SDI line phase is shifted with regards to the SDO line.
      *
      * @param callback : callback function that is invoked when the result is known.
      *         The callback function receives three arguments:
      *         - the user-specific context object
      *         - the YSpiPort object that invoked the callback
-     *         - the result:either Y_SHITFTSAMPLING_OFF or Y_SHITFTSAMPLING_ON, according to true when SDI line
-     *         phase is shifted with regards to SDO line
+     *         - the result:either Y_SHITFTSAMPLING_OFF or Y_SHITFTSAMPLING_ON, according to true when the SDI
+     *         line phase is shifted with regards to the SDO line
      * @param context : user-specific object that is passed as-is to the callback function
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
