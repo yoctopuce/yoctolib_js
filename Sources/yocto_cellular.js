@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_cellular.js 24483 2016-05-13 17:07:47Z mvuilleu $
+ * $Id: yocto_cellular.js 24622 2016-05-27 12:51:52Z mvuilleu $
  *
  * Implements the high-level API for Cellular functions
  *
@@ -1272,7 +1272,7 @@ var YCellular; // definition below
     {
         var gsmMsg;                 // str;
         gsmMsg = this.get_message();
-        if (!((gsmMsg).substr(0, 13) == "Enter SIM PUK")) {
+        if (!(!((gsmMsg).substr(0, 13) == "Enter SIM PUK"))) {
             return this._throw(YAPI_INVALID_ARGUMENT,"PUK not expected at this time",YAPI_INVALID_ARGUMENT);
         }
         if (newPin == "") {
@@ -1304,10 +1304,9 @@ var YCellular; // definition below
      *
      * On failure, throws an exception or returns a negative error code.
      */
-    function YCellular_(val)
+    function YCellular_clearDataCounters()
     {
         var retcode;                // int;
-        
         // may throw an exception
         retcode = this.set_dataReceived(0);
         if (retcode != YAPI_SUCCESS) {
@@ -1855,7 +1854,7 @@ var YCellular; // definition below
         sendPUK                     : YCellular_sendPUK,
         set_apnAuth                 : YCellular_set_apnAuth,
         setApnAuth                  : YCellular_set_apnAuth,
-                                    : YCellular_,
+        clearDataCounters           : YCellular_clearDataCounters,
         _AT                         : YCellular_AT,
         get_availableOperators      : YCellular_get_availableOperators,
         availableOperators          : YCellular_get_availableOperators,
