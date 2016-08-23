@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_messagebox.js 24649 2016-05-31 11:20:13Z mvuilleu $
+ * $Id: yocto_messagebox.js 24964 2016-07-05 06:33:11Z mvuilleu $
  *
  * Implements the high-level API for MessageBox functions
  *
@@ -2401,7 +2401,8 @@ var YMessageBox; // definition below
     }
 
     //--- (end of generated code: YMessageBox implementation)
-
+})();
+    
 //--- (generated code: MessageBox functions)
 
 /**

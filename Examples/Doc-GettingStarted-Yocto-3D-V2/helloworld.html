@@ -1,0 +1,64 @@
+<HTML>
+<HEAD>
+ <TITLE>Hello World</TITLE>
+ <SCRIPT type="text/javascript" src="../../Sources/yocto_api.js"></SCRIPT>
+ <SCRIPT type="text/javascript" src="../../Sources/yocto_tilt.js"></SCRIPT>
+ <SCRIPT type="text/javascript" src="../../Sources/yocto_compass.js"></SCRIPT>
+ <SCRIPT type="text/javascript" src="../../Sources/yocto_gyro.js"></SCRIPT>
+ <SCRIPT type="text/javascript" src="../../Sources/yocto_accelerometer.js"></SCRIPT>
+ 
+ <SCRIPT language='javascript1.5' type='text/JavaScript'>
+ <!--
+
+ // Setup the API to use the VirtualHub on local machine
+ if(yRegisterHub('http://127.0.0.1:4444/') != YAPI_SUCCESS) {
+     alert("Cannot contact VirtualHub on 127.0.0.1");
+ }
+
+ function refresh()
+ { 
+     var serial = document.getElementById('serial').value;
+     var anytilt,tilt1,tilt2,compass,gyro,accelerometer;
+
+     // try to find a valid serial
+     if(serial == '') {
+         // or use any conected module suitable for the demo
+         anytilt = yFirstTilt();
+         if(anytilt) {
+             serial = anytilt.module().get_serialNumber();
+             document.getElementById('serial').value = serial;
+         }
+     }
+     
+     // retrieve all sensor on the device with that serial
+     tilt1          = yFindTilt(serial+".tilt1");
+     tilt2          = yFindTilt(serial+".tilt2");
+     compass       = yFindCompass(serial+".compass");
+     gyro          = yFindGyro(serial+".gyro");
+     accelerometer = yFindAccelerometer(serial+".accelerometer");
+     
+     if (tilt1.isOnline()) {
+         document.getElementById('msg').value = '';
+         document.getElementById("tilt1-val").value    = tilt1.get_currentValue();
+         document.getElementById("tilt2-val").value    = tilt2.get_currentValue();
+         document.getElementById("compass-val").value  = compass.get_currentValue();
+         document.getElementById("gyro-val").value     = gyro.get_currentValue();
+         document.getElementById("accelerometer-val").value = accelerometer.get_currentValue();
+       } else {
+         document.getElementById('msg').value = 'Module not connected';         
+     }
+     setTimeout('refresh()',500);
+ }
+ -->
+ </SCRIPT>
+</HEAD>  
+<BODY onload='refresh();'>
+ Module to use:       <input id='serial'>
+ <input id='msg' style='color:red;border:none;' readonly><br>
+ tilt1:   <input id='tilt1-val' readonly> &deg;<br>
+ tilt2:   <input id='tilt2-val' readonly></span> &deg;<br>
+ compass: <input id='compass-val' readonly></span> &deg;<br>
+ gyro:    <input id='gyro-val' readonly></span> &deg;/s<br>
+ accelerometer:    <input id='accelerometer-val' readonly></span> g<br>
+</BODY>
+</HTML> 

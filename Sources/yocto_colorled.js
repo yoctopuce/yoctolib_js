@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_colorled.js 24475 2016-05-12 14:03:35Z mvuilleu $
+ * $Id: yocto_colorled.js 25249 2016-08-22 15:51:33Z seb $
  *
  * Implements the high-level API for ColorLed functions
  *

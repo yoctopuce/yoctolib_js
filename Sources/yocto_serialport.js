@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_serialport.js 23729 2016-04-04 10:02:22Z mvuilleu $
+ * $Id: yocto_serialport.js 25221 2016-08-19 18:19:15Z mvuilleu $
  *
  * Implements the high-level API for SerialPort functions
  *
@@ -98,6 +98,8 @@ var YSerialPort; // definition below
         this._protocol                       = Y_PROTOCOL_INVALID;         // Protocol
         this._serialMode                     = Y_SERIALMODE_INVALID;       // SerialMode
         this._rxptr                          = 0;                          // int
+        this._rxbuff                         = "";                         // bin
+        this._rxbuffptr                      = 0;                          // int
         //--- (end of YSerialPort constructor)
     }
 
@@ -894,6 +896,8 @@ var YSerialPort; // definition below
     function YSerialPort_reset()
     {
         this._rxptr = 0;
+        this._rxbuffptr = 0;
+        this._rxbuff = new Uint8Array(0);
         // may throw an exception
         return this.sendCommand("Z");
     }
@@ -1071,11 +1075,49 @@ var YSerialPort; // definition below
      */
     function YSerialPort_readByte()
     {
+        var currpos;                // int;
+        var reqlen;                 // int;
         var buff;                   // bin;
         var bufflen;                // int;
         var mult;                   // int;
         var endpos;                 // int;
         var res;                    // int;
+        
+        // first check if we have the requested character in the look-ahead buffer
+        bufflen = (this._rxbuff).length;
+        if ((this._rxptr >= this._rxbuffptr) && (this._rxptr < this._rxbuffptr+bufflen)) {
+            res = (this._rxbuff).charCodeAt(this._rxptr-this._rxbuffptr);
+            this._rxptr = this._rxptr + 1;
+            return res;
+        }
+        
+        // try to preload more than one byte to speed-up byte-per-byte access
+        currpos = this._rxptr;
+        reqlen = 1024;
+        buff = this.readBin(reqlen);
+        bufflen = (buff).length;
+        if (this._rxptr == currpos+bufflen) {
+            res = (buff).charCodeAt(0);
+            this._rxptr = currpos+1;
+            this._rxbuffptr = currpos;
+            this._rxbuff = buff;
+            return res;
+        }
+        // mixed bidirectional data, retry with a smaller block
+        this._rxptr = currpos;
+        reqlen = 16;
+        buff = this.readBin(reqlen);
+        bufflen = (buff).length;
+        if (this._rxptr == currpos+bufflen) {
+            res = (buff).charCodeAt(0);
+            this._rxptr = currpos+1;
+            this._rxbuffptr = currpos;
+            this._rxbuff = buff;
+            return res;
+        }
+        // still mixed, need to process character by character
+        this._rxptr = currpos;
+        
         // may throw an exception
         buff = this._download("rxdata.bin?pos="+String(Math.round(this._rxptr))+"&len=1");
         bufflen = (buff).length - 1;
@@ -1909,9 +1951,6 @@ var YSerialPort; // definition below
         var reply = [];             // intArr;
         var res;                    // int;
         res = 0;
-        if (value != 0) {
-            value = 0xff;
-        }
         pdu.push(0x06);
         pdu.push(((pduAddr) >> (8)));
         pdu.push(((pduAddr) & (0xff)));
