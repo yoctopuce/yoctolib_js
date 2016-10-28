@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_api.js 23695 2016-04-01 08:43:46Z mvuilleu $
+ * $Id: yocto_api.js 25651 2016-10-20 13:36:46Z seb $
  *
  * High-level programming interface, common to all modules
  *
@@ -2627,7 +2627,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
      */
     function YAPI_GetAPIVersion()
     {
-        return "1.10.25534";
+        return "1.10.25748";
     }
 
     /**
@@ -5473,7 +5473,9 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
             }
         }
         if (this._caltyp != 0) {
-            val = this._calhdl(val, this._caltyp, this._calpar, this._calraw, this._calref);
+            if (this._calhdl != null) {
+                val = this._calhdl(val, this._caltyp, this._calpar, this._calraw, this._calref);
+            }
         }
         return val;
     }
@@ -5492,7 +5494,9 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
             }
         }
         if (this._caltyp != 0) {
-            val = this._calhdl(val, this._caltyp, this._calpar, this._calraw, this._calref);
+            if (this._calhdl != null) {
+                val = this._calhdl(val, this._caltyp, this._calpar, this._calraw, this._calref);
+            }
         }
         return val;
     }
