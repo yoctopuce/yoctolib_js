@@ -1,1 +1,3 @@
-- Fix method sendPUK of class YCellular
+- Add README.md for Github
+- Fix typo in CO2 calibration function name
+- Fix comment of method set_portPolarity() of YDigitalIO class.
