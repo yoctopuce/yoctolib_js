@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_api.js 25651 2016-10-20 13:36:46Z seb $
+ * $Id: yocto_api.js 26132 2016-12-01 17:02:38Z seb $
  *
  * High-level programming interface, common to all modules
  *
@@ -2627,7 +2627,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
      */
     function YAPI_GetAPIVersion()
     {
-        return "1.10.25913";
+        return "1.10.26144";
     }
 
     /**
@@ -5911,8 +5911,8 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
                 this._measures.push(new YMeasure(tim - itv, tim, dataRows[ii][minCol], dataRows[ii][avgCol], dataRows[ii][maxCol]));
             }
             tim = tim + itv;
+            tim = Math.round(tim * 1000) / 1000.0;
         }
-        
         return this.get_progress();
     }
 
@@ -6121,7 +6121,6 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
             if (this._streams[ii].get_startTimeUTC() == startUtc) {
                 stream = this._streams[ii];
             }
-            ;;
         }
         if (stream == null) {
             return measures;
@@ -6153,7 +6152,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
             if ((tim >= this._startTime) && ((this._endTime == 0) || (tim <= this._endTime))) {
                 measures.push(new YMeasure(tim - itv, tim, dataRows[ii][minCol], dataRows[ii][avgCol], dataRows[ii][maxCol]));
             }
-            tim = tim + itv;;
+            tim = tim + itv;
         }
         return measures;
     }
@@ -9125,7 +9124,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
                 name = this._decode_json_string(name);
                 data = this._get_json_path( files[ii], "data");
                 data = this._decode_json_string(data);
-                this._upload(name, YAPI._hexStrToBin(data));;
+                this._upload(name, YAPI._hexStrToBin(data));
             }
         }
         return YAPI_SUCCESS;
@@ -9472,7 +9471,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
             value = (each_str).substr( eqpos, leng - eqpos);
             old_jpath.push(jpath);
             old_jpath_len.push((jpath).length);
-            old_val_arr.push(value);;
+            old_val_arr.push(value);
         }
         // may throw an exception
         actualSettings = this._download("api.json");
@@ -9492,7 +9491,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
             value = (each_str).substr( eqpos, leng - eqpos);
             new_jpath.push(jpath);
             new_jpath_len.push((jpath).length);
-            new_val_arr.push(value);;
+            new_val_arr.push(value);
         }
         i = 0;
         while (i < new_jpath.length) {
@@ -9684,7 +9683,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
         }
         for (ii in restoreLast) {
             if(ii=='indexOf') continue; // IE8 Don'tEnum bug
-            this._download(restoreLast[ii]);;
+            this._download(restoreLast[ii]);
         }
         return YAPI_SUCCESS;
     }
