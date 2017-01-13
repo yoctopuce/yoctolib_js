@@ -1,0 +1,55 @@
+<HTML>
+<HEAD>
+ <TITLE>Hello World</TITLE>
+ <SCRIPT type="text/javascript" src="../../Sources/yocto_api.js"></SCRIPT>
+ <SCRIPT type="text/javascript" src="../../Sources/yocto_lightsensor.js"></SCRIPT>
+ <SCRIPT type="text/javascript" src="../../Sources/yocto_proximity.js"></SCRIPT>
+ <SCRIPT language='javascript1.5' type='text/JavaScript'>
+ <!--
+
+ // Setup the API to use the VirtualHub on local machine
+ if(yRegisterHub('http://127.0.0.1:4444/') != YAPI_SUCCESS) {
+     alert("Cannot contact VirtualHub on 127.0.0.1");
+ }
+
+ function refresh()
+ { 
+     var al,ir,p;
+     var serial = document.getElementById('serial').value;
+
+     if(serial == '') {
+         // or use any conected module suitable for the demo
+         p = yFirstProximity();
+         if (p) {
+             serial = p.module().get_serialNumber();
+             document.getElementById('serial').value = serial;
+         }
+     }
+
+     p  = yFindProximity(serial+".proximity1");
+     al = yFindLightSensor(serial+".lightSensor1");
+     ir = yFindLightSensor(serial+".lightSensor2");
+     
+     if (p.isOnline()) {
+         document.getElementById('msg').value = '';
+         document.getElementById("p-val").value = p.get_currentValue();
+         document.getElementById("al-val").value = al.get_currentValue();
+         document.getElementById("ir-val").value = ir.get_currentValue();
+         
+     } else {
+         document.getElementById('msg').value = 'Module not connected';         
+     }
+     setTimeout('refresh()',500);
+ }
+ -->
+ </SCRIPT>
+</HEAD>  
+<BODY onload='refresh();'>
+ Module to use:    <input id='serial'>
+ <input id='msg' style='color:red;border:none;' readonly><br>
+Proximity: <input id='p-val' size=5 readonly> <br>
+Ambient: <input id='al-val' size=5 readonly> <br>
+IR: <input id='ir-val' size=5 readonly> <br>
+
+</BODY>
+</HTML> 

@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_api.js 26132 2016-12-01 17:02:38Z seb $
+ * $Id: yocto_api.js 26329 2017-01-11 14:04:39Z mvuilleu $
  *
  * High-level programming interface, common to all modules
  *
@@ -2627,7 +2627,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
      */
     function YAPI_GetAPIVersion()
     {
-        return "1.10.26144";
+        return "1.10.26380";
     }
 
     /**
@@ -3913,6 +3913,25 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
         return this.set_advertisedValue("");
     }
 
+    /**
+     * Returns the current value of a single function attribute, as a text string, as quickly as
+     * possible but without using the cached value.
+     *
+     * @param attrName : le nom de l'attribut désiré
+     *
+     * @return une chaîne de caractères représentant la valeur actuelle de l'attribut.
+     *
+     * On failure, throws an exception or returns an empty string.
+     */
+    function YFunction_loadAttribute(attrName)
+    {
+        var url;                    // str;
+        var attrVal;                // bin;
+        url = "api/"+this.get_functionId()+"/"+attrName;
+        attrVal = this._download(url);
+        return attrVal;
+    }
+
     function YFunction_parserHelper()
     {
         return 0;
@@ -4875,6 +4894,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
     YFunction.prototype._invokeValueCallback        = YFunction_invokeValueCallback;
     YFunction.prototype.muteValueCallbacks          = YFunction_muteValueCallbacks;
     YFunction.prototype.unmuteValueCallbacks        = YFunction_unmuteValueCallbacks;
+    YFunction.prototype.loadAttribute               = YFunction_loadAttribute;
     YFunction.prototype._parserHelper               = YFunction_parserHelper;
     YFunction.prototype.nextFunction                = YFunction_nextFunction;
     YFunction.prototype._parseAttr                  = YFunction_parseAttr;
