@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_multiaxiscontroller.js 26266 2017-01-04 14:31:46Z seb $
+ * $Id: yocto_multiaxiscontroller.js 26671 2017-02-28 13:42:32Z seb $
  *
  * Implements the high-level API for MultiAxisController functions
  *
@@ -104,12 +104,14 @@ var YMultiAxisController; // definition below
      */
     function YMultiAxisController_get_nAxis()
     {
+        var res;                    // int;
         if (this._cacheExpiration <= YAPI.GetTickCount()) {
             if (this.load(YAPI.defaultCacheValidity) != YAPI_SUCCESS) {
                 return Y_NAXIS_INVALID;
             }
         }
-        return this._nAxis;
+        res = this._nAxis;
+        return res;
     }
 
     /**
@@ -128,6 +130,7 @@ var YMultiAxisController; // definition below
      */
     function YMultiAxisController_get_nAxis_async(callback,context)
     {
+        var res;                    // int;
         var loadcb;                 // func;
         loadcb = function(ctx,obj,res) {
             if (res != YAPI_SUCCESS) {
@@ -169,12 +172,14 @@ var YMultiAxisController; // definition below
      */
     function YMultiAxisController_get_globalState()
     {
+        var res;                    // enumSTEPPERSTATE;
         if (this._cacheExpiration <= YAPI.GetTickCount()) {
             if (this.load(YAPI.defaultCacheValidity) != YAPI_SUCCESS) {
                 return Y_GLOBALSTATE_INVALID;
             }
         }
-        return this._globalState;
+        res = this._globalState;
+        return res;
     }
 
     /**
@@ -195,6 +200,7 @@ var YMultiAxisController; // definition below
      */
     function YMultiAxisController_get_globalState_async(callback,context)
     {
+        var res;                    // enumSTEPPERSTATE;
         var loadcb;                 // func;
         loadcb = function(ctx,obj,res) {
             if (res != YAPI_SUCCESS) {
@@ -212,12 +218,14 @@ var YMultiAxisController; // definition below
 
     function YMultiAxisController_get_command()
     {
+        var res;                    // string;
         if (this._cacheExpiration <= YAPI.GetTickCount()) {
             if (this.load(YAPI.defaultCacheValidity) != YAPI_SUCCESS) {
                 return Y_COMMAND_INVALID;
             }
         }
-        return this._command;
+        res = this._command;
+        return res;
     }
 
     /**
@@ -233,6 +241,7 @@ var YMultiAxisController; // definition below
      */
     function YMultiAxisController_get_command_async(callback,context)
     {
+        var res;                    // string;
         var loadcb;                 // func;
         loadcb = function(ctx,obj,res) {
             if (res != YAPI_SUCCESS) {

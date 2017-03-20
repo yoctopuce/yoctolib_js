@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_api.js 26329 2017-01-11 14:04:39Z mvuilleu $
+ * $Id: yocto_api.js 26826 2017-03-17 11:20:57Z mvuilleu $
  *
  * High-level programming interface, common to all modules
  *
@@ -2627,7 +2627,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
      */
     function YAPI_GetAPIVersion()
     {
-        return "1.10.26380";
+        return "1.10.26849";
     }
 
     /**
@@ -3695,12 +3695,14 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
      */
     function YFunction_get_logicalName()
     {
+        var res;                    // string;
         if (this._cacheExpiration <= YAPI.GetTickCount()) {
             if (this.load(YAPI.defaultCacheValidity) != YAPI_SUCCESS) {
                 return Y_LOGICALNAME_INVALID;
             }
         }
-        return this._logicalName;
+        res = this._logicalName;
+        return res;
     }
 
     /**
@@ -3719,6 +3721,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
      */
     function YFunction_get_logicalName_async(callback,context)
     {
+        var res;                    // string;
         var loadcb;                 // func;
         loadcb = function(ctx,obj,res) {
             if (res != YAPI_SUCCESS) {
@@ -3764,12 +3767,14 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
      */
     function YFunction_get_advertisedValue()
     {
+        var res;                    // string;
         if (this._cacheExpiration <= YAPI.GetTickCount()) {
             if (this.load(YAPI.defaultCacheValidity) != YAPI_SUCCESS) {
                 return Y_ADVERTISEDVALUE_INVALID;
             }
         }
-        return this._advertisedValue;
+        res = this._advertisedValue;
+        return res;
     }
 
     /**
@@ -3788,6 +3793,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
      */
     function YFunction_get_advertisedValue_async(callback,context)
     {
+        var res;                    // string;
         var loadcb;                 // func;
         loadcb = function(ctx,obj,res) {
             if (res != YAPI_SUCCESS) {
@@ -3883,7 +3889,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
     }
 
     /**
-     * Disable the propagation of every new advertised value to the parent hub.
+     * Disables the propagation of every new advertised value to the parent hub.
      * You can use this function to save bandwidth and CPU on computers with limited
      * resources, or to prevent unwanted invocations of the HTTP callback.
      * Remember to call the saveToFlash() method of the module if the
@@ -3899,7 +3905,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
     }
 
     /**
-     * Re-enable the propagation of every new advertised value to the parent hub.
+     * Re-enables the propagation of every new advertised value to the parent hub.
      * This function reverts the effect of a previous call to muteValueCallbacks().
      * Remember to call the saveToFlash() method of the module if the
      * modification must be kept.
@@ -3917,9 +3923,9 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
      * Returns the current value of a single function attribute, as a text string, as quickly as
      * possible but without using the cached value.
      *
-     * @param attrName : le nom de l'attribut désiré
+     * @param attrName : the name of the requested attribute
      *
-     * @return une chaîne de caractères représentant la valeur actuelle de l'attribut.
+     * @return a string with the value of the the attribute
      *
      * On failure, throws an exception or returns an empty string.
      */
@@ -6513,12 +6519,14 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
      */
     function YSensor_get_unit()
     {
+        var res;                    // string;
         if (this._cacheExpiration <= YAPI.GetTickCount()) {
             if (this.load(YAPI.defaultCacheValidity) != YAPI_SUCCESS) {
                 return Y_UNIT_INVALID;
             }
         }
-        return this._unit;
+        res = this._unit;
+        return res;
     }
 
     /**
@@ -6537,6 +6545,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
      */
     function YSensor_get_unit_async(callback,context)
     {
+        var res;                    // string;
         var loadcb;                 // func;
         loadcb = function(ctx,obj,res) {
             if (res != YAPI_SUCCESS) {
@@ -6573,7 +6582,8 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
             res = this._currentValue;
         }
         res = res * this._iresol;
-        return Math.round(res) / this._iresol;
+        res = Math.round(res) / this._iresol;
+        return res;
     }
 
     /**
@@ -6646,7 +6656,8 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
             }
         }
         res = this._lowestValue * this._iresol;
-        return Math.round(res) / this._iresol;
+        res = Math.round(res) / this._iresol;
+        return res;
     }
 
     /**
@@ -6715,7 +6726,8 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
             }
         }
         res = this._highestValue * this._iresol;
-        return Math.round(res) / this._iresol;
+        res = Math.round(res) / this._iresol;
+        return res;
     }
 
     /**
@@ -6763,12 +6775,14 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
      */
     function YSensor_get_currentRawValue()
     {
+        var res;                    // double;
         if (this._cacheExpiration <= YAPI.GetTickCount()) {
             if (this.load(YAPI.defaultCacheValidity) != YAPI_SUCCESS) {
                 return Y_CURRENTRAWVALUE_INVALID;
             }
         }
-        return this._currentRawValue;
+        res = this._currentRawValue;
+        return res;
     }
 
     /**
@@ -6789,6 +6803,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
      */
     function YSensor_get_currentRawValue_async(callback,context)
     {
+        var res;                    // double;
         var loadcb;                 // func;
         loadcb = function(ctx,obj,res) {
             if (res != YAPI_SUCCESS) {
@@ -6815,12 +6830,14 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
      */
     function YSensor_get_logFrequency()
     {
+        var res;                    // string;
         if (this._cacheExpiration <= YAPI.GetTickCount()) {
             if (this.load(YAPI.defaultCacheValidity) != YAPI_SUCCESS) {
                 return Y_LOGFREQUENCY_INVALID;
             }
         }
-        return this._logFrequency;
+        res = this._logFrequency;
+        return res;
     }
 
     /**
@@ -6841,6 +6858,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
      */
     function YSensor_get_logFrequency_async(callback,context)
     {
+        var res;                    // string;
         var loadcb;                 // func;
         loadcb = function(ctx,obj,res) {
             if (res != YAPI_SUCCESS) {
@@ -6886,12 +6904,14 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
      */
     function YSensor_get_reportFrequency()
     {
+        var res;                    // string;
         if (this._cacheExpiration <= YAPI.GetTickCount()) {
             if (this.load(YAPI.defaultCacheValidity) != YAPI_SUCCESS) {
                 return Y_REPORTFREQUENCY_INVALID;
             }
         }
-        return this._reportFrequency;
+        res = this._reportFrequency;
+        return res;
     }
 
     /**
@@ -6912,6 +6932,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
      */
     function YSensor_get_reportFrequency_async(callback,context)
     {
+        var res;                    // string;
         var loadcb;                 // func;
         loadcb = function(ctx,obj,res) {
             if (res != YAPI_SUCCESS) {
@@ -6948,12 +6969,14 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
 
     function YSensor_get_calibrationParam()
     {
+        var res;                    // string;
         if (this._cacheExpiration <= YAPI.GetTickCount()) {
             if (this.load(YAPI.defaultCacheValidity) != YAPI_SUCCESS) {
                 return Y_CALIBRATIONPARAM_INVALID;
             }
         }
-        return this._calibrationParam;
+        res = this._calibrationParam;
+        return res;
     }
 
     /**
@@ -6969,6 +6992,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
      */
     function YSensor_get_calibrationParam_async(callback,context)
     {
+        var res;                    // string;
         var loadcb;                 // func;
         loadcb = function(ctx,obj,res) {
             if (res != YAPI_SUCCESS) {
@@ -7016,12 +7040,14 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
      */
     function YSensor_get_resolution()
     {
+        var res;                    // double;
         if (this._cacheExpiration <= YAPI.GetTickCount()) {
             if (this.load(YAPI.defaultCacheValidity) != YAPI_SUCCESS) {
                 return Y_RESOLUTION_INVALID;
             }
         }
-        return this._resolution;
+        res = this._resolution;
+        return res;
     }
 
     /**
@@ -7041,6 +7067,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
      */
     function YSensor_get_resolution_async(callback,context)
     {
+        var res;                    // double;
         var loadcb;                 // func;
         loadcb = function(ctx,obj,res) {
             if (res != YAPI_SUCCESS) {
@@ -7068,12 +7095,14 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
      */
     function YSensor_get_sensorState()
     {
+        var res;                    // int;
         if (this._cacheExpiration <= YAPI.GetTickCount()) {
             if (this.load(YAPI.defaultCacheValidity) != YAPI_SUCCESS) {
                 return Y_SENSORSTATE_INVALID;
             }
         }
-        return this._sensorState;
+        res = this._sensorState;
+        return res;
     }
 
     /**
@@ -7095,6 +7124,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
      */
     function YSensor_get_sensorState_async(callback,context)
     {
+        var res;                    // int;
         var loadcb;                 // func;
         loadcb = function(ctx,obj,res) {
             if (res != YAPI_SUCCESS) {
@@ -8161,6 +8191,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
      */
     function YModule_get_productName()
     {
+        var res;                    // string;
         var dev;                    // YDevice;
         if (this._cacheExpiration == 0) {
             dev = this._getDev();
@@ -8171,7 +8202,8 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
                 return Y_PRODUCTNAME_INVALID;
             }
         }
-        return this._productName;
+        res = this._productName;
+        return res;
     }
 
     /**
@@ -8190,6 +8222,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
      */
     function YModule_get_productName_async(callback,context)
     {
+        var res;                    // string;
         var dev;                    // YDevice;
         var loadcb;                 // func;
         loadcb = function(ctx,obj,res) {
@@ -8215,6 +8248,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
      */
     function YModule_get_serialNumber()
     {
+        var res;                    // string;
         var dev;                    // YDevice;
         if (this._cacheExpiration == 0) {
             dev = this._getDev();
@@ -8225,7 +8259,8 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
                 return Y_SERIALNUMBER_INVALID;
             }
         }
-        return this._serialNumber;
+        res = this._serialNumber;
+        return res;
     }
 
     /**
@@ -8244,6 +8279,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
      */
     function YModule_get_serialNumber_async(callback,context)
     {
+        var res;                    // string;
         var dev;                    // YDevice;
         var loadcb;                 // func;
         loadcb = function(ctx,obj,res) {
@@ -8269,6 +8305,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
      */
     function YModule_get_productId()
     {
+        var res;                    // int;
         var dev;                    // YDevice;
         if (this._cacheExpiration == 0) {
             dev = this._getDev();
@@ -8279,7 +8316,8 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
                 return Y_PRODUCTID_INVALID;
             }
         }
-        return this._productId;
+        res = this._productId;
+        return res;
     }
 
     /**
@@ -8298,6 +8336,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
      */
     function YModule_get_productId_async(callback,context)
     {
+        var res;                    // int;
         var dev;                    // YDevice;
         var loadcb;                 // func;
         loadcb = function(ctx,obj,res) {
@@ -8323,12 +8362,14 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
      */
     function YModule_get_productRelease()
     {
+        var res;                    // int;
         if (this._cacheExpiration <= YAPI.GetTickCount()) {
             if (this.load(YAPI.defaultCacheValidity) != YAPI_SUCCESS) {
                 return Y_PRODUCTRELEASE_INVALID;
             }
         }
-        return this._productRelease;
+        res = this._productRelease;
+        return res;
     }
 
     /**
@@ -8347,6 +8388,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
      */
     function YModule_get_productRelease_async(callback,context)
     {
+        var res;                    // int;
         var loadcb;                 // func;
         loadcb = function(ctx,obj,res) {
             if (res != YAPI_SUCCESS) {
@@ -8371,12 +8413,14 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
      */
     function YModule_get_firmwareRelease()
     {
+        var res;                    // string;
         if (this._cacheExpiration <= YAPI.GetTickCount()) {
             if (this.load(YAPI.defaultCacheValidity) != YAPI_SUCCESS) {
                 return Y_FIRMWARERELEASE_INVALID;
             }
         }
-        return this._firmwareRelease;
+        res = this._firmwareRelease;
+        return res;
     }
 
     /**
@@ -8395,6 +8439,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
      */
     function YModule_get_firmwareRelease_async(callback,context)
     {
+        var res;                    // string;
         var loadcb;                 // func;
         loadcb = function(ctx,obj,res) {
             if (res != YAPI_SUCCESS) {
@@ -8420,12 +8465,14 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
      */
     function YModule_get_persistentSettings()
     {
+        var res;                    // enumFLASHSETTINGS;
         if (this._cacheExpiration <= YAPI.GetTickCount()) {
             if (this.load(YAPI.defaultCacheValidity) != YAPI_SUCCESS) {
                 return Y_PERSISTENTSETTINGS_INVALID;
             }
         }
-        return this._persistentSettings;
+        res = this._persistentSettings;
+        return res;
     }
 
     /**
@@ -8445,6 +8492,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
      */
     function YModule_get_persistentSettings_async(callback,context)
     {
+        var res;                    // enumFLASHSETTINGS;
         var loadcb;                 // func;
         loadcb = function(ctx,obj,res) {
             if (res != YAPI_SUCCESS) {
@@ -8475,12 +8523,14 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
      */
     function YModule_get_luminosity()
     {
+        var res;                    // int;
         if (this._cacheExpiration <= YAPI.GetTickCount()) {
             if (this.load(YAPI.defaultCacheValidity) != YAPI_SUCCESS) {
                 return Y_LUMINOSITY_INVALID;
             }
         }
-        return this._luminosity;
+        res = this._luminosity;
+        return res;
     }
 
     /**
@@ -8499,6 +8549,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
      */
     function YModule_get_luminosity_async(callback,context)
     {
+        var res;                    // int;
         var loadcb;                 // func;
         loadcb = function(ctx,obj,res) {
             if (res != YAPI_SUCCESS) {
@@ -8541,6 +8592,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
      */
     function YModule_get_beacon()
     {
+        var res;                    // enumONOFF;
         var dev;                    // YDevice;
         if (this._cacheExpiration <= YAPI.GetTickCount()) {
             dev = this._getDev();
@@ -8551,7 +8603,8 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
                 return Y_BEACON_INVALID;
             }
         }
-        return this._beacon;
+        res = this._beacon;
+        return res;
     }
 
     /**
@@ -8570,6 +8623,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
      */
     function YModule_get_beacon_async(callback,context)
     {
+        var res;                    // enumONOFF;
         var dev;                    // YDevice;
         var loadcb;                 // func;
         loadcb = function(ctx,obj,res) {
@@ -8610,12 +8664,14 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
      */
     function YModule_get_upTime()
     {
+        var res;                    // long;
         if (this._cacheExpiration <= YAPI.GetTickCount()) {
             if (this.load(YAPI.defaultCacheValidity) != YAPI_SUCCESS) {
                 return Y_UPTIME_INVALID;
             }
         }
-        return this._upTime;
+        res = this._upTime;
+        return res;
     }
 
     /**
@@ -8634,6 +8690,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
      */
     function YModule_get_upTime_async(callback,context)
     {
+        var res;                    // long;
         var loadcb;                 // func;
         loadcb = function(ctx,obj,res) {
             if (res != YAPI_SUCCESS) {
@@ -8658,12 +8715,14 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
      */
     function YModule_get_usbCurrent()
     {
+        var res;                    // int;
         if (this._cacheExpiration <= YAPI.GetTickCount()) {
             if (this.load(YAPI.defaultCacheValidity) != YAPI_SUCCESS) {
                 return Y_USBCURRENT_INVALID;
             }
         }
-        return this._usbCurrent;
+        res = this._usbCurrent;
+        return res;
     }
 
     /**
@@ -8682,6 +8741,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
      */
     function YModule_get_usbCurrent_async(callback,context)
     {
+        var res;                    // int;
         var loadcb;                 // func;
         loadcb = function(ctx,obj,res) {
             if (res != YAPI_SUCCESS) {
@@ -8708,12 +8768,14 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
      */
     function YModule_get_rebootCountdown()
     {
+        var res;                    // int;
         if (this._cacheExpiration <= YAPI.GetTickCount()) {
             if (this.load(YAPI.defaultCacheValidity) != YAPI_SUCCESS) {
                 return Y_REBOOTCOUNTDOWN_INVALID;
             }
         }
-        return this._rebootCountdown;
+        res = this._rebootCountdown;
+        return res;
     }
 
     /**
@@ -8735,6 +8797,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
      */
     function YModule_get_rebootCountdown_async(callback,context)
     {
+        var res;                    // int;
         var loadcb;                 // func;
         loadcb = function(ctx,obj,res) {
             if (res != YAPI_SUCCESS) {
@@ -8766,12 +8829,14 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
      */
     function YModule_get_userVar()
     {
+        var res;                    // int;
         if (this._cacheExpiration <= YAPI.GetTickCount()) {
             if (this.load(YAPI.defaultCacheValidity) != YAPI_SUCCESS) {
                 return Y_USERVAR_INVALID;
             }
         }
-        return this._userVar;
+        res = this._userVar;
+        return res;
     }
 
     /**
@@ -8791,6 +8856,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
      */
     function YModule_get_userVar_async(callback,context)
     {
+        var res;                    // int;
         var loadcb;                 // func;
         loadcb = function(ctx,obj,res) {
             if (res != YAPI_SUCCESS) {

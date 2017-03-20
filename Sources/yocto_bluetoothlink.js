@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_bluetoothlink.js 23229 2016-02-22 16:19:19Z seb $
+ * $Id: yocto_bluetoothlink.js 26671 2017-02-28 13:42:32Z seb $
  *
  * Implements the high-level API for BluetoothLink functions
  *
@@ -143,12 +143,14 @@ var YBluetoothLink; // definition below
      */
     function YBluetoothLink_get_ownAddress()
     {
+        var res;                    // string;
         if (this._cacheExpiration <= YAPI.GetTickCount()) {
             if (this.load(YAPI.defaultCacheValidity) != YAPI_SUCCESS) {
                 return Y_OWNADDRESS_INVALID;
             }
         }
-        return this._ownAddress;
+        res = this._ownAddress;
+        return res;
     }
 
     /**
@@ -168,6 +170,7 @@ var YBluetoothLink; // definition below
      */
     function YBluetoothLink_get_ownAddress_async(callback,context)
     {
+        var res;                    // string;
         var loadcb;                 // func;
         loadcb = function(ctx,obj,res) {
             if (res != YAPI_SUCCESS) {
@@ -196,12 +199,14 @@ var YBluetoothLink; // definition below
      */
     function YBluetoothLink_get_pairingPin()
     {
+        var res;                    // string;
         if (this._cacheExpiration <= YAPI.GetTickCount()) {
             if (this.load(YAPI.defaultCacheValidity) != YAPI_SUCCESS) {
                 return Y_PAIRINGPIN_INVALID;
             }
         }
-        return this._pairingPin;
+        res = this._pairingPin;
+        return res;
     }
 
     /**
@@ -225,6 +230,7 @@ var YBluetoothLink; // definition below
      */
     function YBluetoothLink_get_pairingPin_async(callback,context)
     {
+        var res;                    // string;
         var loadcb;                 // func;
         loadcb = function(ctx,obj,res) {
             if (res != YAPI_SUCCESS) {
@@ -266,12 +272,14 @@ var YBluetoothLink; // definition below
      */
     function YBluetoothLink_get_remoteAddress()
     {
+        var res;                    // string;
         if (this._cacheExpiration <= YAPI.GetTickCount()) {
             if (this.load(YAPI.defaultCacheValidity) != YAPI_SUCCESS) {
                 return Y_REMOTEADDRESS_INVALID;
             }
         }
-        return this._remoteAddress;
+        res = this._remoteAddress;
+        return res;
     }
 
     /**
@@ -290,6 +298,7 @@ var YBluetoothLink; // definition below
      */
     function YBluetoothLink_get_remoteAddress_async(callback,context)
     {
+        var res;                    // string;
         var loadcb;                 // func;
         loadcb = function(ctx,obj,res) {
             if (res != YAPI_SUCCESS) {
@@ -329,12 +338,14 @@ var YBluetoothLink; // definition below
      */
     function YBluetoothLink_get_remoteName()
     {
+        var res;                    // string;
         if (this._cacheExpiration <= YAPI.GetTickCount()) {
             if (this.load(YAPI.defaultCacheValidity) != YAPI_SUCCESS) {
                 return Y_REMOTENAME_INVALID;
             }
         }
-        return this._remoteName;
+        res = this._remoteName;
+        return res;
     }
 
     /**
@@ -353,6 +364,7 @@ var YBluetoothLink; // definition below
      */
     function YBluetoothLink_get_remoteName_async(callback,context)
     {
+        var res;                    // string;
         var loadcb;                 // func;
         loadcb = function(ctx,obj,res) {
             if (res != YAPI_SUCCESS) {
@@ -377,12 +389,14 @@ var YBluetoothLink; // definition below
      */
     function YBluetoothLink_get_mute()
     {
+        var res;                    // enumBOOL;
         if (this._cacheExpiration <= YAPI.GetTickCount()) {
             if (this.load(YAPI.defaultCacheValidity) != YAPI_SUCCESS) {
                 return Y_MUTE_INVALID;
             }
         }
-        return this._mute;
+        res = this._mute;
+        return res;
     }
 
     /**
@@ -401,6 +415,7 @@ var YBluetoothLink; // definition below
      */
     function YBluetoothLink_get_mute_async(callback,context)
     {
+        var res;                    // enumBOOL;
         var loadcb;                 // func;
         loadcb = function(ctx,obj,res) {
             if (res != YAPI_SUCCESS) {
@@ -441,12 +456,14 @@ var YBluetoothLink; // definition below
      */
     function YBluetoothLink_get_preAmplifier()
     {
+        var res;                    // int;
         if (this._cacheExpiration <= YAPI.GetTickCount()) {
             if (this.load(YAPI.defaultCacheValidity) != YAPI_SUCCESS) {
                 return Y_PREAMPLIFIER_INVALID;
             }
         }
-        return this._preAmplifier;
+        res = this._preAmplifier;
+        return res;
     }
 
     /**
@@ -465,6 +482,7 @@ var YBluetoothLink; // definition below
      */
     function YBluetoothLink_get_preAmplifier_async(callback,context)
     {
+        var res;                    // int;
         var loadcb;                 // func;
         loadcb = function(ctx,obj,res) {
             if (res != YAPI_SUCCESS) {
@@ -504,12 +522,14 @@ var YBluetoothLink; // definition below
      */
     function YBluetoothLink_get_volume()
     {
+        var res;                    // int;
         if (this._cacheExpiration <= YAPI.GetTickCount()) {
             if (this.load(YAPI.defaultCacheValidity) != YAPI_SUCCESS) {
                 return Y_VOLUME_INVALID;
             }
         }
-        return this._volume;
+        res = this._volume;
+        return res;
     }
 
     /**
@@ -528,6 +548,7 @@ var YBluetoothLink; // definition below
      */
     function YBluetoothLink_get_volume_async(callback,context)
     {
+        var res;                    // int;
         var loadcb;                 // func;
         loadcb = function(ctx,obj,res) {
             if (res != YAPI_SUCCESS) {
@@ -568,12 +589,14 @@ var YBluetoothLink; // definition below
      */
     function YBluetoothLink_get_linkState()
     {
+        var res;                    // enumBTSTATE;
         if (this._cacheExpiration <= YAPI.GetTickCount()) {
             if (this.load(YAPI.defaultCacheValidity) != YAPI_SUCCESS) {
                 return Y_LINKSTATE_INVALID;
             }
         }
-        return this._linkState;
+        res = this._linkState;
+        return res;
     }
 
     /**
@@ -593,6 +616,7 @@ var YBluetoothLink; // definition below
      */
     function YBluetoothLink_get_linkState_async(callback,context)
     {
+        var res;                    // enumBTSTATE;
         var loadcb;                 // func;
         loadcb = function(ctx,obj,res) {
             if (res != YAPI_SUCCESS) {
@@ -618,12 +642,14 @@ var YBluetoothLink; // definition below
      */
     function YBluetoothLink_get_linkQuality()
     {
+        var res;                    // int;
         if (this._cacheExpiration <= YAPI.GetTickCount()) {
             if (this.load(YAPI.defaultCacheValidity) != YAPI_SUCCESS) {
                 return Y_LINKQUALITY_INVALID;
             }
         }
-        return this._linkQuality;
+        res = this._linkQuality;
+        return res;
     }
 
     /**
@@ -643,6 +669,7 @@ var YBluetoothLink; // definition below
      */
     function YBluetoothLink_get_linkQuality_async(callback,context)
     {
+        var res;                    // int;
         var loadcb;                 // func;
         loadcb = function(ctx,obj,res) {
             if (res != YAPI_SUCCESS) {
@@ -660,12 +687,14 @@ var YBluetoothLink; // definition below
 
     function YBluetoothLink_get_command()
     {
+        var res;                    // string;
         if (this._cacheExpiration <= YAPI.GetTickCount()) {
             if (this.load(YAPI.defaultCacheValidity) != YAPI_SUCCESS) {
                 return Y_COMMAND_INVALID;
             }
         }
-        return this._command;
+        res = this._command;
+        return res;
     }
 
     /**
@@ -681,6 +710,7 @@ var YBluetoothLink; // definition below
      */
     function YBluetoothLink_get_command_async(callback,context)
     {
+        var res;                    // string;
         var loadcb;                 // func;
         loadcb = function(ctx,obj,res) {
             if (res != YAPI_SUCCESS) {

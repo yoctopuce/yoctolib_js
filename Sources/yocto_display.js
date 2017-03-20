@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_display.js 19607 2015-03-05 10:36:54Z seb $
+ * $Id: yocto_display.js 26671 2017-02-28 13:42:32Z seb $
  *
  * Implements yFindDisplay(), the high-level API for Display functions
  *
@@ -812,12 +812,14 @@ var YDisplay; // definition below
      */
     function YDisplay_get_enabled()
     {
+        var res;                    // enumBOOL;
         if (this._cacheExpiration <= YAPI.GetTickCount()) {
             if (this.load(YAPI.defaultCacheValidity) != YAPI_SUCCESS) {
                 return Y_ENABLED_INVALID;
             }
         }
-        return this._enabled;
+        res = this._enabled;
+        return res;
     }
 
     /**
@@ -837,6 +839,7 @@ var YDisplay; // definition below
      */
     function YDisplay_get_enabled_async(callback,context)
     {
+        var res;                    // enumBOOL;
         var loadcb;                 // func;
         loadcb = function(ctx,obj,res) {
             if (res != YAPI_SUCCESS) {
@@ -876,12 +879,14 @@ var YDisplay; // definition below
      */
     function YDisplay_get_startupSeq()
     {
+        var res;                    // string;
         if (this._cacheExpiration <= YAPI.GetTickCount()) {
             if (this.load(YAPI.defaultCacheValidity) != YAPI_SUCCESS) {
                 return Y_STARTUPSEQ_INVALID;
             }
         }
-        return this._startupSeq;
+        res = this._startupSeq;
+        return res;
     }
 
     /**
@@ -900,6 +905,7 @@ var YDisplay; // definition below
      */
     function YDisplay_get_startupSeq_async(callback,context)
     {
+        var res;                    // string;
         var loadcb;                 // func;
         loadcb = function(ctx,obj,res) {
             if (res != YAPI_SUCCESS) {
@@ -941,12 +947,14 @@ var YDisplay; // definition below
      */
     function YDisplay_get_brightness()
     {
+        var res;                    // int;
         if (this._cacheExpiration <= YAPI.GetTickCount()) {
             if (this.load(YAPI.defaultCacheValidity) != YAPI_SUCCESS) {
                 return Y_BRIGHTNESS_INVALID;
             }
         }
-        return this._brightness;
+        res = this._brightness;
+        return res;
     }
 
     /**
@@ -965,6 +973,7 @@ var YDisplay; // definition below
      */
     function YDisplay_get_brightness_async(callback,context)
     {
+        var res;                    // int;
         var loadcb;                 // func;
         loadcb = function(ctx,obj,res) {
             if (res != YAPI_SUCCESS) {
@@ -1007,12 +1016,14 @@ var YDisplay; // definition below
      */
     function YDisplay_get_orientation()
     {
+        var res;                    // enumORIENTATION;
         if (this._cacheExpiration <= YAPI.GetTickCount()) {
             if (this.load(YAPI.defaultCacheValidity) != YAPI_SUCCESS) {
                 return Y_ORIENTATION_INVALID;
             }
         }
-        return this._orientation;
+        res = this._orientation;
+        return res;
     }
 
     /**
@@ -1032,6 +1043,7 @@ var YDisplay; // definition below
      */
     function YDisplay_get_orientation_async(callback,context)
     {
+        var res;                    // enumORIENTATION;
         var loadcb;                 // func;
         loadcb = function(ctx,obj,res) {
             if (res != YAPI_SUCCESS) {
@@ -1073,12 +1085,14 @@ var YDisplay; // definition below
      */
     function YDisplay_get_displayWidth()
     {
+        var res;                    // int;
         if (this._cacheExpiration <= YAPI.GetTickCount()) {
             if (this.load(YAPI.defaultCacheValidity) != YAPI_SUCCESS) {
                 return Y_DISPLAYWIDTH_INVALID;
             }
         }
-        return this._displayWidth;
+        res = this._displayWidth;
+        return res;
     }
 
     /**
@@ -1097,6 +1111,7 @@ var YDisplay; // definition below
      */
     function YDisplay_get_displayWidth_async(callback,context)
     {
+        var res;                    // int;
         var loadcb;                 // func;
         loadcb = function(ctx,obj,res) {
             if (res != YAPI_SUCCESS) {
@@ -1121,12 +1136,14 @@ var YDisplay; // definition below
      */
     function YDisplay_get_displayHeight()
     {
+        var res;                    // int;
         if (this._cacheExpiration <= YAPI.GetTickCount()) {
             if (this.load(YAPI.defaultCacheValidity) != YAPI_SUCCESS) {
                 return Y_DISPLAYHEIGHT_INVALID;
             }
         }
-        return this._displayHeight;
+        res = this._displayHeight;
+        return res;
     }
 
     /**
@@ -1145,6 +1162,7 @@ var YDisplay; // definition below
      */
     function YDisplay_get_displayHeight_async(callback,context)
     {
+        var res;                    // int;
         var loadcb;                 // func;
         loadcb = function(ctx,obj,res) {
             if (res != YAPI_SUCCESS) {
@@ -1170,12 +1188,14 @@ var YDisplay; // definition below
      */
     function YDisplay_get_displayType()
     {
+        var res;                    // enumDISPLAYTYPE;
         if (this._cacheExpiration == 0) {
             if (this.load(YAPI.defaultCacheValidity) != YAPI_SUCCESS) {
                 return Y_DISPLAYTYPE_INVALID;
             }
         }
-        return this._displayType;
+        res = this._displayType;
+        return res;
     }
 
     /**
@@ -1195,6 +1215,7 @@ var YDisplay; // definition below
      */
     function YDisplay_get_displayType_async(callback,context)
     {
+        var res;                    // enumDISPLAYTYPE;
         var loadcb;                 // func;
         loadcb = function(ctx,obj,res) {
             if (res != YAPI_SUCCESS) {
@@ -1219,12 +1240,14 @@ var YDisplay; // definition below
      */
     function YDisplay_get_layerWidth()
     {
+        var res;                    // int;
         if (this._cacheExpiration == 0) {
             if (this.load(YAPI.defaultCacheValidity) != YAPI_SUCCESS) {
                 return Y_LAYERWIDTH_INVALID;
             }
         }
-        return this._layerWidth;
+        res = this._layerWidth;
+        return res;
     }
 
     /**
@@ -1243,6 +1266,7 @@ var YDisplay; // definition below
      */
     function YDisplay_get_layerWidth_async(callback,context)
     {
+        var res;                    // int;
         var loadcb;                 // func;
         loadcb = function(ctx,obj,res) {
             if (res != YAPI_SUCCESS) {
@@ -1267,12 +1291,14 @@ var YDisplay; // definition below
      */
     function YDisplay_get_layerHeight()
     {
+        var res;                    // int;
         if (this._cacheExpiration == 0) {
             if (this.load(YAPI.defaultCacheValidity) != YAPI_SUCCESS) {
                 return Y_LAYERHEIGHT_INVALID;
             }
         }
-        return this._layerHeight;
+        res = this._layerHeight;
+        return res;
     }
 
     /**
@@ -1291,6 +1317,7 @@ var YDisplay; // definition below
      */
     function YDisplay_get_layerHeight_async(callback,context)
     {
+        var res;                    // int;
         var loadcb;                 // func;
         loadcb = function(ctx,obj,res) {
             if (res != YAPI_SUCCESS) {
@@ -1315,12 +1342,14 @@ var YDisplay; // definition below
      */
     function YDisplay_get_layerCount()
     {
+        var res;                    // int;
         if (this._cacheExpiration == 0) {
             if (this.load(YAPI.defaultCacheValidity) != YAPI_SUCCESS) {
                 return Y_LAYERCOUNT_INVALID;
             }
         }
-        return this._layerCount;
+        res = this._layerCount;
+        return res;
     }
 
     /**
@@ -1339,6 +1368,7 @@ var YDisplay; // definition below
      */
     function YDisplay_get_layerCount_async(callback,context)
     {
+        var res;                    // int;
         var loadcb;                 // func;
         loadcb = function(ctx,obj,res) {
             if (res != YAPI_SUCCESS) {
@@ -1356,12 +1386,14 @@ var YDisplay; // definition below
 
     function YDisplay_get_command()
     {
+        var res;                    // string;
         if (this._cacheExpiration <= YAPI.GetTickCount()) {
             if (this.load(YAPI.defaultCacheValidity) != YAPI_SUCCESS) {
                 return Y_COMMAND_INVALID;
             }
         }
-        return this._command;
+        res = this._command;
+        return res;
     }
 
     /**
@@ -1377,6 +1409,7 @@ var YDisplay; // definition below
      */
     function YDisplay_get_command_async(callback,context)
     {
+        var res;                    // string;
         var loadcb;                 // func;
         loadcb = function(ctx,obj,res) {
             if (res != YAPI_SUCCESS) {

@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_watchdog.js 23229 2016-02-22 16:19:19Z seb $
+ * $Id: yocto_watchdog.js 26671 2017-02-28 13:42:32Z seb $
  *
  * Implements the high-level API for Watchdog functions
  *
@@ -160,12 +160,14 @@ var YWatchdog; // definition below
      */
     function YWatchdog_get_state()
     {
+        var res;                    // enumTOGGLE;
         if (this._cacheExpiration <= YAPI.GetTickCount()) {
             if (this.load(YAPI.defaultCacheValidity) != YAPI_SUCCESS) {
                 return Y_STATE_INVALID;
             }
         }
-        return this._state;
+        res = this._state;
+        return res;
     }
 
     /**
@@ -185,6 +187,7 @@ var YWatchdog; // definition below
      */
     function YWatchdog_get_state_async(callback,context)
     {
+        var res;                    // enumTOGGLE;
         var loadcb;                 // func;
         loadcb = function(ctx,obj,res) {
             if (res != YAPI_SUCCESS) {
@@ -228,12 +231,14 @@ var YWatchdog; // definition below
      */
     function YWatchdog_get_stateAtPowerOn()
     {
+        var res;                    // enumTOGGLEATPOWERON;
         if (this._cacheExpiration <= YAPI.GetTickCount()) {
             if (this.load(YAPI.defaultCacheValidity) != YAPI_SUCCESS) {
                 return Y_STATEATPOWERON_INVALID;
             }
         }
-        return this._stateAtPowerOn;
+        res = this._stateAtPowerOn;
+        return res;
     }
 
     /**
@@ -255,6 +260,7 @@ var YWatchdog; // definition below
      */
     function YWatchdog_get_stateAtPowerOn_async(callback,context)
     {
+        var res;                    // enumTOGGLEATPOWERON;
         var loadcb;                 // func;
         loadcb = function(ctx,obj,res) {
             if (res != YAPI_SUCCESS) {
@@ -297,12 +303,14 @@ var YWatchdog; // definition below
      */
     function YWatchdog_get_maxTimeOnStateA()
     {
+        var res;                    // long;
         if (this._cacheExpiration <= YAPI.GetTickCount()) {
             if (this.load(YAPI.defaultCacheValidity) != YAPI_SUCCESS) {
                 return Y_MAXTIMEONSTATEA_INVALID;
             }
         }
-        return this._maxTimeOnStateA;
+        res = this._maxTimeOnStateA;
+        return res;
     }
 
     /**
@@ -322,6 +330,7 @@ var YWatchdog; // definition below
      */
     function YWatchdog_get_maxTimeOnStateA_async(callback,context)
     {
+        var res;                    // long;
         var loadcb;                 // func;
         loadcb = function(ctx,obj,res) {
             if (res != YAPI_SUCCESS) {
@@ -363,12 +372,14 @@ var YWatchdog; // definition below
      */
     function YWatchdog_get_maxTimeOnStateB()
     {
+        var res;                    // long;
         if (this._cacheExpiration <= YAPI.GetTickCount()) {
             if (this.load(YAPI.defaultCacheValidity) != YAPI_SUCCESS) {
                 return Y_MAXTIMEONSTATEB_INVALID;
             }
         }
-        return this._maxTimeOnStateB;
+        res = this._maxTimeOnStateB;
+        return res;
     }
 
     /**
@@ -388,6 +399,7 @@ var YWatchdog; // definition below
      */
     function YWatchdog_get_maxTimeOnStateB_async(callback,context)
     {
+        var res;                    // long;
         var loadcb;                 // func;
         loadcb = function(ctx,obj,res) {
             if (res != YAPI_SUCCESS) {
@@ -429,12 +441,14 @@ var YWatchdog; // definition below
      */
     function YWatchdog_get_output()
     {
+        var res;                    // enumONOFF;
         if (this._cacheExpiration <= YAPI.GetTickCount()) {
             if (this.load(YAPI.defaultCacheValidity) != YAPI_SUCCESS) {
                 return Y_OUTPUT_INVALID;
             }
         }
-        return this._output;
+        res = this._output;
+        return res;
     }
 
     /**
@@ -454,6 +468,7 @@ var YWatchdog; // definition below
      */
     function YWatchdog_get_output_async(callback,context)
     {
+        var res;                    // enumONOFF;
         var loadcb;                 // func;
         loadcb = function(ctx,obj,res) {
             if (res != YAPI_SUCCESS) {
@@ -497,12 +512,14 @@ var YWatchdog; // definition below
      */
     function YWatchdog_get_pulseTimer()
     {
+        var res;                    // long;
         if (this._cacheExpiration <= YAPI.GetTickCount()) {
             if (this.load(YAPI.defaultCacheValidity) != YAPI_SUCCESS) {
                 return Y_PULSETIMER_INVALID;
             }
         }
-        return this._pulseTimer;
+        res = this._pulseTimer;
+        return res;
     }
 
     /**
@@ -524,6 +541,7 @@ var YWatchdog; // definition below
      */
     function YWatchdog_get_pulseTimer_async(callback,context)
     {
+        var res;                    // long;
         var loadcb;                 // func;
         loadcb = function(ctx,obj,res) {
             if (res != YAPI_SUCCESS) {
@@ -563,12 +581,14 @@ var YWatchdog; // definition below
 
     function YWatchdog_get_delayedPulseTimer()
     {
+        var res;                    // YDelayedPulse;
         if (this._cacheExpiration <= YAPI.GetTickCount()) {
             if (this.load(YAPI.defaultCacheValidity) != YAPI_SUCCESS) {
                 return Y_DELAYEDPULSETIMER_INVALID;
             }
         }
-        return this._delayedPulseTimer;
+        res = this._delayedPulseTimer;
+        return res;
     }
 
     /**
@@ -584,6 +604,7 @@ var YWatchdog; // definition below
      */
     function YWatchdog_get_delayedPulseTimer_async(callback,context)
     {
+        var res;                    // YDelayedPulse;
         var loadcb;                 // func;
         loadcb = function(ctx,obj,res) {
             if (res != YAPI_SUCCESS) {
@@ -632,12 +653,14 @@ var YWatchdog; // definition below
      */
     function YWatchdog_get_countdown()
     {
+        var res;                    // long;
         if (this._cacheExpiration <= YAPI.GetTickCount()) {
             if (this.load(YAPI.defaultCacheValidity) != YAPI_SUCCESS) {
                 return Y_COUNTDOWN_INVALID;
             }
         }
-        return this._countdown;
+        res = this._countdown;
+        return res;
     }
 
     /**
@@ -659,6 +682,7 @@ var YWatchdog; // definition below
      */
     function YWatchdog_get_countdown_async(callback,context)
     {
+        var res;                    // long;
         var loadcb;                 // func;
         loadcb = function(ctx,obj,res) {
             if (res != YAPI_SUCCESS) {
@@ -683,12 +707,14 @@ var YWatchdog; // definition below
      */
     function YWatchdog_get_autoStart()
     {
+        var res;                    // enumONOFF;
         if (this._cacheExpiration <= YAPI.GetTickCount()) {
             if (this.load(YAPI.defaultCacheValidity) != YAPI_SUCCESS) {
                 return Y_AUTOSTART_INVALID;
             }
         }
-        return this._autoStart;
+        res = this._autoStart;
+        return res;
     }
 
     /**
@@ -707,6 +733,7 @@ var YWatchdog; // definition below
      */
     function YWatchdog_get_autoStart_async(callback,context)
     {
+        var res;                    // enumONOFF;
         var loadcb;                 // func;
         loadcb = function(ctx,obj,res) {
             if (res != YAPI_SUCCESS) {
@@ -748,12 +775,14 @@ var YWatchdog; // definition below
      */
     function YWatchdog_get_running()
     {
+        var res;                    // enumONOFF;
         if (this._cacheExpiration <= YAPI.GetTickCount()) {
             if (this.load(YAPI.defaultCacheValidity) != YAPI_SUCCESS) {
                 return Y_RUNNING_INVALID;
             }
         }
-        return this._running;
+        res = this._running;
+        return res;
     }
 
     /**
@@ -772,6 +801,7 @@ var YWatchdog; // definition below
      */
     function YWatchdog_get_running_async(callback,context)
     {
+        var res;                    // enumONOFF;
         var loadcb;                 // func;
         loadcb = function(ctx,obj,res) {
             if (res != YAPI_SUCCESS) {
@@ -827,12 +857,14 @@ var YWatchdog; // definition below
      */
     function YWatchdog_get_triggerDelay()
     {
+        var res;                    // long;
         if (this._cacheExpiration <= YAPI.GetTickCount()) {
             if (this.load(YAPI.defaultCacheValidity) != YAPI_SUCCESS) {
                 return Y_TRIGGERDELAY_INVALID;
             }
         }
-        return this._triggerDelay;
+        res = this._triggerDelay;
+        return res;
     }
 
     /**
@@ -852,6 +884,7 @@ var YWatchdog; // definition below
      */
     function YWatchdog_get_triggerDelay_async(callback,context)
     {
+        var res;                    // long;
         var loadcb;                 // func;
         loadcb = function(ctx,obj,res) {
             if (res != YAPI_SUCCESS) {
@@ -892,12 +925,14 @@ var YWatchdog; // definition below
      */
     function YWatchdog_get_triggerDuration()
     {
+        var res;                    // long;
         if (this._cacheExpiration <= YAPI.GetTickCount()) {
             if (this.load(YAPI.defaultCacheValidity) != YAPI_SUCCESS) {
                 return Y_TRIGGERDURATION_INVALID;
             }
         }
-        return this._triggerDuration;
+        res = this._triggerDuration;
+        return res;
     }
 
     /**
@@ -916,6 +951,7 @@ var YWatchdog; // definition below
      */
     function YWatchdog_get_triggerDuration_async(callback,context)
     {
+        var res;                    // long;
         var loadcb;                 // func;
         loadcb = function(ctx,obj,res) {
             if (res != YAPI_SUCCESS) {

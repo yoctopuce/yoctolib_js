@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_oscontrol.js 23229 2016-02-22 16:19:19Z seb $
+ * $Id: yocto_oscontrol.js 26671 2017-02-28 13:42:32Z seb $
  *
  * Implements the high-level API for OsControl functions
  *
@@ -92,12 +92,14 @@ var YOsControl; // definition below
      */
     function YOsControl_get_shutdownCountdown()
     {
+        var res;                    // int;
         if (this._cacheExpiration <= YAPI.GetTickCount()) {
             if (this.load(YAPI.defaultCacheValidity) != YAPI_SUCCESS) {
                 return Y_SHUTDOWNCOUNTDOWN_INVALID;
             }
         }
-        return this._shutdownCountdown;
+        res = this._shutdownCountdown;
+        return res;
     }
 
     /**
@@ -118,6 +120,7 @@ var YOsControl; // definition below
      */
     function YOsControl_get_shutdownCountdown_async(callback,context)
     {
+        var res;                    // int;
         var loadcb;                 // func;
         loadcb = function(ctx,obj,res) {
             if (res != YAPI_SUCCESS) {

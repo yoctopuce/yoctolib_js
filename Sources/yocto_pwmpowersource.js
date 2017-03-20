@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_pwmpowersource.js 23229 2016-02-22 16:19:19Z seb $
+ * $Id: yocto_pwmpowersource.js 26671 2017-02-28 13:42:32Z seb $
  *
  * Implements the high-level API for PwmPowerSource functions
  *
@@ -94,12 +94,14 @@ var YPwmPowerSource; // definition below
      */
     function YPwmPowerSource_get_powerMode()
     {
+        var res;                    // enumPWMPWRMODE;
         if (this._cacheExpiration <= YAPI.GetTickCount()) {
             if (this.load(YAPI.defaultCacheValidity) != YAPI_SUCCESS) {
                 return Y_POWERMODE_INVALID;
             }
         }
-        return this._powerMode;
+        res = this._powerMode;
+        return res;
     }
 
     /**
@@ -119,6 +121,7 @@ var YPwmPowerSource; // definition below
      */
     function YPwmPowerSource_get_powerMode_async(callback,context)
     {
+        var res;                    // enumPWMPWRMODE;
         var loadcb;                 // func;
         loadcb = function(ctx,obj,res) {
             if (res != YAPI_SUCCESS) {

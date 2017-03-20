@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_motor.js 23229 2016-02-22 16:19:19Z seb $
+ * $Id: yocto_motor.js 26671 2017-02-28 13:42:32Z seb $
  *
  * Implements the high-level API for Motor functions
  *
@@ -152,12 +152,14 @@ var YMotor; // definition below
      */
     function YMotor_get_motorStatus()
     {
+        var res;                    // enumMOTORSTATE;
         if (this._cacheExpiration <= YAPI.GetTickCount()) {
             if (this.load(YAPI.defaultCacheValidity) != YAPI_SUCCESS) {
                 return Y_MOTORSTATUS_INVALID;
             }
         }
-        return this._motorStatus;
+        res = this._motorStatus;
+        return res;
     }
 
     /**
@@ -188,6 +190,7 @@ var YMotor; // definition below
      */
     function YMotor_get_motorStatus_async(callback,context)
     {
+        var res;                    // enumMOTORSTATE;
         var loadcb;                 // func;
         loadcb = function(ctx,obj,res) {
             if (res != YAPI_SUCCESS) {
@@ -238,12 +241,14 @@ var YMotor; // definition below
      */
     function YMotor_get_drivingForce()
     {
+        var res;                    // double;
         if (this._cacheExpiration <= YAPI.GetTickCount()) {
             if (this.load(YAPI.defaultCacheValidity) != YAPI_SUCCESS) {
                 return Y_DRIVINGFORCE_INVALID;
             }
         }
-        return this._drivingForce;
+        res = this._drivingForce;
+        return res;
     }
 
     /**
@@ -263,6 +268,7 @@ var YMotor; // definition below
      */
     function YMotor_get_drivingForce_async(callback,context)
     {
+        var res;                    // double;
         var loadcb;                 // func;
         loadcb = function(ctx,obj,res) {
             if (res != YAPI_SUCCESS) {
@@ -306,12 +312,14 @@ var YMotor; // definition below
      */
     function YMotor_get_brakingForce()
     {
+        var res;                    // double;
         if (this._cacheExpiration <= YAPI.GetTickCount()) {
             if (this.load(YAPI.defaultCacheValidity) != YAPI_SUCCESS) {
                 return Y_BRAKINGFORCE_INVALID;
             }
         }
-        return this._brakingForce;
+        res = this._brakingForce;
+        return res;
     }
 
     /**
@@ -331,6 +339,7 @@ var YMotor; // definition below
      */
     function YMotor_get_brakingForce_async(callback,context)
     {
+        var res;                    // double;
         var loadcb;                 // func;
         loadcb = function(ctx,obj,res) {
             if (res != YAPI_SUCCESS) {
@@ -380,12 +389,14 @@ var YMotor; // definition below
      */
     function YMotor_get_cutOffVoltage()
     {
+        var res;                    // double;
         if (this._cacheExpiration <= YAPI.GetTickCount()) {
             if (this.load(YAPI.defaultCacheValidity) != YAPI_SUCCESS) {
                 return Y_CUTOFFVOLTAGE_INVALID;
             }
         }
-        return this._cutOffVoltage;
+        res = this._cutOffVoltage;
+        return res;
     }
 
     /**
@@ -408,6 +419,7 @@ var YMotor; // definition below
      */
     function YMotor_get_cutOffVoltage_async(callback,context)
     {
+        var res;                    // double;
         var loadcb;                 // func;
         loadcb = function(ctx,obj,res) {
             if (res != YAPI_SUCCESS) {
@@ -434,12 +446,14 @@ var YMotor; // definition below
      */
     function YMotor_get_overCurrentLimit()
     {
+        var res;                    // int;
         if (this._cacheExpiration <= YAPI.GetTickCount()) {
             if (this.load(YAPI.defaultCacheValidity) != YAPI_SUCCESS) {
                 return Y_OVERCURRENTLIMIT_INVALID;
             }
         }
-        return this._overCurrentLimit;
+        res = this._overCurrentLimit;
+        return res;
     }
 
     /**
@@ -460,6 +474,7 @@ var YMotor; // definition below
      */
     function YMotor_get_overCurrentLimit_async(callback,context)
     {
+        var res;                    // int;
         var loadcb;                 // func;
         loadcb = function(ctx,obj,res) {
             if (res != YAPI_SUCCESS) {
@@ -522,12 +537,14 @@ var YMotor; // definition below
      */
     function YMotor_get_frequency()
     {
+        var res;                    // double;
         if (this._cacheExpiration <= YAPI.GetTickCount()) {
             if (this.load(YAPI.defaultCacheValidity) != YAPI_SUCCESS) {
                 return Y_FREQUENCY_INVALID;
             }
         }
-        return this._frequency;
+        res = this._frequency;
+        return res;
     }
 
     /**
@@ -546,6 +563,7 @@ var YMotor; // definition below
      */
     function YMotor_get_frequency_async(callback,context)
     {
+        var res;                    // double;
         var loadcb;                 // func;
         loadcb = function(ctx,obj,res) {
             if (res != YAPI_SUCCESS) {
@@ -573,12 +591,14 @@ var YMotor; // definition below
      */
     function YMotor_get_starterTime()
     {
+        var res;                    // int;
         if (this._cacheExpiration <= YAPI.GetTickCount()) {
             if (this.load(YAPI.defaultCacheValidity) != YAPI_SUCCESS) {
                 return Y_STARTERTIME_INVALID;
             }
         }
-        return this._starterTime;
+        res = this._starterTime;
+        return res;
     }
 
     /**
@@ -600,6 +620,7 @@ var YMotor; // definition below
      */
     function YMotor_get_starterTime_async(callback,context)
     {
+        var res;                    // int;
         var loadcb;                 // func;
         loadcb = function(ctx,obj,res) {
             if (res != YAPI_SUCCESS) {
@@ -647,12 +668,14 @@ var YMotor; // definition below
      */
     function YMotor_get_failSafeTimeout()
     {
+        var res;                    // int;
         if (this._cacheExpiration <= YAPI.GetTickCount()) {
             if (this.load(YAPI.defaultCacheValidity) != YAPI_SUCCESS) {
                 return Y_FAILSAFETIMEOUT_INVALID;
             }
         }
-        return this._failSafeTimeout;
+        res = this._failSafeTimeout;
+        return res;
     }
 
     /**
@@ -676,6 +699,7 @@ var YMotor; // definition below
      */
     function YMotor_get_failSafeTimeout_async(callback,context)
     {
+        var res;                    // int;
         var loadcb;                 // func;
         loadcb = function(ctx,obj,res) {
             if (res != YAPI_SUCCESS) {
@@ -713,12 +737,14 @@ var YMotor; // definition below
 
     function YMotor_get_command()
     {
+        var res;                    // string;
         if (this._cacheExpiration <= YAPI.GetTickCount()) {
             if (this.load(YAPI.defaultCacheValidity) != YAPI_SUCCESS) {
                 return Y_COMMAND_INVALID;
             }
         }
-        return this._command;
+        res = this._command;
+        return res;
     }
 
     /**
@@ -734,6 +760,7 @@ var YMotor; // definition below
      */
     function YMotor_get_command_async(callback,context)
     {
+        var res;                    // string;
         var loadcb;                 // func;
         loadcb = function(ctx,obj,res) {
             if (res != YAPI_SUCCESS) {

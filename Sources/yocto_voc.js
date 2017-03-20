@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_voc.js 23229 2016-02-22 16:19:19Z seb $
+ * $Id: yocto_voc.js 26826 2017-03-17 11:20:57Z mvuilleu $
  *
  * Implements the high-level API for Voc functions
  *
@@ -50,7 +50,7 @@ if(typeof YAPI == "undefined") { if(typeof yAPI != "undefined") window["YAPI"]=y
  *
  * The Yoctopuce class YVoc allows you to read and configure Yoctopuce Volatile Organic
  * Compound sensors. It inherits from YSensor class the core functions to read measurements,
- * register callback functions, access to the autonomous datalogger.
+ * to register callback functions, to access the autonomous datalogger.
  */
 //--- (end of YVoc class start)
 

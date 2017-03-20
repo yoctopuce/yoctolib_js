@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_dualpower.js 23229 2016-02-22 16:19:19Z seb $
+ * $Id: yocto_dualpower.js 26671 2017-02-28 13:42:32Z seb $
  *
  * Implements the high-level API for DualPower functions
  *
@@ -110,12 +110,14 @@ var YDualPower; // definition below
      */
     function YDualPower_get_powerState()
     {
+        var res;                    // enumPWRSTATE;
         if (this._cacheExpiration <= YAPI.GetTickCount()) {
             if (this.load(YAPI.defaultCacheValidity) != YAPI_SUCCESS) {
                 return Y_POWERSTATE_INVALID;
             }
         }
-        return this._powerState;
+        res = this._powerState;
+        return res;
     }
 
     /**
@@ -135,6 +137,7 @@ var YDualPower; // definition below
      */
     function YDualPower_get_powerState_async(callback,context)
     {
+        var res;                    // enumPWRSTATE;
         var loadcb;                 // func;
         loadcb = function(ctx,obj,res) {
             if (res != YAPI_SUCCESS) {
@@ -160,12 +163,14 @@ var YDualPower; // definition below
      */
     function YDualPower_get_powerControl()
     {
+        var res;                    // enumPWRCTRL;
         if (this._cacheExpiration <= YAPI.GetTickCount()) {
             if (this.load(YAPI.defaultCacheValidity) != YAPI_SUCCESS) {
                 return Y_POWERCONTROL_INVALID;
             }
         }
-        return this._powerControl;
+        res = this._powerControl;
+        return res;
     }
 
     /**
@@ -186,6 +191,7 @@ var YDualPower; // definition below
      */
     function YDualPower_get_powerControl_async(callback,context)
     {
+        var res;                    // enumPWRCTRL;
         var loadcb;                 // func;
         loadcb = function(ctx,obj,res) {
             if (res != YAPI_SUCCESS) {
@@ -227,12 +233,14 @@ var YDualPower; // definition below
      */
     function YDualPower_get_extVoltage()
     {
+        var res;                    // int;
         if (this._cacheExpiration <= YAPI.GetTickCount()) {
             if (this.load(YAPI.defaultCacheValidity) != YAPI_SUCCESS) {
                 return Y_EXTVOLTAGE_INVALID;
             }
         }
-        return this._extVoltage;
+        res = this._extVoltage;
+        return res;
     }
 
     /**
@@ -251,6 +259,7 @@ var YDualPower; // definition below
      */
     function YDualPower_get_extVoltage_async(callback,context)
     {
+        var res;                    // int;
         var loadcb;                 // func;
         loadcb = function(ctx,obj,res) {
             if (res != YAPI_SUCCESS) {

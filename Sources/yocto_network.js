@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_network.js 23930 2016-04-15 09:31:14Z seb $
+ * $Id: yocto_network.js 26671 2017-02-28 13:42:32Z seb $
  *
  * Implements the high-level API for Network functions
  *
@@ -82,6 +82,7 @@ var Y_WWWWATCHDOGDELAY_INVALID      = YAPI_INVALID_UINT;
 var Y_CALLBACKURL_INVALID           = YAPI_INVALID_STRING;
 var Y_CALLBACKCREDENTIALS_INVALID   = YAPI_INVALID_STRING;
 var Y_CALLBACKINITIALDELAY_INVALID  = YAPI_INVALID_UINT;
+var Y_CALLBACKSCHEDULE_INVALID      = YAPI_INVALID_STRING;
 var Y_CALLBACKMINDELAY_INVALID      = YAPI_INVALID_UINT;
 var Y_CALLBACKMAXDELAY_INVALID      = YAPI_INVALID_UINT;
 var Y_POECURRENT_INVALID            = YAPI_INVALID_UINT;
@@ -126,6 +127,7 @@ var YNetwork; // definition below
         this._callbackEncoding               = Y_CALLBACKENCODING_INVALID; // CallbackEncoding
         this._callbackCredentials            = Y_CALLBACKCREDENTIALS_INVALID; // Credentials
         this._callbackInitialDelay           = Y_CALLBACKINITIALDELAY_INVALID; // UInt31
+        this._callbackSchedule               = Y_CALLBACKSCHEDULE_INVALID; // CallbackSchedule
         this._callbackMinDelay               = Y_CALLBACKMINDELAY_INVALID; // UInt31
         this._callbackMaxDelay               = Y_CALLBACKMAXDELAY_INVALID; // UInt31
         this._poeCurrent                     = Y_POECURRENT_INVALID;       // UsedCurrent
@@ -197,6 +199,9 @@ var YNetwork; // definition below
         case "callbackInitialDelay":
             this._callbackInitialDelay = parseInt(val);
             return 1;
+        case "callbackSchedule":
+            this._callbackSchedule = val;
+            return 1;
         case "callbackMinDelay":
             this._callbackMinDelay = parseInt(val);
             return 1;
@@ -233,12 +238,14 @@ var YNetwork; // definition below
      */
     function YNetwork_get_readiness()
     {
+        var res;                    // enumREADINESS;
         if (this._cacheExpiration <= YAPI.GetTickCount()) {
             if (this.load(YAPI.defaultCacheValidity) != YAPI_SUCCESS) {
                 return Y_READINESS_INVALID;
             }
         }
-        return this._readiness;
+        res = this._readiness;
+        return res;
     }
 
     /**
@@ -272,6 +279,7 @@ var YNetwork; // definition below
      */
     function YNetwork_get_readiness_async(callback,context)
     {
+        var res;                    // enumREADINESS;
         var loadcb;                 // func;
         loadcb = function(ctx,obj,res) {
             if (res != YAPI_SUCCESS) {
@@ -297,12 +305,14 @@ var YNetwork; // definition below
      */
     function YNetwork_get_macAddress()
     {
+        var res;                    // string;
         if (this._cacheExpiration == 0) {
             if (this.load(YAPI.defaultCacheValidity) != YAPI_SUCCESS) {
                 return Y_MACADDRESS_INVALID;
             }
         }
-        return this._macAddress;
+        res = this._macAddress;
+        return res;
     }
 
     /**
@@ -322,6 +332,7 @@ var YNetwork; // definition below
      */
     function YNetwork_get_macAddress_async(callback,context)
     {
+        var res;                    // string;
         var loadcb;                 // func;
         loadcb = function(ctx,obj,res) {
             if (res != YAPI_SUCCESS) {
@@ -347,12 +358,14 @@ var YNetwork; // definition below
      */
     function YNetwork_get_ipAddress()
     {
+        var res;                    // string;
         if (this._cacheExpiration <= YAPI.GetTickCount()) {
             if (this.load(YAPI.defaultCacheValidity) != YAPI_SUCCESS) {
                 return Y_IPADDRESS_INVALID;
             }
         }
-        return this._ipAddress;
+        res = this._ipAddress;
+        return res;
     }
 
     /**
@@ -372,6 +385,7 @@ var YNetwork; // definition below
      */
     function YNetwork_get_ipAddress_async(callback,context)
     {
+        var res;                    // string;
         var loadcb;                 // func;
         loadcb = function(ctx,obj,res) {
             if (res != YAPI_SUCCESS) {
@@ -396,12 +410,14 @@ var YNetwork; // definition below
      */
     function YNetwork_get_subnetMask()
     {
+        var res;                    // string;
         if (this._cacheExpiration <= YAPI.GetTickCount()) {
             if (this.load(YAPI.defaultCacheValidity) != YAPI_SUCCESS) {
                 return Y_SUBNETMASK_INVALID;
             }
         }
-        return this._subnetMask;
+        res = this._subnetMask;
+        return res;
     }
 
     /**
@@ -420,6 +436,7 @@ var YNetwork; // definition below
      */
     function YNetwork_get_subnetMask_async(callback,context)
     {
+        var res;                    // string;
         var loadcb;                 // func;
         loadcb = function(ctx,obj,res) {
             if (res != YAPI_SUCCESS) {
@@ -444,12 +461,14 @@ var YNetwork; // definition below
      */
     function YNetwork_get_router()
     {
+        var res;                    // string;
         if (this._cacheExpiration <= YAPI.GetTickCount()) {
             if (this.load(YAPI.defaultCacheValidity) != YAPI_SUCCESS) {
                 return Y_ROUTER_INVALID;
             }
         }
-        return this._router;
+        res = this._router;
+        return res;
     }
 
     /**
@@ -468,6 +487,7 @@ var YNetwork; // definition below
      */
     function YNetwork_get_router_async(callback,context)
     {
+        var res;                    // string;
         var loadcb;                 // func;
         loadcb = function(ctx,obj,res) {
             if (res != YAPI_SUCCESS) {
@@ -483,29 +503,66 @@ var YNetwork; // definition below
         }
     }
 
+    /**
+     * Returns the IP configuration of the network interface.
+     *
+     * If the network interface is setup to use a static IP address, the string starts with "STATIC:" and
+     * is followed by three
+     * parameters, separated by "/". The first is the device IP address, followed by the subnet mask
+     * length, and finally the
+     * router IP address (default gateway). For instance: "STATIC:192.168.1.14/16/192.168.1.1"
+     *
+     * If the network interface is configured to receive its IP from a DHCP server, the string start with
+     * "DHCP:" and is followed by
+     * three parameters separated by "/". The first is the fallback IP address, then the fallback subnet
+     * mask length and finally the
+     * fallback router IP address. These three parameters are used when no DHCP reply is received.
+     *
+     * @return a string corresponding to the IP configuration of the network interface
+     *
+     * On failure, throws an exception or returns Y_IPCONFIG_INVALID.
+     */
     function YNetwork_get_ipConfig()
     {
+        var res;                    // string;
         if (this._cacheExpiration <= YAPI.GetTickCount()) {
             if (this.load(YAPI.defaultCacheValidity) != YAPI_SUCCESS) {
                 return Y_IPCONFIG_INVALID;
             }
         }
-        return this._ipConfig;
+        res = this._ipConfig;
+        return res;
     }
 
     /**
+     * Gets the IP configuration of the network interface.
+     *
+     * If the network interface is setup to use a static IP address, the string starts with "STATIC:" and
+     * is followed by three
+     * parameters, separated by "/". The first is the device IP address, followed by the subnet mask
+     * length, and finally the
+     * router IP address (default gateway). For instance: "STATIC:192.168.1.14/16/192.168.1.1"
+     *
+     * If the network interface is configured to receive its IP from a DHCP server, the string start with
+     * "DHCP:" and is followed by
+     * three parameters separated by "/". The first is the fallback IP address, then the fallback subnet
+     * mask length and finally the
+     * fallback router IP address. These three parameters are used when no DHCP reply is received.
      *
      * @param callback : callback function that is invoked when the result is known.
      *         The callback function receives three arguments:
      *         - the user-specific context object
      *         - the YNetwork object that invoked the callback
-     *         - the result:
+     *         - the result:a string corresponding to the IP configuration of the network interface
      * @param context : user-specific object that is passed as-is to the callback function
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
+     *
+     * On failure, throws an exception or returns Y_IPCONFIG_INVALID.
      */
     function YNetwork_get_ipConfig_async(callback,context)
     {
+        var res;                    // string;
         var loadcb;                 // func;
         loadcb = function(ctx,obj,res) {
             if (res != YAPI_SUCCESS) {
@@ -536,12 +593,14 @@ var YNetwork; // definition below
      */
     function YNetwork_get_primaryDNS()
     {
+        var res;                    // string;
         if (this._cacheExpiration <= YAPI.GetTickCount()) {
             if (this.load(YAPI.defaultCacheValidity) != YAPI_SUCCESS) {
                 return Y_PRIMARYDNS_INVALID;
             }
         }
-        return this._primaryDNS;
+        res = this._primaryDNS;
+        return res;
     }
 
     /**
@@ -560,6 +619,7 @@ var YNetwork; // definition below
      */
     function YNetwork_get_primaryDNS_async(callback,context)
     {
+        var res;                    // string;
         var loadcb;                 // func;
         loadcb = function(ctx,obj,res) {
             if (res != YAPI_SUCCESS) {
@@ -601,12 +661,14 @@ var YNetwork; // definition below
      */
     function YNetwork_get_secondaryDNS()
     {
+        var res;                    // string;
         if (this._cacheExpiration <= YAPI.GetTickCount()) {
             if (this.load(YAPI.defaultCacheValidity) != YAPI_SUCCESS) {
                 return Y_SECONDARYDNS_INVALID;
             }
         }
-        return this._secondaryDNS;
+        res = this._secondaryDNS;
+        return res;
     }
 
     /**
@@ -625,6 +687,7 @@ var YNetwork; // definition below
      */
     function YNetwork_get_secondaryDNS_async(callback,context)
     {
+        var res;                    // string;
         var loadcb;                 // func;
         loadcb = function(ctx,obj,res) {
             if (res != YAPI_SUCCESS) {
@@ -666,12 +729,14 @@ var YNetwork; // definition below
      */
     function YNetwork_get_ntpServer()
     {
+        var res;                    // string;
         if (this._cacheExpiration <= YAPI.GetTickCount()) {
             if (this.load(YAPI.defaultCacheValidity) != YAPI_SUCCESS) {
                 return Y_NTPSERVER_INVALID;
             }
         }
-        return this._ntpServer;
+        res = this._ntpServer;
+        return res;
     }
 
     /**
@@ -690,6 +755,7 @@ var YNetwork; // definition below
      */
     function YNetwork_get_ntpServer_async(callback,context)
     {
+        var res;                    // string;
         var loadcb;                 // func;
         loadcb = function(ctx,obj,res) {
             if (res != YAPI_SUCCESS) {
@@ -732,12 +798,14 @@ var YNetwork; // definition below
      */
     function YNetwork_get_userPassword()
     {
+        var res;                    // string;
         if (this._cacheExpiration <= YAPI.GetTickCount()) {
             if (this.load(YAPI.defaultCacheValidity) != YAPI_SUCCESS) {
                 return Y_USERPASSWORD_INVALID;
             }
         }
-        return this._userPassword;
+        res = this._userPassword;
+        return res;
     }
 
     /**
@@ -758,6 +826,7 @@ var YNetwork; // definition below
      */
     function YNetwork_get_userPassword_async(callback,context)
     {
+        var res;                    // string;
         var loadcb;                 // func;
         loadcb = function(ctx,obj,res) {
             if (res != YAPI_SUCCESS) {
@@ -803,12 +872,14 @@ var YNetwork; // definition below
      */
     function YNetwork_get_adminPassword()
     {
+        var res;                    // string;
         if (this._cacheExpiration <= YAPI.GetTickCount()) {
             if (this.load(YAPI.defaultCacheValidity) != YAPI_SUCCESS) {
                 return Y_ADMINPASSWORD_INVALID;
             }
         }
-        return this._adminPassword;
+        res = this._adminPassword;
+        return res;
     }
 
     /**
@@ -829,6 +900,7 @@ var YNetwork; // definition below
      */
     function YNetwork_get_adminPassword_async(callback,context)
     {
+        var res;                    // string;
         var loadcb;                 // func;
         loadcb = function(ctx,obj,res) {
             if (res != YAPI_SUCCESS) {
@@ -872,12 +944,14 @@ var YNetwork; // definition below
      */
     function YNetwork_get_httpPort()
     {
+        var res;                    // int;
         if (this._cacheExpiration <= YAPI.GetTickCount()) {
             if (this.load(YAPI.defaultCacheValidity) != YAPI_SUCCESS) {
                 return Y_HTTPPORT_INVALID;
             }
         }
-        return this._httpPort;
+        res = this._httpPort;
+        return res;
     }
 
     /**
@@ -896,6 +970,7 @@ var YNetwork; // definition below
      */
     function YNetwork_get_httpPort_async(callback,context)
     {
+        var res;                    // int;
         var loadcb;                 // func;
         loadcb = function(ctx,obj,res) {
             if (res != YAPI_SUCCESS) {
@@ -937,12 +1012,14 @@ var YNetwork; // definition below
      */
     function YNetwork_get_defaultPage()
     {
+        var res;                    // string;
         if (this._cacheExpiration <= YAPI.GetTickCount()) {
             if (this.load(YAPI.defaultCacheValidity) != YAPI_SUCCESS) {
                 return Y_DEFAULTPAGE_INVALID;
             }
         }
-        return this._defaultPage;
+        res = this._defaultPage;
+        return res;
     }
 
     /**
@@ -961,6 +1038,7 @@ var YNetwork; // definition below
      */
     function YNetwork_get_defaultPage_async(callback,context)
     {
+        var res;                    // string;
         var loadcb;                 // func;
         loadcb = function(ctx,obj,res) {
             if (res != YAPI_SUCCESS) {
@@ -1005,12 +1083,14 @@ var YNetwork; // definition below
      */
     function YNetwork_get_discoverable()
     {
+        var res;                    // enumBOOL;
         if (this._cacheExpiration <= YAPI.GetTickCount()) {
             if (this.load(YAPI.defaultCacheValidity) != YAPI_SUCCESS) {
                 return Y_DISCOVERABLE_INVALID;
             }
         }
-        return this._discoverable;
+        res = this._discoverable;
+        return res;
     }
 
     /**
@@ -1032,6 +1112,7 @@ var YNetwork; // definition below
      */
     function YNetwork_get_discoverable_async(callback,context)
     {
+        var res;                    // enumBOOL;
         var loadcb;                 // func;
         loadcb = function(ctx,obj,res) {
             if (res != YAPI_SUCCESS) {
@@ -1078,12 +1159,14 @@ var YNetwork; // definition below
      */
     function YNetwork_get_wwwWatchdogDelay()
     {
+        var res;                    // int;
         if (this._cacheExpiration <= YAPI.GetTickCount()) {
             if (this.load(YAPI.defaultCacheValidity) != YAPI_SUCCESS) {
                 return Y_WWWWATCHDOGDELAY_INVALID;
             }
         }
-        return this._wwwWatchdogDelay;
+        res = this._wwwWatchdogDelay;
+        return res;
     }
 
     /**
@@ -1106,6 +1189,7 @@ var YNetwork; // definition below
      */
     function YNetwork_get_wwwWatchdogDelay_async(callback,context)
     {
+        var res;                    // int;
         var loadcb;                 // func;
         loadcb = function(ctx,obj,res) {
             if (res != YAPI_SUCCESS) {
@@ -1150,12 +1234,14 @@ var YNetwork; // definition below
      */
     function YNetwork_get_callbackUrl()
     {
+        var res;                    // string;
         if (this._cacheExpiration <= YAPI.GetTickCount()) {
             if (this.load(YAPI.defaultCacheValidity) != YAPI_SUCCESS) {
                 return Y_CALLBACKURL_INVALID;
             }
         }
-        return this._callbackUrl;
+        res = this._callbackUrl;
+        return res;
     }
 
     /**
@@ -1174,6 +1260,7 @@ var YNetwork; // definition below
      */
     function YNetwork_get_callbackUrl_async(callback,context)
     {
+        var res;                    // string;
         var loadcb;                 // func;
         loadcb = function(ctx,obj,res) {
             if (res != YAPI_SUCCESS) {
@@ -1215,12 +1302,14 @@ var YNetwork; // definition below
      */
     function YNetwork_get_callbackMethod()
     {
+        var res;                    // enumHTTPMETHOD;
         if (this._cacheExpiration <= YAPI.GetTickCount()) {
             if (this.load(YAPI.defaultCacheValidity) != YAPI_SUCCESS) {
                 return Y_CALLBACKMETHOD_INVALID;
             }
         }
-        return this._callbackMethod;
+        res = this._callbackMethod;
+        return res;
     }
 
     /**
@@ -1240,6 +1329,7 @@ var YNetwork; // definition below
      */
     function YNetwork_get_callbackMethod_async(callback,context)
     {
+        var res;                    // enumHTTPMETHOD;
         var loadcb;                 // func;
         loadcb = function(ctx,obj,res) {
             if (res != YAPI_SUCCESS) {
@@ -1284,12 +1374,14 @@ var YNetwork; // definition below
      */
     function YNetwork_get_callbackEncoding()
     {
+        var res;                    // enumCALLBACKENCODING;
         if (this._cacheExpiration <= YAPI.GetTickCount()) {
             if (this.load(YAPI.defaultCacheValidity) != YAPI_SUCCESS) {
                 return Y_CALLBACKENCODING_INVALID;
             }
         }
-        return this._callbackEncoding;
+        res = this._callbackEncoding;
+        return res;
     }
 
     /**
@@ -1312,6 +1404,7 @@ var YNetwork; // definition below
      */
     function YNetwork_get_callbackEncoding_async(callback,context)
     {
+        var res;                    // enumCALLBACKENCODING;
         var loadcb;                 // func;
         loadcb = function(ctx,obj,res) {
             if (res != YAPI_SUCCESS) {
@@ -1357,12 +1450,14 @@ var YNetwork; // definition below
      */
     function YNetwork_get_callbackCredentials()
     {
+        var res;                    // string;
         if (this._cacheExpiration <= YAPI.GetTickCount()) {
             if (this.load(YAPI.defaultCacheValidity) != YAPI_SUCCESS) {
                 return Y_CALLBACKCREDENTIALS_INVALID;
             }
         }
-        return this._callbackCredentials;
+        res = this._callbackCredentials;
+        return res;
     }
 
     /**
@@ -1383,6 +1478,7 @@ var YNetwork; // definition below
      */
     function YNetwork_get_callbackCredentials_async(callback,context)
     {
+        var res;                    // string;
         var loadcb;                 // func;
         loadcb = function(ctx,obj,res) {
             if (res != YAPI_SUCCESS) {
@@ -1449,12 +1545,14 @@ var YNetwork; // definition below
      */
     function YNetwork_get_callbackInitialDelay()
     {
+        var res;                    // int;
         if (this._cacheExpiration <= YAPI.GetTickCount()) {
             if (this.load(YAPI.defaultCacheValidity) != YAPI_SUCCESS) {
                 return Y_CALLBACKINITIALDELAY_INVALID;
             }
         }
-        return this._callbackInitialDelay;
+        res = this._callbackInitialDelay;
+        return res;
     }
 
     /**
@@ -1474,6 +1572,7 @@ var YNetwork; // definition below
      */
     function YNetwork_get_callbackInitialDelay_async(callback,context)
     {
+        var res;                    // int;
         var loadcb;                 // func;
         loadcb = function(ctx,obj,res) {
             if (res != YAPI_SUCCESS) {
@@ -1506,30 +1605,98 @@ var YNetwork; // definition below
     }
 
     /**
-     * Returns the minimum waiting time between two callback notifications, in seconds.
+     * Returns the HTTP callback schedule strategy, as a text string.
      *
-     * @return an integer corresponding to the minimum waiting time between two callback notifications, in seconds
+     * @return a string corresponding to the HTTP callback schedule strategy, as a text string
      *
-     * On failure, throws an exception or returns Y_CALLBACKMINDELAY_INVALID.
+     * On failure, throws an exception or returns Y_CALLBACKSCHEDULE_INVALID.
      */
-    function YNetwork_get_callbackMinDelay()
+    function YNetwork_get_callbackSchedule()
     {
+        var res;                    // string;
         if (this._cacheExpiration <= YAPI.GetTickCount()) {
             if (this.load(YAPI.defaultCacheValidity) != YAPI_SUCCESS) {
-                return Y_CALLBACKMINDELAY_INVALID;
+                return Y_CALLBACKSCHEDULE_INVALID;
             }
         }
-        return this._callbackMinDelay;
+        res = this._callbackSchedule;
+        return res;
     }
 
     /**
-     * Gets the minimum waiting time between two callback notifications, in seconds.
+     * Gets the HTTP callback schedule strategy, as a text string.
      *
      * @param callback : callback function that is invoked when the result is known.
      *         The callback function receives three arguments:
      *         - the user-specific context object
      *         - the YNetwork object that invoked the callback
-     *         - the result:an integer corresponding to the minimum waiting time between two callback notifications, in seconds
+     *         - the result:a string corresponding to the HTTP callback schedule strategy, as a text string
+     * @param context : user-specific object that is passed as-is to the callback function
+     *
+     * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
+     *
+     * On failure, throws an exception or returns Y_CALLBACKSCHEDULE_INVALID.
+     */
+    function YNetwork_get_callbackSchedule_async(callback,context)
+    {
+        var res;                    // string;
+        var loadcb;                 // func;
+        loadcb = function(ctx,obj,res) {
+            if (res != YAPI_SUCCESS) {
+                callback(context, obj, Y_CALLBACKSCHEDULE_INVALID);
+            } else {
+                callback(context, obj, obj._callbackSchedule);
+            }
+        };
+        if (this._cacheExpiration <= YAPI.GetTickCount()) {
+            this.load_async(YAPI.defaultCacheValidity,loadcb,null);
+        } else {
+            loadcb(null, this, YAPI_SUCCESS);
+        }
+    }
+
+    /**
+     * Changes the HTTP callback schedule strategy, as a text string.
+     *
+     * @param newval : a string corresponding to the HTTP callback schedule strategy, as a text string
+     *
+     * @return YAPI_SUCCESS if the call succeeds.
+     *
+     * On failure, throws an exception or returns a negative error code.
+     */
+    function YNetwork_set_callbackSchedule(newval)
+    {   var rest_val;
+        rest_val = newval;
+        return this._setAttr('callbackSchedule',rest_val);
+    }
+
+    /**
+     * Returns the minimum waiting time between two HTTP callbacks, in seconds.
+     *
+     * @return an integer corresponding to the minimum waiting time between two HTTP callbacks, in seconds
+     *
+     * On failure, throws an exception or returns Y_CALLBACKMINDELAY_INVALID.
+     */
+    function YNetwork_get_callbackMinDelay()
+    {
+        var res;                    // int;
+        if (this._cacheExpiration <= YAPI.GetTickCount()) {
+            if (this.load(YAPI.defaultCacheValidity) != YAPI_SUCCESS) {
+                return Y_CALLBACKMINDELAY_INVALID;
+            }
+        }
+        res = this._callbackMinDelay;
+        return res;
+    }
+
+    /**
+     * Gets the minimum waiting time between two HTTP callbacks, in seconds.
+     *
+     * @param callback : callback function that is invoked when the result is known.
+     *         The callback function receives three arguments:
+     *         - the user-specific context object
+     *         - the YNetwork object that invoked the callback
+     *         - the result:an integer corresponding to the minimum waiting time between two HTTP callbacks, in seconds
      * @param context : user-specific object that is passed as-is to the callback function
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
@@ -1538,6 +1705,7 @@ var YNetwork; // definition below
      */
     function YNetwork_get_callbackMinDelay_async(callback,context)
     {
+        var res;                    // int;
         var loadcb;                 // func;
         loadcb = function(ctx,obj,res) {
             if (res != YAPI_SUCCESS) {
@@ -1554,10 +1722,9 @@ var YNetwork; // definition below
     }
 
     /**
-     * Changes the minimum waiting time between two callback notifications, in seconds.
+     * Changes the minimum waiting time between two HTTP callbacks, in seconds.
      *
-     * @param newval : an integer corresponding to the minimum waiting time between two callback
-     * notifications, in seconds
+     * @param newval : an integer corresponding to the minimum waiting time between two HTTP callbacks, in seconds
      *
      * @return YAPI_SUCCESS if the call succeeds.
      *
@@ -1570,30 +1737,32 @@ var YNetwork; // definition below
     }
 
     /**
-     * Returns the maximum waiting time between two callback notifications, in seconds.
+     * Returns the waiting time between two HTTP callbacks when there is nothing new.
      *
-     * @return an integer corresponding to the maximum waiting time between two callback notifications, in seconds
+     * @return an integer corresponding to the waiting time between two HTTP callbacks when there is nothing new
      *
      * On failure, throws an exception or returns Y_CALLBACKMAXDELAY_INVALID.
      */
     function YNetwork_get_callbackMaxDelay()
     {
+        var res;                    // int;
         if (this._cacheExpiration <= YAPI.GetTickCount()) {
             if (this.load(YAPI.defaultCacheValidity) != YAPI_SUCCESS) {
                 return Y_CALLBACKMAXDELAY_INVALID;
             }
         }
-        return this._callbackMaxDelay;
+        res = this._callbackMaxDelay;
+        return res;
     }
 
     /**
-     * Gets the maximum waiting time between two callback notifications, in seconds.
+     * Gets the waiting time between two HTTP callbacks when there is nothing new.
      *
      * @param callback : callback function that is invoked when the result is known.
      *         The callback function receives three arguments:
      *         - the user-specific context object
      *         - the YNetwork object that invoked the callback
-     *         - the result:an integer corresponding to the maximum waiting time between two callback notifications, in seconds
+     *         - the result:an integer corresponding to the waiting time between two HTTP callbacks when there is nothing new
      * @param context : user-specific object that is passed as-is to the callback function
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
@@ -1602,6 +1771,7 @@ var YNetwork; // definition below
      */
     function YNetwork_get_callbackMaxDelay_async(callback,context)
     {
+        var res;                    // int;
         var loadcb;                 // func;
         loadcb = function(ctx,obj,res) {
             if (res != YAPI_SUCCESS) {
@@ -1618,10 +1788,10 @@ var YNetwork; // definition below
     }
 
     /**
-     * Changes the maximum waiting time between two callback notifications, in seconds.
+     * Changes the waiting time between two HTTP callbacks when there is nothing new.
      *
-     * @param newval : an integer corresponding to the maximum waiting time between two callback
-     * notifications, in seconds
+     * @param newval : an integer corresponding to the waiting time between two HTTP callbacks when there
+     * is nothing new
      *
      * @return YAPI_SUCCESS if the call succeeds.
      *
@@ -1645,12 +1815,14 @@ var YNetwork; // definition below
      */
     function YNetwork_get_poeCurrent()
     {
+        var res;                    // int;
         if (this._cacheExpiration <= YAPI.GetTickCount()) {
             if (this.load(YAPI.defaultCacheValidity) != YAPI_SUCCESS) {
                 return Y_POECURRENT_INVALID;
             }
         }
-        return this._poeCurrent;
+        res = this._poeCurrent;
+        return res;
     }
 
     /**
@@ -1672,6 +1844,7 @@ var YNetwork; // definition below
      */
     function YNetwork_get_poeCurrent_async(callback,context)
     {
+        var res;                    // int;
         var loadcb;                 // func;
         loadcb = function(ctx,obj,res) {
             if (res != YAPI_SUCCESS) {
@@ -1866,6 +2039,7 @@ var YNetwork; // definition below
         CALLBACKENCODING_INVALID    : -1,
         CALLBACKCREDENTIALS_INVALID : YAPI_INVALID_STRING,
         CALLBACKINITIALDELAY_INVALID : YAPI_INVALID_UINT,
+        CALLBACKSCHEDULE_INVALID    : YAPI_INVALID_STRING,
         CALLBACKMINDELAY_INVALID    : YAPI_INVALID_UINT,
         CALLBACKMAXDELAY_INVALID    : YAPI_INVALID_UINT,
         POECURRENT_INVALID          : YAPI_INVALID_UINT
@@ -1986,6 +2160,12 @@ var YNetwork; // definition below
         callbackInitialDelay_async  : YNetwork_get_callbackInitialDelay_async,
         set_callbackInitialDelay    : YNetwork_set_callbackInitialDelay,
         setCallbackInitialDelay     : YNetwork_set_callbackInitialDelay,
+        get_callbackSchedule        : YNetwork_get_callbackSchedule,
+        callbackSchedule            : YNetwork_get_callbackSchedule,
+        get_callbackSchedule_async  : YNetwork_get_callbackSchedule_async,
+        callbackSchedule_async      : YNetwork_get_callbackSchedule_async,
+        set_callbackSchedule        : YNetwork_set_callbackSchedule,
+        setCallbackSchedule         : YNetwork_set_callbackSchedule,
         get_callbackMinDelay        : YNetwork_get_callbackMinDelay,
         callbackMinDelay            : YNetwork_get_callbackMinDelay,
         get_callbackMinDelay_async  : YNetwork_get_callbackMinDelay_async,

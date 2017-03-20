@@ -1,0 +1,56 @@
+<HTML>
+<HEAD>
+ <TITLE>Hello World</TITLE>
+ <SCRIPT type="text/javascript" src="../../Sources/yocto_api.js"></SCRIPT>
+ <SCRIPT type="text/javascript" src="../../Sources/yocto_rangefinder.js"></SCRIPT>
+ <SCRIPT type="text/javascript" src="../../Sources/yocto_lightsensor.js"></SCRIPT>
+ <SCRIPT type="text/javascript" src="../../Sources/yocto_temperature.js"></SCRIPT>
+ <SCRIPT language='javascript1.5' type='text/JavaScript'>
+ <!--
+
+ // Setup the API to use the VirtualHub on local machine
+ if(yRegisterHub('http://127.0.0.1:4444/') != YAPI_SUCCESS) {
+     alert("Cannot contact VirtualHub on 127.0.0.1");
+ }
+
+ function refresh()
+ { 
+     var rf,ir,tmp;
+     var serial = document.getElementById('serial').value;
+
+     if(serial == '') {
+         // or use any conected module suitable for the demo
+         rf = yFirstRangeFinder();
+         if (rf) {
+             serial = rf.module().get_serialNumber();
+             document.getElementById('serial').value = serial;
+         }
+     }
+
+     rf = yFindRangeFinder(serial+".rangeFinder1");
+     ir = yFindLightSensor(serial+".lightSensor1");
+     tmp = yFindTemperature(serial+".temperature1");
+     
+     if (rf.isOnline()) {
+         document.getElementById('msg').value = '';
+         document.getElementById("rf-val").value = rf.get_currentValue();
+         document.getElementById("ir-val").value = ir.get_currentValue();
+         document.getElementById("tmp-val").value = tmp.get_currentValue();
+         
+     } else {
+         document.getElementById('msg').value = 'Module not connected';         
+     }
+     setTimeout('refresh()',500);
+ }
+ -->
+ </SCRIPT>
+</HEAD>  
+<BODY onload='refresh();'>
+Module to use:    <input id='serial'>
+ <input id='msg' style='color:red;border:none;' readonly><br>
+Distance: <input id='rf-val' size=5 readonly> <br>
+Ambient IR: <input id='ir-val' size=5 readonly> <br>
+Temperature: <input id='tmp-val' size=5 readonly> <br>
+
+</BODY>
+</HTML> 

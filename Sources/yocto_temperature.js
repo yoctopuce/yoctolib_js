@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_temperature.js 23527 2016-03-18 21:49:19Z mvuilleu $
+ * $Id: yocto_temperature.js 26826 2017-03-17 11:20:57Z mvuilleu $
  *
  * Implements the high-level API for Temperature functions
  *
@@ -67,8 +67,8 @@ var Y_COMMAND_INVALID               = YAPI_INVALID_STRING;
  * YTemperature Class: Temperature function interface
  *
  * The Yoctopuce class YTemperature allows you to read and configure Yoctopuce temperature
- * sensors. It inherits from YSensor class the core functions to read measurements,
- * register callback functions, access to the autonomous datalogger.
+ * sensors. It inherits from YSensor class the core functions to read measurements, to
+ * register callback functions, to access the autonomous datalogger.
  * This class adds the ability to configure some specific parameters for some
  * sensors (connection type, temperature mapping table).
  */
@@ -148,12 +148,14 @@ var YTemperature; // definition below
      */
     function YTemperature_get_sensorType()
     {
+        var res;                    // enumTEMPSENSORTYPEALL;
         if (this._cacheExpiration <= YAPI.GetTickCount()) {
             if (this.load(YAPI.defaultCacheValidity) != YAPI_SUCCESS) {
                 return Y_SENSORTYPE_INVALID;
             }
         }
-        return this._sensorType;
+        res = this._sensorType;
+        return res;
     }
 
     /**
@@ -176,6 +178,7 @@ var YTemperature; // definition below
      */
     function YTemperature_get_sensorType_async(callback,context)
     {
+        var res;                    // enumTEMPSENSORTYPEALL;
         var loadcb;                 // func;
         loadcb = function(ctx,obj,res) {
             if (res != YAPI_SUCCESS) {
@@ -223,12 +226,14 @@ var YTemperature; // definition below
      */
     function YTemperature_get_signalValue()
     {
+        var res;                    // double;
         if (this._cacheExpiration <= YAPI.GetTickCount()) {
             if (this.load(YAPI.defaultCacheValidity) != YAPI_SUCCESS) {
                 return Y_SIGNALVALUE_INVALID;
             }
         }
-        return Math.round(this._signalValue * 1000) / 1000;
+        res = Math.round(this._signalValue * 1000) / 1000;
+        return res;
     }
 
     /**
@@ -248,6 +253,7 @@ var YTemperature; // definition below
      */
     function YTemperature_get_signalValue_async(callback,context)
     {
+        var res;                    // double;
         var loadcb;                 // func;
         loadcb = function(ctx,obj,res) {
             if (res != YAPI_SUCCESS) {
@@ -272,12 +278,14 @@ var YTemperature; // definition below
      */
     function YTemperature_get_signalUnit()
     {
+        var res;                    // string;
         if (this._cacheExpiration == 0) {
             if (this.load(YAPI.defaultCacheValidity) != YAPI_SUCCESS) {
                 return Y_SIGNALUNIT_INVALID;
             }
         }
-        return this._signalUnit;
+        res = this._signalUnit;
+        return res;
     }
 
     /**
@@ -296,6 +304,7 @@ var YTemperature; // definition below
      */
     function YTemperature_get_signalUnit_async(callback,context)
     {
+        var res;                    // string;
         var loadcb;                 // func;
         loadcb = function(ctx,obj,res) {
             if (res != YAPI_SUCCESS) {
@@ -313,12 +322,14 @@ var YTemperature; // definition below
 
     function YTemperature_get_command()
     {
+        var res;                    // string;
         if (this._cacheExpiration <= YAPI.GetTickCount()) {
             if (this.load(YAPI.defaultCacheValidity) != YAPI_SUCCESS) {
                 return Y_COMMAND_INVALID;
             }
         }
-        return this._command;
+        res = this._command;
+        return res;
     }
 
     /**
@@ -334,6 +345,7 @@ var YTemperature; // definition below
      */
     function YTemperature_get_command_async(callback,context)
     {
+        var res;                    // string;
         var loadcb;                 // func;
         loadcb = function(ctx,obj,res) {
             if (res != YAPI_SUCCESS) {
@@ -390,7 +402,7 @@ var YTemperature; // definition below
     }
 
     /**
-     * Configure NTC thermistor parameters in order to properly compute the temperature from
+     * Configures NTC thermistor parameters in order to properly compute the temperature from
      * the measured resistance. For increased precision, you can enter a complete mapping
      * table using set_thermistorResponseTable. This function can only be used with a
      * temperature sensor based on thermistors.
