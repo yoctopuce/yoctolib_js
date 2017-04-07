@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_api.js 26826 2017-03-17 11:20:57Z mvuilleu $
+ * $Id: yocto_api.js 27114 2017-04-06 22:22:28Z seb $
  *
  * High-level programming interface, common to all modules
  *
@@ -2627,7 +2627,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
      */
     function YAPI_GetAPIVersion()
     {
-        return "1.10.26849";
+        return "1.10.27127";
     }
 
     /**
@@ -5431,7 +5431,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
             this._nRows = 0;
             return YAPI_SUCCESS;
         }
-        // may throw an exception
+        
         udat = YAPI._decodeWords(this._parent._json_get_string(sdata));
         this._values.length = 0;
         idx = 0;
@@ -5894,7 +5894,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
         var minCol;                 // int;
         var avgCol;                 // int;
         var maxCol;                 // int;
-        // may throw an exception
+        
         if (progress != this._progress) {
             return this._progress;
         }
@@ -6139,7 +6139,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
         var minCol;                 // int;
         var avgCol;                 // int;
         var maxCol;                 // int;
-        // may throw an exception
+        
         startUtc = Math.round(measure.get_startTimeUTC());
         stream = null;
         for (ii in this._streams) {
@@ -7202,19 +7202,23 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
             return 0;
         }
         if ((this._calibrationParam).indexOf(",") >= 0) {
+            // Plain text format
             iCalib = YAPI._decodeFloats(this._calibrationParam);
             this._caltyp = parseInt((iCalib[0]) / (1000));
             if (this._caltyp > 0) {
                 if (this._caltyp < YOCTO_CALIB_TYPE_OFS) {
+                    // Unknown calibration type: calibrated value will be provided by the device
                     this._caltyp = -1;
                     return 0;
                 }
                 this._calhdl = YAPI._getCalibrationHandler(this._caltyp);
                 if (!(this._calhdl != null)) {
+                    // Unknown calibration type: calibrated value will be provided by the device
                     this._caltyp = -1;
                     return 0;
                 }
             }
+            // New 32bit text format
             this._isScal = true;
             this._isScal32 = true;
             this._offset = 0;
@@ -7239,11 +7243,14 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
                 position = position + 2;
             }
         } else {
+            // Recorder-encoded format, including encoding
             iCalib = YAPI._decodeWords(this._calibrationParam);
+            // In case of unknown format, calibrated value will be provided by the device
             if (iCalib.length < 2) {
                 this._caltyp = -1;
                 return 0;
             }
+            // Save variable format (scale for scalar, or decimal exponent)
             this._isScal = (iCalib[1] > 0);
             if (this._isScal) {
                 this._offset = iCalib[0];
@@ -7262,12 +7269,14 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
                     position = position - 1;
                 }
             }
+            // Shortcut when there is no calibration parameter
             if (iCalib.length == 2) {
                 this._caltyp = 0;
                 return 0;
             }
             this._caltyp = iCalib[2];
             this._calhdl = YAPI._getCalibrationHandler(this._caltyp);
+            // parse calibration points
             if (this._caltyp <= 10) {
                 maxpos = this._caltyp;
             } else {
@@ -7336,7 +7345,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
     function YSensor_startDataLogger()
     {
         var res;                    // bin;
-        // may throw an exception
+        
         res = this._download("api/dataLogger/recording?recording=1");
         if (!((res).length>0)) {
             return this._throw(YAPI_IO_ERROR,"unable to start datalogger",YAPI_IO_ERROR);
@@ -7352,7 +7361,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
     function YSensor_stopDataLogger()
     {
         var res;                    // bin;
-        // may throw an exception
+        
         res = this._download("api/dataLogger/recording?recording=0");
         if (!((res).length>0)) {
             return this._throw(YAPI_IO_ERROR,"unable to stop datalogger",YAPI_IO_ERROR);
@@ -7390,7 +7399,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
     {
         var funcid;                 // str;
         var funit;                  // str;
-        // may throw an exception
+        
         funcid = this.get_functionId();
         funit = this.get_unit();
         return new YDataSet(this, funcid, funit, startTime, endTime);
@@ -7453,9 +7462,11 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
     function YSensor_calibrateFromPoints(rawValues,refValues)
     {
         var rest_val;               // str;
-        // may throw an exception
+        var res;                    // int;
+        
         rest_val = this._encodeCalibrationPoints(rawValues, refValues);
-        return this._setAttr("calibrationParam", rest_val);
+        res = this._setAttr("calibrationParam", rest_val);
+        return res;
     }
 
     /**
@@ -7527,6 +7538,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
             return "0";
         }
         if (this._isScal32) {
+            // 32-bit fixed-point encoding
             res = ""+String(Math.round(YOCTO_CALIB_TYPE_OFS));
             idx = 0;
             while (idx < npt) {
@@ -7535,6 +7547,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
             }
         } else {
             if (this._isScal) {
+                // 16-bit fixed-point encoding
                 res = ""+String(Math.round(npt));
                 idx = 0;
                 while (idx < npt) {
@@ -7544,6 +7557,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
                     idx = idx + 1;
                 }
             } else {
+                // 16-bit floating-point decimal encoding
                 res = ""+String(Math.round(10 + npt));
                 idx = 0;
                 while (idx < npt) {
@@ -7596,7 +7610,9 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
             startTime = endTime;
         }
         if (report[0] == 2) {
+            // 32bit timed report format
             if (report.length <= 5) {
+                // sub-second report, 1-4 bytes
                 poww = 1;
                 avgRaw = 0;
                 byteVal = 0;
@@ -7619,6 +7635,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
                 minVal = avgVal;
                 maxVal = avgVal;
             } else {
+                // averaged report: avg,avg-min,max-avg
                 sublen = 1 + ((report[1]) & (3));
                 poww = 1;
                 avgRaw = 0;
@@ -7668,7 +7685,9 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
                 }
             }
         } else {
+            // 16bit timed report format
             if (report[0] == 0) {
+                // sub-second report, 1-4 bytes
                 poww = 1;
                 avgRaw = 0;
                 byteVal = 0;
@@ -7690,6 +7709,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
                 minVal = avgVal;
                 maxVal = avgVal;
             } else {
+                // averaged report 2+4+2 bytes
                 minRaw = report[1] + 0x100 * report[2];
                 maxRaw = report[3] + 0x100 * report[4];
                 avgRaw = report[5] + 0x100 * report[6] + 0x10000 * report[7];
@@ -9018,7 +9038,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
     {
         var serial;                 // str;
         var settings;               // bin;
-        // may throw an exception
+        
         serial = this.get_serialNumber();
         settings = this.get_allSettings();
         if ((settings).length == 0) {
@@ -9067,7 +9087,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
         var ext_settings;           // str;
         var filelist = [];          // strArr;
         var templist = [];          // strArr;
-        // may throw an exception
+        
         settings = this._download("api.json");
         if ((settings).length == 0) {
             return settings;
@@ -9125,7 +9145,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
         var ofs;                    // int;
         var size;                   // int;
         url = "api/" + funcId + ".json?command=Z";
-        // may throw an exception
+        
         this._download(url);
         // add records in growing resistance value
         values = this._json_get_array(jsonExtra);
@@ -9229,7 +9249,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
         var count;                  // int;
         var i;                      // int;
         var fid;                    // str;
-        // may throw an exception
+        
         count  = this.functionCount();
         i = 0;
         while (i < count) {
@@ -9255,7 +9275,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
         var i;                      // int;
         var ftype;                  // str;
         var res = [];               // strArr;
-        // may throw an exception
+        
         count = this.functionCount();
         i = 0;
         while (i < count) {
@@ -9354,9 +9374,11 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
         paramScale = funScale;
         paramOffset = funOffset;
         if (funVer < 3) {
+            // Read the effective device scale if available
             if (funVer == 2) {
                 words = YAPI._decodeWords(currentFuncValue);
                 if ((words[0] == 1366) && (words[1] == 12500)) {
+                    // Yocto-3D RefFrame used a special encoding
                     funScale = 1;
                     funOffset = 0;
                 } else {
@@ -9374,9 +9396,11 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
         calibData.length = 0;
         calibType = 0;
         if (paramVer < 3) {
+            // Handle old 16 bit parameters formats
             if (paramVer == 2) {
                 words = YAPI._decodeWords(param);
                 if ((words[0] == 1366) && (words[1] == 12500)) {
+                    // Yocto-3D RefFrame used a special encoding
                     paramScale = 1;
                     paramOffset = 0;
                 } else {
@@ -9430,13 +9454,16 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
             i = 0;
             while (i < calibData.length) {
                 if (paramScale > 0) {
+                    // scalar decoding
                     calibData[i] = (calibData[i] - paramOffset) / paramScale;
                 } else {
+                    // floating-point decoding
                     calibData[i] = YAPI._decimalToDouble(Math.round(calibData[i]));
                 }
                 i = i + 1;
             }
         } else {
+            // Handle latest 32bit parameter format
             iCalib = YAPI._decodeFloats(param);
             calibType = Math.round(iCalib[0] / 1000.0);
             if (calibType >= 30) {
@@ -9449,6 +9476,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
             }
         }
         if (funVer >= 3) {
+            // Encode parameters in new format
             if (calibData.length == 0) {
                 param = "0,";
             } else {
@@ -9467,6 +9495,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
             }
         } else {
             if (funVer >= 1) {
+                // Encode parameters for older devices
                 nPoints = parseInt((calibData.length) / (2));
                 param = nPoints;
                 i = 0;
@@ -9480,6 +9509,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
                     i = i + 1;
                 }
             } else {
+                // Initial V0 encoding used for old Yocto-Light
                 if (calibData.length == 4) {
                     param = Math.round(1000 * (calibData[3] - calibData[1]) / calibData[2] - calibData[0]);
                 }
@@ -9546,6 +9576,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
         for (ii in old_dslist) {
             if(ii=='indexOf') continue; // IE8 Don'tEnum bug
             each_str = this._json_get_string(old_dslist[ii]);
+            // split json path and attr
             leng = (each_str).length;
             eqpos = (each_str).indexOf("=");
             if ((eqpos < 0) || (leng == 0)) {
@@ -9559,13 +9590,15 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
             old_jpath_len.push((jpath).length);
             old_val_arr.push(value);
         }
-        // may throw an exception
+        
         actualSettings = this._download("api.json");
         actualSettings = this._flattenJsonStruct(actualSettings);
         new_dslist = this._json_get_array(actualSettings);
         for (ii in new_dslist) {
             if(ii=='indexOf') continue; // IE8 Don'tEnum bug
+            // remove quotes
             each_str = this._json_get_string(new_dslist[ii]);
+            // split json path and attr
             leng = (each_str).length;
             eqpos = (each_str).indexOf("=");
             if ((eqpos < 0) || (leng == 0)) {
@@ -9810,7 +9843,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
     function YModule_get_lastLogs()
     {
         var content;                // bin;
-        // may throw an exception
+        
         content = this._download("logs.txt");
         return content;
     }

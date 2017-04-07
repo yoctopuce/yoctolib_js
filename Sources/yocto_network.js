@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_network.js 26671 2017-02-28 13:42:32Z seb $
+ * $Id: yocto_network.js 27114 2017-04-06 22:22:28Z seb $
  *
  * Implements the high-level API for Network functions
  *
@@ -1943,7 +1943,7 @@ var YNetwork; // definition below
     function YNetwork_ping(host)
     {
         var content;                // bin;
-        // may throw an exception
+        
         content = this._download("ping.txt?host="+host);
         return content;
     }

@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_serialport.js 26671 2017-02-28 13:42:32Z seb $
+ * $Id: yocto_serialport.js 27114 2017-04-06 22:22:28Z seb $
  *
  * Implements the high-level API for SerialPort functions
  *
@@ -934,7 +934,7 @@ var YSerialPort; // definition below
         this._rxptr = 0;
         this._rxbuffptr = 0;
         this._rxbuff = new Uint8Array(0);
-        // may throw an exception
+        
         return this.sendCommand("Z");
     }
 
@@ -970,6 +970,7 @@ var YSerialPort; // definition below
         buff = text;
         bufflen = (buff).length;
         if (bufflen < 100) {
+            // if string is pure text, we can send it as a simple command (faster)
             ch = 0x20;
             idx = 0;
             while ((idx < bufflen) && (ch != 0)) {
@@ -1026,7 +1027,7 @@ var YSerialPort; // definition below
             buff[idx] = hexb;
             idx = idx + 1;
         }
-        // may throw an exception
+        
         res = this._upload("txdata", buff);
         return res;
     }
@@ -1059,7 +1060,7 @@ var YSerialPort; // definition below
             buff[idx] = hexb;
             idx = idx + 1;
         }
-        // may throw an exception
+        
         res = this._upload("txdata", buff);
         return res;
     }
@@ -1082,6 +1083,7 @@ var YSerialPort; // definition below
         buff = ""+text+"\r\n";
         bufflen = (buff).length-2;
         if (bufflen < 100) {
+            // if string is pure text, we can send it as a simple command (faster)
             ch = 0x20;
             idx = 0;
             while ((idx < bufflen) && (ch != 0)) {
@@ -1154,7 +1156,7 @@ var YSerialPort; // definition below
         // still mixed, need to process character by character
         this._rxptr = currpos;
         
-        // may throw an exception
+        
         buff = this._download("rxdata.bin?pos="+String(Math.round(this._rxptr))+"&len=1");
         bufflen = (buff).length - 1;
         endpos = 0;
@@ -1193,7 +1195,7 @@ var YSerialPort; // definition below
         if (nChars > 65535) {
             nChars = 65535;
         }
-        // may throw an exception
+        
         buff = this._download("rxdata.bin?pos="+String(Math.round(this._rxptr))+"&len="+String(Math.round(nChars)));
         bufflen = (buff).length - 1;
         endpos = 0;
@@ -1230,7 +1232,7 @@ var YSerialPort; // definition below
         if (nChars > 65535) {
             nChars = 65535;
         }
-        // may throw an exception
+        
         buff = this._download("rxdata.bin?pos="+String(Math.round(this._rxptr))+"&len="+String(Math.round(nChars)));
         bufflen = (buff).length - 1;
         endpos = 0;
@@ -1273,7 +1275,7 @@ var YSerialPort; // definition below
         if (nChars > 65535) {
             nChars = 65535;
         }
-        // may throw an exception
+        
         buff = this._download("rxdata.bin?pos="+String(Math.round(this._rxptr))+"&len="+String(Math.round(nChars)));
         bufflen = (buff).length - 1;
         endpos = 0;
@@ -1316,7 +1318,7 @@ var YSerialPort; // definition below
         if (nBytes > 65535) {
             nBytes = 65535;
         }
-        // may throw an exception
+        
         buff = this._download("rxdata.bin?pos="+String(Math.round(this._rxptr))+"&len="+String(Math.round(nBytes)));
         bufflen = (buff).length - 1;
         endpos = 0;
@@ -1360,7 +1362,7 @@ var YSerialPort; // definition below
         var msgarr = [];            // strArr;
         var msglen;                 // int;
         var res;                    // str;
-        // may throw an exception
+        
         url = "rxmsg.json?pos="+String(Math.round(this._rxptr))+"&len=1&maxw=1";
         msgbin = this._download(url);
         msgarr = this._json_get_array(msgbin);
@@ -1407,7 +1409,7 @@ var YSerialPort; // definition below
         var msglen;                 // int;
         var res = [];               // strArr;
         var idx;                    // int;
-        // may throw an exception
+        
         url = "rxmsg.json?pos="+String(Math.round(this._rxptr))+"&maxw="+String(Math.round(maxWait))+"&pat="+pattern;
         msgbin = this._download(url);
         msgarr = this._json_get_array(msgbin);
@@ -1462,7 +1464,7 @@ var YSerialPort; // definition below
         var buff;                   // bin;
         var bufflen;                // int;
         var res;                    // int;
-        // may throw an exception
+        
         buff = this._download("rxcnt.bin?pos="+String(Math.round(this._rxptr)));
         bufflen = (buff).length - 1;
         while ((bufflen > 0) && ((buff).charCodeAt(bufflen) != 64)) {
@@ -1491,7 +1493,7 @@ var YSerialPort; // definition below
         var msgarr = [];            // strArr;
         var msglen;                 // int;
         var res;                    // str;
-        // may throw an exception
+        
         url = "rxmsg.json?len=1&maxw="+String(Math.round(maxWait))+"&cmd=!"+query;
         msgbin = this._download(url);
         msgarr = this._json_get_array(msgbin);
@@ -1569,7 +1571,7 @@ var YSerialPort; // definition below
     {
         var buff;                   // bin;
         var res;                    // int;
-        // may throw an exception
+        
         buff = this._download("cts.txt");
         if (!((buff).length == 1)) {
             return this._throw(YAPI_IO_ERROR,"invalid CTS reply",YAPI_IO_ERROR);
@@ -1629,7 +1631,7 @@ var YSerialPort; // definition below
             cmd = ""+cmd+""+('00'+(((pduBytes[i]) & (0xff))).toString(16)).slice(-2);
             i = i + 1;
         }
-        // may throw an exception
+        
         url = "rxmsg.json?cmd=:"+cmd+"&pat=:"+pat;
         msgs = this._download(url);
         reps = this._json_get_array(msgs);
@@ -1690,7 +1692,7 @@ var YSerialPort; // definition below
         pdu.push(((pduAddr) & (0xff)));
         pdu.push(((nBits) >> (8)));
         pdu.push(((nBits) & (0xff)));
-        // may throw an exception
+        
         reply = this.queryMODBUS(slaveNo, pdu);
         if (reply.length == 0) {
             return res;
@@ -1746,7 +1748,7 @@ var YSerialPort; // definition below
         pdu.push(((pduAddr) & (0xff)));
         pdu.push(((nBits) >> (8)));
         pdu.push(((nBits) & (0xff)));
-        // may throw an exception
+        
         reply = this.queryMODBUS(slaveNo, pdu);
         if (reply.length == 0) {
             return res;
@@ -1801,7 +1803,7 @@ var YSerialPort; // definition below
         pdu.push(((pduAddr) & (0xff)));
         pdu.push(((nWords) >> (8)));
         pdu.push(((nWords) & (0xff)));
-        // may throw an exception
+        
         reply = this.queryMODBUS(slaveNo, pdu);
         if (reply.length == 0) {
             return res;
@@ -1847,7 +1849,7 @@ var YSerialPort; // definition below
         pdu.push(((pduAddr) & (0xff)));
         pdu.push(((nWords) >> (8)));
         pdu.push(((nWords) & (0xff)));
-        // may throw an exception
+        
         reply = this.queryMODBUS(slaveNo, pdu);
         if (reply.length == 0) {
             return res;
@@ -1894,7 +1896,7 @@ var YSerialPort; // definition below
         pdu.push(((pduAddr) & (0xff)));
         pdu.push(value);
         pdu.push(0x00);
-        // may throw an exception
+        
         reply = this.queryMODBUS(slaveNo, pdu);
         if (reply.length == 0) {
             return res;
@@ -1956,7 +1958,7 @@ var YSerialPort; // definition below
         if (mask != 1) {
             pdu.push(val);
         }
-        // may throw an exception
+        
         reply = this.queryMODBUS(slaveNo, pdu);
         if (reply.length == 0) {
             return res;
@@ -1992,7 +1994,7 @@ var YSerialPort; // definition below
         pdu.push(((pduAddr) & (0xff)));
         pdu.push(((value) >> (8)));
         pdu.push(((value) & (0xff)));
-        // may throw an exception
+        
         reply = this.queryMODBUS(slaveNo, pdu);
         if (reply.length == 0) {
             return res;
@@ -2041,7 +2043,7 @@ var YSerialPort; // definition below
             pdu.push(((val) & (0xff)));
             regpos = regpos + 1;
         }
-        // may throw an exception
+        
         reply = this.queryMODBUS(slaveNo, pdu);
         if (reply.length == 0) {
             return res;
@@ -2098,7 +2100,7 @@ var YSerialPort; // definition below
             pdu.push(((val) & (0xff)));
             regpos = regpos + 1;
         }
-        // may throw an exception
+        
         reply = this.queryMODBUS(slaveNo, pdu);
         if (reply.length == 0) {
             return res;

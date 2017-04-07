@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_cellular.js 26671 2017-02-28 13:42:32Z seb $
+ * $Id: yocto_cellular.js 27114 2017-04-06 22:22:28Z seb $
  *
  * Implements the high-level API for Cellular functions
  *
@@ -1356,7 +1356,7 @@ var YCellular; // definition below
     function YCellular_clearDataCounters()
     {
         var retcode;                // int;
-        // may throw an exception
+        
         retcode = this.set_dataReceived(0);
         if (retcode != YAPI_SUCCESS) {
             return retcode;
@@ -1422,11 +1422,13 @@ var YCellular; // definition below
                 idx = idx - 1;
             }
             if ((buff).charCodeAt(idx) == 64) {
+                // continuation detected
                 suffixlen = bufflen - idx;
                 cmd = "at.txt?cmd="+(buffstr).substr( buffstrlen - suffixlen, suffixlen);
                 buffstr = (buffstr).substr( 0, buffstrlen - suffixlen);
                 waitMore = waitMore - 1;
             } else {
+                // request complete
                 waitMore = 0;
             }
             res = ""+res+""+buffstr;
@@ -1449,7 +1451,7 @@ var YCellular; // definition below
         var idx;                    // int;
         var slen;                   // int;
         var res = [];               // strArr;
-        // may throw an exception
+        
         cops = this._AT("+COPS=?");
         slen = (cops).length;
         res.length = 0;
@@ -1497,7 +1499,7 @@ var YCellular; // definition below
         var tad;                    // int;
         var oper;                   // str;
         var res = [];               // YCellRecordArr;
-        // may throw an exception
+        
         moni = this._AT("+CCED=0;#MONI=7;#MONI");
         mccs = (moni).substr(7, 3);
         if ((mccs).substr(0, 1) == "0") {

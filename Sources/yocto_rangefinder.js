@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_rangefinder.js 26826 2017-03-17 11:20:57Z mvuilleu $
+ * $Id: yocto_rangefinder.js 26996 2017-03-30 16:18:14Z seb $
  *
  * Implements the high-level API for RangeFinder functions
  *
@@ -385,7 +385,6 @@ var YRangeFinder; // definition below
     function YRangeFinder_get_hardwareCalibrationTemperature()
     {
         var hwcal;                  // string;
-        
         hwcal = this.get_hardwareCalibration();
         if (!((hwcal).substr(0, 1) == "@")) {
             return YAPI_INVALID_DOUBLE;
@@ -436,7 +435,6 @@ var YRangeFinder; // definition below
     function YRangeFinder_triggerOffsetCalibration(targetDist)
     {
         var distmm;                 // int;
-        
         if (this.get_unit() == "\"") {
             distmm = Math.round(targetDist * 25.4);
         } else {
@@ -460,7 +458,6 @@ var YRangeFinder; // definition below
     function YRangeFinder_triggerXTalkCalibration(targetDist)
     {
         var distmm;                 // int;
-        
         if (this.get_unit() == "\"") {
             distmm = Math.round(targetDist * 25.4);
         } else {

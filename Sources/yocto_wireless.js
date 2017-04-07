@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_wireless.js 26671 2017-02-28 13:42:32Z seb $
+ * $Id: yocto_wireless.js 27114 2017-04-06 22:22:28Z seb $
  *
  * Implements yFindWireless(), the high-level API for Wireless functions
  *
@@ -599,7 +599,7 @@ var YWireless; // definition below
         var json;                   // bin;
         var wlanlist = [];          // strArr;
         var res = [];               // YWlanRecordArr;
-        // may throw an exception
+        
         json = this._download("wlan.json?by=name");
         wlanlist = this._json_get_array(json);
         res.length = 0;
