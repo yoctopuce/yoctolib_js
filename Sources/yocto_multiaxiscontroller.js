@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_multiaxiscontroller.js 26671 2017-02-28 13:42:32Z seb $
+ * $Id: yocto_multiaxiscontroller.js 27159 2017-04-07 21:21:06Z mvuilleu $
  *
  * Implements the high-level API for MultiAxisController functions
  *
@@ -329,7 +329,7 @@ var YMultiAxisController; // definition below
         ndim = speed.length;
         cmd = "H"+String(Math.round(Math.round(1000*speed[0])));
         i = 1;
-        while (i + 1 < ndim) {
+        while (i < ndim) {
             cmd = ""+cmd+","+String(Math.round(Math.round(1000*speed[i])));
             i = i + 1;
         }
@@ -355,7 +355,7 @@ var YMultiAxisController; // definition below
         ndim = absPos.length;
         cmd = "M"+String(Math.round(Math.round(16*absPos[0])));
         i = 1;
-        while (i + 1 < ndim) {
+        while (i < ndim) {
             cmd = ""+cmd+","+String(Math.round(Math.round(16*absPos[i])));
             i = i + 1;
         }
@@ -381,7 +381,7 @@ var YMultiAxisController; // definition below
         ndim = relPos.length;
         cmd = "m"+String(Math.round(Math.round(16*relPos[0])));
         i = 1;
-        while (i + 1 < ndim) {
+        while (i < ndim) {
             cmd = ""+cmd+","+String(Math.round(Math.round(16*relPos[i])));
             i = i + 1;
         }

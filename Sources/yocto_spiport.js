@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_spiport.js 27114 2017-04-06 22:22:28Z seb $
+ * $Id: yocto_spiport.js 27280 2017-04-25 15:43:05Z seb $
  *
  * Implements the high-level API for SpiPort functions
  *
@@ -1069,7 +1069,7 @@ var YSpiPort; // definition below
         this._rxptr = 0;
         this._rxbuffptr = 0;
         this._rxbuff = new Uint8Array(0);
-        
+
         return this.sendCommand("Z");
     }
 
@@ -1162,7 +1162,7 @@ var YSpiPort; // definition below
             buff[idx] = hexb;
             idx = idx + 1;
         }
-        
+
         res = this._upload("txdata", buff);
         return res;
     }
@@ -1195,7 +1195,7 @@ var YSpiPort; // definition below
             buff[idx] = hexb;
             idx = idx + 1;
         }
-        
+
         res = this._upload("txdata", buff);
         return res;
     }
@@ -1255,7 +1255,7 @@ var YSpiPort; // definition below
         var mult;                   // int;
         var endpos;                 // int;
         var res;                    // int;
-        
+
         // first check if we have the requested character in the look-ahead buffer
         bufflen = (this._rxbuff).length;
         if ((this._rxptr >= this._rxbuffptr) && (this._rxptr < this._rxbuffptr+bufflen)) {
@@ -1263,7 +1263,7 @@ var YSpiPort; // definition below
             this._rxptr = this._rxptr + 1;
             return res;
         }
-        
+
         // try to preload more than one byte to speed-up byte-per-byte access
         currpos = this._rxptr;
         reqlen = 1024;
@@ -1290,8 +1290,8 @@ var YSpiPort; // definition below
         }
         // still mixed, need to process character by character
         this._rxptr = currpos;
-        
-        
+
+
         buff = this._download("rxdata.bin?pos="+String(Math.round(this._rxptr))+"&len=1");
         bufflen = (buff).length - 1;
         endpos = 0;
@@ -1330,7 +1330,7 @@ var YSpiPort; // definition below
         if (nChars > 65535) {
             nChars = 65535;
         }
-        
+
         buff = this._download("rxdata.bin?pos="+String(Math.round(this._rxptr))+"&len="+String(Math.round(nChars)));
         bufflen = (buff).length - 1;
         endpos = 0;
@@ -1367,7 +1367,7 @@ var YSpiPort; // definition below
         if (nChars > 65535) {
             nChars = 65535;
         }
-        
+
         buff = this._download("rxdata.bin?pos="+String(Math.round(this._rxptr))+"&len="+String(Math.round(nChars)));
         bufflen = (buff).length - 1;
         endpos = 0;
@@ -1410,7 +1410,7 @@ var YSpiPort; // definition below
         if (nChars > 65535) {
             nChars = 65535;
         }
-        
+
         buff = this._download("rxdata.bin?pos="+String(Math.round(this._rxptr))+"&len="+String(Math.round(nChars)));
         bufflen = (buff).length - 1;
         endpos = 0;
@@ -1453,7 +1453,7 @@ var YSpiPort; // definition below
         if (nBytes > 65535) {
             nBytes = 65535;
         }
-        
+
         buff = this._download("rxdata.bin?pos="+String(Math.round(this._rxptr))+"&len="+String(Math.round(nBytes)));
         bufflen = (buff).length - 1;
         endpos = 0;
@@ -1497,7 +1497,7 @@ var YSpiPort; // definition below
         var msgarr = [];            // strArr;
         var msglen;                 // int;
         var res;                    // str;
-        
+
         url = "rxmsg.json?pos="+String(Math.round(this._rxptr))+"&len=1&maxw=1";
         msgbin = this._download(url);
         msgarr = this._json_get_array(msgbin);
@@ -1544,7 +1544,7 @@ var YSpiPort; // definition below
         var msglen;                 // int;
         var res = [];               // strArr;
         var idx;                    // int;
-        
+
         url = "rxmsg.json?pos="+String(Math.round(this._rxptr))+"&maxw="+String(Math.round(maxWait))+"&pat="+pattern;
         msgbin = this._download(url);
         msgarr = this._json_get_array(msgbin);
@@ -1599,7 +1599,7 @@ var YSpiPort; // definition below
         var buff;                   // bin;
         var bufflen;                // int;
         var res;                    // int;
-        
+
         buff = this._download("rxcnt.bin?pos="+String(Math.round(this._rxptr)));
         bufflen = (buff).length - 1;
         while ((bufflen > 0) && ((buff).charCodeAt(bufflen) != 64)) {
@@ -1628,7 +1628,7 @@ var YSpiPort; // definition below
         var msgarr = [];            // strArr;
         var msglen;                 // int;
         var res;                    // str;
-        
+
         url = "rxmsg.json?len=1&maxw="+String(Math.round(maxWait))+"&cmd=!"+query;
         msgbin = this._download(url);
         msgarr = this._json_get_array(msgbin);

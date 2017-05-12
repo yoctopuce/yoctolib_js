@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_api.js 27114 2017-04-06 22:22:28Z seb $
+ * $Id: yocto_api.js 27280 2017-04-25 15:43:05Z seb $
  *
  * High-level programming interface, common to all modules
  *
@@ -2627,7 +2627,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
      */
     function YAPI_GetAPIVersion()
     {
-        return "1.10.27127";
+        return "1.10.27439";
     }
 
     /**
@@ -5431,7 +5431,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
             this._nRows = 0;
             return YAPI_SUCCESS;
         }
-        
+
         udat = YAPI._decodeWords(this._parent._json_get_string(sdata));
         this._values.length = 0;
         idx = 0;
@@ -5468,7 +5468,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
                 }
             }
         }
-        
+
         this._nRows = this._values.length;
         return YAPI_SUCCESS;
     }
@@ -5894,7 +5894,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
         var minCol;                 // int;
         var avgCol;                 // int;
         var maxCol;                 // int;
-        
+
         if (progress != this._progress) {
             return this._progress;
         }
@@ -5930,7 +5930,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
         } else {
             maxCol = 0;
         }
-        
+
         for (ii in dataRows) {
             if(ii=='indexOf') continue; // IE8 Don'tEnum bug
             if ((tim >= this._startTime) && ((this._endTime == 0) || (tim <= this._endTime))) {
@@ -6139,7 +6139,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
         var minCol;                 // int;
         var avgCol;                 // int;
         var maxCol;                 // int;
-        
+
         startUtc = Math.round(measure.get_startTimeUTC());
         stream = null;
         for (ii in this._streams) {
@@ -6172,7 +6172,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
         } else {
             maxCol = 0;
         }
-        
+
         for (ii in dataRows) {
             if(ii=='indexOf') continue; // IE8 Don'tEnum bug
             if ((tim >= this._startTime) && ((this._endTime == 0) || (tim <= this._endTime))) {
@@ -7345,7 +7345,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
     function YSensor_startDataLogger()
     {
         var res;                    // bin;
-        
+
         res = this._download("api/dataLogger/recording?recording=1");
         if (!((res).length>0)) {
             return this._throw(YAPI_IO_ERROR,"unable to start datalogger",YAPI_IO_ERROR);
@@ -7361,7 +7361,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
     function YSensor_stopDataLogger()
     {
         var res;                    // bin;
-        
+
         res = this._download("api/dataLogger/recording?recording=0");
         if (!((res).length>0)) {
             return this._throw(YAPI_IO_ERROR,"unable to stop datalogger",YAPI_IO_ERROR);
@@ -7399,7 +7399,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
     {
         var funcid;                 // str;
         var funit;                  // str;
-        
+
         funcid = this.get_functionId();
         funit = this.get_unit();
         return new YDataSet(this, funcid, funit, startTime, endTime);
@@ -7463,7 +7463,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
     {
         var rest_val;               // str;
         var res;                    // int;
-        
+
         rest_val = this._encodeCalibrationPoints(rawValues, refValues);
         res = this._setAttr("calibrationParam", rest_val);
         return res;
@@ -7981,7 +7981,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
      * @param functionIndex : the index of the function for which the information is desired, starting at
      * 0 for the first function.
      *
-     * @return a the type of the function
+     * @return a string corresponding to the type of the function
      *
      * On failure, throws an exception or returns an empty string.
      */
@@ -7994,11 +7994,12 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
 
     /**
      * Retrieves the base type of the <i>n</i>th function on the module.
+     * For instance, the base type of all measuring functions is "Sensor".
      *
      * @param functionIndex : the index of the function for which the information is desired, starting at
      * 0 for the first function.
      *
-     * @return a the base type of the function
+     * @return a string corresponding to the base type of the function
      *
      * On failure, throws an exception or returns an empty string.
      */
@@ -9038,7 +9039,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
     {
         var serial;                 // str;
         var settings;               // bin;
-        
+
         serial = this.get_serialNumber();
         settings = this.get_allSettings();
         if ((settings).length == 0) {
@@ -9087,7 +9088,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
         var ext_settings;           // str;
         var filelist = [];          // strArr;
         var templist = [];          // strArr;
-        
+
         settings = this._download("api.json");
         if ((settings).length == 0) {
             return settings;
@@ -9145,7 +9146,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
         var ofs;                    // int;
         var size;                   // int;
         url = "api/" + funcId + ".json?command=Z";
-        
+
         this._download(url);
         // add records in growing resistance value
         values = this._json_get_array(jsonExtra);
@@ -9249,7 +9250,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
         var count;                  // int;
         var i;                      // int;
         var fid;                    // str;
-        
+
         count  = this.functionCount();
         i = 0;
         while (i < count) {
@@ -9275,7 +9276,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
         var i;                      // int;
         var ftype;                  // str;
         var res = [];               // strArr;
-        
+
         count = this.functionCount();
         i = 0;
         while (i < count) {
@@ -9590,7 +9591,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
             old_jpath_len.push((jpath).length);
             old_val_arr.push(value);
         }
-        
+
         actualSettings = this._download("api.json");
         actualSettings = this._flattenJsonStruct(actualSettings);
         new_dslist = this._json_get_array(actualSettings);
@@ -9843,7 +9844,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
     function YModule_get_lastLogs()
     {
         var content;                // bin;
-        
+
         content = this._download("logs.txt");
         return content;
     }
