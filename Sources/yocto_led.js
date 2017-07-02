@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_led.js 26671 2017-02-28 13:42:32Z seb $
+ * $Id: yocto_led.js 27707 2017-06-01 12:34:39Z seb $
  *
  * Implements the high-level API for Led functions
  *
@@ -319,6 +319,10 @@ var YLed; // definition below
      * found is returned. The search is performed first by hardware name,
      * then by logical name.
      *
+     * If a call to this object's is_online() method returns FALSE although
+     * you are certain that the matching device is plugged, make sure that you did
+     * call registerHub() at application initialization time.
+     *
      * @param func : a string that uniquely characterizes the LED
      *
      * @return a YLed object allowing you to drive the LED.
@@ -431,6 +435,10 @@ var YLed; // definition below
  * a LED by logical name, no error is notified: the first instance
  * found is returned. The search is performed first by hardware name,
  * then by logical name.
+ *
+ * If a call to this object's is_online() method returns FALSE although
+ * you are certain that the matching device is plugged, make sure that you did
+ * call registerHub() at application initialization time.
  *
  * @param func : a string that uniquely characterizes the LED
  *

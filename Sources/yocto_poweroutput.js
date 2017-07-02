@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_poweroutput.js 26671 2017-02-28 13:42:32Z seb $
+ * $Id: yocto_poweroutput.js 27926 2017-06-27 13:25:52Z seb $
  *
  * Implements the high-level API for PowerOutput functions
  *
@@ -84,12 +84,10 @@ var YPowerOutput; // definition below
     }
 
     /**
-     * Returns the voltage on the power ouput featured by
-     * the module.
+     * Returns the voltage on the power output featured by the module.
      *
      * @return a value among Y_VOLTAGE_OFF, Y_VOLTAGE_OUT3V3 and Y_VOLTAGE_OUT5V corresponding to the
-     * voltage on the power ouput featured by
-     *         the module
+     * voltage on the power output featured by the module
      *
      * On failure, throws an exception or returns Y_VOLTAGE_INVALID.
      */
@@ -106,16 +104,14 @@ var YPowerOutput; // definition below
     }
 
     /**
-     * Gets the voltage on the power ouput featured by
-     * the module.
+     * Gets the voltage on the power output featured by the module.
      *
      * @param callback : callback function that is invoked when the result is known.
      *         The callback function receives three arguments:
      *         - the user-specific context object
      *         - the YPowerOutput object that invoked the callback
      *         - the result:a value among Y_VOLTAGE_OFF, Y_VOLTAGE_OUT3V3 and Y_VOLTAGE_OUT5V corresponding to the
-     *         voltage on the power ouput featured by
-     *         the module
+     *         voltage on the power output featured by the module
      * @param context : user-specific object that is passed as-is to the callback function
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
@@ -177,6 +173,10 @@ var YPowerOutput; // definition below
      * a dual power  ouput control by logical name, no error is notified: the first instance
      * found is returned. The search is performed first by hardware name,
      * then by logical name.
+     *
+     * If a call to this object's is_online() method returns FALSE although
+     * you are certain that the matching device is plugged, make sure that you did
+     * call registerHub() at application initialization time.
      *
      * @param func : a string that uniquely characterizes the power ouput control
      *
@@ -271,6 +271,10 @@ var YPowerOutput; // definition below
  * a dual power  ouput control by logical name, no error is notified: the first instance
  * found is returned. The search is performed first by hardware name,
  * then by logical name.
+ *
+ * If a call to this object's is_online() method returns FALSE although
+ * you are certain that the matching device is plugged, make sure that you did
+ * call registerHub() at application initialization time.
  *
  * @param func : a string that uniquely characterizes the power ouput control
  *

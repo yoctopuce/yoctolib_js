@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_bridgecontrol.js 27017 2017-03-31 14:47:59Z seb $
+ * $Id: yocto_bridgecontrol.js 27707 2017-06-01 12:34:39Z seb $
  *
  * Implements the high-level API for BridgeControl functions
  *
@@ -362,6 +362,10 @@ var YBridgeControl; // definition below
      * found is returned. The search is performed first by hardware name,
      * then by logical name.
      *
+     * If a call to this object's is_online() method returns FALSE although
+     * you are certain that the matching device is plugged, make sure that you did
+     * call registerHub() at application initialization time.
+     *
      * @param func : a string that uniquely characterizes the Wheatstone bridge controller
      *
      * @return a YBridgeControl object allowing you to drive the Wheatstone bridge controller.
@@ -472,6 +476,10 @@ var YBridgeControl; // definition below
  * a Wheatstone bridge controller by logical name, no error is notified: the first instance
  * found is returned. The search is performed first by hardware name,
  * then by logical name.
+ *
+ * If a call to this object's is_online() method returns FALSE although
+ * you are certain that the matching device is plugged, make sure that you did
+ * call registerHub() at application initialization time.
  *
  * @param func : a string that uniquely characterizes the Wheatstone bridge controller
  *

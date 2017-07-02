@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_api.js 27280 2017-04-25 15:43:05Z seb $
+ * $Id: yocto_api.js 27707 2017-06-01 12:34:39Z seb $
  *
  * High-level programming interface, common to all modules
  *
@@ -2627,7 +2627,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
      */
     function YAPI_GetAPIVersion()
     {
-        return "1.10.27439";
+        return "1.10.27961";
     }
 
     /**
@@ -3833,6 +3833,10 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
      * a function by logical name, no error is notified: the first instance
      * found is returned. The search is performed first by hardware name,
      * then by logical name.
+     *
+     * If a call to this object's is_online() method returns FALSE although
+     * you are certain that the matching device is plugged, make sure that you did
+     * call registerHub() at application initialization time.
      *
      * @param func : a string that uniquely characterizes the function
      *
@@ -7159,6 +7163,10 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
      * found is returned. The search is performed first by hardware name,
      * then by logical name.
      *
+     * If a call to this object's is_online() method returns FALSE although
+     * you are certain that the matching device is plugged, make sure that you did
+     * call registerHub() at application initialization time.
+     *
      * @param func : a string that uniquely characterizes the sensor
      *
      * @return a YSensor object allowing you to drive the sensor.
@@ -8894,7 +8902,8 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
     }
 
     /**
-     * Returns the value previously stored in this attribute.
+     * Stores a 32 bit value in the device RAM. This attribute is at programmer disposal,
+     * should he need to store a state variable.
      * On startup and after a device reboot, the value is always reset to zero.
      *
      * @param newval : an integer
@@ -8919,6 +8928,10 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
      * a module by logical name, no error is notified: the first instance
      * found is returned. The search is performed first by hardware name,
      * then by logical name.
+     *
+     * If a call to this object's is_online() method returns FALSE although
+     * you are certain that the device is plugged, make sure that you did
+     * call registerHub() at application initialization time.
      *
      * @param func : a string containing either the serial number or
      *         the logical name of the desired module
@@ -10439,6 +10452,10 @@ var yLinearCalibrationHandler = YAPI.LinearCalibrationHandler;
  * found is returned. The search is performed first by hardware name,
  * then by logical name.
  *
+ * If a call to this object's is_online() method returns FALSE although
+ * you are certain that the matching device is plugged, make sure that you did
+ * call registerHub() at application initialization time.
+ *
  * @param func : a string that uniquely characterizes the sensor
  *
  * @return a YSensor object allowing you to drive the sensor.
@@ -10476,6 +10493,10 @@ function yFirstSensor()
  * a module by logical name, no error is notified: the first instance
  * found is returned. The search is performed first by hardware name,
  * then by logical name.
+ *
+ * If a call to this object's is_online() method returns FALSE although
+ * you are certain that the device is plugged, make sure that you did
+ * call registerHub() at application initialization time.
  *
  * @param func : a string containing either the serial number or
  *         the logical name of the desired module

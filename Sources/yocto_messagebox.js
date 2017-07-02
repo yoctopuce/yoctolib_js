@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_messagebox.js 27420 2017-05-11 10:00:50Z seb $
+ * $Id: yocto_messagebox.js 27707 2017-06-01 12:34:39Z seb $
  *
  * Implements the high-level API for MessageBox functions
  *
@@ -1775,6 +1775,10 @@ var YMessageBox; // definition below
      * found is returned. The search is performed first by hardware name,
      * then by logical name.
      *
+     * If a call to this object's is_online() method returns FALSE although
+     * you are certain that the matching device is plugged, make sure that you did
+     * call registerHub() at application initialization time.
+     *
      * @param func : a string that uniquely characterizes the MessageBox interface
      *
      * @return a YMessageBox object allowing you to drive the MessageBox interface.
@@ -2443,6 +2447,10 @@ var YMessageBox; // definition below
  * a MessageBox interface by logical name, no error is notified: the first instance
  * found is returned. The search is performed first by hardware name,
  * then by logical name.
+ *
+ * If a call to this object's is_online() method returns FALSE although
+ * you are certain that the matching device is plugged, make sure that you did
+ * call registerHub() at application initialization time.
  *
  * @param func : a string that uniquely characterizes the MessageBox interface
  *

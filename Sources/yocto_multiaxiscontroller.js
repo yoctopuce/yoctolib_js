@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_multiaxiscontroller.js 27159 2017-04-07 21:21:06Z mvuilleu $
+ * $Id: yocto_multiaxiscontroller.js 27707 2017-06-01 12:34:39Z seb $
  *
  * Implements the high-level API for MultiAxisController functions
  *
@@ -282,6 +282,10 @@ var YMultiAxisController; // definition below
      * found is returned. The search is performed first by hardware name,
      * then by logical name.
      *
+     * If a call to this object's is_online() method returns FALSE although
+     * you are certain that the matching device is plugged, make sure that you did
+     * call registerHub() at application initialization time.
+     *
      * @param func : a string that uniquely characterizes the multi-axis controller
      *
      * @return a YMultiAxisController object allowing you to drive the multi-axis controller.
@@ -536,6 +540,10 @@ var YMultiAxisController; // definition below
  * a multi-axis controller by logical name, no error is notified: the first instance
  * found is returned. The search is performed first by hardware name,
  * then by logical name.
+ *
+ * If a call to this object's is_online() method returns FALSE although
+ * you are certain that the matching device is plugged, make sure that you did
+ * call registerHub() at application initialization time.
  *
  * @param func : a string that uniquely characterizes the multi-axis controller
  *

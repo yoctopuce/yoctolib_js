@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_display.js 27089 2017-04-06 20:54:27Z seb $
+ * $Id: yocto_display.js 27707 2017-06-01 12:34:39Z seb $
  *
  * Implements yFindDisplay(), the high-level API for Display functions
  *
@@ -1450,6 +1450,10 @@ var YDisplay; // definition below
      * found is returned. The search is performed first by hardware name,
      * then by logical name.
      *
+     * If a call to this object's is_online() method returns FALSE although
+     * you are certain that the matching device is plugged, make sure that you did
+     * call registerHub() at application initialization time.
+     *
      * @param func : a string that uniquely characterizes the display
      *
      * @return a YDisplay object allowing you to drive the display.
@@ -1855,6 +1859,10 @@ var YDisplay; // definition below
  * a display by logical name, no error is notified: the first instance
  * found is returned. The search is performed first by hardware name,
  * then by logical name.
+ *
+ * If a call to this object's is_online() method returns FALSE although
+ * you are certain that the matching device is plugged, make sure that you did
+ * call registerHub() at application initialization time.
  *
  * @param func : a string that uniquely characterizes the display
  *

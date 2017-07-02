@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_network.js 27420 2017-05-11 10:00:50Z seb $
+ * $Id: yocto_network.js 27726 2017-06-02 13:18:52Z mvuilleu $
  *
  * Implements the high-level API for Network functions
  *
@@ -65,6 +65,7 @@ var Y_CALLBACKENCODING_EMONCMS      = 6;
 var Y_CALLBACKENCODING_AZURE        = 7;
 var Y_CALLBACKENCODING_INFLUXDB     = 8;
 var Y_CALLBACKENCODING_MQTT         = 9;
+var Y_CALLBACKENCODING_YOCTO_API_JZON = 10;
 var Y_CALLBACKENCODING_INVALID      = -1;
 var Y_MACADDRESS_INVALID            = YAPI_INVALID_STRING;
 var Y_IPADDRESS_INVALID             = YAPI_INVALID_STRING;
@@ -1367,8 +1368,8 @@ var YNetwork; // definition below
      * @return a value among Y_CALLBACKENCODING_FORM, Y_CALLBACKENCODING_JSON,
      * Y_CALLBACKENCODING_JSON_ARRAY, Y_CALLBACKENCODING_CSV, Y_CALLBACKENCODING_YOCTO_API,
      * Y_CALLBACKENCODING_JSON_NUM, Y_CALLBACKENCODING_EMONCMS, Y_CALLBACKENCODING_AZURE,
-     * Y_CALLBACKENCODING_INFLUXDB and Y_CALLBACKENCODING_MQTT corresponding to the encoding standard to
-     * use for representing notification values
+     * Y_CALLBACKENCODING_INFLUXDB, Y_CALLBACKENCODING_MQTT and Y_CALLBACKENCODING_YOCTO_API_JZON
+     * corresponding to the encoding standard to use for representing notification values
      *
      * On failure, throws an exception or returns Y_CALLBACKENCODING_INVALID.
      */
@@ -1394,8 +1395,8 @@ var YNetwork; // definition below
      *         - the result:a value among Y_CALLBACKENCODING_FORM, Y_CALLBACKENCODING_JSON,
      *         Y_CALLBACKENCODING_JSON_ARRAY, Y_CALLBACKENCODING_CSV, Y_CALLBACKENCODING_YOCTO_API,
      *         Y_CALLBACKENCODING_JSON_NUM, Y_CALLBACKENCODING_EMONCMS, Y_CALLBACKENCODING_AZURE,
-     *         Y_CALLBACKENCODING_INFLUXDB and Y_CALLBACKENCODING_MQTT corresponding to the encoding standard to
-     *         use for representing notification values
+     *         Y_CALLBACKENCODING_INFLUXDB, Y_CALLBACKENCODING_MQTT and Y_CALLBACKENCODING_YOCTO_API_JZON
+     *         corresponding to the encoding standard to use for representing notification values
      * @param context : user-specific object that is passed as-is to the callback function
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
@@ -1426,8 +1427,8 @@ var YNetwork; // definition below
      * @param newval : a value among Y_CALLBACKENCODING_FORM, Y_CALLBACKENCODING_JSON,
      * Y_CALLBACKENCODING_JSON_ARRAY, Y_CALLBACKENCODING_CSV, Y_CALLBACKENCODING_YOCTO_API,
      * Y_CALLBACKENCODING_JSON_NUM, Y_CALLBACKENCODING_EMONCMS, Y_CALLBACKENCODING_AZURE,
-     * Y_CALLBACKENCODING_INFLUXDB and Y_CALLBACKENCODING_MQTT corresponding to the encoding standard to
-     * use for representing notification values
+     * Y_CALLBACKENCODING_INFLUXDB, Y_CALLBACKENCODING_MQTT and Y_CALLBACKENCODING_YOCTO_API_JZON
+     * corresponding to the encoding standard to use for representing notification values
      *
      * @return YAPI_SUCCESS if the call succeeds.
      *
@@ -1879,6 +1880,10 @@ var YNetwork; // definition below
      * found is returned. The search is performed first by hardware name,
      * then by logical name.
      *
+     * If a call to this object's is_online() method returns FALSE although
+     * you are certain that the matching device is plugged, make sure that you did
+     * call registerHub() at application initialization time.
+     *
      * @param func : a string that uniquely characterizes the network interface
      *
      * @return a YNetwork object allowing you to drive the network interface.
@@ -2051,6 +2056,7 @@ var YNetwork; // definition below
         CALLBACKENCODING_AZURE      : 7,
         CALLBACKENCODING_INFLUXDB   : 8,
         CALLBACKENCODING_MQTT       : 9,
+        CALLBACKENCODING_YOCTO_API_JZON : 10,
         CALLBACKENCODING_INVALID    : -1,
         CALLBACKCREDENTIALS_INVALID : YAPI_INVALID_STRING,
         CALLBACKINITIALDELAY_INVALID : YAPI_INVALID_UINT,
@@ -2228,6 +2234,10 @@ var YNetwork; // definition below
  * a network interface by logical name, no error is notified: the first instance
  * found is returned. The search is performed first by hardware name,
  * then by logical name.
+ *
+ * If a call to this object's is_online() method returns FALSE although
+ * you are certain that the matching device is plugged, make sure that you did
+ * call registerHub() at application initialization time.
  *
  * @param func : a string that uniquely characterizes the network interface
  *

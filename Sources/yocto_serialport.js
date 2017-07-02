@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_serialport.js 27280 2017-04-25 15:43:05Z seb $
+ * $Id: yocto_serialport.js 27948 2017-06-30 14:46:55Z mvuilleu $
  *
  * Implements the high-level API for SerialPort functions
  *
@@ -719,6 +719,8 @@ var YSerialPort; // definition below
      * "Frame:[timeout]ms" for binary messages separated by a delay time,
      * "Modbus-ASCII" for MODBUS messages in ASCII mode,
      * "Modbus-RTU" for MODBUS messages in RTU mode,
+     * "Wiegand-ASCII" for Wiegand messages in ASCII mode,
+     * "Wiegand-26","Wiegand-34", etc for Wiegand messages in byte mode,
      * "Char" for a continuous ASCII stream or
      * "Byte" for a continuous binary stream.
      *
@@ -744,6 +746,8 @@ var YSerialPort; // definition below
      * "Frame:[timeout]ms" for binary messages separated by a delay time,
      * "Modbus-ASCII" for MODBUS messages in ASCII mode,
      * "Modbus-RTU" for MODBUS messages in RTU mode,
+     * "Wiegand-ASCII" for Wiegand messages in ASCII mode,
+     * "Wiegand-26","Wiegand-34", etc for Wiegand messages in byte mode,
      * "Char" for a continuous ASCII stream or
      * "Byte" for a continuous binary stream.
      *
@@ -782,6 +786,8 @@ var YSerialPort; // definition below
      * "Frame:[timeout]ms" for binary messages separated by a delay time,
      * "Modbus-ASCII" for MODBUS messages in ASCII mode,
      * "Modbus-RTU" for MODBUS messages in RTU mode,
+     * "Wiegand-ASCII" for Wiegand messages in ASCII mode,
+     * "Wiegand-26","Wiegand-34", etc for Wiegand messages in byte mode,
      * "Char" for a continuous ASCII stream or
      * "Byte" for a continuous binary stream.
      * The suffix "/[wait]ms" can be added to reduce the transmit rate so that there
@@ -901,6 +907,10 @@ var YSerialPort; // definition below
      * a serial port by logical name, no error is notified: the first instance
      * found is returned. The search is performed first by hardware name,
      * then by logical name.
+     *
+     * If a call to this object's is_online() method returns FALSE although
+     * you are certain that the matching device is plugged, make sure that you did
+     * call registerHub() at application initialization time.
      *
      * @param func : a string that uniquely characterizes the serial port
      *
@@ -2304,6 +2314,10 @@ var YSerialPort; // definition below
  * a serial port by logical name, no error is notified: the first instance
  * found is returned. The search is performed first by hardware name,
  * then by logical name.
+ *
+ * If a call to this object's is_online() method returns FALSE although
+ * you are certain that the matching device is plugged, make sure that you did
+ * call registerHub() at application initialization time.
  *
  * @param func : a string that uniquely characterizes the serial port
  *

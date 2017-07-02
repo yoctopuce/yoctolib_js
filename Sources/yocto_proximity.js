@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_proximity.js 27257 2017-04-25 11:37:20Z seb $
+ * $Id: yocto_proximity.js 27707 2017-06-01 12:34:39Z seb $
  *
  * Implements the high-level API for Proximity functions
  *
@@ -626,6 +626,10 @@ var YProximity; // definition below
      * found is returned. The search is performed first by hardware name,
      * then by logical name.
      *
+     * If a call to this object's is_online() method returns FALSE although
+     * you are certain that the matching device is plugged, make sure that you did
+     * call registerHub() at application initialization time.
+     *
      * @param func : a string that uniquely characterizes the proximity sensor
      *
      * @return a YProximity object allowing you to drive the proximity sensor.
@@ -773,6 +777,10 @@ var YProximity; // definition below
  * a proximity sensor by logical name, no error is notified: the first instance
  * found is returned. The search is performed first by hardware name,
  * then by logical name.
+ *
+ * If a call to this object's is_online() method returns FALSE although
+ * you are certain that the matching device is plugged, make sure that you did
+ * call registerHub() at application initialization time.
  *
  * @param func : a string that uniquely characterizes the proximity sensor
  *
