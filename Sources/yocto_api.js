@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_api.js 27707 2017-06-01 12:34:39Z seb $
+ * $Id: yocto_api.js 28024 2017-07-10 08:50:02Z mvuilleu $
  *
  * High-level programming interface, common to all modules
  *
@@ -2627,7 +2627,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
      */
     function YAPI_GetAPIVersion()
     {
-        return "1.10.27961";
+        return "1.10.28028";
     }
 
     /**
@@ -6064,6 +6064,12 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
         var stream;                 // YDataStream;
         if (this._progress < 0) {
             url = "logger.json?id="+this._functionId;
+            if (this._startTime != 0) {
+                url = ""+url+"&from="+String(Math.round(this._startTime));
+            }
+            if (this._endTime != 0) {
+                url = ""+url+"&to="+String(Math.round(this._endTime));
+            }
         } else {
             if (this._progress >= this._streams.length) {
                 return 100;

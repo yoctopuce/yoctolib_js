@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_network.js 27726 2017-06-02 13:18:52Z mvuilleu $
+ * $Id: yocto_network.js 28010 2017-07-07 13:15:07Z mvuilleu $
  *
  * Implements the high-level API for Network functions
  *
@@ -1984,6 +1984,24 @@ var YNetwork; // definition below
     }
 
     /**
+     * Setup periodic HTTP callbacks (simplifed function).
+     *
+     * @param interval : a string representing the callback periodicity, expressed in
+     *         seconds, minutes or hours, eg. "60s", "5m", "1h", "48h".
+     * @param offset : an integer representing the time offset relative to the period
+     *         when the callback should occur. For instance, if the periodicity is
+     *         24h, an offset of 7 will make the callback occur each day at 7AM.
+     *
+     * @return YAPI_SUCCESS when the call succeeds.
+     *
+     * On failure, throws an exception or returns a negative error code.
+     */
+    function YNetwork_set_periodicCallbackSchedule(interval,offset)
+    {
+        return this.set_callbackSchedule("every "+interval+"+"+String(Math.round(offset)));
+    }
+
+    /**
      * Continues the enumeration of network interfaces started using yFirstNetwork().
      *
      * @return a pointer to a YNetwork object, corresponding to
@@ -2208,6 +2226,8 @@ var YNetwork; // definition below
         useStaticIP                 : YNetwork_useStaticIP,
         ping                        : YNetwork_ping,
         triggerCallback             : YNetwork_triggerCallback,
+        set_periodicCallbackSchedule : YNetwork_set_periodicCallbackSchedule,
+        setPeriodicCallbackSchedule : YNetwork_set_periodicCallbackSchedule,
         nextNetwork                 : YNetwork_nextNetwork,
         _parseAttr                  : YNetwork_parseAttr
     });
