@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_temperature.js 27707 2017-06-01 12:34:39Z seb $
+ * $Id: yocto_temperature.js 28142 2017-07-25 20:24:23Z mvuilleu $
  *
  * Implements the high-level API for Temperature functions
  *
@@ -56,6 +56,7 @@ var Y_SENSORTYPE_PT100_2WIRES       = 10;
 var Y_SENSORTYPE_RES_OHM            = 11;
 var Y_SENSORTYPE_RES_NTC            = 12;
 var Y_SENSORTYPE_RES_LINEAR         = 13;
+var Y_SENSORTYPE_RES_INTERNAL       = 14;
 var Y_SENSORTYPE_INVALID            = -1;
 var Y_SIGNALVALUE_INVALID           = YAPI_INVALID_DOUBLE;
 var Y_SIGNALUNIT_INVALID            = YAPI_INVALID_STRING;
@@ -141,8 +142,8 @@ var YTemperature; // definition below
      * @return a value among Y_SENSORTYPE_DIGITAL, Y_SENSORTYPE_TYPE_K, Y_SENSORTYPE_TYPE_E,
      * Y_SENSORTYPE_TYPE_J, Y_SENSORTYPE_TYPE_N, Y_SENSORTYPE_TYPE_R, Y_SENSORTYPE_TYPE_S,
      * Y_SENSORTYPE_TYPE_T, Y_SENSORTYPE_PT100_4WIRES, Y_SENSORTYPE_PT100_3WIRES,
-     * Y_SENSORTYPE_PT100_2WIRES, Y_SENSORTYPE_RES_OHM, Y_SENSORTYPE_RES_NTC and Y_SENSORTYPE_RES_LINEAR
-     * corresponding to the temperature sensor type
+     * Y_SENSORTYPE_PT100_2WIRES, Y_SENSORTYPE_RES_OHM, Y_SENSORTYPE_RES_NTC, Y_SENSORTYPE_RES_LINEAR and
+     * Y_SENSORTYPE_RES_INTERNAL corresponding to the temperature sensor type
      *
      * On failure, throws an exception or returns Y_SENSORTYPE_INVALID.
      */
@@ -168,8 +169,8 @@ var YTemperature; // definition below
      *         - the result:a value among Y_SENSORTYPE_DIGITAL, Y_SENSORTYPE_TYPE_K, Y_SENSORTYPE_TYPE_E,
      *         Y_SENSORTYPE_TYPE_J, Y_SENSORTYPE_TYPE_N, Y_SENSORTYPE_TYPE_R, Y_SENSORTYPE_TYPE_S,
      *         Y_SENSORTYPE_TYPE_T, Y_SENSORTYPE_PT100_4WIRES, Y_SENSORTYPE_PT100_3WIRES,
-     *         Y_SENSORTYPE_PT100_2WIRES, Y_SENSORTYPE_RES_OHM, Y_SENSORTYPE_RES_NTC and Y_SENSORTYPE_RES_LINEAR
-     *         corresponding to the temperature sensor type
+     *         Y_SENSORTYPE_PT100_2WIRES, Y_SENSORTYPE_RES_OHM, Y_SENSORTYPE_RES_NTC, Y_SENSORTYPE_RES_LINEAR and
+     *         Y_SENSORTYPE_RES_INTERNAL corresponding to the temperature sensor type
      * @param context : user-specific object that is passed as-is to the callback function
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
@@ -204,7 +205,8 @@ var YTemperature; // definition below
      * @param newval : a value among Y_SENSORTYPE_DIGITAL, Y_SENSORTYPE_TYPE_K, Y_SENSORTYPE_TYPE_E,
      * Y_SENSORTYPE_TYPE_J, Y_SENSORTYPE_TYPE_N, Y_SENSORTYPE_TYPE_R, Y_SENSORTYPE_TYPE_S,
      * Y_SENSORTYPE_TYPE_T, Y_SENSORTYPE_PT100_4WIRES, Y_SENSORTYPE_PT100_3WIRES,
-     * Y_SENSORTYPE_PT100_2WIRES, Y_SENSORTYPE_RES_OHM, Y_SENSORTYPE_RES_NTC and Y_SENSORTYPE_RES_LINEAR
+     * Y_SENSORTYPE_PT100_2WIRES, Y_SENSORTYPE_RES_OHM, Y_SENSORTYPE_RES_NTC, Y_SENSORTYPE_RES_LINEAR and
+     * Y_SENSORTYPE_RES_INTERNAL
      *
      * @return YAPI_SUCCESS if the call succeeds.
      *
@@ -626,6 +628,7 @@ var YTemperature; // definition below
         SENSORTYPE_RES_OHM          : 11,
         SENSORTYPE_RES_NTC          : 12,
         SENSORTYPE_RES_LINEAR       : 13,
+        SENSORTYPE_RES_INTERNAL     : 14,
         SENSORTYPE_INVALID          : -1,
         SIGNALVALUE_INVALID         : YAPI_INVALID_DOUBLE,
         SIGNALUNIT_INVALID          : YAPI_INVALID_STRING,

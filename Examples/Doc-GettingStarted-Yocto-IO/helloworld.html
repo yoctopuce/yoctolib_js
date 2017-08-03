@@ -1,0 +1,63 @@
+<HTML>
+<HEAD>
+ <TITLE>Hello World</TITLE>
+ <SCRIPT type="text/javascript" src="../../Sources/yocto_api.js"></SCRIPT>
+ <SCRIPT type="text/javascript" src="../../Sources/yocto_digitalio.js"></SCRIPT>
+ <SCRIPT language='javascript1.5' type='text/JavaScript'>
+ <!--
+
+ // Setup the API to use the VirtualHub on local machine
+ try
+  {
+    yRegisterHub('http://127.0.0.1:4444/')
+  }  catch (e) { alert("Cannot contact VirtualHub on 127.0.0.1");}
+
+ var outputdata = 0;
+ var configDone = false;
+
+ function refresh()
+ {
+     var serial = document.getElementById('serial').value;
+     if(serial == '') {
+         // Detect any conected module suitable for the demo
+         io = yFirstDigitalIO();
+         if(io) {
+             serial = io.module().get_serialNumber();
+             document.getElementById('serial').value = serial;
+         }
+     }
+
+     io = yFindDigitalIO(serial+".digitalIO");
+     if(io.isOnline())
+       { if (!configDone)
+           { io.set_portDirection(0x03);
+             io.set_portPolarity(0); // polarity set to regular
+             io.set_portOpenDrain(0); // No open drain
+             configDone=true;
+           }
+         outputdata = (outputdata + 1) % 4; // cycle ouput 0..3
+         io.set_portState(outputdata); // We could have used set_bitState as well
+         // set is asynchronous and get is synchronous, we cannot mix them
+
+         io.wait_async( function()
+          { var inputdata = io.get_portState(); // read port values
+            var line = "";  // display port value as binary
+            for (var i = 0; i < 4; i++)
+              if ((inputdata & (8 >> i))>0) line = line + '1'; else line = line + '0';
+                 document.getElementById('state').value = line;
+             setTimeout('refresh()',1000);
+          },null);
+       } else  document.getElementById('state').value = 'Module not connected';
+ }
+
+ -->
+ </SCRIPT>
+</HEAD>
+<BODY onload='refresh();'>
+<p>Channels 0..3 are configured as outputs and channels 4..7
+  are configred as inputs, you can connect some inputs to
+  ouputs and see what happens</p>
+  Module to use: <input id='serial'>
+  Port value : <input id='state' style='border:none;' readonly><br>
+</BODY>
+</HTML>

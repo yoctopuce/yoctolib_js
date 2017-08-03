@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_quadraturedecoder.js 27707 2017-06-01 12:34:39Z seb $
+ * $Id: yocto_quadraturedecoder.js 28159 2017-07-27 09:37:52Z seb $
  *
  * Implements the high-level API for QuadratureDecoder functions
  *
@@ -105,9 +105,9 @@ var YQuadratureDecoder; // definition below
     }
 
     /**
-     * Returns the PWM frequency in Hz.
+     * Returns the increments frequency, in Hz.
      *
-     * @return a floating point number corresponding to the PWM frequency in Hz
+     * @return a floating point number corresponding to the increments frequency, in Hz
      *
      * On failure, throws an exception or returns Y_SPEED_INVALID.
      */
@@ -124,13 +124,13 @@ var YQuadratureDecoder; // definition below
     }
 
     /**
-     * Gets the PWM frequency in Hz.
+     * Gets the increments frequency, in Hz.
      *
      * @param callback : callback function that is invoked when the result is known.
      *         The callback function receives three arguments:
      *         - the user-specific context object
      *         - the YQuadratureDecoder object that invoked the callback
-     *         - the result:a floating point number corresponding to the PWM frequency in Hz
+     *         - the result:a floating point number corresponding to the increments frequency, in Hz
      * @param context : user-specific object that is passed as-is to the callback function
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
