@@ -326,7 +326,7 @@ var YVoltageOutput; // definition below
         if (V_target > 10.0) {
             V_target = 10.0;
         }
-        newval = ""+String(Math.round(Math.round(V_target*1000)))+":"+String(Math.round(ms_duration));
+        newval = ""+String(Math.round(Math.round(V_target*65536)))+":"+String(Math.round(ms_duration));
 
         return this.set_voltageTransition(newval);
     }
