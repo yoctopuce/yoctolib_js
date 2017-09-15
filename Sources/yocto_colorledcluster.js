@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_colorledcluster.js 27707 2017-06-01 12:34:39Z seb $
+ * $Id: yocto_colorledcluster.js 28443 2017-09-01 14:45:46Z mvuilleu $
  *
  * Implements the high-level API for ColorLedCluster functions
  *
@@ -560,6 +560,39 @@ var YColorLedCluster; // definition below
     function YColorLedCluster_addMirrorToBlinkSeq(seqIndex)
     {
         return this.sendCommand("AC"+String(Math.round(seqIndex))+",0,0");
+    }
+
+    /**
+     * Adds to a sequence a jump to another sequence. When a pixel will reach this jump,
+     * it will be automatically relinked to the new sequence, and will run it starting
+     * from the beginning.
+     *
+     * @param seqIndex : sequence index.
+     * @param linkSeqIndex : index of the sequence to chain.
+     *
+     * @return YAPI_SUCCESS when the call succeeds.
+     *
+     * On failure, throws an exception or returns a negative error code.
+     */
+    function YColorLedCluster_addJumpToBlinkSeq(seqIndex,linkSeqIndex)
+    {
+        return this.sendCommand("AC"+String(Math.round(seqIndex))+",100,"+String(Math.round(linkSeqIndex))+",1000");
+    }
+
+    /**
+     * Adds a to a sequence a hard stop code. When a pixel will reach this stop code,
+     * instead of restarting the sequence in a loop it will automatically be unlinked
+     * from the sequence.
+     *
+     * @param seqIndex : sequence index.
+     *
+     * @return YAPI_SUCCESS when the call succeeds.
+     *
+     * On failure, throws an exception or returns a negative error code.
+     */
+    function YColorLedCluster_addUnlinkToBlinkSeq(seqIndex)
+    {
+        return this.sendCommand("AC"+String(Math.round(seqIndex))+",100,-1,1000");
     }
 
     /**
@@ -1241,6 +1274,8 @@ var YColorLedCluster; // definition below
         addRgbMoveToBlinkSeq        : YColorLedCluster_addRgbMoveToBlinkSeq,
         addHslMoveToBlinkSeq        : YColorLedCluster_addHslMoveToBlinkSeq,
         addMirrorToBlinkSeq         : YColorLedCluster_addMirrorToBlinkSeq,
+        addJumpToBlinkSeq           : YColorLedCluster_addJumpToBlinkSeq,
+        addUnlinkToBlinkSeq         : YColorLedCluster_addUnlinkToBlinkSeq,
         linkLedToBlinkSeq           : YColorLedCluster_linkLedToBlinkSeq,
         linkLedToBlinkSeqAtPowerOn  : YColorLedCluster_linkLedToBlinkSeqAtPowerOn,
         linkLedToPeriodicBlinkSeq   : YColorLedCluster_linkLedToPeriodicBlinkSeq,

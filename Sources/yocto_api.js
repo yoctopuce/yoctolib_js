@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_api.js 28159 2017-07-27 09:37:52Z seb $
+ * $Id: yocto_api.js 28559 2017-09-15 15:01:38Z seb $
  *
  * High-level programming interface, common to all modules
  *
@@ -82,6 +82,11 @@ var Y_DURATION_INVALID              = YAPI_INVALID_INT;
 //--- (end of generated code: YDataSet definitions)
 
 //--- (generated code: YSensor definitions)
+var Y_ADVMODE_IMMEDIATE             = 0;
+var Y_ADVMODE_PERIOD_AVG            = 1;
+var Y_ADVMODE_PERIOD_MIN            = 2;
+var Y_ADVMODE_PERIOD_MAX            = 3;
+var Y_ADVMODE_INVALID               = -1;
 var Y_UNIT_INVALID                  = YAPI_INVALID_STRING;
 var Y_CURRENTVALUE_INVALID          = YAPI_INVALID_DOUBLE;
 var Y_LOWESTVALUE_INVALID           = YAPI_INVALID_DOUBLE;
@@ -2627,7 +2632,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
      */
     function YAPI_GetAPIVersion()
     {
-        return "1.10.28296";
+        return "1.10.28564";
     }
 
     /**
@@ -6462,6 +6467,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
         this._currentRawValue                = Y_CURRENTRAWVALUE_INVALID;  // MeasureVal
         this._logFrequency                   = Y_LOGFREQUENCY_INVALID;     // YFrequency
         this._reportFrequency                = Y_REPORTFREQUENCY_INVALID;  // YFrequency
+        this._advMode                        = Y_ADVMODE_INVALID;          // AdvertisingMode
         this._calibrationParam               = Y_CALIBRATIONPARAM_INVALID; // CalibParams
         this._resolution                     = Y_RESOLUTION_INVALID;       // MeasureVal
         this._sensorState                    = Y_SENSORSTATE_INVALID;      // Int
@@ -6506,6 +6512,9 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
             return 1;
         case "reportFrequency":
             this._reportFrequency = val;
+            return 1;
+        case "advMode":
+            this._advMode = parseInt(val);
             return 1;
         case "calibrationParam":
             this._calibrationParam = val;
@@ -6975,6 +6984,75 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
     {   var rest_val;
         rest_val = newval;
         return this._setAttr('reportFrequency',rest_val);
+    }
+
+    /**
+     * Returns the measuring mode used for the advertised value pushed to the parent hub.
+     *
+     * @return a value among Y_ADVMODE_IMMEDIATE, Y_ADVMODE_PERIOD_AVG, Y_ADVMODE_PERIOD_MIN and
+     * Y_ADVMODE_PERIOD_MAX corresponding to the measuring mode used for the advertised value pushed to the parent hub
+     *
+     * On failure, throws an exception or returns Y_ADVMODE_INVALID.
+     */
+    function YSensor_get_advMode()
+    {
+        var res;                    // enumADVERTISINGMODE;
+        if (this._cacheExpiration <= YAPI.GetTickCount()) {
+            if (this.load(YAPI.defaultCacheValidity) != YAPI_SUCCESS) {
+                return Y_ADVMODE_INVALID;
+            }
+        }
+        res = this._advMode;
+        return res;
+    }
+
+    /**
+     * Gets the measuring mode used for the advertised value pushed to the parent hub.
+     *
+     * @param callback : callback function that is invoked when the result is known.
+     *         The callback function receives three arguments:
+     *         - the user-specific context object
+     *         - the YSensor object that invoked the callback
+     *         - the result:a value among Y_ADVMODE_IMMEDIATE, Y_ADVMODE_PERIOD_AVG, Y_ADVMODE_PERIOD_MIN and
+     *         Y_ADVMODE_PERIOD_MAX corresponding to the measuring mode used for the advertised value pushed to the parent hub
+     * @param context : user-specific object that is passed as-is to the callback function
+     *
+     * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
+     *
+     * On failure, throws an exception or returns Y_ADVMODE_INVALID.
+     */
+    function YSensor_get_advMode_async(callback,context)
+    {
+        var res;                    // enumADVERTISINGMODE;
+        var loadcb;                 // func;
+        loadcb = function(ctx,obj,res) {
+            if (res != YAPI_SUCCESS) {
+                callback(context, obj, Y_ADVMODE_INVALID);
+            } else {
+                callback(context, obj, obj._advMode);
+            }
+        };
+        if (this._cacheExpiration <= YAPI.GetTickCount()) {
+            this.load_async(YAPI.defaultCacheValidity,loadcb,null);
+        } else {
+            loadcb(null, this, YAPI_SUCCESS);
+        }
+    }
+
+    /**
+     * Changes the measuring mode used for the advertised value pushed to the parent hub.
+     *
+     * @param newval : a value among Y_ADVMODE_IMMEDIATE, Y_ADVMODE_PERIOD_AVG, Y_ADVMODE_PERIOD_MIN and
+     * Y_ADVMODE_PERIOD_MAX corresponding to the measuring mode used for the advertised value pushed to the parent hub
+     *
+     * @return YAPI_SUCCESS if the call succeeds.
+     *
+     * On failure, throws an exception or returns a negative error code.
+     */
+    function YSensor_set_advMode(newval)
+    {   var rest_val;
+        rest_val = String(newval);
+        return this._setAttr('advMode',rest_val);
     }
 
     function YSensor_get_calibrationParam()
@@ -7842,6 +7920,11 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
         CURRENTRAWVALUE_INVALID     : YAPI_INVALID_DOUBLE,
         LOGFREQUENCY_INVALID        : YAPI_INVALID_STRING,
         REPORTFREQUENCY_INVALID     : YAPI_INVALID_STRING,
+        ADVMODE_IMMEDIATE           : 0,
+        ADVMODE_PERIOD_AVG          : 1,
+        ADVMODE_PERIOD_MIN          : 2,
+        ADVMODE_PERIOD_MAX          : 3,
+        ADVMODE_INVALID             : -1,
         CALIBRATIONPARAM_INVALID    : YAPI_INVALID_STRING,
         RESOLUTION_INVALID          : YAPI_INVALID_DOUBLE,
         SENSORSTATE_INVALID         : YAPI_INVALID_INT
@@ -7887,6 +7970,12 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
         reportFrequency_async       : YSensor_get_reportFrequency_async,
         set_reportFrequency         : YSensor_set_reportFrequency,
         setReportFrequency          : YSensor_set_reportFrequency,
+        get_advMode                 : YSensor_get_advMode,
+        advMode                     : YSensor_get_advMode,
+        get_advMode_async           : YSensor_get_advMode_async,
+        advMode_async               : YSensor_get_advMode_async,
+        set_advMode                 : YSensor_set_advMode,
+        setAdvMode                  : YSensor_set_advMode,
         get_calibrationParam        : YSensor_get_calibrationParam,
         calibrationParam            : YSensor_get_calibrationParam,
         get_calibrationParam_async  : YSensor_get_calibrationParam_async,

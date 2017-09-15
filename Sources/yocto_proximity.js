@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_proximity.js 27707 2017-06-01 12:34:39Z seb $
+ * $Id: yocto_proximity.js 28559 2017-09-15 15:01:38Z seb $
  *
  * Implements the high-level API for Proximity functions
  *
@@ -589,13 +589,14 @@ var YProximity; // definition below
     }
 
     /**
-     * Modifies the  parameter  type (sensor value, presence or pulse count) returned by the
+     * Changes the  parameter  type (sensor value, presence or pulse count) returned by the
      * get_currentValue function and callbacks.
      * The edge count value is limited to the 6 lowest digits. For values greater than one million, use
      * get_pulseCounter().
      *
      * @param newval : a value among Y_PROXIMITYREPORTMODE_NUMERIC, Y_PROXIMITYREPORTMODE_PRESENCE and
-     * Y_PROXIMITYREPORTMODE_PULSECOUNT
+     * Y_PROXIMITYREPORTMODE_PULSECOUNT corresponding to the  parameter  type (sensor value, presence or
+     * pulse count) returned by the get_currentValue function and callbacks
      *
      * @return YAPI_SUCCESS if the call succeeds.
      *

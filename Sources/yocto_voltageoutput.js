@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: pic24config.php 28204 2017-07-28 13:25:31Z mvuilleu $
+ * $Id: yocto_voltageoutput.js 28491 2017-09-12 13:25:28Z seb $
  *
  * Implements the high-level API for VoltageOutput functions
  *
@@ -90,9 +90,9 @@ var YVoltageOutput; // definition below
     }
 
     /**
-     * Changes the output voltage. Valid range is from 0 to 10V.
+     * Changes the output voltage, in V. Valid range is from 0 to 10V.
      *
-     * @param newval : a floating point number corresponding to the output voltage
+     * @param newval : a floating point number corresponding to the output voltage, in V
      *
      * @return YAPI_SUCCESS if the call succeeds.
      *
@@ -105,9 +105,9 @@ var YVoltageOutput; // definition below
     }
 
     /**
-     * Returns the loop current set point in mA.
+     * Returns the output voltage set point, in V.
      *
-     * @return a floating point number corresponding to the loop current set point in mA
+     * @return a floating point number corresponding to the output voltage set point, in V
      *
      * On failure, throws an exception or returns Y_CURRENTVOLTAGE_INVALID.
      */
@@ -124,13 +124,13 @@ var YVoltageOutput; // definition below
     }
 
     /**
-     * Gets the loop current set point in mA.
+     * Gets the output voltage set point, in V.
      *
      * @param callback : callback function that is invoked when the result is known.
      *         The callback function receives three arguments:
      *         - the user-specific context object
      *         - the YVoltageOutput object that invoked the callback
-     *         - the result:a floating point number corresponding to the loop current set point in mA
+     *         - the result:a floating point number corresponding to the output voltage set point, in V
      * @param context : user-specific object that is passed as-is to the callback function
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value

@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_refframe.js 27707 2017-06-01 12:34:39Z seb $
+ * $Id: yocto_refframe.js 28457 2017-09-06 08:34:21Z mvuilleu $
  *
  * Implements the high-level API for RefFrame functions
  *
@@ -42,6 +42,12 @@ if(typeof YAPI == "undefined") { if(typeof yAPI != "undefined") window["YAPI"]=y
 //--- (YRefFrame return codes)
 //--- (end of YRefFrame return codes)
 //--- (YRefFrame definitions)
+var Y_FUSIONMODE_NDOF               = 0;
+var Y_FUSIONMODE_NDOF_FMC_OFF       = 1;
+var Y_FUSIONMODE_M4G                = 2;
+var Y_FUSIONMODE_COMPASS            = 3;
+var Y_FUSIONMODE_IMU                = 4;
+var Y_FUSIONMODE_INVALID            = -1;
 var Y_MOUNTPOSITION_BOTTOM          = 0;
 var Y_MOUNTPOSITION_TOP             = 1;
 var Y_MOUNTPOSITION_FRONT           = 2;
@@ -84,6 +90,7 @@ var YRefFrame; // definition below
         this._mountPos                       = Y_MOUNTPOS_INVALID;         // UInt31
         this._bearing                        = Y_BEARING_INVALID;          // MeasureVal
         this._calibrationParam               = Y_CALIBRATIONPARAM_INVALID; // CalibParams
+        this._fusionMode                     = Y_FUSIONMODE_INVALID;       // FusionMode
         this._calibV2                        = 0;                          // bool
         this._calibStage                     = 0;                          // int
         this._calibStageHint                 = "";                         // str
@@ -121,6 +128,9 @@ var YRefFrame; // definition below
             return 1;
         case "calibrationParam":
             this._calibrationParam = val;
+            return 1;
+        case "fusionMode":
+            this._fusionMode = parseInt(val);
             return 1;
         }
         return _super._parseAttr.call(this, name, val, _super._super);
@@ -301,6 +311,53 @@ var YRefFrame; // definition below
     {   var rest_val;
         rest_val = newval;
         return this._setAttr('calibrationParam',rest_val);
+    }
+
+    function YRefFrame_get_fusionMode()
+    {
+        var res;                    // enumFUSIONMODE;
+        if (this._cacheExpiration <= YAPI.GetTickCount()) {
+            if (this.load(YAPI.defaultCacheValidity) != YAPI_SUCCESS) {
+                return Y_FUSIONMODE_INVALID;
+            }
+        }
+        res = this._fusionMode;
+        return res;
+    }
+
+    /**
+     *
+     * @param callback : callback function that is invoked when the result is known.
+     *         The callback function receives three arguments:
+     *         - the user-specific context object
+     *         - the YRefFrame object that invoked the callback
+     *         - the result:
+     * @param context : user-specific object that is passed as-is to the callback function
+     *
+     * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
+     */
+    function YRefFrame_get_fusionMode_async(callback,context)
+    {
+        var res;                    // enumFUSIONMODE;
+        var loadcb;                 // func;
+        loadcb = function(ctx,obj,res) {
+            if (res != YAPI_SUCCESS) {
+                callback(context, obj, Y_FUSIONMODE_INVALID);
+            } else {
+                callback(context, obj, obj._fusionMode);
+            }
+        };
+        if (this._cacheExpiration <= YAPI.GetTickCount()) {
+            this.load_async(YAPI.defaultCacheValidity,loadcb,null);
+        } else {
+            loadcb(null, this, YAPI_SUCCESS);
+        }
+    }
+
+    function YRefFrame_set_fusionMode(newval)
+    {   var rest_val;
+        rest_val = String(newval);
+        return this._setAttr('fusionMode',rest_val);
     }
 
     /**
@@ -1039,6 +1096,12 @@ var YRefFrame; // definition below
         MOUNTPOS_INVALID            : YAPI_INVALID_UINT,
         BEARING_INVALID             : YAPI_INVALID_DOUBLE,
         CALIBRATIONPARAM_INVALID    : YAPI_INVALID_STRING,
+        FUSIONMODE_NDOF             : 0,
+        FUSIONMODE_NDOF_FMC_OFF     : 1,
+        FUSIONMODE_M4G              : 2,
+        FUSIONMODE_COMPASS          : 3,
+        FUSIONMODE_IMU              : 4,
+        FUSIONMODE_INVALID          : -1,
         MOUNTPOSITION_BOTTOM        : 0,
         MOUNTPOSITION_TOP           : 1,
         MOUNTPOSITION_FRONT         : 2,
@@ -1075,6 +1138,12 @@ var YRefFrame; // definition below
         calibrationParam_async      : YRefFrame_get_calibrationParam_async,
         set_calibrationParam        : YRefFrame_set_calibrationParam,
         setCalibrationParam         : YRefFrame_set_calibrationParam,
+        get_fusionMode              : YRefFrame_get_fusionMode,
+        fusionMode                  : YRefFrame_get_fusionMode,
+        get_fusionMode_async        : YRefFrame_get_fusionMode_async,
+        fusionMode_async            : YRefFrame_get_fusionMode_async,
+        set_fusionMode              : YRefFrame_set_fusionMode,
+        setFusionMode               : YRefFrame_set_fusionMode,
         get_mountPosition           : YRefFrame_get_mountPosition,
         mountPosition               : YRefFrame_get_mountPosition,
         get_mountOrientation        : YRefFrame_get_mountOrientation,

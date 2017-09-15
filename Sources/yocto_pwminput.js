@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_pwminput.js 27707 2017-06-01 12:34:39Z seb $
+ * $Id: yocto_pwminput.js 28559 2017-09-15 15:01:38Z seb $
  *
  * Implements the high-level API for PwmInput functions
  *
@@ -53,6 +53,7 @@ var Y_FREQUENCY_INVALID             = YAPI_INVALID_DOUBLE;
 var Y_PERIOD_INVALID                = YAPI_INVALID_DOUBLE;
 var Y_PULSECOUNTER_INVALID          = YAPI_INVALID_LONG;
 var Y_PULSETIMER_INVALID            = YAPI_INVALID_LONG;
+var Y_DEBOUNCEPERIOD_INVALID        = YAPI_INVALID_UINT;
 //--- (end of YPwmInput definitions)
 
 //--- (YPwmInput class start)
@@ -84,6 +85,7 @@ var YPwmInput; // definition below
         this._pulseCounter                   = Y_PULSECOUNTER_INVALID;     // UInt
         this._pulseTimer                     = Y_PULSETIMER_INVALID;       // Time
         this._pwmReportMode                  = Y_PWMREPORTMODE_INVALID;    // PwmReportModeType
+        this._debouncePeriod                 = Y_DEBOUNCEPERIOD_INVALID;   // UInt31
         //--- (end of YPwmInput constructor)
     }
 
@@ -112,6 +114,9 @@ var YPwmInput; // definition below
             return 1;
         case "pwmReportMode":
             this._pwmReportMode = parseInt(val);
+            return 1;
+        case "debouncePeriod":
+            this._debouncePeriod = parseInt(val);
             return 1;
         }
         return _super._parseAttr.call(this, name, val, _super._super);
@@ -493,13 +498,14 @@ var YPwmInput; // definition below
     }
 
     /**
-     * Modifies the  parameter  type (frequency/duty cycle, pulse width, or edge count) returned by the
+     * Changes the  parameter  type (frequency/duty cycle, pulse width, or edge count) returned by the
      * get_currentValue function and callbacks.
      * The edge count value is limited to the 6 lowest digits. For values greater than one million, use
      * get_pulseCounter().
      *
      * @param newval : a value among Y_PWMREPORTMODE_PWM_DUTYCYCLE, Y_PWMREPORTMODE_PWM_FREQUENCY,
-     * Y_PWMREPORTMODE_PWM_PULSEDURATION and Y_PWMREPORTMODE_PWM_EDGECOUNT
+     * Y_PWMREPORTMODE_PWM_PULSEDURATION and Y_PWMREPORTMODE_PWM_EDGECOUNT corresponding to the  parameter
+     *  type (frequency/duty cycle, pulse width, or edge count) returned by the get_currentValue function and callbacks
      *
      * @return YAPI_SUCCESS if the call succeeds.
      *
@@ -509,6 +515,72 @@ var YPwmInput; // definition below
     {   var rest_val;
         rest_val = String(newval);
         return this._setAttr('pwmReportMode',rest_val);
+    }
+
+    /**
+     * Returns the shortest expected pulse duration, in ms. Any shorter pulse will be automatically ignored (debounce).
+     *
+     * @return an integer corresponding to the shortest expected pulse duration, in ms
+     *
+     * On failure, throws an exception or returns Y_DEBOUNCEPERIOD_INVALID.
+     */
+    function YPwmInput_get_debouncePeriod()
+    {
+        var res;                    // int;
+        if (this._cacheExpiration <= YAPI.GetTickCount()) {
+            if (this.load(YAPI.defaultCacheValidity) != YAPI_SUCCESS) {
+                return Y_DEBOUNCEPERIOD_INVALID;
+            }
+        }
+        res = this._debouncePeriod;
+        return res;
+    }
+
+    /**
+     * Gets the shortest expected pulse duration, in ms. Any shorter pulse will be automatically ignored (debounce).
+     *
+     * @param callback : callback function that is invoked when the result is known.
+     *         The callback function receives three arguments:
+     *         - the user-specific context object
+     *         - the YPwmInput object that invoked the callback
+     *         - the result:an integer corresponding to the shortest expected pulse duration, in ms
+     * @param context : user-specific object that is passed as-is to the callback function
+     *
+     * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
+     *
+     * On failure, throws an exception or returns Y_DEBOUNCEPERIOD_INVALID.
+     */
+    function YPwmInput_get_debouncePeriod_async(callback,context)
+    {
+        var res;                    // int;
+        var loadcb;                 // func;
+        loadcb = function(ctx,obj,res) {
+            if (res != YAPI_SUCCESS) {
+                callback(context, obj, Y_DEBOUNCEPERIOD_INVALID);
+            } else {
+                callback(context, obj, obj._debouncePeriod);
+            }
+        };
+        if (this._cacheExpiration <= YAPI.GetTickCount()) {
+            this.load_async(YAPI.defaultCacheValidity,loadcb,null);
+        } else {
+            loadcb(null, this, YAPI_SUCCESS);
+        }
+    }
+
+    /**
+     * Changes the shortest expected pulse duration, in ms. Any shorter pulse will be automatically ignored (debounce).
+     *
+     * @param newval : an integer corresponding to the shortest expected pulse duration, in ms
+     *
+     * @return YAPI_SUCCESS if the call succeeds.
+     *
+     * On failure, throws an exception or returns a negative error code.
+     */
+    function YPwmInput_set_debouncePeriod(newval)
+    {   var rest_val;
+        rest_val = String(newval);
+        return this._setAttr('debouncePeriod',rest_val);
     }
 
     /**
@@ -607,7 +679,8 @@ var YPwmInput; // definition below
         PWMREPORTMODE_PWM_FREQUENCY : 1,
         PWMREPORTMODE_PWM_PULSEDURATION : 2,
         PWMREPORTMODE_PWM_EDGECOUNT : 3,
-        PWMREPORTMODE_INVALID       : -1
+        PWMREPORTMODE_INVALID       : -1,
+        DEBOUNCEPERIOD_INVALID      : YAPI_INVALID_UINT
     }, {
         // Class methods
         FindPwmInput                : YPwmInput_FindPwmInput,
@@ -646,6 +719,12 @@ var YPwmInput; // definition below
         pwmReportMode_async         : YPwmInput_get_pwmReportMode_async,
         set_pwmReportMode           : YPwmInput_set_pwmReportMode,
         setPwmReportMode            : YPwmInput_set_pwmReportMode,
+        get_debouncePeriod          : YPwmInput_get_debouncePeriod,
+        debouncePeriod              : YPwmInput_get_debouncePeriod,
+        get_debouncePeriod_async    : YPwmInput_get_debouncePeriod_async,
+        debouncePeriod_async        : YPwmInput_get_debouncePeriod_async,
+        set_debouncePeriod          : YPwmInput_set_debouncePeriod,
+        setDebouncePeriod           : YPwmInput_set_debouncePeriod,
         resetCounter                : YPwmInput_resetCounter,
         nextPwmInput                : YPwmInput_nextPwmInput,
         _parseAttr                  : YPwmInput_parseAttr
