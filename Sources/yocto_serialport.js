@@ -1,10 +1,10 @@
 /*********************************************************************
  *
- * $Id: yocto_serialport.js 27948 2017-06-30 14:46:55Z mvuilleu $
+ * $Id: yocto_serialport.js 28659 2017-09-26 16:30:45Z seb $
  *
  * Implements the high-level API for SerialPort functions
  *
- * - - - - - - - - - License information: - - - - - - - - - 
+ * - - - - - - - - - License information: - - - - - - - - -
  *
  *  Copyright (C) 2011 and beyond by Yoctopuce Sarl, Switzerland.
  *
@@ -23,7 +23,7 @@
  *  obligations.
  *
  *  THE SOFTWARE AND DOCUMENTATION ARE PROVIDED 'AS IS' WITHOUT
- *  WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING 
+ *  WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING
  *  WITHOUT LIMITATION, ANY WARRANTY OF MERCHANTABILITY, FITNESS
  *  FOR A PARTICULAR PURPOSE, TITLE AND NON-INFRINGEMENT. IN NO
  *  EVENT SHALL LICENSOR BE LIABLE FOR ANY INCIDENTAL, SPECIAL,
@@ -39,9 +39,9 @@
 
 if(typeof YAPI == "undefined") { if(typeof yAPI != "undefined") window["YAPI"]=yAPI; else throw "YAPI is not defined, please include yocto_api.js first"; }
 
-//--- (YSerialPort return codes)
-//--- (end of YSerialPort return codes)
-//--- (YSerialPort definitions)
+//--- (generated code: YSerialPort return codes)
+//--- (end of generated code: YSerialPort return codes)
+//--- (generated code: YSerialPort definitions)
 var Y_VOLTAGELEVEL_OFF              = 0;
 var Y_VOLTAGELEVEL_TTL3V            = 1;
 var Y_VOLTAGELEVEL_TTL3VR           = 2;
@@ -61,9 +61,71 @@ var Y_STARTUPJOB_INVALID            = YAPI_INVALID_STRING;
 var Y_COMMAND_INVALID               = YAPI_INVALID_STRING;
 var Y_PROTOCOL_INVALID              = YAPI_INVALID_STRING;
 var Y_SERIALMODE_INVALID            = YAPI_INVALID_STRING;
-//--- (end of YSerialPort definitions)
+//--- (end of generated code: YSerialPort definitions)
 
-//--- (YSerialPort class start)
+
+//--- (generated code: YSnoopingRecord definitions)
+//--- (end of generated code: YSnoopingRecord definitions)
+
+//--- (generated code: YSnoopingRecord class start)
+/**
+ * YSnoopingRecord Class: Description of a message intercepted
+ *
+ *
+ */
+//--- (end of generated code: YSnoopingRecord class start)
+
+var YSnoopingRecord; // definition below
+(function()
+{
+    function _YSnoopingRecord(str_json)
+    {
+        //--- (generated code: YSnoopingRecord constructor)
+        this._tim                            = 0;                          // int
+        this._dir                            = 0;                          // int
+        this._msg                            = "";                         // str
+        //--- (end of generated code: YSnoopingRecord constructor)
+
+        var loadval = JSON.parse(str_json);
+        this._tim = loadval.t;
+        this._dir = (loadval.m[0] == '<' ? 1 : 0);
+        this._msg = loadval.m.slice(1);
+
+    }
+
+    //--- (generated code: YSnoopingRecord implementation)
+
+    function YSnoopingRecord_get_time()
+    {
+        return this._tim;
+    }
+
+    function YSnoopingRecord_get_direction()
+    {
+        return this._dir;
+    }
+
+    function YSnoopingRecord_get_message()
+    {
+        return this._msg;
+    }
+
+    //--- (end of generated code: YSnoopingRecord implementation)
+
+    //--- (generated code: YSnoopingRecord initialization)
+    YSnoopingRecord = _YSnoopingRecord;
+    // Methods
+    YSnoopingRecord.prototype.get_time                    = YSnoopingRecord_get_time;
+    YSnoopingRecord.prototype.time                        = YSnoopingRecord_get_time;
+    YSnoopingRecord.prototype.get_direction               = YSnoopingRecord_get_direction;
+    YSnoopingRecord.prototype.direction                   = YSnoopingRecord_get_direction;
+    YSnoopingRecord.prototype.get_message                 = YSnoopingRecord_get_message;
+    YSnoopingRecord.prototype.message                     = YSnoopingRecord_get_message;
+    //--- (end of generated code: YSnoopingRecord initialization)
+})();
+
+
+//--- (generated code: YSerialPort class start)
 /**
  * YSerialPort Class: SerialPort function interface
  *
@@ -73,14 +135,14 @@ var Y_SERIALMODE_INVALID            = YAPI_INVALID_STRING;
  * Note that Yoctopuce serial ports are not exposed as virtual COM ports.
  * They are meant to be used in the same way as all Yoctopuce devices.
  */
-//--- (end of YSerialPort class start)
+//--- (end of generated code: YSerialPort class start)
 
 var YSerialPort; // definition below
 (function()
 {
     function _YSerialPort(str_func)
     {
-        //--- (YSerialPort constructor)
+        //--- (generated code: YSerialPort constructor)
         // inherit from YFunction
         YFunction.call(this, str_func);
         this._className = 'SerialPort';
@@ -100,10 +162,10 @@ var YSerialPort; // definition below
         this._rxptr                          = 0;                          // int
         this._rxbuff                         = "";                         // bin
         this._rxbuffptr                      = 0;                          // int
-        //--- (end of YSerialPort constructor)
+        //--- (end of generated code: YSerialPort constructor)
     }
 
-    //--- (YSerialPort implementation)
+    //--- (generated code: YSerialPort implementation)
 
     function YSerialPort_parseAttr(name, val, _super)
     {
@@ -1130,7 +1192,6 @@ var YSerialPort; // definition below
         var mult;                   // int;
         var endpos;                 // int;
         var res;                    // int;
-
         // first check if we have the requested character in the look-ahead buffer
         bufflen = (this._rxbuff).length;
         if ((this._rxptr >= this._rxbuffptr) && (this._rxptr < this._rxbuffptr+bufflen)) {
@@ -1138,7 +1199,6 @@ var YSerialPort; // definition below
             this._rxptr = this._rxptr + 1;
             return res;
         }
-
         // try to preload more than one byte to speed-up byte-per-byte access
         currpos = this._rxptr;
         reqlen = 1024;
@@ -1165,7 +1225,6 @@ var YSerialPort; // definition below
         }
         // still mixed, need to process character by character
         this._rxptr = currpos;
-
 
         buff = this._download("rxdata.bin?pos="+String(Math.round(this._rxptr))+"&len=1");
         bufflen = (buff).length - 1;
@@ -1587,6 +1646,49 @@ var YSerialPort; // definition below
             return this._throw(YAPI_IO_ERROR,"invalid CTS reply",YAPI_IO_ERROR);
         }
         res = (buff).charCodeAt(0) - 48;
+        return res;
+    }
+
+    /**
+     * Retrieves messages (both direction) in the serial port buffer, starting at current position.
+     * This function will only compare and return printable characters in the message strings.
+     * Binary protocols are handled as hexadecimal strings.
+     *
+     * If no message is found, the search waits for one up to the specified maximum timeout
+     * (in milliseconds).
+     *
+     * @param maxWait : the maximum number of milliseconds to wait for a message if none is found
+     *         in the receive buffer.
+     *
+     * @return an array of YSnoopingRecord objects containing the messages found, if any.
+     *         Binary messages are converted to hexadecimal representation.
+     *
+     * On failure, throws an exception or returns an empty array.
+     */
+    function YSerialPort_snoopMessages(maxWait)
+    {
+        var url;                    // str;
+        var msgbin;                 // bin;
+        var msgarr = [];            // strArr;
+        var msglen;                 // int;
+        var res = [];               // YSnoopingRecordArr;
+        var idx;                    // int;
+
+        url = "rxmsg.json?pos="+String(Math.round(this._rxptr))+"&maxw="+String(Math.round(maxWait))+"&t=0";
+        msgbin = this._download(url);
+        msgarr = this._json_get_array(msgbin);
+        msglen = msgarr.length;
+        if (msglen == 0) {
+            return res;
+        }
+        // last element of array is the new position
+        msglen = msglen - 1;
+        this._rxptr = YAPI._atoi(msgarr[msglen]);
+        idx = 0;
+        while (idx < msglen) {
+            res.push(new YSnoopingRecord(msgarr[idx]));
+            idx = idx + 1;
+        }
         return res;
     }
 
@@ -2162,9 +2264,9 @@ var YSerialPort; // definition below
         return YSerialPort.FindSerialPort(next_hwid);
     }
 
-    //--- (end of YSerialPort implementation)
+    //--- (end of generated code: YSerialPort implementation)
 
-    //--- (YSerialPort initialization)
+    //--- (generated code: YSerialPort initialization)
     YSerialPort = YFunction._Subclass(_YSerialPort, {
         // Constants
         RXCOUNT_INVALID             : YAPI_INVALID_UINT,
@@ -2277,6 +2379,7 @@ var YSerialPort; // definition below
         setRTS                      : YSerialPort_set_RTS,
         get_CTS                     : YSerialPort_get_CTS,
         CTS                         : YSerialPort_get_CTS,
+        snoopMessages               : YSerialPort_snoopMessages,
         writeMODBUS                 : YSerialPort_writeMODBUS,
         queryMODBUS                 : YSerialPort_queryMODBUS,
         modbusReadBits              : YSerialPort_modbusReadBits,
@@ -2291,10 +2394,10 @@ var YSerialPort; // definition below
         nextSerialPort              : YSerialPort_nextSerialPort,
         _parseAttr                  : YSerialPort_parseAttr
     });
-    //--- (end of YSerialPort initialization)
+    //--- (end of generated code: YSerialPort initialization)
 })();
 
-//--- (SerialPort functions)
+//--- (generated code: SerialPort functions)
 
 /**
  * Retrieves a serial port for a given identifier.
@@ -2342,4 +2445,4 @@ function yFirstSerialPort()
     return YSerialPort.FirstSerialPort();
 }
 
-//--- (end of SerialPort functions)
+//--- (end of generated code: SerialPort functions)

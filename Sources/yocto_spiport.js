@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_spiport.js 27707 2017-06-01 12:34:39Z seb $
+ * $Id: yocto_spiport.js 28655 2017-09-26 15:55:10Z seb $
  *
  * Implements the high-level API for SpiPort functions
  *
@@ -1259,7 +1259,6 @@ var YSpiPort; // definition below
         var mult;                   // int;
         var endpos;                 // int;
         var res;                    // int;
-
         // first check if we have the requested character in the look-ahead buffer
         bufflen = (this._rxbuff).length;
         if ((this._rxptr >= this._rxbuffptr) && (this._rxptr < this._rxbuffptr+bufflen)) {
@@ -1267,7 +1266,6 @@ var YSpiPort; // definition below
             this._rxptr = this._rxptr + 1;
             return res;
         }
-
         // try to preload more than one byte to speed-up byte-per-byte access
         currpos = this._rxptr;
         reqlen = 1024;
@@ -1294,7 +1292,6 @@ var YSpiPort; // definition below
         }
         // still mixed, need to process character by character
         this._rxptr = currpos;
-
 
         buff = this._download("rxdata.bin?pos="+String(Math.round(this._rxptr))+"&len=1");
         bufflen = (buff).length - 1;
