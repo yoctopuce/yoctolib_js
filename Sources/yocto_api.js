@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_api.js 28559 2017-09-15 15:01:38Z seb $
+ * $Id: yocto_api.js 28745 2017-10-03 08:17:29Z seb $
  *
  * High-level programming interface, common to all modules
  *
@@ -2632,7 +2632,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
      */
     function YAPI_GetAPIVersion()
     {
-        return "1.10.28707";
+        return "1.10.28878";
     }
 
     /**
@@ -8959,7 +8959,7 @@ var YDataLogger; // definition below
     //--- (end of generated code: YDataLogger initialization)
 })();
 
-//--- (generated code: DataLogger functions)
+//--- (generated code: YDataLogger functions)
 
 /**
  * Retrieves a data logger for a given identifier.
@@ -9007,7 +9007,7 @@ function yFirstDataLogger()
     return YDataLogger.FirstDataLogger();
 }
 
-//--- (end of generated code: DataLogger functions)
+//--- (end of generated code: YDataLogger functions)
 
 
 //--- (generated code: YModule class start)
@@ -11548,7 +11548,7 @@ function yRegisterCalibrationHandler(calibrationType, calibrationHandler)
 //
 var yLinearCalibrationHandler = YAPI.LinearCalibrationHandler;
 
-//--- (generated code: Sensor functions)
+//--- (generated code: YSensor functions)
 
 /**
  * Retrieves a sensor for a given identifier.
@@ -11596,9 +11596,9 @@ function yFirstSensor()
     return YSensor.FirstSensor();
 }
 
-//--- (end of generated code: Sensor functions)
+//--- (end of generated code: YSensor functions)
 
-//--- (generated code: Module functions)
+//--- (generated code: YModule functions)
 
 /**
  * Allows you to find a module from its serial number or from its logical name.
@@ -11640,5 +11640,5 @@ function yFirstModule()
     return YModule.FirstModule();
 }
 
-//--- (end of generated code: Module functions)
+//--- (end of generated code: YModule functions)
 

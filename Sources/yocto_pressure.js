@@ -1,10 +1,10 @@
 /*********************************************************************
  *
- * $Id: yocto_pressure.js 27707 2017-06-01 12:34:39Z seb $
+ * $Id: yocto_pressure.js 28745 2017-10-03 08:17:29Z seb $
  *
  * Implements the high-level API for Pressure functions
  *
- * - - - - - - - - - License information: - - - - - - - - - 
+ * - - - - - - - - - License information: - - - - - - - - -
  *
  *  Copyright (C) 2011 and beyond by Yoctopuce Sarl, Switzerland.
  *
@@ -23,7 +23,7 @@
  *  obligations.
  *
  *  THE SOFTWARE AND DOCUMENTATION ARE PROVIDED 'AS IS' WITHOUT
- *  WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING 
+ *  WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING
  *  WITHOUT LIMITATION, ANY WARRANTY OF MERCHANTABILITY, FITNESS
  *  FOR A PARTICULAR PURPOSE, TITLE AND NON-INFRINGEMENT. IN NO
  *  EVENT SHALL LICENSOR BE LIABLE FOR ANY INCIDENTAL, SPECIAL,
@@ -153,7 +153,7 @@ var YPressure; // definition below
     //--- (end of YPressure initialization)
 })();
 
-//--- (Pressure functions)
+//--- (YPressure functions)
 
 /**
  * Retrieves a pressure sensor for a given identifier.
@@ -201,4 +201,4 @@ function yFirstPressure()
     return YPressure.FirstPressure();
 }
 
-//--- (end of Pressure functions)
+//--- (end of YPressure functions)

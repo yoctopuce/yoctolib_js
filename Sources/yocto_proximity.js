@@ -1,10 +1,10 @@
 /*********************************************************************
  *
- * $Id: yocto_proximity.js 28559 2017-09-15 15:01:38Z seb $
+ * $Id: yocto_proximity.js 28745 2017-10-03 08:17:29Z seb $
  *
  * Implements the high-level API for Proximity functions
  *
- * - - - - - - - - - License information: - - - - - - - - - 
+ * - - - - - - - - - License information: - - - - - - - - -
  *
  *  Copyright (C) 2011 and beyond by Yoctopuce Sarl, Switzerland.
  *
@@ -23,7 +23,7 @@
  *  obligations.
  *
  *  THE SOFTWARE AND DOCUMENTATION ARE PROVIDED 'AS IS' WITHOUT
- *  WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING 
+ *  WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING
  *  WITHOUT LIMITATION, ANY WARRANTY OF MERCHANTABILITY, FITNESS
  *  FOR A PARTICULAR PURPOSE, TITLE AND NON-INFRINGEMENT. IN NO
  *  EVENT SHALL LICENSOR BE LIABLE FOR ANY INCIDENTAL, SPECIAL,
@@ -758,7 +758,7 @@ var YProximity; // definition below
     //--- (end of YProximity initialization)
 })();
 
-//--- (Proximity functions)
+//--- (YProximity functions)
 
 /**
  * Retrieves a proximity sensor for a given identifier.
@@ -806,4 +806,4 @@ function yFirstProximity()
     return YProximity.FirstProximity();
 }
 
-//--- (end of Proximity functions)
+//--- (end of YProximity functions)

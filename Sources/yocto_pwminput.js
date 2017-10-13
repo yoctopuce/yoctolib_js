@@ -1,10 +1,10 @@
 /*********************************************************************
  *
- * $Id: yocto_pwminput.js 28559 2017-09-15 15:01:38Z seb $
+ * $Id: yocto_pwminput.js 28807 2017-10-12 09:46:33Z seb $
  *
  * Implements the high-level API for PwmInput functions
  *
- * - - - - - - - - - License information: - - - - - - - - - 
+ * - - - - - - - - - License information: - - - - - - - - -
  *
  *  Copyright (C) 2011 and beyond by Yoctopuce Sarl, Switzerland.
  *
@@ -23,7 +23,7 @@
  *  obligations.
  *
  *  THE SOFTWARE AND DOCUMENTATION ARE PROVIDED 'AS IS' WITHOUT
- *  WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING 
+ *  WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING
  *  WITHOUT LIMITATION, ANY WARRANTY OF MERCHANTABILITY, FITNESS
  *  FOR A PARTICULAR PURPOSE, TITLE AND NON-INFRINGEMENT. IN NO
  *  EVENT SHALL LICENSOR BE LIABLE FOR ANY INCIDENTAL, SPECIAL,
@@ -46,6 +46,10 @@ var Y_PWMREPORTMODE_PWM_DUTYCYCLE   = 0;
 var Y_PWMREPORTMODE_PWM_FREQUENCY   = 1;
 var Y_PWMREPORTMODE_PWM_PULSEDURATION = 2;
 var Y_PWMREPORTMODE_PWM_EDGECOUNT   = 3;
+var Y_PWMREPORTMODE_PWM_PULSECOUNT  = 4;
+var Y_PWMREPORTMODE_PWM_CPS         = 5;
+var Y_PWMREPORTMODE_PWM_CPM         = 6;
+var Y_PWMREPORTMODE_PWM_STATE       = 7;
 var Y_PWMREPORTMODE_INVALID         = -1;
 var Y_DUTYCYCLE_INVALID             = YAPI_INVALID_DOUBLE;
 var Y_PULSEDURATION_INVALID         = YAPI_INVALID_DOUBLE;
@@ -331,7 +335,7 @@ var YPwmInput; // definition below
     /**
      * Returns the pulse counter value. Actually that
      * counter is incremented twice per period. That counter is
-     * limited  to 1 billion
+     * limited  to 1 billion.
      *
      * @return an integer corresponding to the pulse counter value
      *
@@ -352,7 +356,7 @@ var YPwmInput; // definition below
     /**
      * Gets the pulse counter value. Actually that
      * counter is incremented twice per period. That counter is
-     * limited  to 1 billion
+     * limited  to 1 billion.
      *
      * @param callback : callback function that is invoked when the result is known.
      *         The callback function receives three arguments:
@@ -445,8 +449,10 @@ var YPwmInput; // definition below
      * get_currentValue function and callbacks. Attention
      *
      * @return a value among Y_PWMREPORTMODE_PWM_DUTYCYCLE, Y_PWMREPORTMODE_PWM_FREQUENCY,
-     * Y_PWMREPORTMODE_PWM_PULSEDURATION and Y_PWMREPORTMODE_PWM_EDGECOUNT corresponding to the parameter
-     * (frequency/duty cycle, pulse width, edges count) returned by the get_currentValue function and callbacks
+     * Y_PWMREPORTMODE_PWM_PULSEDURATION, Y_PWMREPORTMODE_PWM_EDGECOUNT, Y_PWMREPORTMODE_PWM_PULSECOUNT,
+     * Y_PWMREPORTMODE_PWM_CPS, Y_PWMREPORTMODE_PWM_CPM and Y_PWMREPORTMODE_PWM_STATE corresponding to the
+     * parameter (frequency/duty cycle, pulse width, edges count) returned by the get_currentValue
+     * function and callbacks
      *
      * On failure, throws an exception or returns Y_PWMREPORTMODE_INVALID.
      */
@@ -471,8 +477,10 @@ var YPwmInput; // definition below
      *         - the user-specific context object
      *         - the YPwmInput object that invoked the callback
      *         - the result:a value among Y_PWMREPORTMODE_PWM_DUTYCYCLE, Y_PWMREPORTMODE_PWM_FREQUENCY,
-     *         Y_PWMREPORTMODE_PWM_PULSEDURATION and Y_PWMREPORTMODE_PWM_EDGECOUNT corresponding to the parameter
-     *         (frequency/duty cycle, pulse width, edges count) returned by the get_currentValue function and callbacks
+     *         Y_PWMREPORTMODE_PWM_PULSEDURATION, Y_PWMREPORTMODE_PWM_EDGECOUNT, Y_PWMREPORTMODE_PWM_PULSECOUNT,
+     *         Y_PWMREPORTMODE_PWM_CPS, Y_PWMREPORTMODE_PWM_CPM and Y_PWMREPORTMODE_PWM_STATE corresponding to the
+     *         parameter (frequency/duty cycle, pulse width, edges count) returned by the get_currentValue
+     *         function and callbacks
      * @param context : user-specific object that is passed as-is to the callback function
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
@@ -504,8 +512,10 @@ var YPwmInput; // definition below
      * get_pulseCounter().
      *
      * @param newval : a value among Y_PWMREPORTMODE_PWM_DUTYCYCLE, Y_PWMREPORTMODE_PWM_FREQUENCY,
-     * Y_PWMREPORTMODE_PWM_PULSEDURATION and Y_PWMREPORTMODE_PWM_EDGECOUNT corresponding to the  parameter
-     *  type (frequency/duty cycle, pulse width, or edge count) returned by the get_currentValue function and callbacks
+     * Y_PWMREPORTMODE_PWM_PULSEDURATION, Y_PWMREPORTMODE_PWM_EDGECOUNT, Y_PWMREPORTMODE_PWM_PULSECOUNT,
+     * Y_PWMREPORTMODE_PWM_CPS, Y_PWMREPORTMODE_PWM_CPM and Y_PWMREPORTMODE_PWM_STATE corresponding to the
+     *  parameter  type (frequency/duty cycle, pulse width, or edge count) returned by the
+     * get_currentValue function and callbacks
      *
      * @return YAPI_SUCCESS if the call succeeds.
      *
@@ -679,6 +689,10 @@ var YPwmInput; // definition below
         PWMREPORTMODE_PWM_FREQUENCY : 1,
         PWMREPORTMODE_PWM_PULSEDURATION : 2,
         PWMREPORTMODE_PWM_EDGECOUNT : 3,
+        PWMREPORTMODE_PWM_PULSECOUNT : 4,
+        PWMREPORTMODE_PWM_CPS       : 5,
+        PWMREPORTMODE_PWM_CPM       : 6,
+        PWMREPORTMODE_PWM_STATE     : 7,
         PWMREPORTMODE_INVALID       : -1,
         DEBOUNCEPERIOD_INVALID      : YAPI_INVALID_UINT
     }, {
@@ -732,7 +746,7 @@ var YPwmInput; // definition below
     //--- (end of YPwmInput initialization)
 })();
 
-//--- (PwmInput functions)
+//--- (YPwmInput functions)
 
 /**
  * Retrieves a PWM input for a given identifier.
@@ -780,4 +794,4 @@ function yFirstPwmInput()
     return YPwmInput.FirstPwmInput();
 }
 
-//--- (end of PwmInput functions)
+//--- (end of YPwmInput functions)

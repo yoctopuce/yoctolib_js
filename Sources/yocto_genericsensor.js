@@ -1,10 +1,10 @@
 /*********************************************************************
  *
- * $Id: yocto_genericsensor.js 27707 2017-06-01 12:34:39Z seb $
+ * $Id: yocto_genericsensor.js 28745 2017-10-03 08:17:29Z seb $
  *
  * Implements the high-level API for GenericSensor functions
  *
- * - - - - - - - - - License information: - - - - - - - - - 
+ * - - - - - - - - - License information: - - - - - - - - -
  *
  *  Copyright (C) 2011 and beyond by Yoctopuce Sarl, Switzerland.
  *
@@ -23,7 +23,7 @@
  *  obligations.
  *
  *  THE SOFTWARE AND DOCUMENTATION ARE PROVIDED 'AS IS' WITHOUT
- *  WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING 
+ *  WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING
  *  WITHOUT LIMITATION, ANY WARRANTY OF MERCHANTABILITY, FITNESS
  *  FOR A PARTICULAR PURPOSE, TITLE AND NON-INFRINGEMENT. IN NO
  *  EVENT SHALL LICENSOR BE LIABLE FOR ANY INCIDENTAL, SPECIAL,
@@ -673,7 +673,7 @@ var YGenericSensor; // definition below
     //--- (end of YGenericSensor initialization)
 })();
 
-//--- (GenericSensor functions)
+//--- (YGenericSensor functions)
 
 /**
  * Retrieves a generic sensor for a given identifier.
@@ -721,4 +721,4 @@ function yFirstGenericSensor()
     return YGenericSensor.FirstGenericSensor();
 }
 
-//--- (end of GenericSensor functions)
+//--- (end of YGenericSensor functions)

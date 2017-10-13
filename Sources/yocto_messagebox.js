@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_messagebox.js 27707 2017-06-01 12:34:39Z seb $
+ * $Id: yocto_messagebox.js 28745 2017-10-03 08:17:29Z seb $
  *
  * Implements the high-level API for MessageBox functions
  *
@@ -853,7 +853,7 @@ var YSms; // definition below
         var wpos;                   // int;
         var carry;                  // int;
         var nbits;                  // int;
-        var thisb;                  // int;
+        var thi_b;                  // int;
         // nbits = number of bits in carry
         udsize = this.udataSize();
         udhsize = (this._udh).length;
@@ -895,11 +895,11 @@ var YSms; // definition below
                     carry = (this._udata).charCodeAt(i);
                     nbits = 7;
                 } else {
-                    thisb = (this._udata).charCodeAt(i);
-                    res[wpos] = ((carry) | ((((((thisb) << (nbits)))) & (255))));
+                    thi_b = (this._udata).charCodeAt(i);
+                    res[wpos] = ((carry) | ((((((thi_b) << (nbits)))) & (255))));
                     wpos = wpos + 1;
                     nbits = nbits - 1;
-                    carry = ((thisb) >> ((7 - nbits)));
+                    carry = ((thi_b) >> ((7 - nbits)));
                 }
                 i = i + 1;
             }
@@ -1116,7 +1116,7 @@ var YSms; // definition below
         var i;                      // int;
         var carry;                  // int;
         var nbits;                  // int;
-        var thisb;                  // int;
+        var thi_b;                  // int;
         this._pdu = pdu;
         this._npdu = 1;
         // parse meta-data
@@ -1177,9 +1177,9 @@ var YSms; // definition below
                 udhlen = parseInt(((8 + 8*udhsize + 6)) / (7));
                 nbits = 7*udhlen - 8 - 8*udhsize;
                 if (nbits > 0) {
-                    thisb = (pdu).charCodeAt(rpos);
+                    thi_b = (pdu).charCodeAt(rpos);
                     rpos = rpos + 1;
-                    carry = ((thisb) >> (nbits));
+                    carry = ((thi_b) >> (nbits));
                     nbits = 8 - nbits;
                 }
             } else {
@@ -1201,10 +1201,10 @@ var YSms; // definition below
                     carry = 0;
                     nbits = 0;
                 } else {
-                    thisb = (pdu).charCodeAt(rpos);
+                    thi_b = (pdu).charCodeAt(rpos);
                     rpos = rpos + 1;
-                    this._udata[i] = ((carry) | ((((((thisb) << (nbits)))) & (127))));
-                    carry = ((thisb) >> ((7 - nbits)));
+                    this._udata[i] = ((carry) | ((((((thi_b) << (nbits)))) & (127))));
+                    carry = ((thi_b) >> ((7 - nbits)));
                     nbits = nbits + 1;
                 }
                 i = i + 1;
@@ -1357,8 +1357,8 @@ var YSms; // definition below
     //--- (end of generated code: YSms initialization)
 })();
 
-//--- (generated code: Sms functions)
-//--- (end of generated code: Sms functions)
+//--- (generated code: YSms functions)
+//--- (end of generated code: YSms functions)
 
 
 //--- (generated code: YMessageBox return codes)
@@ -2426,8 +2426,8 @@ var YMessageBox; // definition below
 
     //--- (end of generated code: YMessageBox implementation)
 })();
-    
-//--- (generated code: MessageBox functions)
+
+//--- (generated code: YMessageBox functions)
 
 /**
  * Retrieves a MessageBox interface for a given identifier.
@@ -2475,4 +2475,4 @@ function yFirstMessageBox()
     return YMessageBox.FirstMessageBox();
 }
 
-//--- (end of generated code: MessageBox functions)
+//--- (end of generated code: YMessageBox functions)

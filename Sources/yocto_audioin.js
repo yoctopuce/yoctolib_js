@@ -1,10 +1,10 @@
 /*********************************************************************
  *
- * $Id: yocto_audioin.js 27707 2017-06-01 12:34:39Z seb $
+ * $Id: yocto_audioin.js 28745 2017-10-03 08:17:29Z seb $
  *
  * Implements the high-level API for AudioIn functions
  *
- * - - - - - - - - - License information: - - - - - - - - - 
+ * - - - - - - - - - License information: - - - - - - - - -
  *
  *  Copyright (C) 2011 and beyond by Yoctopuce Sarl, Switzerland.
  *
@@ -23,7 +23,7 @@
  *  obligations.
  *
  *  THE SOFTWARE AND DOCUMENTATION ARE PROVIDED 'AS IS' WITHOUT
- *  WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING 
+ *  WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING
  *  WITHOUT LIMITATION, ANY WARRANTY OF MERCHANTABILITY, FITNESS
  *  FOR A PARTICULAR PURPOSE, TITLE AND NON-INFRINGEMENT. IN NO
  *  EVENT SHALL LICENSOR BE LIABLE FOR ANY INCIDENTAL, SPECIAL,
@@ -510,7 +510,7 @@ var YAudioIn; // definition below
     //--- (end of YAudioIn initialization)
 })();
 
-//--- (AudioIn functions)
+//--- (YAudioIn functions)
 
 /**
  * Retrieves an audio input for a given identifier.
@@ -558,4 +558,4 @@ function yFirstAudioIn()
     return YAudioIn.FirstAudioIn();
 }
 
-//--- (end of AudioIn functions)
+//--- (end of YAudioIn functions)

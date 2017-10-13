@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_serialport.js 28659 2017-09-26 16:30:45Z seb $
+ * $Id: yocto_serialport.js 28745 2017-10-03 08:17:29Z seb $
  *
  * Implements the high-level API for SerialPort functions
  *
@@ -2397,7 +2397,7 @@ var YSerialPort; // definition below
     //--- (end of generated code: YSerialPort initialization)
 })();
 
-//--- (generated code: SerialPort functions)
+//--- (generated code: YSerialPort functions)
 
 /**
  * Retrieves a serial port for a given identifier.
@@ -2445,4 +2445,4 @@ function yFirstSerialPort()
     return YSerialPort.FirstSerialPort();
 }
 
-//--- (end of generated code: SerialPort functions)
+//--- (end of generated code: YSerialPort functions)

@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_cellular.js 27707 2017-06-01 12:34:39Z seb $
+ * $Id: yocto_cellular.js 28745 2017-10-03 08:17:29Z seb $
  *
  * Implements the high-level API for Cellular functions
  *
@@ -134,8 +134,8 @@ var YCellRecord; // definition below
     //--- (end of generated code: YCellRecord initialization)
 })();
 
-//--- (generated code: CellRecord functions)
-//--- (end of generated code: CellRecord functions)
+//--- (generated code: YCellRecord functions)
+//--- (end of generated code: YCellRecord functions)
 
 
 //--- (generated code: YCellular return codes)
@@ -1602,9 +1602,9 @@ var YCellular; // definition below
                 var cmd = "at.txt?cmd="+buff.substr( bufflen - suffixlen, suffixlen);
                 buff = buff.substr( 0, bufflen - suffixlen);
                 ctx.res += buff;
-                ctx.waitMore = ctx.waitMore - 1;                
+                ctx.waitMore = ctx.waitMore - 1;
                 return cellular._download_async(cmd, cellular._AT_async_internal, ctx);
-            }           
+            }
         }
         ctx.res += buff;
         ctx.usercb(ctx.userctx, cellular, ctx.res);
@@ -1630,7 +1630,7 @@ var YCellular; // definition below
     {
         var chrPos;                 // int;
         var cmdLen;                 // int;
-        
+
         // quote dangerous characters used in AT commands
         cmdLen = (cmd).length;
         chrPos = (cmd).indexOf("#");
@@ -1731,7 +1731,7 @@ var YCellular; // definition below
             var tad;                    // int;
             var oper;                   // str;
             var res = [];               // YCellRecordArr;
-            
+
             mccs = (moni).substr(7, 3);
             if ((mccs).substr(0, 1) == "0") {
                 mccs = (mccs).substr(1, 2);
@@ -1924,7 +1924,7 @@ var YCellular; // definition below
     YCellular.prototype.quickCellSurvey_async        = YCellular_quickCellSurvey_async;
 })();
 
-//--- (generated code: Cellular functions)
+//--- (generated code: YCellular functions)
 
 /**
  * Retrieves a cellular interface for a given identifier.
@@ -1972,4 +1972,4 @@ function yFirstCellular()
     return YCellular.FirstCellular();
 }
 
-//--- (end of generated code: Cellular functions)
+//--- (end of generated code: YCellular functions)

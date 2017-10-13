@@ -1,10 +1,10 @@
 /*********************************************************************
  *
- * $Id: yocto_poweroutput.js 27926 2017-06-27 13:25:52Z seb $
+ * $Id: yocto_poweroutput.js 28745 2017-10-03 08:17:29Z seb $
  *
  * Implements the high-level API for PowerOutput functions
  *
- * - - - - - - - - - License information: - - - - - - - - - 
+ * - - - - - - - - - License information: - - - - - - - - -
  *
  *  Copyright (C) 2011 and beyond by Yoctopuce Sarl, Switzerland.
  *
@@ -23,7 +23,7 @@
  *  obligations.
  *
  *  THE SOFTWARE AND DOCUMENTATION ARE PROVIDED 'AS IS' WITHOUT
- *  WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING 
+ *  WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING
  *  WITHOUT LIMITATION, ANY WARRANTY OF MERCHANTABILITY, FITNESS
  *  FOR A PARTICULAR PURPOSE, TITLE AND NON-INFRINGEMENT. IN NO
  *  EVENT SHALL LICENSOR BE LIABLE FOR ANY INCIDENTAL, SPECIAL,
@@ -251,7 +251,7 @@ var YPowerOutput; // definition below
     //--- (end of YPowerOutput initialization)
 })();
 
-//--- (PowerOutput functions)
+//--- (YPowerOutput functions)
 
 /**
  * Retrieves a dual power  ouput control for a given identifier.
@@ -299,4 +299,4 @@ function yFirstPowerOutput()
     return YPowerOutput.FirstPowerOutput();
 }
 
-//--- (end of PowerOutput functions)
+//--- (end of YPowerOutput functions)
