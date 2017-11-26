@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_api.js 28745 2017-10-03 08:17:29Z seb $
+ * $Id: yocto_api.js 29240 2017-11-23 13:29:57Z seb $
  *
  * High-level programming interface, common to all modules
  *
@@ -2632,7 +2632,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
      */
     function YAPI_GetAPIVersion()
     {
-        return "1.10.28878";
+        return "1.10.29281";
     }
 
     /**
@@ -10935,6 +10935,7 @@ function yFirstDataLogger()
             if(ii=='indexOf') continue; // IE8 Don'tEnum bug
             this._download(restoreLast[ii]);
         }
+        this.clearCache();
         return YAPI_SUCCESS;
     }
 

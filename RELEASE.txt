@@ -1,1 +1,2 @@
-- Add new methods in YPwmInput
+- Add methods to YColorLedCluster class
+- Fix attribute retrieval immediately after call to YModule.set_allSettings()

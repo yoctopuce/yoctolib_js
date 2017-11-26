@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_colorledcluster.js 28745 2017-10-03 08:17:29Z seb $
+ * $Id: yocto_colorledcluster.js 29259 2017-11-24 09:28:13Z seb $
  *
  * Implements the high-level API for ColorLedCluster functions
  *
@@ -841,6 +841,7 @@ var YColorLedCluster; // definition below
      * color codes. The first color code represents the target RGB value of the first LED,
      * the next color code represents the target value of the next LED, etc.
      *
+     * @param ledIndex : index of the first LED which should be updated
      * @param rgbList : a list of target 24bit RGB codes, in the form 0xRRGGBB
      * @param delay   : transition duration in ms
      *
@@ -848,7 +849,7 @@ var YColorLedCluster; // definition below
      *
      * On failure, throws an exception or returns a negative error code.
      */
-    function YColorLedCluster_rgbArray_move(rgbList,delay)
+    function YColorLedCluster_rgbArrayOfs_move(ledIndex,rgbList,delay)
     {
         var listlen;                // int;
         var buff;                   // bin;
@@ -866,7 +867,27 @@ var YColorLedCluster; // definition below
             idx = idx + 1;
         }
 
-        res = this._upload("rgb:"+String(Math.round(delay)), buff);
+        res = this._upload("rgb:"+String(Math.round(delay))+":"+String(Math.round(ledIndex)), buff);
+        return res;
+    }
+
+    /**
+     * Sets up a smooth RGB color transition to the specified pixel-by-pixel list of RGB
+     * color codes. The first color code represents the target RGB value of the first LED,
+     * the next color code represents the target value of the next LED, etc.
+     *
+     * @param rgbList : a list of target 24bit RGB codes, in the form 0xRRGGBB
+     * @param delay   : transition duration in ms
+     *
+     * @return YAPI_SUCCESS if the call succeeds.
+     *
+     * On failure, throws an exception or returns a negative error code.
+     */
+    function YColorLedCluster_rgbArray_move(rgbList,delay)
+    {
+        var res;                    // int;
+
+        res = this.rgbArrayOfs_move(0,rgbList,delay);
         return res;
     }
 
@@ -935,6 +956,27 @@ var YColorLedCluster; // definition below
      */
     function YColorLedCluster_hslArray_move(hslList,delay)
     {
+        var res;                    // int;
+
+        res = this.hslArrayOfs_move(0,hslList, delay);
+        return res;
+    }
+
+    /**
+     * Sets up a smooth HSL color transition to the specified pixel-by-pixel list of HSL
+     * color codes. The first color code represents the target HSL value of the first LED,
+     * the second color code represents the target value of the second LED, etc.
+     *
+     * @param ledIndex : index of the first LED which should be updated
+     * @param hslList : a list of target 24bit HSL codes, in the form 0xHHSSLL
+     * @param delay   : transition duration in ms
+     *
+     * @return YAPI_SUCCESS if the call succeeds.
+     *
+     * On failure, throws an exception or returns a negative error code.
+     */
+    function YColorLedCluster_hslArrayOfs_move(ledIndex,hslList,delay)
+    {
         var listlen;                // int;
         var buff;                   // bin;
         var idx;                    // int;
@@ -951,7 +993,7 @@ var YColorLedCluster; // definition below
             idx = idx + 1;
         }
 
-        res = this._upload("hsl:"+String(Math.round(delay)), buff);
+        res = this._upload("hsl:"+String(Math.round(delay))+":"+String(Math.round(ledIndex)), buff);
         return res;
     }
 
@@ -1295,12 +1337,14 @@ var YColorLedCluster; // definition below
         setRgbColorBuffer           : YColorLedCluster_set_rgbColorBuffer,
         set_rgbColorArray           : YColorLedCluster_set_rgbColorArray,
         setRgbColorArray            : YColorLedCluster_set_rgbColorArray,
+        rgbArrayOfs_move            : YColorLedCluster_rgbArrayOfs_move,
         rgbArray_move               : YColorLedCluster_rgbArray_move,
         set_hslColorBuffer          : YColorLedCluster_set_hslColorBuffer,
         setHslColorBuffer           : YColorLedCluster_set_hslColorBuffer,
         set_hslColorArray           : YColorLedCluster_set_hslColorArray,
         setHslColorArray            : YColorLedCluster_set_hslColorArray,
         hslArray_move               : YColorLedCluster_hslArray_move,
+        hslArrayOfs_move            : YColorLedCluster_hslArrayOfs_move,
         get_rgbColorBuffer          : YColorLedCluster_get_rgbColorBuffer,
         rgbColorBuffer              : YColorLedCluster_get_rgbColorBuffer,
         get_rgbColorArray           : YColorLedCluster_get_rgbColorArray,
