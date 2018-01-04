@@ -1,2 +1,1 @@
-- Add methods to YColorLedCluster class
-- Fix attribute retrieval immediately after call to YModule.set_allSettings()
+- Add YMultiCellWeighScale class

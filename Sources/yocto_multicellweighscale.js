@@ -1,8 +1,8 @@
 /*********************************************************************
  *
- * $Id: yocto_weighscale.js 29472 2017-12-20 11:34:07Z mvuilleu $
+ * $Id: yocto_multicellweighscale.js 29478 2017-12-21 08:10:05Z seb $
  *
- * Implements the high-level API for WeighScale functions
+ * Implements the high-level API for MultiCellWeighScale functions
  *
  * - - - - - - - - - License information: - - - - - - - - -
  *
@@ -39,43 +39,45 @@
 
 if(typeof YAPI == "undefined") { if(typeof yAPI != "undefined") window["YAPI"]=yAPI; else throw "YAPI is not defined, please include yocto_api.js first"; }
 
-//--- (YWeighScale return codes)
-//--- (end of YWeighScale return codes)
-//--- (YWeighScale definitions)
+//--- (YMultiCellWeighScale return codes)
+//--- (end of YMultiCellWeighScale return codes)
+//--- (YMultiCellWeighScale definitions)
 var Y_EXCITATION_OFF                = 0;
 var Y_EXCITATION_DC                 = 1;
 var Y_EXCITATION_AC                 = 2;
 var Y_EXCITATION_INVALID            = -1;
+var Y_CELLCOUNT_INVALID             = YAPI_INVALID_UINT;
 var Y_COMPTEMPADAPTRATIO_INVALID    = YAPI_INVALID_DOUBLE;
 var Y_COMPTEMPAVG_INVALID           = YAPI_INVALID_DOUBLE;
 var Y_COMPTEMPCHG_INVALID           = YAPI_INVALID_DOUBLE;
 var Y_COMPENSATION_INVALID          = YAPI_INVALID_DOUBLE;
 var Y_ZEROTRACKING_INVALID          = YAPI_INVALID_DOUBLE;
 var Y_COMMAND_INVALID               = YAPI_INVALID_STRING;
-//--- (end of YWeighScale definitions)
+//--- (end of YMultiCellWeighScale definitions)
 
-//--- (YWeighScale class start)
+//--- (YMultiCellWeighScale class start)
 /**
- * YWeighScale Class: WeighScale function interface
+ * YMultiCellWeighScale Class: MultiCellWeighScale function interface
  *
- * The YWeighScale class provides a weight measurement from a ratiometric load cell
+ * The YMultiCellWeighScale class provides a weight measurement from a set of ratiometric load cells
  * sensor. It can be used to control the bridge excitation parameters, in order to avoid
  * measure shifts caused by temperature variation in the electronics, and can also
  * automatically apply an additional correction factor based on temperature to
- * compensate for offsets in the load cell itself.
+ * compensate for offsets in the load cells themselves.
  */
-//--- (end of YWeighScale class start)
+//--- (end of YMultiCellWeighScale class start)
 
-var YWeighScale; // definition below
+var YMultiCellWeighScale; // definition below
 (function()
 {
-    function _YWeighScale(str_func)
+    function _YMultiCellWeighScale(str_func)
     {
-        //--- (YWeighScale constructor)
+        //--- (YMultiCellWeighScale constructor)
         // inherit from YSensor
         YSensor.call(this, str_func);
-        this._className = 'WeighScale';
+        this._className = 'MultiCellWeighScale';
 
+        this._cellCount                      = Y_CELLCOUNT_INVALID;        // UInt31
         this._excitation                     = Y_EXCITATION_INVALID;       // ExcitationMode
         this._compTempAdaptRatio             = Y_COMPTEMPADAPTRATIO_INVALID; // MeasureVal
         this._compTempAvg                    = Y_COMPTEMPAVG_INVALID;      // MeasureVal
@@ -83,14 +85,17 @@ var YWeighScale; // definition below
         this._compensation                   = Y_COMPENSATION_INVALID;     // MeasureVal
         this._zeroTracking                   = Y_ZEROTRACKING_INVALID;     // MeasureVal
         this._command                        = Y_COMMAND_INVALID;          // Text
-        //--- (end of YWeighScale constructor)
+        //--- (end of YMultiCellWeighScale constructor)
     }
 
-    //--- (YWeighScale implementation)
+    //--- (YMultiCellWeighScale implementation)
 
-    function YWeighScale_parseAttr(name, val, _super)
+    function YMultiCellWeighScale_parseAttr(name, val, _super)
     {
         switch(name) {
+        case "cellCount":
+            this._cellCount = parseInt(val);
+            return 1;
         case "excitation":
             this._excitation = parseInt(val);
             return 1;
@@ -117,6 +122,72 @@ var YWeighScale; // definition below
     }
 
     /**
+     * Returns the number of load cells in use.
+     *
+     * @return an integer corresponding to the number of load cells in use
+     *
+     * On failure, throws an exception or returns Y_CELLCOUNT_INVALID.
+     */
+    function YMultiCellWeighScale_get_cellCount()
+    {
+        var res;                    // int;
+        if (this._cacheExpiration <= YAPI.GetTickCount()) {
+            if (this.load(YAPI.defaultCacheValidity) != YAPI_SUCCESS) {
+                return Y_CELLCOUNT_INVALID;
+            }
+        }
+        res = this._cellCount;
+        return res;
+    }
+
+    /**
+     * Gets the number of load cells in use.
+     *
+     * @param callback : callback function that is invoked when the result is known.
+     *         The callback function receives three arguments:
+     *         - the user-specific context object
+     *         - the YMultiCellWeighScale object that invoked the callback
+     *         - the result:an integer corresponding to the number of load cells in use
+     * @param context : user-specific object that is passed as-is to the callback function
+     *
+     * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
+     *
+     * On failure, throws an exception or returns Y_CELLCOUNT_INVALID.
+     */
+    function YMultiCellWeighScale_get_cellCount_async(callback,context)
+    {
+        var res;                    // int;
+        var loadcb;                 // func;
+        loadcb = function(ctx,obj,res) {
+            if (res != YAPI_SUCCESS) {
+                callback(context, obj, Y_CELLCOUNT_INVALID);
+            } else {
+                callback(context, obj, obj._cellCount);
+            }
+        };
+        if (this._cacheExpiration <= YAPI.GetTickCount()) {
+            this.load_async(YAPI.defaultCacheValidity,loadcb,null);
+        } else {
+            loadcb(null, this, YAPI_SUCCESS);
+        }
+    }
+
+    /**
+     * Changes the number of load cells in use.
+     *
+     * @param newval : an integer corresponding to the number of load cells in use
+     *
+     * @return YAPI_SUCCESS if the call succeeds.
+     *
+     * On failure, throws an exception or returns a negative error code.
+     */
+    function YMultiCellWeighScale_set_cellCount(newval)
+    {   var rest_val;
+        rest_val = String(newval);
+        return this._setAttr('cellCount',rest_val);
+    }
+
+    /**
      * Returns the current load cell bridge excitation method.
      *
      * @return a value among Y_EXCITATION_OFF, Y_EXCITATION_DC and Y_EXCITATION_AC corresponding to the
@@ -124,7 +195,7 @@ var YWeighScale; // definition below
      *
      * On failure, throws an exception or returns Y_EXCITATION_INVALID.
      */
-    function YWeighScale_get_excitation()
+    function YMultiCellWeighScale_get_excitation()
     {
         var res;                    // enumEXCITATIONMODE;
         if (this._cacheExpiration <= YAPI.GetTickCount()) {
@@ -142,7 +213,7 @@ var YWeighScale; // definition below
      * @param callback : callback function that is invoked when the result is known.
      *         The callback function receives three arguments:
      *         - the user-specific context object
-     *         - the YWeighScale object that invoked the callback
+     *         - the YMultiCellWeighScale object that invoked the callback
      *         - the result:a value among Y_EXCITATION_OFF, Y_EXCITATION_DC and Y_EXCITATION_AC corresponding to
      *         the current load cell bridge excitation method
      * @param context : user-specific object that is passed as-is to the callback function
@@ -151,7 +222,7 @@ var YWeighScale; // definition below
      *
      * On failure, throws an exception or returns Y_EXCITATION_INVALID.
      */
-    function YWeighScale_get_excitation_async(callback,context)
+    function YMultiCellWeighScale_get_excitation_async(callback,context)
     {
         var res;                    // enumEXCITATIONMODE;
         var loadcb;                 // func;
@@ -179,7 +250,7 @@ var YWeighScale; // definition below
      *
      * On failure, throws an exception or returns a negative error code.
      */
-    function YWeighScale_set_excitation(newval)
+    function YMultiCellWeighScale_set_excitation(newval)
     {   var rest_val;
         rest_val = String(newval);
         return this._setAttr('excitation',rest_val);
@@ -197,7 +268,7 @@ var YWeighScale; // definition below
      *
      * On failure, throws an exception or returns a negative error code.
      */
-    function YWeighScale_set_compTempAdaptRatio(newval)
+    function YMultiCellWeighScale_set_compTempAdaptRatio(newval)
     {   var rest_val;
         rest_val = String(Math.round(newval * 65536.0));
         return this._setAttr('compTempAdaptRatio',rest_val);
@@ -213,7 +284,7 @@ var YWeighScale; // definition below
      *
      * On failure, throws an exception or returns Y_COMPTEMPADAPTRATIO_INVALID.
      */
-    function YWeighScale_get_compTempAdaptRatio()
+    function YMultiCellWeighScale_get_compTempAdaptRatio()
     {
         var res;                    // double;
         if (this._cacheExpiration <= YAPI.GetTickCount()) {
@@ -234,7 +305,7 @@ var YWeighScale; // definition below
      * @param callback : callback function that is invoked when the result is known.
      *         The callback function receives three arguments:
      *         - the user-specific context object
-     *         - the YWeighScale object that invoked the callback
+     *         - the YMultiCellWeighScale object that invoked the callback
      *         - the result:a floating point number corresponding to the averaged temperature update rate, in percents
      * @param context : user-specific object that is passed as-is to the callback function
      *
@@ -242,7 +313,7 @@ var YWeighScale; // definition below
      *
      * On failure, throws an exception or returns Y_COMPTEMPADAPTRATIO_INVALID.
      */
-    function YWeighScale_get_compTempAdaptRatio_async(callback,context)
+    function YMultiCellWeighScale_get_compTempAdaptRatio_async(callback,context)
     {
         var res;                    // double;
         var loadcb;                 // func;
@@ -267,7 +338,7 @@ var YWeighScale; // definition below
      *
      * On failure, throws an exception or returns Y_COMPTEMPAVG_INVALID.
      */
-    function YWeighScale_get_compTempAvg()
+    function YMultiCellWeighScale_get_compTempAvg()
     {
         var res;                    // double;
         if (this._cacheExpiration <= YAPI.GetTickCount()) {
@@ -285,7 +356,7 @@ var YWeighScale; // definition below
      * @param callback : callback function that is invoked when the result is known.
      *         The callback function receives three arguments:
      *         - the user-specific context object
-     *         - the YWeighScale object that invoked the callback
+     *         - the YMultiCellWeighScale object that invoked the callback
      *         - the result:a floating point number corresponding to the current averaged temperature, used for
      *         thermal compensation
      * @param context : user-specific object that is passed as-is to the callback function
@@ -294,7 +365,7 @@ var YWeighScale; // definition below
      *
      * On failure, throws an exception or returns Y_COMPTEMPAVG_INVALID.
      */
-    function YWeighScale_get_compTempAvg_async(callback,context)
+    function YMultiCellWeighScale_get_compTempAvg_async(callback,context)
     {
         var res;                    // double;
         var loadcb;                 // func;
@@ -320,7 +391,7 @@ var YWeighScale; // definition below
      *
      * On failure, throws an exception or returns Y_COMPTEMPCHG_INVALID.
      */
-    function YWeighScale_get_compTempChg()
+    function YMultiCellWeighScale_get_compTempChg()
     {
         var res;                    // double;
         if (this._cacheExpiration <= YAPI.GetTickCount()) {
@@ -338,7 +409,7 @@ var YWeighScale; // definition below
      * @param callback : callback function that is invoked when the result is known.
      *         The callback function receives three arguments:
      *         - the user-specific context object
-     *         - the YWeighScale object that invoked the callback
+     *         - the YMultiCellWeighScale object that invoked the callback
      *         - the result:a floating point number corresponding to the current temperature variation, used for
      *         thermal compensation
      * @param context : user-specific object that is passed as-is to the callback function
@@ -347,7 +418,7 @@ var YWeighScale; // definition below
      *
      * On failure, throws an exception or returns Y_COMPTEMPCHG_INVALID.
      */
-    function YWeighScale_get_compTempChg_async(callback,context)
+    function YMultiCellWeighScale_get_compTempChg_async(callback,context)
     {
         var res;                    // double;
         var loadcb;                 // func;
@@ -372,7 +443,7 @@ var YWeighScale; // definition below
      *
      * On failure, throws an exception or returns Y_COMPENSATION_INVALID.
      */
-    function YWeighScale_get_compensation()
+    function YMultiCellWeighScale_get_compensation()
     {
         var res;                    // double;
         if (this._cacheExpiration <= YAPI.GetTickCount()) {
@@ -390,7 +461,7 @@ var YWeighScale; // definition below
      * @param callback : callback function that is invoked when the result is known.
      *         The callback function receives three arguments:
      *         - the user-specific context object
-     *         - the YWeighScale object that invoked the callback
+     *         - the YMultiCellWeighScale object that invoked the callback
      *         - the result:a floating point number corresponding to the current current thermal compensation value
      * @param context : user-specific object that is passed as-is to the callback function
      *
@@ -398,7 +469,7 @@ var YWeighScale; // definition below
      *
      * On failure, throws an exception or returns Y_COMPENSATION_INVALID.
      */
-    function YWeighScale_get_compensation_async(callback,context)
+    function YMultiCellWeighScale_get_compensation_async(callback,context)
     {
         var res;                    // double;
         var loadcb;                 // func;
@@ -425,7 +496,7 @@ var YWeighScale; // definition below
      *
      * On failure, throws an exception or returns a negative error code.
      */
-    function YWeighScale_set_zeroTracking(newval)
+    function YMultiCellWeighScale_set_zeroTracking(newval)
     {   var rest_val;
         rest_val = String(Math.round(newval * 65536.0));
         return this._setAttr('zeroTracking',rest_val);
@@ -440,7 +511,7 @@ var YWeighScale; // definition below
      *
      * On failure, throws an exception or returns Y_ZEROTRACKING_INVALID.
      */
-    function YWeighScale_get_zeroTracking()
+    function YMultiCellWeighScale_get_zeroTracking()
     {
         var res;                    // double;
         if (this._cacheExpiration <= YAPI.GetTickCount()) {
@@ -460,7 +531,7 @@ var YWeighScale; // definition below
      * @param callback : callback function that is invoked when the result is known.
      *         The callback function receives three arguments:
      *         - the user-specific context object
-     *         - the YWeighScale object that invoked the callback
+     *         - the YMultiCellWeighScale object that invoked the callback
      *         - the result:a floating point number corresponding to the zero tracking threshold value
      * @param context : user-specific object that is passed as-is to the callback function
      *
@@ -468,7 +539,7 @@ var YWeighScale; // definition below
      *
      * On failure, throws an exception or returns Y_ZEROTRACKING_INVALID.
      */
-    function YWeighScale_get_zeroTracking_async(callback,context)
+    function YMultiCellWeighScale_get_zeroTracking_async(callback,context)
     {
         var res;                    // double;
         var loadcb;                 // func;
@@ -486,7 +557,7 @@ var YWeighScale; // definition below
         }
     }
 
-    function YWeighScale_get_command()
+    function YMultiCellWeighScale_get_command()
     {
         var res;                    // string;
         if (this._cacheExpiration <= YAPI.GetTickCount()) {
@@ -503,13 +574,13 @@ var YWeighScale; // definition below
      * @param callback : callback function that is invoked when the result is known.
      *         The callback function receives three arguments:
      *         - the user-specific context object
-     *         - the YWeighScale object that invoked the callback
+     *         - the YMultiCellWeighScale object that invoked the callback
      *         - the result:
      * @param context : user-specific object that is passed as-is to the callback function
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      */
-    function YWeighScale_get_command_async(callback,context)
+    function YMultiCellWeighScale_get_command_async(callback,context)
     {
         var res;                    // string;
         var loadcb;                 // func;
@@ -527,14 +598,14 @@ var YWeighScale; // definition below
         }
     }
 
-    function YWeighScale_set_command(newval)
+    function YMultiCellWeighScale_set_command(newval)
     {   var rest_val;
         rest_val = newval;
         return this._setAttr('command',rest_val);
     }
 
     /**
-     * Retrieves a weighing scale sensor for a given identifier.
+     * Retrieves a multi-cell weighing scale sensor for a given identifier.
      * The identifier can be specified using several formats:
      * <ul>
      * <li>FunctionLogicalName</li>
@@ -544,11 +615,11 @@ var YWeighScale; // definition below
      * <li>ModuleLogicalName.FunctionLogicalName</li>
      * </ul>
      *
-     * This function does not require that the weighing scale sensor is online at the time
+     * This function does not require that the multi-cell weighing scale sensor is online at the time
      * it is invoked. The returned object is nevertheless valid.
-     * Use the method YWeighScale.isOnline() to test if the weighing scale sensor is
+     * Use the method YMultiCellWeighScale.isOnline() to test if the multi-cell weighing scale sensor is
      * indeed online at a given time. In case of ambiguity when looking for
-     * a weighing scale sensor by logical name, no error is notified: the first instance
+     * a multi-cell weighing scale sensor by logical name, no error is notified: the first instance
      * found is returned. The search is performed first by hardware name,
      * then by logical name.
      *
@@ -556,36 +627,36 @@ var YWeighScale; // definition below
      * you are certain that the matching device is plugged, make sure that you did
      * call registerHub() at application initialization time.
      *
-     * @param func : a string that uniquely characterizes the weighing scale sensor
+     * @param func : a string that uniquely characterizes the multi-cell weighing scale sensor
      *
-     * @return a YWeighScale object allowing you to drive the weighing scale sensor.
+     * @return a YMultiCellWeighScale object allowing you to drive the multi-cell weighing scale sensor.
      */
-    function YWeighScale_FindWeighScale(func)                   // class method
+    function YMultiCellWeighScale_FindMultiCellWeighScale(func) // class method
     {
-        var obj;                    // YWeighScale;
-        obj = YFunction._FindFromCache("WeighScale", func);
+        var obj;                    // YMultiCellWeighScale;
+        obj = YFunction._FindFromCache("MultiCellWeighScale", func);
         if (obj == null) {
-            obj = new YWeighScale(func);
-            YFunction._AddToCache("WeighScale", func, obj);
+            obj = new YMultiCellWeighScale(func);
+            YFunction._AddToCache("MultiCellWeighScale", func, obj);
         }
         return obj;
     }
 
     /**
-     * Adapts the load cell signal bias (stored in the corresponding genericSensor)
+     * Adapts the load cells signal bias (stored in the corresponding genericSensor)
      * so that the current signal corresponds to a zero weight.
      *
      * @return YAPI_SUCCESS if the call succeeds.
      *
      * On failure, throws an exception or returns a negative error code.
      */
-    function YWeighScale_tare()
+    function YMultiCellWeighScale_tare()
     {
         return this.set_command("T");
     }
 
     /**
-     * Configures the load cell span parameters (stored in the corresponding genericSensor)
+     * Configures the load cells span parameters (stored in the corresponding genericSensors)
      * so that the current signal corresponds to the specified reference weight.
      *
      * @param currWeight : reference weight presently on the load cell.
@@ -595,286 +666,48 @@ var YWeighScale; // definition below
      *
      * On failure, throws an exception or returns a negative error code.
      */
-    function YWeighScale_setupSpan(currWeight,maxWeight)
+    function YMultiCellWeighScale_setupSpan(currWeight,maxWeight)
     {
         return this.set_command("S"+String(Math.round(Math.round(1000*currWeight)))+":"+String(Math.round(Math.round(1000*maxWeight))));
     }
 
-    function YWeighScale_setCompensationTable(tableIndex,tempValues,compValues)
-    {
-        var siz;                    // int;
-        var res;                    // int;
-        var idx;                    // int;
-        var found;                  // int;
-        var prev;                   // float;
-        var curr;                   // float;
-        var currComp;               // float;
-        var idxTemp;                // float;
-        siz = tempValues.length;
-        if (!(siz != 1)) {
-            return this._throw(YAPI_INVALID_ARGUMENT,"thermal compensation table must have at least two points",YAPI_INVALID_ARGUMENT);
-        }
-        if (!(siz == compValues.length)) {
-            return this._throw(YAPI_INVALID_ARGUMENT,"table sizes mismatch",YAPI_INVALID_ARGUMENT);
-        }
-
-        res = this.set_command(""+String(Math.round(tableIndex))+"Z");
-        if (!(res==YAPI_SUCCESS)) {
-            return this._throw(YAPI_IO_ERROR,"unable to reset thermal compensation table",YAPI_IO_ERROR);
-        }
-        // add records in growing temperature value
-        found = 1;
-        prev = -999999.0;
-        while (found > 0) {
-            found = 0;
-            curr = 99999999.0;
-            currComp = -999999.0;
-            idx = 0;
-            while (idx < siz) {
-                idxTemp = tempValues[idx];
-                if ((idxTemp > prev) && (idxTemp < curr)) {
-                    curr = idxTemp;
-                    currComp = compValues[idx];
-                    found = 1;
-                }
-                idx = idx + 1;
-            }
-            if (found > 0) {
-                res = this.set_command(""+String(Math.round(tableIndex))+"m"+String(Math.round(Math.round(1000*curr)))+":"+String(Math.round(Math.round(1000*currComp))));
-                if (!(res==YAPI_SUCCESS)) {
-                    return this._throw(YAPI_IO_ERROR,"unable to set thermal compensation table",YAPI_IO_ERROR);
-                }
-                prev = curr;
-            }
-        }
-        return YAPI_SUCCESS;
-    }
-
-    function YWeighScale_loadCompensationTable(tableIndex,tempValues,compValues)
-    {
-        var id;                     // str;
-        var bin_json;               // bin;
-        var paramlist = [];         // strArr;
-        var siz;                    // int;
-        var idx;                    // int;
-        var temp;                   // float;
-        var comp;                   // float;
-
-        id = this.get_functionId();
-        id = (id).substr( 10, (id).length - 10);
-        bin_json = this._download("extra.json?page="+String(Math.round((4*YAPI._atoi(id))+tableIndex)));
-        paramlist = this._json_get_array(bin_json);
-        // convert all values to float and append records
-        siz = ((paramlist.length) >> (1));
-        tempValues.length = 0;
-        compValues.length = 0;
-        idx = 0;
-        while (idx < siz) {
-            temp = parseFloat(paramlist[2*idx])/1000.0;
-            comp = parseFloat(paramlist[2*idx+1])/1000.0;
-            tempValues.push(temp);
-            compValues.push(comp);
-            idx = idx + 1;
-        }
-        return YAPI_SUCCESS;
-    }
-
     /**
-     * Records a weight offset thermal compensation table, in order to automatically correct the
-     * measured weight based on the averaged compensation temperature.
-     * The weight correction will be applied by linear interpolation between specified points.
+     * Continues the enumeration of multi-cell weighing scale sensors started using yFirstMultiCellWeighScale().
      *
-     * @param tempValues : array of floating point numbers, corresponding to all averaged
-     *         temperatures for which an offset correction is specified.
-     * @param compValues : array of floating point numbers, corresponding to the offset correction
-     *         to apply for each of the temperature included in the first
-     *         argument, index by index.
-     *
-     * @return YAPI_SUCCESS if the call succeeds.
-     *
-     * On failure, throws an exception or returns a negative error code.
+     * @return a pointer to a YMultiCellWeighScale object, corresponding to
+     *         a multi-cell weighing scale sensor currently online, or a null pointer
+     *         if there are no more multi-cell weighing scale sensors to enumerate.
      */
-    function YWeighScale_set_offsetAvgCompensationTable(tempValues,compValues)
-    {
-        return this.setCompensationTable(0, tempValues, compValues);
-    }
-
-    /**
-     * Retrieves the weight offset thermal compensation table previously configured using the
-     * set_offsetAvgCompensationTable function.
-     * The weight correction is applied by linear interpolation between specified points.
-     *
-     * @param tempValues : array of floating point numbers, that is filled by the function
-     *         with all averaged temperatures for which an offset correction is specified.
-     * @param compValues : array of floating point numbers, that is filled by the function
-     *         with the offset correction applied for each of the temperature
-     *         included in the first argument, index by index.
-     *
-     * @return YAPI_SUCCESS if the call succeeds.
-     *
-     * On failure, throws an exception or returns a negative error code.
-     */
-    function YWeighScale_loadOffsetAvgCompensationTable(tempValues,compValues)
-    {
-        return this.loadCompensationTable(0, tempValues, compValues);
-    }
-
-    /**
-     * Records a weight offset thermal compensation table, in order to automatically correct the
-     * measured weight based on the variation of temperature.
-     * The weight correction will be applied by linear interpolation between specified points.
-     *
-     * @param tempValues : array of floating point numbers, corresponding to temperature
-     *         variations for which an offset correction is specified.
-     * @param compValues : array of floating point numbers, corresponding to the offset correction
-     *         to apply for each of the temperature variation included in the first
-     *         argument, index by index.
-     *
-     * @return YAPI_SUCCESS if the call succeeds.
-     *
-     * On failure, throws an exception or returns a negative error code.
-     */
-    function YWeighScale_set_offsetChgCompensationTable(tempValues,compValues)
-    {
-        return this.setCompensationTable(1, tempValues, compValues);
-    }
-
-    /**
-     * Retrieves the weight offset thermal compensation table previously configured using the
-     * set_offsetChgCompensationTable function.
-     * The weight correction is applied by linear interpolation between specified points.
-     *
-     * @param tempValues : array of floating point numbers, that is filled by the function
-     *         with all temperature variations for which an offset correction is specified.
-     * @param compValues : array of floating point numbers, that is filled by the function
-     *         with the offset correction applied for each of the temperature
-     *         variation included in the first argument, index by index.
-     *
-     * @return YAPI_SUCCESS if the call succeeds.
-     *
-     * On failure, throws an exception or returns a negative error code.
-     */
-    function YWeighScale_loadOffsetChgCompensationTable(tempValues,compValues)
-    {
-        return this.loadCompensationTable(1, tempValues, compValues);
-    }
-
-    /**
-     * Records a weight span thermal compensation table, in order to automatically correct the
-     * measured weight based on the compensation temperature.
-     * The weight correction will be applied by linear interpolation between specified points.
-     *
-     * @param tempValues : array of floating point numbers, corresponding to all averaged
-     *         temperatures for which a span correction is specified.
-     * @param compValues : array of floating point numbers, corresponding to the span correction
-     *         (in percents) to apply for each of the temperature included in the first
-     *         argument, index by index.
-     *
-     * @return YAPI_SUCCESS if the call succeeds.
-     *
-     * On failure, throws an exception or returns a negative error code.
-     */
-    function YWeighScale_set_spanAvgCompensationTable(tempValues,compValues)
-    {
-        return this.setCompensationTable(2, tempValues, compValues);
-    }
-
-    /**
-     * Retrieves the weight span thermal compensation table previously configured using the
-     * set_spanAvgCompensationTable function.
-     * The weight correction is applied by linear interpolation between specified points.
-     *
-     * @param tempValues : array of floating point numbers, that is filled by the function
-     *         with all averaged temperatures for which an span correction is specified.
-     * @param compValues : array of floating point numbers, that is filled by the function
-     *         with the span correction applied for each of the temperature
-     *         included in the first argument, index by index.
-     *
-     * @return YAPI_SUCCESS if the call succeeds.
-     *
-     * On failure, throws an exception or returns a negative error code.
-     */
-    function YWeighScale_loadSpanAvgCompensationTable(tempValues,compValues)
-    {
-        return this.loadCompensationTable(2, tempValues, compValues);
-    }
-
-    /**
-     * Records a weight span thermal compensation table, in order to automatically correct the
-     * measured weight based on the variation of temperature.
-     * The weight correction will be applied by linear interpolation between specified points.
-     *
-     * @param tempValues : array of floating point numbers, corresponding to all variations of
-     *         temperatures for which a span correction is specified.
-     * @param compValues : array of floating point numbers, corresponding to the span correction
-     *         (in percents) to apply for each of the temperature variation included
-     *         in the first argument, index by index.
-     *
-     * @return YAPI_SUCCESS if the call succeeds.
-     *
-     * On failure, throws an exception or returns a negative error code.
-     */
-    function YWeighScale_set_spanChgCompensationTable(tempValues,compValues)
-    {
-        return this.setCompensationTable(3, tempValues, compValues);
-    }
-
-    /**
-     * Retrieves the weight span thermal compensation table previously configured using the
-     * set_spanChgCompensationTable function.
-     * The weight correction is applied by linear interpolation between specified points.
-     *
-     * @param tempValues : array of floating point numbers, that is filled by the function
-     *         with all variation of temperature for which an span correction is specified.
-     * @param compValues : array of floating point numbers, that is filled by the function
-     *         with the span correction applied for each of variation of temperature
-     *         included in the first argument, index by index.
-     *
-     * @return YAPI_SUCCESS if the call succeeds.
-     *
-     * On failure, throws an exception or returns a negative error code.
-     */
-    function YWeighScale_loadSpanChgCompensationTable(tempValues,compValues)
-    {
-        return this.loadCompensationTable(3, tempValues, compValues);
-    }
-
-    /**
-     * Continues the enumeration of weighing scale sensors started using yFirstWeighScale().
-     *
-     * @return a pointer to a YWeighScale object, corresponding to
-     *         a weighing scale sensor currently online, or a null pointer
-     *         if there are no more weighing scale sensors to enumerate.
-     */
-    function YWeighScale_nextWeighScale()
+    function YMultiCellWeighScale_nextMultiCellWeighScale()
     {   var resolve = YAPI.resolveFunction(this._className, this._func);
         if(resolve.errorType != YAPI_SUCCESS) return null;
         var next_hwid = YAPI.getNextHardwareId(this._className, resolve.result);
         if(next_hwid == null) return null;
-        return YWeighScale.FindWeighScale(next_hwid);
+        return YMultiCellWeighScale.FindMultiCellWeighScale(next_hwid);
     }
 
     /**
-     * Starts the enumeration of weighing scale sensors currently accessible.
-     * Use the method YWeighScale.nextWeighScale() to iterate on
-     * next weighing scale sensors.
+     * Starts the enumeration of multi-cell weighing scale sensors currently accessible.
+     * Use the method YMultiCellWeighScale.nextMultiCellWeighScale() to iterate on
+     * next multi-cell weighing scale sensors.
      *
-     * @return a pointer to a YWeighScale object, corresponding to
-     *         the first weighing scale sensor currently online, or a null pointer
+     * @return a pointer to a YMultiCellWeighScale object, corresponding to
+     *         the first multi-cell weighing scale sensor currently online, or a null pointer
      *         if there are none.
      */
-    function YWeighScale_FirstWeighScale()
+    function YMultiCellWeighScale_FirstMultiCellWeighScale()
     {
-        var next_hwid = YAPI.getFirstHardwareId('WeighScale');
+        var next_hwid = YAPI.getFirstHardwareId('MultiCellWeighScale');
         if(next_hwid == null) return null;
-        return YWeighScale.FindWeighScale(next_hwid);
+        return YMultiCellWeighScale.FindMultiCellWeighScale(next_hwid);
     }
 
-    //--- (end of YWeighScale implementation)
+    //--- (end of YMultiCellWeighScale implementation)
 
-    //--- (YWeighScale initialization)
-    YWeighScale = YSensor._Subclass(_YWeighScale, {
+    //--- (YMultiCellWeighScale initialization)
+    YMultiCellWeighScale = YSensor._Subclass(_YMultiCellWeighScale, {
         // Constants
+        CELLCOUNT_INVALID           : YAPI_INVALID_UINT,
         EXCITATION_OFF              : 0,
         EXCITATION_DC               : 1,
         EXCITATION_AC               : 2,
@@ -887,72 +720,64 @@ var YWeighScale; // definition below
         COMMAND_INVALID             : YAPI_INVALID_STRING
     }, {
         // Class methods
-        FindWeighScale              : YWeighScale_FindWeighScale,
-        FirstWeighScale             : YWeighScale_FirstWeighScale
+        FindMultiCellWeighScale     : YMultiCellWeighScale_FindMultiCellWeighScale,
+        FirstMultiCellWeighScale    : YMultiCellWeighScale_FirstMultiCellWeighScale
     }, {
         // Methods
-        get_excitation              : YWeighScale_get_excitation,
-        excitation                  : YWeighScale_get_excitation,
-        get_excitation_async        : YWeighScale_get_excitation_async,
-        excitation_async            : YWeighScale_get_excitation_async,
-        set_excitation              : YWeighScale_set_excitation,
-        setExcitation               : YWeighScale_set_excitation,
-        set_compTempAdaptRatio      : YWeighScale_set_compTempAdaptRatio,
-        setCompTempAdaptRatio       : YWeighScale_set_compTempAdaptRatio,
-        get_compTempAdaptRatio      : YWeighScale_get_compTempAdaptRatio,
-        compTempAdaptRatio          : YWeighScale_get_compTempAdaptRatio,
-        get_compTempAdaptRatio_async : YWeighScale_get_compTempAdaptRatio_async,
-        compTempAdaptRatio_async    : YWeighScale_get_compTempAdaptRatio_async,
-        get_compTempAvg             : YWeighScale_get_compTempAvg,
-        compTempAvg                 : YWeighScale_get_compTempAvg,
-        get_compTempAvg_async       : YWeighScale_get_compTempAvg_async,
-        compTempAvg_async           : YWeighScale_get_compTempAvg_async,
-        get_compTempChg             : YWeighScale_get_compTempChg,
-        compTempChg                 : YWeighScale_get_compTempChg,
-        get_compTempChg_async       : YWeighScale_get_compTempChg_async,
-        compTempChg_async           : YWeighScale_get_compTempChg_async,
-        get_compensation            : YWeighScale_get_compensation,
-        compensation                : YWeighScale_get_compensation,
-        get_compensation_async      : YWeighScale_get_compensation_async,
-        compensation_async          : YWeighScale_get_compensation_async,
-        set_zeroTracking            : YWeighScale_set_zeroTracking,
-        setZeroTracking             : YWeighScale_set_zeroTracking,
-        get_zeroTracking            : YWeighScale_get_zeroTracking,
-        zeroTracking                : YWeighScale_get_zeroTracking,
-        get_zeroTracking_async      : YWeighScale_get_zeroTracking_async,
-        zeroTracking_async          : YWeighScale_get_zeroTracking_async,
-        get_command                 : YWeighScale_get_command,
-        command                     : YWeighScale_get_command,
-        get_command_async           : YWeighScale_get_command_async,
-        command_async               : YWeighScale_get_command_async,
-        set_command                 : YWeighScale_set_command,
-        setCommand                  : YWeighScale_set_command,
-        tare                        : YWeighScale_tare,
-        setupSpan                   : YWeighScale_setupSpan,
-        setCompensationTable        : YWeighScale_setCompensationTable,
-        loadCompensationTable       : YWeighScale_loadCompensationTable,
-        set_offsetAvgCompensationTable : YWeighScale_set_offsetAvgCompensationTable,
-        setOffsetAvgCompensationTable : YWeighScale_set_offsetAvgCompensationTable,
-        loadOffsetAvgCompensationTable : YWeighScale_loadOffsetAvgCompensationTable,
-        set_offsetChgCompensationTable : YWeighScale_set_offsetChgCompensationTable,
-        setOffsetChgCompensationTable : YWeighScale_set_offsetChgCompensationTable,
-        loadOffsetChgCompensationTable : YWeighScale_loadOffsetChgCompensationTable,
-        set_spanAvgCompensationTable : YWeighScale_set_spanAvgCompensationTable,
-        setSpanAvgCompensationTable : YWeighScale_set_spanAvgCompensationTable,
-        loadSpanAvgCompensationTable : YWeighScale_loadSpanAvgCompensationTable,
-        set_spanChgCompensationTable : YWeighScale_set_spanChgCompensationTable,
-        setSpanChgCompensationTable : YWeighScale_set_spanChgCompensationTable,
-        loadSpanChgCompensationTable : YWeighScale_loadSpanChgCompensationTable,
-        nextWeighScale              : YWeighScale_nextWeighScale,
-        _parseAttr                  : YWeighScale_parseAttr
+        get_cellCount               : YMultiCellWeighScale_get_cellCount,
+        cellCount                   : YMultiCellWeighScale_get_cellCount,
+        get_cellCount_async         : YMultiCellWeighScale_get_cellCount_async,
+        cellCount_async             : YMultiCellWeighScale_get_cellCount_async,
+        set_cellCount               : YMultiCellWeighScale_set_cellCount,
+        setCellCount                : YMultiCellWeighScale_set_cellCount,
+        get_excitation              : YMultiCellWeighScale_get_excitation,
+        excitation                  : YMultiCellWeighScale_get_excitation,
+        get_excitation_async        : YMultiCellWeighScale_get_excitation_async,
+        excitation_async            : YMultiCellWeighScale_get_excitation_async,
+        set_excitation              : YMultiCellWeighScale_set_excitation,
+        setExcitation               : YMultiCellWeighScale_set_excitation,
+        set_compTempAdaptRatio      : YMultiCellWeighScale_set_compTempAdaptRatio,
+        setCompTempAdaptRatio       : YMultiCellWeighScale_set_compTempAdaptRatio,
+        get_compTempAdaptRatio      : YMultiCellWeighScale_get_compTempAdaptRatio,
+        compTempAdaptRatio          : YMultiCellWeighScale_get_compTempAdaptRatio,
+        get_compTempAdaptRatio_async : YMultiCellWeighScale_get_compTempAdaptRatio_async,
+        compTempAdaptRatio_async    : YMultiCellWeighScale_get_compTempAdaptRatio_async,
+        get_compTempAvg             : YMultiCellWeighScale_get_compTempAvg,
+        compTempAvg                 : YMultiCellWeighScale_get_compTempAvg,
+        get_compTempAvg_async       : YMultiCellWeighScale_get_compTempAvg_async,
+        compTempAvg_async           : YMultiCellWeighScale_get_compTempAvg_async,
+        get_compTempChg             : YMultiCellWeighScale_get_compTempChg,
+        compTempChg                 : YMultiCellWeighScale_get_compTempChg,
+        get_compTempChg_async       : YMultiCellWeighScale_get_compTempChg_async,
+        compTempChg_async           : YMultiCellWeighScale_get_compTempChg_async,
+        get_compensation            : YMultiCellWeighScale_get_compensation,
+        compensation                : YMultiCellWeighScale_get_compensation,
+        get_compensation_async      : YMultiCellWeighScale_get_compensation_async,
+        compensation_async          : YMultiCellWeighScale_get_compensation_async,
+        set_zeroTracking            : YMultiCellWeighScale_set_zeroTracking,
+        setZeroTracking             : YMultiCellWeighScale_set_zeroTracking,
+        get_zeroTracking            : YMultiCellWeighScale_get_zeroTracking,
+        zeroTracking                : YMultiCellWeighScale_get_zeroTracking,
+        get_zeroTracking_async      : YMultiCellWeighScale_get_zeroTracking_async,
+        zeroTracking_async          : YMultiCellWeighScale_get_zeroTracking_async,
+        get_command                 : YMultiCellWeighScale_get_command,
+        command                     : YMultiCellWeighScale_get_command,
+        get_command_async           : YMultiCellWeighScale_get_command_async,
+        command_async               : YMultiCellWeighScale_get_command_async,
+        set_command                 : YMultiCellWeighScale_set_command,
+        setCommand                  : YMultiCellWeighScale_set_command,
+        tare                        : YMultiCellWeighScale_tare,
+        setupSpan                   : YMultiCellWeighScale_setupSpan,
+        nextMultiCellWeighScale     : YMultiCellWeighScale_nextMultiCellWeighScale,
+        _parseAttr                  : YMultiCellWeighScale_parseAttr
     });
-    //--- (end of YWeighScale initialization)
+    //--- (end of YMultiCellWeighScale initialization)
 })();
 
-//--- (YWeighScale functions)
+//--- (YMultiCellWeighScale functions)
 
 /**
- * Retrieves a weighing scale sensor for a given identifier.
+ * Retrieves a multi-cell weighing scale sensor for a given identifier.
  * The identifier can be specified using several formats:
  * <ul>
  * <li>FunctionLogicalName</li>
@@ -962,11 +787,11 @@ var YWeighScale; // definition below
  * <li>ModuleLogicalName.FunctionLogicalName</li>
  * </ul>
  *
- * This function does not require that the weighing scale sensor is online at the time
+ * This function does not require that the multi-cell weighing scale sensor is online at the time
  * it is invoked. The returned object is nevertheless valid.
- * Use the method YWeighScale.isOnline() to test if the weighing scale sensor is
+ * Use the method YMultiCellWeighScale.isOnline() to test if the multi-cell weighing scale sensor is
  * indeed online at a given time. In case of ambiguity when looking for
- * a weighing scale sensor by logical name, no error is notified: the first instance
+ * a multi-cell weighing scale sensor by logical name, no error is notified: the first instance
  * found is returned. The search is performed first by hardware name,
  * then by logical name.
  *
@@ -974,27 +799,27 @@ var YWeighScale; // definition below
  * you are certain that the matching device is plugged, make sure that you did
  * call registerHub() at application initialization time.
  *
- * @param func : a string that uniquely characterizes the weighing scale sensor
+ * @param func : a string that uniquely characterizes the multi-cell weighing scale sensor
  *
- * @return a YWeighScale object allowing you to drive the weighing scale sensor.
+ * @return a YMultiCellWeighScale object allowing you to drive the multi-cell weighing scale sensor.
  */
-function yFindWeighScale(func)
+function yFindMultiCellWeighScale(func)
 {
-    return YWeighScale.FindWeighScale(func);
+    return YMultiCellWeighScale.FindMultiCellWeighScale(func);
 }
 
 /**
- * Starts the enumeration of weighing scale sensors currently accessible.
- * Use the method YWeighScale.nextWeighScale() to iterate on
- * next weighing scale sensors.
+ * Starts the enumeration of multi-cell weighing scale sensors currently accessible.
+ * Use the method YMultiCellWeighScale.nextMultiCellWeighScale() to iterate on
+ * next multi-cell weighing scale sensors.
  *
- * @return a pointer to a YWeighScale object, corresponding to
- *         the first weighing scale sensor currently online, or a null pointer
+ * @return a pointer to a YMultiCellWeighScale object, corresponding to
+ *         the first multi-cell weighing scale sensor currently online, or a null pointer
  *         if there are none.
  */
-function yFirstWeighScale()
+function yFirstMultiCellWeighScale()
 {
-    return YWeighScale.FirstWeighScale();
+    return YMultiCellWeighScale.FirstMultiCellWeighScale();
 }
 
-//--- (end of YWeighScale functions)
+//--- (end of YMultiCellWeighScale functions)

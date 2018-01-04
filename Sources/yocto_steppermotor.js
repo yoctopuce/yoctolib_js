@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_steppermotor.js 28745 2017-10-03 08:17:29Z seb $
+ * $Id: yocto_steppermotor.js 29507 2017-12-28 14:14:56Z mvuilleu $
  *
  * Implements the high-level API for StepperMotor functions
  *
@@ -1110,7 +1110,26 @@ var YStepperMotor; // definition below
 
     function YStepperMotor_sendCommand(command)
     {
-        return this.set_command(command);
+        var id;                     // str;
+        var url;                    // str;
+        var retBin;                 // bin;
+        var res;                    // int;
+        id = this.get_functionId();
+        id = (id).substr( 12, 1);
+        url = "cmd.txt?"+id+"="+command;
+        //may throw an exception
+        retBin = this._download(url);
+        res = (retBin).charCodeAt(0);
+        if (res == 49) {
+            if (!(res == 48)) {
+                return this._throw(YAPI_DEVICE_BUSY,"Motor command pipeline is full, try again later",YAPI_DEVICE_BUSY);
+            }
+        } else {
+            if (!(res == 48)) {
+                return this._throw(YAPI_IO_ERROR,"Motor command failed permanently",YAPI_IO_ERROR);
+            }
+        }
+        return YAPI_SUCCESS;
     }
 
     /**
@@ -1183,6 +1202,22 @@ var YStepperMotor; // definition below
     }
 
     /**
+     * Starts the motor to reach a given relative position, keeping the speed under the
+     * specified limit. The time needed to reach the requested position will depend on
+     * the acceleration parameters configured for the motor.
+     *
+     * @param relPos : relative position, measured in steps from the current position.
+     * @param maxSpeed : limit speed, in steps per second.
+     *
+     * @return YAPI_SUCCESS if the call succeeds.
+     *         On failure, throws an exception or returns a negative error code.
+     */
+    function YStepperMotor_moveRelSlow(relPos,maxSpeed)
+    {
+        return this.sendCommand("m"+String(Math.round(Math.round(16*relPos)))+"@"+String(Math.round(Math.round(1000*maxSpeed))));
+    }
+
+    /**
      * Keep the motor in the same state for the specified amount of time, before processing next command.
      *
      * @param waitMs : wait time, specified in milliseconds.
@@ -1217,6 +1252,27 @@ var YStepperMotor; // definition below
     function YStepperMotor_alertStepOut()
     {
         return this.sendCommand(".");
+    }
+
+    /**
+     * Move one single step in the selected direction without regards to end switches.
+     * The move occures even if the system is still in alert mode (end switch depressed). Caution.
+     * use this function with great care as it may cause mechanical damages !
+     *
+     * @param dir : Value +1 ou -1, according to the desired direction of the move
+     *
+     * @return YAPI_SUCCESS if the call succeeds.
+     *         On failure, throws an exception or returns a negative error code.
+     */
+    function YStepperMotor_alertStepDir(dir)
+    {
+        if (!(dir != 0)) {
+            return this._throw(YAPI_INVALID_ARGUMENT,"direction must be +1 or -1",YAPI_INVALID_ARGUMENT);
+        }
+        if (dir > 0) {
+            return this.sendCommand(".+");
+        }
+        return this.sendCommand(".-");
     }
 
     /**
@@ -1399,9 +1455,11 @@ var YStepperMotor; // definition below
         changeSpeed                 : YStepperMotor_changeSpeed,
         moveTo                      : YStepperMotor_moveTo,
         moveRel                     : YStepperMotor_moveRel,
+        moveRelSlow                 : YStepperMotor_moveRelSlow,
         pause                       : YStepperMotor_pause,
         emergencyStop               : YStepperMotor_emergencyStop,
         alertStepOut                : YStepperMotor_alertStepOut,
+        alertStepDir                : YStepperMotor_alertStepDir,
         abortAndBrake               : YStepperMotor_abortAndBrake,
         abortAndHiZ                 : YStepperMotor_abortAndHiZ,
         nextStepperMotor            : YStepperMotor_nextStepperMotor,
