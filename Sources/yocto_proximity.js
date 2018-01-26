@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_proximity.js 28745 2017-10-03 08:17:29Z seb $
+ * $Id: yocto_proximity.js 29767 2018-01-26 08:53:27Z seb $
  *
  * Implements the high-level API for Proximity functions
  *
@@ -51,6 +51,9 @@ var Y_PROXIMITYREPORTMODE_PULSECOUNT = 2;
 var Y_PROXIMITYREPORTMODE_INVALID   = -1;
 var Y_SIGNALVALUE_INVALID           = YAPI_INVALID_DOUBLE;
 var Y_DETECTIONTHRESHOLD_INVALID    = YAPI_INVALID_UINT;
+var Y_DETECTIONHYSTERESIS_INVALID   = YAPI_INVALID_UINT;
+var Y_PRESENCEMINTIME_INVALID       = YAPI_INVALID_UINT;
+var Y_REMOVALMINTIME_INVALID        = YAPI_INVALID_UINT;
 var Y_LASTTIMEAPPROACHED_INVALID    = YAPI_INVALID_LONG;
 var Y_LASTTIMEREMOVED_INVALID       = YAPI_INVALID_LONG;
 var Y_PULSECOUNTER_INVALID          = YAPI_INVALID_LONG;
@@ -81,6 +84,9 @@ var YProximity; // definition below
 
         this._signalValue                    = Y_SIGNALVALUE_INVALID;      // MeasureVal
         this._detectionThreshold             = Y_DETECTIONTHRESHOLD_INVALID; // UInt31
+        this._detectionHysteresis            = Y_DETECTIONHYSTERESIS_INVALID; // UInt31
+        this._presenceMinTime                = Y_PRESENCEMINTIME_INVALID;  // UInt31
+        this._removalMinTime                 = Y_REMOVALMINTIME_INVALID;   // UInt31
         this._isPresent                      = Y_ISPRESENT_INVALID;        // Bool
         this._lastTimeApproached             = Y_LASTTIMEAPPROACHED_INVALID; // Time
         this._lastTimeRemoved                = Y_LASTTIMEREMOVED_INVALID;  // Time
@@ -100,6 +106,15 @@ var YProximity; // definition below
             return 1;
         case "detectionThreshold":
             this._detectionThreshold = parseInt(val);
+            return 1;
+        case "detectionHysteresis":
+            this._detectionHysteresis = parseInt(val);
+            return 1;
+        case "presenceMinTime":
+            this._presenceMinTime = parseInt(val);
+            return 1;
+        case "removalMinTime":
+            this._removalMinTime = parseInt(val);
             return 1;
         case "isPresent":
             this._isPresent = parseInt(val);
@@ -248,6 +263,219 @@ var YProximity; // definition below
     {   var rest_val;
         rest_val = String(newval);
         return this._setAttr('detectionThreshold',rest_val);
+    }
+
+    /**
+     * Returns the hysteresis used to determine the logical state of the proximity sensor, when considered
+     * as a binary input (on/off).
+     *
+     * @return an integer corresponding to the hysteresis used to determine the logical state of the
+     * proximity sensor, when considered
+     *         as a binary input (on/off)
+     *
+     * On failure, throws an exception or returns Y_DETECTIONHYSTERESIS_INVALID.
+     */
+    function YProximity_get_detectionHysteresis()
+    {
+        var res;                    // int;
+        if (this._cacheExpiration <= YAPI.GetTickCount()) {
+            if (this.load(YAPI.defaultCacheValidity) != YAPI_SUCCESS) {
+                return Y_DETECTIONHYSTERESIS_INVALID;
+            }
+        }
+        res = this._detectionHysteresis;
+        return res;
+    }
+
+    /**
+     * Gets the hysteresis used to determine the logical state of the proximity sensor, when considered
+     * as a binary input (on/off).
+     *
+     * @param callback : callback function that is invoked when the result is known.
+     *         The callback function receives three arguments:
+     *         - the user-specific context object
+     *         - the YProximity object that invoked the callback
+     *         - the result:an integer corresponding to the hysteresis used to determine the logical state of the
+     *         proximity sensor, when considered
+     *         as a binary input (on/off)
+     * @param context : user-specific object that is passed as-is to the callback function
+     *
+     * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
+     *
+     * On failure, throws an exception or returns Y_DETECTIONHYSTERESIS_INVALID.
+     */
+    function YProximity_get_detectionHysteresis_async(callback,context)
+    {
+        var res;                    // int;
+        var loadcb;                 // func;
+        loadcb = function(ctx,obj,res) {
+            if (res != YAPI_SUCCESS) {
+                callback(context, obj, Y_DETECTIONHYSTERESIS_INVALID);
+            } else {
+                callback(context, obj, obj._detectionHysteresis);
+            }
+        };
+        if (this._cacheExpiration <= YAPI.GetTickCount()) {
+            this.load_async(YAPI.defaultCacheValidity,loadcb,null);
+        } else {
+            loadcb(null, this, YAPI_SUCCESS);
+        }
+    }
+
+    /**
+     * Changes the hysteresis used to determine the logical state of the proximity sensor, when considered
+     * as a binary input (on/off).
+     *
+     * @param newval : an integer corresponding to the hysteresis used to determine the logical state of
+     * the proximity sensor, when considered
+     *         as a binary input (on/off)
+     *
+     * @return YAPI_SUCCESS if the call succeeds.
+     *
+     * On failure, throws an exception or returns a negative error code.
+     */
+    function YProximity_set_detectionHysteresis(newval)
+    {   var rest_val;
+        rest_val = String(newval);
+        return this._setAttr('detectionHysteresis',rest_val);
+    }
+
+    /**
+     * Returns the minimal detection duration before signaling a presence event. Any shorter detection is
+     * considered as noise or bounce (false positive) and filtered out.
+     *
+     * @return an integer corresponding to the minimal detection duration before signaling a presence event
+     *
+     * On failure, throws an exception or returns Y_PRESENCEMINTIME_INVALID.
+     */
+    function YProximity_get_presenceMinTime()
+    {
+        var res;                    // int;
+        if (this._cacheExpiration <= YAPI.GetTickCount()) {
+            if (this.load(YAPI.defaultCacheValidity) != YAPI_SUCCESS) {
+                return Y_PRESENCEMINTIME_INVALID;
+            }
+        }
+        res = this._presenceMinTime;
+        return res;
+    }
+
+    /**
+     * Gets the minimal detection duration before signaling a presence event. Any shorter detection is
+     * considered as noise or bounce (false positive) and filtered out.
+     *
+     * @param callback : callback function that is invoked when the result is known.
+     *         The callback function receives three arguments:
+     *         - the user-specific context object
+     *         - the YProximity object that invoked the callback
+     *         - the result:an integer corresponding to the minimal detection duration before signaling a presence event
+     * @param context : user-specific object that is passed as-is to the callback function
+     *
+     * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
+     *
+     * On failure, throws an exception or returns Y_PRESENCEMINTIME_INVALID.
+     */
+    function YProximity_get_presenceMinTime_async(callback,context)
+    {
+        var res;                    // int;
+        var loadcb;                 // func;
+        loadcb = function(ctx,obj,res) {
+            if (res != YAPI_SUCCESS) {
+                callback(context, obj, Y_PRESENCEMINTIME_INVALID);
+            } else {
+                callback(context, obj, obj._presenceMinTime);
+            }
+        };
+        if (this._cacheExpiration <= YAPI.GetTickCount()) {
+            this.load_async(YAPI.defaultCacheValidity,loadcb,null);
+        } else {
+            loadcb(null, this, YAPI_SUCCESS);
+        }
+    }
+
+    /**
+     * Changes the minimal detection duration before signaling a presence event. Any shorter detection is
+     * considered as noise or bounce (false positive) and filtered out.
+     *
+     * @param newval : an integer corresponding to the minimal detection duration before signaling a presence event
+     *
+     * @return YAPI_SUCCESS if the call succeeds.
+     *
+     * On failure, throws an exception or returns a negative error code.
+     */
+    function YProximity_set_presenceMinTime(newval)
+    {   var rest_val;
+        rest_val = String(newval);
+        return this._setAttr('presenceMinTime',rest_val);
+    }
+
+    /**
+     * Returns the minimal detection duration before signaling a removal event. Any shorter detection is
+     * considered as noise or bounce (false positive) and filtered out.
+     *
+     * @return an integer corresponding to the minimal detection duration before signaling a removal event
+     *
+     * On failure, throws an exception or returns Y_REMOVALMINTIME_INVALID.
+     */
+    function YProximity_get_removalMinTime()
+    {
+        var res;                    // int;
+        if (this._cacheExpiration <= YAPI.GetTickCount()) {
+            if (this.load(YAPI.defaultCacheValidity) != YAPI_SUCCESS) {
+                return Y_REMOVALMINTIME_INVALID;
+            }
+        }
+        res = this._removalMinTime;
+        return res;
+    }
+
+    /**
+     * Gets the minimal detection duration before signaling a removal event. Any shorter detection is
+     * considered as noise or bounce (false positive) and filtered out.
+     *
+     * @param callback : callback function that is invoked when the result is known.
+     *         The callback function receives three arguments:
+     *         - the user-specific context object
+     *         - the YProximity object that invoked the callback
+     *         - the result:an integer corresponding to the minimal detection duration before signaling a removal event
+     * @param context : user-specific object that is passed as-is to the callback function
+     *
+     * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
+     *
+     * On failure, throws an exception or returns Y_REMOVALMINTIME_INVALID.
+     */
+    function YProximity_get_removalMinTime_async(callback,context)
+    {
+        var res;                    // int;
+        var loadcb;                 // func;
+        loadcb = function(ctx,obj,res) {
+            if (res != YAPI_SUCCESS) {
+                callback(context, obj, Y_REMOVALMINTIME_INVALID);
+            } else {
+                callback(context, obj, obj._removalMinTime);
+            }
+        };
+        if (this._cacheExpiration <= YAPI.GetTickCount()) {
+            this.load_async(YAPI.defaultCacheValidity,loadcb,null);
+        } else {
+            loadcb(null, this, YAPI_SUCCESS);
+        }
+    }
+
+    /**
+     * Changes the minimal detection duration before signaling a removal event. Any shorter detection is
+     * considered as noise or bounce (false positive) and filtered out.
+     *
+     * @param newval : an integer corresponding to the minimal detection duration before signaling a removal event
+     *
+     * @return YAPI_SUCCESS if the call succeeds.
+     *
+     * On failure, throws an exception or returns a negative error code.
+     */
+    function YProximity_set_removalMinTime(newval)
+    {   var rest_val;
+        rest_val = String(newval);
+        return this._setAttr('removalMinTime',rest_val);
     }
 
     /**
@@ -696,6 +924,9 @@ var YProximity; // definition below
         // Constants
         SIGNALVALUE_INVALID         : YAPI_INVALID_DOUBLE,
         DETECTIONTHRESHOLD_INVALID  : YAPI_INVALID_UINT,
+        DETECTIONHYSTERESIS_INVALID : YAPI_INVALID_UINT,
+        PRESENCEMINTIME_INVALID     : YAPI_INVALID_UINT,
+        REMOVALMINTIME_INVALID      : YAPI_INVALID_UINT,
         ISPRESENT_FALSE             : 0,
         ISPRESENT_TRUE              : 1,
         ISPRESENT_INVALID           : -1,
@@ -723,6 +954,24 @@ var YProximity; // definition below
         detectionThreshold_async    : YProximity_get_detectionThreshold_async,
         set_detectionThreshold      : YProximity_set_detectionThreshold,
         setDetectionThreshold       : YProximity_set_detectionThreshold,
+        get_detectionHysteresis     : YProximity_get_detectionHysteresis,
+        detectionHysteresis         : YProximity_get_detectionHysteresis,
+        get_detectionHysteresis_async : YProximity_get_detectionHysteresis_async,
+        detectionHysteresis_async   : YProximity_get_detectionHysteresis_async,
+        set_detectionHysteresis     : YProximity_set_detectionHysteresis,
+        setDetectionHysteresis      : YProximity_set_detectionHysteresis,
+        get_presenceMinTime         : YProximity_get_presenceMinTime,
+        presenceMinTime             : YProximity_get_presenceMinTime,
+        get_presenceMinTime_async   : YProximity_get_presenceMinTime_async,
+        presenceMinTime_async       : YProximity_get_presenceMinTime_async,
+        set_presenceMinTime         : YProximity_set_presenceMinTime,
+        setPresenceMinTime          : YProximity_set_presenceMinTime,
+        get_removalMinTime          : YProximity_get_removalMinTime,
+        removalMinTime              : YProximity_get_removalMinTime,
+        get_removalMinTime_async    : YProximity_get_removalMinTime_async,
+        removalMinTime_async        : YProximity_get_removalMinTime_async,
+        set_removalMinTime          : YProximity_set_removalMinTime,
+        setRemovalMinTime           : YProximity_set_removalMinTime,
         get_isPresent               : YProximity_get_isPresent,
         isPresent                   : YProximity_get_isPresent,
         get_isPresent_async         : YProximity_get_isPresent_async,

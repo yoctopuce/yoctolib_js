@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_multicellweighscale.js 29478 2017-12-21 08:10:05Z seb $
+ * $Id: yocto_multicellweighscale.js 29661 2018-01-18 13:32:13Z mvuilleu $
  *
  * Implements the high-level API for MultiCellWeighScale functions
  *
@@ -119,6 +119,23 @@ var YMultiCellWeighScale; // definition below
             return 1;
         }
         return _super._parseAttr.call(this, name, val, _super._super);
+    }
+
+    /**
+     * Changes the measuring unit for the weight.
+     * Remember to call the saveToFlash() method of the module if the
+     * modification must be kept.
+     *
+     * @param newval : a string corresponding to the measuring unit for the weight
+     *
+     * @return YAPI_SUCCESS if the call succeeds.
+     *
+     * On failure, throws an exception or returns a negative error code.
+     */
+    function YMultiCellWeighScale_set_unit(newval)
+    {   var rest_val;
+        rest_val = newval;
+        return this._setAttr('unit',rest_val);
     }
 
     /**
@@ -724,6 +741,8 @@ var YMultiCellWeighScale; // definition below
         FirstMultiCellWeighScale    : YMultiCellWeighScale_FirstMultiCellWeighScale
     }, {
         // Methods
+        set_unit                    : YMultiCellWeighScale_set_unit,
+        setUnit                     : YMultiCellWeighScale_set_unit,
         get_cellCount               : YMultiCellWeighScale_get_cellCount,
         cellCount                   : YMultiCellWeighScale_get_cellCount,
         get_cellCount_async         : YMultiCellWeighScale_get_cellCount_async,

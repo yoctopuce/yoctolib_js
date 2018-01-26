@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_weighscale.js 29472 2017-12-20 11:34:07Z mvuilleu $
+ * $Id: yocto_weighscale.js 29661 2018-01-18 13:32:13Z mvuilleu $
  *
  * Implements the high-level API for WeighScale functions
  *
@@ -114,6 +114,23 @@ var YWeighScale; // definition below
             return 1;
         }
         return _super._parseAttr.call(this, name, val, _super._super);
+    }
+
+    /**
+     * Changes the measuring unit for the weight.
+     * Remember to call the saveToFlash() method of the module if the
+     * modification must be kept.
+     *
+     * @param newval : a string corresponding to the measuring unit for the weight
+     *
+     * @return YAPI_SUCCESS if the call succeeds.
+     *
+     * On failure, throws an exception or returns a negative error code.
+     */
+    function YWeighScale_set_unit(newval)
+    {   var rest_val;
+        rest_val = newval;
+        return this._setAttr('unit',rest_val);
     }
 
     /**
@@ -891,6 +908,8 @@ var YWeighScale; // definition below
         FirstWeighScale             : YWeighScale_FirstWeighScale
     }, {
         // Methods
+        set_unit                    : YWeighScale_set_unit,
+        setUnit                     : YWeighScale_set_unit,
         get_excitation              : YWeighScale_get_excitation,
         excitation                  : YWeighScale_get_excitation,
         get_excitation_async        : YWeighScale_get_excitation_async,
