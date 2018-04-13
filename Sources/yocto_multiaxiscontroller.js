@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_multiaxiscontroller.js 29507 2017-12-28 14:14:56Z mvuilleu $
+ * $Id: yocto_multiaxiscontroller.js 30483 2018-03-29 07:43:07Z mvuilleu $
  *
  * Implements the high-level API for MultiAxisController functions
  *
@@ -330,7 +330,7 @@ var YMultiAxisController; // definition below
      */
     function YMultiAxisController_reset()
     {
-        return this.sendCommand("Z");
+        return this.set_command("Z");
     }
 
     /**
@@ -429,7 +429,7 @@ var YMultiAxisController; // definition below
      */
     function YMultiAxisController_emergencyStop()
     {
-        return this.sendCommand("!");
+        return this.set_command("!");
     }
 
     /**
@@ -440,7 +440,7 @@ var YMultiAxisController; // definition below
      */
     function YMultiAxisController_abortAndBrake()
     {
-        return this.sendCommand("B");
+        return this.set_command("B");
     }
 
     /**
@@ -451,7 +451,7 @@ var YMultiAxisController; // definition below
      */
     function YMultiAxisController_abortAndHiZ()
     {
-        return this.sendCommand("z");
+        return this.set_command("z");
     }
 
     /**

@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_colorledcluster.js 29259 2017-11-24 09:28:13Z seb $
+ * $Id: yocto_colorledcluster.js 30500 2018-04-04 07:53:46Z mvuilleu $
  *
  * Implements the high-level API for ColorLedCluster functions
  *
@@ -42,6 +42,9 @@ if(typeof YAPI == "undefined") { if(typeof yAPI != "undefined") window["YAPI"]=y
 //--- (YColorLedCluster return codes)
 //--- (end of YColorLedCluster return codes)
 //--- (YColorLedCluster definitions)
+var Y_LEDTYPE_RGB                   = 0;
+var Y_LEDTYPE_RGBW                  = 1;
+var Y_LEDTYPE_INVALID               = -1;
 var Y_ACTIVELEDCOUNT_INVALID        = YAPI_INVALID_UINT;
 var Y_MAXLEDCOUNT_INVALID           = YAPI_INVALID_UINT;
 var Y_BLINKSEQMAXCOUNT_INVALID      = YAPI_INVALID_UINT;
@@ -75,6 +78,7 @@ var YColorLedCluster; // definition below
         this._className = 'ColorLedCluster';
 
         this._activeLedCount                 = Y_ACTIVELEDCOUNT_INVALID;   // UInt31
+        this._ledType                        = Y_LEDTYPE_INVALID;          // LedType
         this._maxLedCount                    = Y_MAXLEDCOUNT_INVALID;      // UInt31
         this._blinkSeqMaxCount               = Y_BLINKSEQMAXCOUNT_INVALID; // UInt31
         this._blinkSeqMaxSize                = Y_BLINKSEQMAXSIZE_INVALID;  // UInt31
@@ -89,6 +93,9 @@ var YColorLedCluster; // definition below
         switch(name) {
         case "activeLedCount":
             this._activeLedCount = parseInt(val);
+            return 1;
+        case "ledType":
+            this._ledType = parseInt(val);
             return 1;
         case "maxLedCount":
             this._maxLedCount = parseInt(val);
@@ -170,6 +177,74 @@ var YColorLedCluster; // definition below
     {   var rest_val;
         rest_val = String(newval);
         return this._setAttr('activeLedCount',rest_val);
+    }
+
+    /**
+     * Returns the RGB LED type currently handled by the device.
+     *
+     * @return either Y_LEDTYPE_RGB or Y_LEDTYPE_RGBW, according to the RGB LED type currently handled by the device
+     *
+     * On failure, throws an exception or returns Y_LEDTYPE_INVALID.
+     */
+    function YColorLedCluster_get_ledType()
+    {
+        var res;                    // enumLEDTYPE;
+        if (this._cacheExpiration <= YAPI.GetTickCount()) {
+            if (this.load(YAPI.defaultCacheValidity) != YAPI_SUCCESS) {
+                return Y_LEDTYPE_INVALID;
+            }
+        }
+        res = this._ledType;
+        return res;
+    }
+
+    /**
+     * Gets the RGB LED type currently handled by the device.
+     *
+     * @param callback : callback function that is invoked when the result is known.
+     *         The callback function receives three arguments:
+     *         - the user-specific context object
+     *         - the YColorLedCluster object that invoked the callback
+     *         - the result:either Y_LEDTYPE_RGB or Y_LEDTYPE_RGBW, according to the RGB LED type currently
+     *         handled by the device
+     * @param context : user-specific object that is passed as-is to the callback function
+     *
+     * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
+     *
+     * On failure, throws an exception or returns Y_LEDTYPE_INVALID.
+     */
+    function YColorLedCluster_get_ledType_async(callback,context)
+    {
+        var res;                    // enumLEDTYPE;
+        var loadcb;                 // func;
+        loadcb = function(ctx,obj,res) {
+            if (res != YAPI_SUCCESS) {
+                callback(context, obj, Y_LEDTYPE_INVALID);
+            } else {
+                callback(context, obj, obj._ledType);
+            }
+        };
+        if (this._cacheExpiration <= YAPI.GetTickCount()) {
+            this.load_async(YAPI.defaultCacheValidity,loadcb,null);
+        } else {
+            loadcb(null, this, YAPI_SUCCESS);
+        }
+    }
+
+    /**
+     * Changes the RGB LED type currently handled by the device.
+     *
+     * @param newval : either Y_LEDTYPE_RGB or Y_LEDTYPE_RGBW, according to the RGB LED type currently
+     * handled by the device
+     *
+     * @return YAPI_SUCCESS if the call succeeds.
+     *
+     * On failure, throws an exception or returns a negative error code.
+     */
+    function YColorLedCluster_set_ledType(newval)
+    {   var rest_val;
+        rest_val = String(newval);
+        return this._setAttr('ledType',rest_val);
     }
 
     /**
@@ -1271,6 +1346,9 @@ var YColorLedCluster; // definition below
     YColorLedCluster = YFunction._Subclass(_YColorLedCluster, {
         // Constants
         ACTIVELEDCOUNT_INVALID      : YAPI_INVALID_UINT,
+        LEDTYPE_RGB                 : 0,
+        LEDTYPE_RGBW                : 1,
+        LEDTYPE_INVALID             : -1,
         MAXLEDCOUNT_INVALID         : YAPI_INVALID_UINT,
         BLINKSEQMAXCOUNT_INVALID    : YAPI_INVALID_UINT,
         BLINKSEQMAXSIZE_INVALID     : YAPI_INVALID_UINT,
@@ -1287,6 +1365,12 @@ var YColorLedCluster; // definition below
         activeLedCount_async        : YColorLedCluster_get_activeLedCount_async,
         set_activeLedCount          : YColorLedCluster_set_activeLedCount,
         setActiveLedCount           : YColorLedCluster_set_activeLedCount,
+        get_ledType                 : YColorLedCluster_get_ledType,
+        ledType                     : YColorLedCluster_get_ledType,
+        get_ledType_async           : YColorLedCluster_get_ledType_async,
+        ledType_async               : YColorLedCluster_get_ledType_async,
+        set_ledType                 : YColorLedCluster_set_ledType,
+        setLedType                  : YColorLedCluster_set_ledType,
         get_maxLedCount             : YColorLedCluster_get_maxLedCount,
         maxLedCount                 : YColorLedCluster_get_maxLedCount,
         get_maxLedCount_async       : YColorLedCluster_get_maxLedCount_async,

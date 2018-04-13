@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_pwmoutput.js 28745 2017-10-03 08:17:29Z seb $
+ * $Id: yocto_pwmoutput.js 30595 2018-04-12 21:36:11Z mvuilleu $
  *
  * Implements the high-level API for PwmOutput functions
  *
@@ -79,7 +79,7 @@ var YPwmOutput; // definition below
         this._period                         = Y_PERIOD_INVALID;           // MeasureVal
         this._dutyCycle                      = Y_DUTYCYCLE_INVALID;        // MeasureVal
         this._pulseDuration                  = Y_PULSEDURATION_INVALID;    // MeasureVal
-        this._pwmTransition                  = Y_PWMTRANSITION_INVALID;    // AnyFloatTransition
+        this._pwmTransition                  = Y_PWMTRANSITION_INVALID;    // Text
         this._enabledAtPowerOn               = Y_ENABLEDATPOWERON_INVALID; // Bool
         this._dutyCycleAtPowerOn             = Y_DUTYCYCLEATPOWERON_INVALID; // MeasureVal
         //--- (end of YPwmOutput constructor)
@@ -677,8 +677,8 @@ var YPwmOutput; // definition below
     }
 
     /**
-     * Performs a smooth transistion of the pulse duration toward a given value. Any period,
-     * frequency, duty cycle or pulse width change will cancel any ongoing transition process.
+     * Performs a smooth transistion of the pulse duration toward a given value.
+     * Any period, frequency, duty cycle or pulse width change will cancel any ongoing transition process.
      *
      * @param ms_target   : new pulse duration at the end of the transition
      *         (floating-point number, representing the pulse duration in milliseconds)
@@ -699,10 +699,11 @@ var YPwmOutput; // definition below
     }
 
     /**
-     * Performs a smooth change of the pulse duration toward a given value.
+     * Performs a smooth change of the duty cycle toward a given value.
+     * Any period, frequency, duty cycle or pulse width change will cancel any ongoing transition process.
      *
      * @param target      : new duty cycle at the end of the transition
-     *         (floating-point number, between 0 and 1)
+     *         (percentage, floating-point number between 0 and 100)
      * @param ms_duration : total duration of the transition, in milliseconds
      *
      * @return YAPI_SUCCESS when the call succeeds.
@@ -719,6 +720,96 @@ var YPwmOutput; // definition below
             target = 100.0;
         }
         newval = ""+String(Math.round(Math.round(target*65536)))+":"+String(Math.round(ms_duration));
+        return this.set_pwmTransition(newval);
+    }
+
+    /**
+     * Performs a smooth frequency change toward a given value.
+     * Any period, frequency, duty cycle or pulse width change will cancel any ongoing transition process.
+     *
+     * @param target      : new freuency at the end of the transition (floating-point number)
+     * @param ms_duration : total duration of the transition, in milliseconds
+     *
+     * @return YAPI_SUCCESS when the call succeeds.
+     *
+     * On failure, throws an exception or returns a negative error code.
+     */
+    function YPwmOutput_frequencyMove(target,ms_duration)
+    {
+        var newval;                 // str;
+        if (target < 0.001) {
+            target = 0.001;
+        }
+        newval = ""+String(Math.round(target*1000)/1000)+"Hz:"+String(Math.round(ms_duration));
+        return this.set_pwmTransition(newval);
+    }
+
+    /**
+     * Trigger a given number of pulses of specified duration, at current frequency.
+     * At the end of the pulse train, revert to the original state of the PWM generator.
+     *
+     * @param ms_target : desired pulse duration
+     *         (floating-point number, representing the pulse duration in milliseconds)
+     * @param n_pulses  : desired pulse count
+     *
+     * @return YAPI_SUCCESS when the call succeeds.
+     *
+     * On failure, throws an exception or returns a negative error code.
+     */
+    function YPwmOutput_triggerPulsesByDuration(ms_target,n_pulses)
+    {
+        var newval;                 // str;
+        if (ms_target < 0.0) {
+            ms_target = 0.0;
+        }
+        newval = ""+String(Math.round(Math.round(ms_target*65536)))+"ms*"+String(Math.round(n_pulses));
+        return this.set_pwmTransition(newval);
+    }
+
+    /**
+     * Trigger a given number of pulses of specified duration, at current frequency.
+     * At the end of the pulse train, revert to the original state of the PWM generator.
+     *
+     * @param target   : desired duty cycle for the generated pulses
+     *         (percentage, floating-point number between 0 and 100)
+     * @param n_pulses : desired pulse count
+     *
+     * @return YAPI_SUCCESS when the call succeeds.
+     *
+     * On failure, throws an exception or returns a negative error code.
+     */
+    function YPwmOutput_triggerPulsesByDutyCycle(target,n_pulses)
+    {
+        var newval;                 // str;
+        if (target < 0.0) {
+            target = 0.0;
+        }
+        if (target > 100.0) {
+            target = 100.0;
+        }
+        newval = ""+String(Math.round(Math.round(target*65536)))+"*"+String(Math.round(n_pulses));
+        return this.set_pwmTransition(newval);
+    }
+
+    /**
+     * Trigger a given number of pulses at the specified frequency, using current duty cycle.
+     * At the end of the pulse train, revert to the original state of the PWM generator.
+     *
+     * @param target   : desired frequency for the generated pulses (floating-point number)
+     *         (percentage, floating-point number between 0 and 100)
+     * @param n_pulses : desired pulse count
+     *
+     * @return YAPI_SUCCESS when the call succeeds.
+     *
+     * On failure, throws an exception or returns a negative error code.
+     */
+    function YPwmOutput_triggerPulsesByFrequency(target,n_pulses)
+    {
+        var newval;                 // str;
+        if (target < 0.001) {
+            target = 0.001;
+        }
+        newval = ""+String(Math.round(target*1000)/1000)+"Hz*"+String(Math.round(n_pulses));
         return this.set_pwmTransition(newval);
     }
 
@@ -826,6 +917,10 @@ var YPwmOutput; // definition below
         dutyCycleAtPowerOn_async    : YPwmOutput_get_dutyCycleAtPowerOn_async,
         pulseDurationMove           : YPwmOutput_pulseDurationMove,
         dutyCycleMove               : YPwmOutput_dutyCycleMove,
+        frequencyMove               : YPwmOutput_frequencyMove,
+        triggerPulsesByDuration     : YPwmOutput_triggerPulsesByDuration,
+        triggerPulsesByDutyCycle    : YPwmOutput_triggerPulsesByDutyCycle,
+        triggerPulsesByFrequency    : YPwmOutput_triggerPulsesByFrequency,
         nextPwmOutput               : YPwmOutput_nextPwmOutput,
         _parseAttr                  : YPwmOutput_parseAttr
     });
