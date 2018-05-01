@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_colorledcluster.js 30500 2018-04-04 07:53:46Z mvuilleu $
+ * $Id: yocto_colorledcluster.js 30667 2018-04-23 09:14:26Z seb $
  *
  * Implements the high-level API for ColorLedCluster functions
  *
@@ -504,7 +504,7 @@ var YColorLedCluster; // definition below
      */
     function YColorLedCluster_set_rgbColor(ledIndex,count,rgbValue)
     {
-        return this.sendCommand("SR"+String(Math.round(ledIndex))+","+String(Math.round(count))+","+(rgbValue).toString(16));
+        return this.sendCommand("SR"+String(Math.round(ledIndex))+","+String(Math.round(count))+","+(rgbValue).toString(16).toLowerCase());
     }
 
     /**
@@ -523,7 +523,7 @@ var YColorLedCluster; // definition below
      */
     function YColorLedCluster_set_rgbColorAtPowerOn(ledIndex,count,rgbValue)
     {
-        return this.sendCommand("SC"+String(Math.round(ledIndex))+","+String(Math.round(count))+","+(rgbValue).toString(16));
+        return this.sendCommand("SC"+String(Math.round(ledIndex))+","+String(Math.round(count))+","+(rgbValue).toString(16).toLowerCase());
     }
 
     /**
@@ -540,7 +540,7 @@ var YColorLedCluster; // definition below
      */
     function YColorLedCluster_set_hslColor(ledIndex,count,hslValue)
     {
-        return this.sendCommand("SH"+String(Math.round(ledIndex))+","+String(Math.round(count))+","+(hslValue).toString(16));
+        return this.sendCommand("SH"+String(Math.round(ledIndex))+","+String(Math.round(count))+","+(hslValue).toString(16).toLowerCase());
     }
 
     /**
@@ -558,7 +558,7 @@ var YColorLedCluster; // definition below
      */
     function YColorLedCluster_rgb_move(ledIndex,count,rgbValue,delay)
     {
-        return this.sendCommand("MR"+String(Math.round(ledIndex))+","+String(Math.round(count))+","+(rgbValue).toString(16)+","+String(Math.round(delay)));
+        return this.sendCommand("MR"+String(Math.round(ledIndex))+","+String(Math.round(count))+","+(rgbValue).toString(16).toLowerCase()+","+String(Math.round(delay)));
     }
 
     /**
@@ -580,7 +580,7 @@ var YColorLedCluster; // definition below
      */
     function YColorLedCluster_hsl_move(ledIndex,count,hslValue,delay)
     {
-        return this.sendCommand("MH"+String(Math.round(ledIndex))+","+String(Math.round(count))+","+(hslValue).toString(16)+","+String(Math.round(delay)));
+        return this.sendCommand("MH"+String(Math.round(ledIndex))+","+String(Math.round(count))+","+(hslValue).toString(16).toLowerCase()+","+String(Math.round(delay)));
     }
 
     /**
@@ -598,7 +598,7 @@ var YColorLedCluster; // definition below
      */
     function YColorLedCluster_addRgbMoveToBlinkSeq(seqIndex,rgbValue,delay)
     {
-        return this.sendCommand("AR"+String(Math.round(seqIndex))+","+(rgbValue).toString(16)+","+String(Math.round(delay)));
+        return this.sendCommand("AR"+String(Math.round(seqIndex))+","+(rgbValue).toString(16).toLowerCase()+","+String(Math.round(delay)));
     }
 
     /**
@@ -616,7 +616,7 @@ var YColorLedCluster; // definition below
      */
     function YColorLedCluster_addHslMoveToBlinkSeq(seqIndex,hslValue,delay)
     {
-        return this.sendCommand("AH"+String(Math.round(seqIndex))+","+(hslValue).toString(16)+","+String(Math.round(delay)));
+        return this.sendCommand("AH"+String(Math.round(seqIndex))+","+(hslValue).toString(16).toLowerCase()+","+String(Math.round(delay)));
     }
 
     /**

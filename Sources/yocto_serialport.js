@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_serialport.js 28745 2017-10-03 08:17:29Z seb $
+ * $Id: yocto_serialport.js 30685 2018-04-24 13:46:18Z seb $
  *
  * Implements the high-level API for SerialPort functions
  *
@@ -1021,7 +1021,7 @@ var YSerialPort; // definition below
      */
     function YSerialPort_writeByte(code)
     {
-        return this.sendCommand("$"+('00'+(code).toString(16)).slice(-2));
+        return this.sendCommand("$"+('00'+(code).toString(16)).slice(-2).toUpperCase());
     }
 
     /**
@@ -1401,11 +1401,11 @@ var YSerialPort; // definition below
         res = "";
         ofs = 0;
         while (ofs + 3 < bufflen) {
-            res = ""+res+""+('00'+((buff).charCodeAt(ofs)).toString(16)).slice(-2)+""+('00'+((buff).charCodeAt(ofs + 1)).toString(16)).slice(-2)+""+('00'+((buff).charCodeAt(ofs + 2)).toString(16)).slice(-2)+""+('00'+((buff).charCodeAt(ofs + 3)).toString(16)).slice(-2);
+            res = ""+res+""+('00'+((buff).charCodeAt(ofs)).toString(16)).slice(-2).toUpperCase()+""+('00'+((buff).charCodeAt(ofs + 1)).toString(16)).slice(-2).toUpperCase()+""+('00'+((buff).charCodeAt(ofs + 2)).toString(16)).slice(-2).toUpperCase()+""+('00'+((buff).charCodeAt(ofs + 3)).toString(16)).slice(-2).toUpperCase();
             ofs = ofs + 4;
         }
         while (ofs < bufflen) {
-            res = ""+res+""+('00'+((buff).charCodeAt(ofs)).toString(16)).slice(-2);
+            res = ""+res+""+('00'+((buff).charCodeAt(ofs)).toString(16)).slice(-2).toUpperCase();
             ofs = ofs + 1;
         }
         return res;
@@ -1736,11 +1736,11 @@ var YSerialPort; // definition below
         var hexb;                   // int;
         funCode = pduBytes[0];
         nib = ((funCode) >> (4));
-        pat = ""+('00'+(slaveNo).toString(16)).slice(-2)+"["+(nib).toString(16)+""+((nib+8)).toString(16)+"]"+(((funCode) & (15))).toString(16)+".*";
-        cmd = ""+('00'+(slaveNo).toString(16)).slice(-2)+""+('00'+(funCode).toString(16)).slice(-2);
+        pat = ""+('00'+(slaveNo).toString(16)).slice(-2).toUpperCase()+"["+(nib).toString(16).toUpperCase()+""+((nib+8)).toString(16).toUpperCase()+"]"+(((funCode) & (15))).toString(16).toUpperCase()+".*";
+        cmd = ""+('00'+(slaveNo).toString(16)).slice(-2).toUpperCase()+""+('00'+(funCode).toString(16)).slice(-2).toUpperCase();
         i = 1;
         while (i < pduBytes.length) {
-            cmd = ""+cmd+""+('00'+(((pduBytes[i]) & (0xff))).toString(16)).slice(-2);
+            cmd = ""+cmd+""+('00'+(((pduBytes[i]) & (0xff))).toString(16)).slice(-2).toUpperCase();
             i = i + 1;
         }
 

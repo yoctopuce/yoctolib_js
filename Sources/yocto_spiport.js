@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_spiport.js 28745 2017-10-03 08:17:29Z seb $
+ * $Id: yocto_spiport.js 30685 2018-04-24 13:46:18Z seb $
  *
  * Implements the high-level API for SpiPort functions
  *
@@ -1088,7 +1088,7 @@ var YSpiPort; // definition below
      */
     function YSpiPort_writeByte(code)
     {
-        return this.sendCommand("$"+('00'+(code).toString(16)).slice(-2));
+        return this.sendCommand("$"+('00'+(code).toString(16)).slice(-2).toUpperCase());
     }
 
     /**
@@ -1468,11 +1468,11 @@ var YSpiPort; // definition below
         res = "";
         ofs = 0;
         while (ofs + 3 < bufflen) {
-            res = ""+res+""+('00'+((buff).charCodeAt(ofs)).toString(16)).slice(-2)+""+('00'+((buff).charCodeAt(ofs + 1)).toString(16)).slice(-2)+""+('00'+((buff).charCodeAt(ofs + 2)).toString(16)).slice(-2)+""+('00'+((buff).charCodeAt(ofs + 3)).toString(16)).slice(-2);
+            res = ""+res+""+('00'+((buff).charCodeAt(ofs)).toString(16)).slice(-2).toUpperCase()+""+('00'+((buff).charCodeAt(ofs + 1)).toString(16)).slice(-2).toUpperCase()+""+('00'+((buff).charCodeAt(ofs + 2)).toString(16)).slice(-2).toUpperCase()+""+('00'+((buff).charCodeAt(ofs + 3)).toString(16)).slice(-2).toUpperCase();
             ofs = ofs + 4;
         }
         while (ofs < bufflen) {
-            res = ""+res+""+('00'+((buff).charCodeAt(ofs)).toString(16)).slice(-2);
+            res = ""+res+""+('00'+((buff).charCodeAt(ofs)).toString(16)).slice(-2).toUpperCase();
             ofs = ofs + 1;
         }
         return res;

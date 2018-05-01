@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_display.js 28745 2017-10-03 08:17:29Z seb $
+ * $Id: yocto_display.js 30667 2018-04-23 09:14:26Z seb $
  *
  * Implements yFindDisplay(), the high-level API for Display functions
  *
@@ -190,7 +190,7 @@ var YDisplayLayer; // definition below
      */
     function YDisplayLayer_selectColorPen(color)
     {
-        return this.command_push("c"+('000000'+(color).toString(16)).slice(-6));
+        return this.command_push("c"+('000000'+(color).toString(16)).slice(-6).toLowerCase());
     }
 
     /**

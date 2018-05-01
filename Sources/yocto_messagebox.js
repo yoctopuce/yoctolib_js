@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_messagebox.js 28745 2017-10-03 08:17:29Z seb $
+ * $Id: yocto_messagebox.js 30667 2018-04-23 09:14:26Z seb $
  *
  * Implements the high-level API for MessageBox functions
  *
@@ -660,7 +660,7 @@ var YSms; // definition below
             i = 0;
             while (i < siz) {
                 byt = (addr).charCodeAt(ofs+i+1);
-                res = ""+res+""+(((byt) & (15))).toString(16)+""+(((byt) >> (4))).toString(16);
+                res = ""+res+""+(((byt) & (15))).toString(16).toLowerCase()+""+(((byt) >> (4))).toString(16).toLowerCase();
                 i = i + 1;
             }
             // remove padding digit if needed
@@ -788,7 +788,7 @@ var YSms; // definition below
         i = 0;
         while ((i < siz) && (i < 6)) {
             byt = (exp).charCodeAt(ofs+i);
-            res = ""+res+""+(((byt) & (15))).toString(16)+""+(((byt) >> (4))).toString(16);
+            res = ""+res+""+(((byt) & (15))).toString(16).toLowerCase()+""+(((byt) >> (4))).toString(16).toLowerCase();
             if (i < 3) {
                 if (i < 2) {
                     res = ""+res+"-";
@@ -1085,14 +1085,14 @@ var YSms; // definition below
             if (i + ielen <= udhlen) {
                 if ((iei == 0) && (ielen == 3)) {
                     // concatenated SMS, 8-bit ref
-                    sig = ""+this._orig+"-"+this._dest+"-"+('00'+(this._mref).toString(16)).slice(-2)+"-"+('00'+((this._udh).charCodeAt(i)).toString(16)).slice(-2);
+                    sig = ""+this._orig+"-"+this._dest+"-"+('00'+(this._mref).toString(16)).slice(-2).toLowerCase()+"-"+('00'+((this._udh).charCodeAt(i)).toString(16)).slice(-2).toLowerCase();
                     this._aggSig = sig;
                     this._aggCnt = (this._udh).charCodeAt(i+1);
                     this._aggIdx = (this._udh).charCodeAt(i+2);
                 }
                 if ((iei == 8) && (ielen == 4)) {
                     // concatenated SMS, 16-bit ref
-                    sig = ""+this._orig+"-"+this._dest+"-"+('00'+(this._mref).toString(16)).slice(-2)+"-"+('00'+((this._udh).charCodeAt(i)).toString(16)).slice(-2)+""+('00'+((this._udh).charCodeAt(i+1)).toString(16)).slice(-2);
+                    sig = ""+this._orig+"-"+this._dest+"-"+('00'+(this._mref).toString(16)).slice(-2).toLowerCase()+"-"+('00'+((this._udh).charCodeAt(i)).toString(16)).slice(-2).toLowerCase()+""+('00'+((this._udh).charCodeAt(i+1)).toString(16)).slice(-2).toLowerCase();
                     this._aggSig = sig;
                     this._aggCnt = (this._udh).charCodeAt(i+2);
                     this._aggIdx = (this._udh).charCodeAt(i+3);

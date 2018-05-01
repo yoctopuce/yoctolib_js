@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_pwmoutput.js 30595 2018-04-12 21:36:11Z mvuilleu $
+ * $Id: yocto_pwmoutput.js 30679 2018-04-24 09:34:17Z mvuilleu $
  *
  * Implements the high-level API for PwmOutput functions
  *
@@ -813,6 +813,16 @@ var YPwmOutput; // definition below
         return this.set_pwmTransition(newval);
     }
 
+    function YPwmOutput_markForRepeat()
+    {
+        return this.set_pwmTransition(":");
+    }
+
+    function YPwmOutput_repeatFromMark()
+    {
+        return this.set_pwmTransition("R");
+    }
+
     /**
      * Continues the enumeration of PWMs started using yFirstPwmOutput().
      *
@@ -921,6 +931,8 @@ var YPwmOutput; // definition below
         triggerPulsesByDuration     : YPwmOutput_triggerPulsesByDuration,
         triggerPulsesByDutyCycle    : YPwmOutput_triggerPulsesByDutyCycle,
         triggerPulsesByFrequency    : YPwmOutput_triggerPulsesByFrequency,
+        markForRepeat               : YPwmOutput_markForRepeat,
+        repeatFromMark              : YPwmOutput_repeatFromMark,
         nextPwmOutput               : YPwmOutput_nextPwmOutput,
         _parseAttr                  : YPwmOutput_parseAttr
     });
