@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_api.js 29466 2017-12-20 08:11:49Z mvuilleu $
+ * $Id: yocto_api.js 31238 2018-07-17 11:08:47Z mvuilleu $
  *
  * High-level programming interface, common to all modules
  *
@@ -2632,7 +2632,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
      */
     function YAPI_GetAPIVersion()
     {
-        return "1.10.30760";
+        return "1.10.31315";
     }
 
     /**
@@ -9046,6 +9046,7 @@ function yFirstDataLogger()
         this._rebootCountdown                = Y_REBOOTCOUNTDOWN_INVALID;  // Int
         this._userVar                        = Y_USERVAR_INVALID;          // Int
         this._logCallback                    = null;                       // YModuleLogCallback
+        this._confChangeCallback             = null;                       // YModuleConfigChangeCallback
         //--- (end of generated code: YModule constructor)
 
         // automatically fill in hardware properties if they can be resolved
@@ -10129,6 +10130,36 @@ function yFirstDataLogger()
     }
 
     /**
+     * Register a callback function, to be called when a persistent settings in
+     * a device configuration has been changed (e.g. change of unit, etc).
+     *
+     * @param callback : a procedure taking a YModule parameter, or null
+     *         to unregister a previously registered  callback.
+     */
+    function YModule_registerConfigChangeCallback(callback)
+    {
+        this._confChangeCallback = callback;
+        return 0;
+    }
+
+    function YModule_invokeConfigChangeCallback()
+    {
+        if (this._confChangeCallback != null) {
+            this._confChangeCallback(this);
+        }
+        return 0;
+    }
+
+    /**
+     * Triggers a configuration change callback, to check if they are supported or not.
+     */
+    function YModule_triggerConfigChangeCallback()
+    {
+        this._setAttr("persistentSettings","2");
+        return 0;
+    }
+
+    /**
      * Tests whether the byn file is valid for this module. This method is useful to test if the module
      * needs to be updated.
      * It is possible to pass a directory as argument instead of a file. In this case, this method returns
@@ -11132,6 +11163,9 @@ function yFirstDataLogger()
         revertFromFlash             : YModule_revertFromFlash,
         reboot                      : YModule_reboot,
         triggerFirmwareUpdate       : YModule_triggerFirmwareUpdate,
+        registerConfigChangeCallback : YModule_registerConfigChangeCallback,
+        _invokeConfigChangeCallback : YModule_invokeConfigChangeCallback,
+        triggerConfigChangeCallback : YModule_triggerConfigChangeCallback,
         checkFirmware               : YModule_checkFirmware,
         updateFirmwareEx            : YModule_updateFirmwareEx,
         updateFirmware              : YModule_updateFirmware,

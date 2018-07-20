@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_multicellweighscale.js 29804 2018-01-30 18:05:21Z mvuilleu $
+ * $Id: yocto_multicellweighscale.js 31016 2018-06-04 08:45:40Z mvuilleu $
  *
  * Implements the high-level API for MultiCellWeighScale functions
  *
@@ -47,7 +47,8 @@ var Y_EXCITATION_DC                 = 1;
 var Y_EXCITATION_AC                 = 2;
 var Y_EXCITATION_INVALID            = -1;
 var Y_CELLCOUNT_INVALID             = YAPI_INVALID_UINT;
-var Y_COMPTEMPADAPTRATIO_INVALID    = YAPI_INVALID_DOUBLE;
+var Y_TEMPAVGADAPTRATIO_INVALID     = YAPI_INVALID_DOUBLE;
+var Y_TEMPCHGADAPTRATIO_INVALID     = YAPI_INVALID_DOUBLE;
 var Y_COMPTEMPAVG_INVALID           = YAPI_INVALID_DOUBLE;
 var Y_COMPTEMPCHG_INVALID           = YAPI_INVALID_DOUBLE;
 var Y_COMPENSATION_INVALID          = YAPI_INVALID_DOUBLE;
@@ -79,7 +80,8 @@ var YMultiCellWeighScale; // definition below
 
         this._cellCount                      = Y_CELLCOUNT_INVALID;        // UInt31
         this._excitation                     = Y_EXCITATION_INVALID;       // ExcitationMode
-        this._compTempAdaptRatio             = Y_COMPTEMPADAPTRATIO_INVALID; // MeasureVal
+        this._tempAvgAdaptRatio              = Y_TEMPAVGADAPTRATIO_INVALID; // MeasureVal
+        this._tempChgAdaptRatio              = Y_TEMPCHGADAPTRATIO_INVALID; // MeasureVal
         this._compTempAvg                    = Y_COMPTEMPAVG_INVALID;      // MeasureVal
         this._compTempChg                    = Y_COMPTEMPCHG_INVALID;      // MeasureVal
         this._compensation                   = Y_COMPENSATION_INVALID;     // MeasureVal
@@ -99,8 +101,11 @@ var YMultiCellWeighScale; // definition below
         case "excitation":
             this._excitation = parseInt(val);
             return 1;
-        case "compTempAdaptRatio":
-            this._compTempAdaptRatio = Math.round(val * 1000.0 / 65536.0) / 1000.0;
+        case "tempAvgAdaptRatio":
+            this._tempAvgAdaptRatio = Math.round(val * 1000.0 / 65536.0) / 1000.0;
+            return 1;
+        case "tempChgAdaptRatio":
+            this._tempChgAdaptRatio = Math.round(val * 1000.0 / 65536.0) / 1000.0;
             return 1;
         case "compTempAvg":
             this._compTempAvg = Math.round(val * 1000.0 / 65536.0) / 1000.0;
@@ -274,71 +279,149 @@ var YMultiCellWeighScale; // definition below
     }
 
     /**
-     * Changes the averaged temperature update rate, in percents.
+     * Changes the averaged temperature update rate, in per mille.
+     * The purpose of this adaptation ratio is to model the thermal inertia of the load cell.
      * The averaged temperature is updated every 10 seconds, by applying this adaptation rate
      * to the difference between the measures ambiant temperature and the current compensation
-     * temperature. The standard rate is 0.04 percents, and the maximal rate is 65 percents.
+     * temperature. The standard rate is 0.2 per mille, and the maximal rate is 65 per mille.
      *
-     * @param newval : a floating point number corresponding to the averaged temperature update rate, in percents
+     * @param newval : a floating point number corresponding to the averaged temperature update rate, in per mille
      *
      * @return YAPI_SUCCESS if the call succeeds.
      *
      * On failure, throws an exception or returns a negative error code.
      */
-    function YMultiCellWeighScale_set_compTempAdaptRatio(newval)
+    function YMultiCellWeighScale_set_tempAvgAdaptRatio(newval)
     {   var rest_val;
         rest_val = String(Math.round(newval * 65536.0));
-        return this._setAttr('compTempAdaptRatio',rest_val);
+        return this._setAttr('tempAvgAdaptRatio',rest_val);
     }
 
     /**
-     * Returns the averaged temperature update rate, in percents.
+     * Returns the averaged temperature update rate, in per mille.
+     * The purpose of this adaptation ratio is to model the thermal inertia of the load cell.
      * The averaged temperature is updated every 10 seconds, by applying this adaptation rate
      * to the difference between the measures ambiant temperature and the current compensation
-     * temperature. The standard rate is 0.04 percents, and the maximal rate is 65 percents.
+     * temperature. The standard rate is 0.2 per mille, and the maximal rate is 65 per mille.
      *
-     * @return a floating point number corresponding to the averaged temperature update rate, in percents
+     * @return a floating point number corresponding to the averaged temperature update rate, in per mille
      *
-     * On failure, throws an exception or returns Y_COMPTEMPADAPTRATIO_INVALID.
+     * On failure, throws an exception or returns Y_TEMPAVGADAPTRATIO_INVALID.
      */
-    function YMultiCellWeighScale_get_compTempAdaptRatio()
+    function YMultiCellWeighScale_get_tempAvgAdaptRatio()
     {
         var res;                    // double;
         if (this._cacheExpiration <= YAPI.GetTickCount()) {
             if (this.load(YAPI.defaultCacheValidity) != YAPI_SUCCESS) {
-                return Y_COMPTEMPADAPTRATIO_INVALID;
+                return Y_TEMPAVGADAPTRATIO_INVALID;
             }
         }
-        res = this._compTempAdaptRatio;
+        res = this._tempAvgAdaptRatio;
         return res;
     }
 
     /**
-     * Gets the averaged temperature update rate, in percents.
+     * Gets the averaged temperature update rate, in per mille.
+     * The purpose of this adaptation ratio is to model the thermal inertia of the load cell.
      * The averaged temperature is updated every 10 seconds, by applying this adaptation rate
      * to the difference between the measures ambiant temperature and the current compensation
-     * temperature. The standard rate is 0.04 percents, and the maximal rate is 65 percents.
+     * temperature. The standard rate is 0.2 per mille, and the maximal rate is 65 per mille.
      *
      * @param callback : callback function that is invoked when the result is known.
      *         The callback function receives three arguments:
      *         - the user-specific context object
      *         - the YMultiCellWeighScale object that invoked the callback
-     *         - the result:a floating point number corresponding to the averaged temperature update rate, in percents
+     *         - the result:a floating point number corresponding to the averaged temperature update rate, in per mille
      * @param context : user-specific object that is passed as-is to the callback function
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      *
-     * On failure, throws an exception or returns Y_COMPTEMPADAPTRATIO_INVALID.
+     * On failure, throws an exception or returns Y_TEMPAVGADAPTRATIO_INVALID.
      */
-    function YMultiCellWeighScale_get_compTempAdaptRatio_async(callback,context)
+    function YMultiCellWeighScale_get_tempAvgAdaptRatio_async(callback,context)
     {
         var res;                    // double;
         var loadcb;                 // func;
         loadcb = function(ctx,obj,res) {
             if (res != YAPI_SUCCESS) {
-                callback(context, obj, Y_COMPTEMPADAPTRATIO_INVALID);
+                callback(context, obj, Y_TEMPAVGADAPTRATIO_INVALID);
             } else {
-                callback(context, obj, obj._compTempAdaptRatio);
+                callback(context, obj, obj._tempAvgAdaptRatio);
+            }
+        };
+        if (this._cacheExpiration <= YAPI.GetTickCount()) {
+            this.load_async(YAPI.defaultCacheValidity,loadcb,null);
+        } else {
+            loadcb(null, this, YAPI_SUCCESS);
+        }
+    }
+
+    /**
+     * Changes the temperature change update rate, in per mille.
+     * The temperature change is updated every 10 seconds, by applying this adaptation rate
+     * to the difference between the measures ambiant temperature and the current temperature used for
+     * change compensation. The standard rate is 0.6 per mille, and the maximal rate is 65 pour mille.
+     *
+     * @param newval : a floating point number corresponding to the temperature change update rate, in per mille
+     *
+     * @return YAPI_SUCCESS if the call succeeds.
+     *
+     * On failure, throws an exception or returns a negative error code.
+     */
+    function YMultiCellWeighScale_set_tempChgAdaptRatio(newval)
+    {   var rest_val;
+        rest_val = String(Math.round(newval * 65536.0));
+        return this._setAttr('tempChgAdaptRatio',rest_val);
+    }
+
+    /**
+     * Returns the temperature change update rate, in per mille.
+     * The temperature change is updated every 10 seconds, by applying this adaptation rate
+     * to the difference between the measures ambiant temperature and the current temperature used for
+     * change compensation. The standard rate is 0.6 per mille, and the maximal rate is 65 pour mille.
+     *
+     * @return a floating point number corresponding to the temperature change update rate, in per mille
+     *
+     * On failure, throws an exception or returns Y_TEMPCHGADAPTRATIO_INVALID.
+     */
+    function YMultiCellWeighScale_get_tempChgAdaptRatio()
+    {
+        var res;                    // double;
+        if (this._cacheExpiration <= YAPI.GetTickCount()) {
+            if (this.load(YAPI.defaultCacheValidity) != YAPI_SUCCESS) {
+                return Y_TEMPCHGADAPTRATIO_INVALID;
+            }
+        }
+        res = this._tempChgAdaptRatio;
+        return res;
+    }
+
+    /**
+     * Gets the temperature change update rate, in per mille.
+     * The temperature change is updated every 10 seconds, by applying this adaptation rate
+     * to the difference between the measures ambiant temperature and the current temperature used for
+     * change compensation. The standard rate is 0.6 per mille, and the maximal rate is 65 pour mille.
+     *
+     * @param callback : callback function that is invoked when the result is known.
+     *         The callback function receives three arguments:
+     *         - the user-specific context object
+     *         - the YMultiCellWeighScale object that invoked the callback
+     *         - the result:a floating point number corresponding to the temperature change update rate, in per mille
+     * @param context : user-specific object that is passed as-is to the callback function
+     *
+     * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
+     *
+     * On failure, throws an exception or returns Y_TEMPCHGADAPTRATIO_INVALID.
+     */
+    function YMultiCellWeighScale_get_tempChgAdaptRatio_async(callback,context)
+    {
+        var res;                    // double;
+        var loadcb;                 // func;
+        loadcb = function(ctx,obj,res) {
+            if (res != YAPI_SUCCESS) {
+                callback(context, obj, Y_TEMPCHGADAPTRATIO_INVALID);
+            } else {
+                callback(context, obj, obj._tempChgAdaptRatio);
             }
         };
         if (this._cacheExpiration <= YAPI.GetTickCount()) {
@@ -731,7 +814,8 @@ var YMultiCellWeighScale; // definition below
         EXCITATION_DC               : 1,
         EXCITATION_AC               : 2,
         EXCITATION_INVALID          : -1,
-        COMPTEMPADAPTRATIO_INVALID  : YAPI_INVALID_DOUBLE,
+        TEMPAVGADAPTRATIO_INVALID   : YAPI_INVALID_DOUBLE,
+        TEMPCHGADAPTRATIO_INVALID   : YAPI_INVALID_DOUBLE,
         COMPTEMPAVG_INVALID         : YAPI_INVALID_DOUBLE,
         COMPTEMPCHG_INVALID         : YAPI_INVALID_DOUBLE,
         COMPENSATION_INVALID        : YAPI_INVALID_DOUBLE,
@@ -757,12 +841,18 @@ var YMultiCellWeighScale; // definition below
         excitation_async            : YMultiCellWeighScale_get_excitation_async,
         set_excitation              : YMultiCellWeighScale_set_excitation,
         setExcitation               : YMultiCellWeighScale_set_excitation,
-        set_compTempAdaptRatio      : YMultiCellWeighScale_set_compTempAdaptRatio,
-        setCompTempAdaptRatio       : YMultiCellWeighScale_set_compTempAdaptRatio,
-        get_compTempAdaptRatio      : YMultiCellWeighScale_get_compTempAdaptRatio,
-        compTempAdaptRatio          : YMultiCellWeighScale_get_compTempAdaptRatio,
-        get_compTempAdaptRatio_async : YMultiCellWeighScale_get_compTempAdaptRatio_async,
-        compTempAdaptRatio_async    : YMultiCellWeighScale_get_compTempAdaptRatio_async,
+        set_tempAvgAdaptRatio       : YMultiCellWeighScale_set_tempAvgAdaptRatio,
+        setTempAvgAdaptRatio        : YMultiCellWeighScale_set_tempAvgAdaptRatio,
+        get_tempAvgAdaptRatio       : YMultiCellWeighScale_get_tempAvgAdaptRatio,
+        tempAvgAdaptRatio           : YMultiCellWeighScale_get_tempAvgAdaptRatio,
+        get_tempAvgAdaptRatio_async : YMultiCellWeighScale_get_tempAvgAdaptRatio_async,
+        tempAvgAdaptRatio_async     : YMultiCellWeighScale_get_tempAvgAdaptRatio_async,
+        set_tempChgAdaptRatio       : YMultiCellWeighScale_set_tempChgAdaptRatio,
+        setTempChgAdaptRatio        : YMultiCellWeighScale_set_tempChgAdaptRatio,
+        get_tempChgAdaptRatio       : YMultiCellWeighScale_get_tempChgAdaptRatio,
+        tempChgAdaptRatio           : YMultiCellWeighScale_get_tempChgAdaptRatio,
+        get_tempChgAdaptRatio_async : YMultiCellWeighScale_get_tempChgAdaptRatio_async,
+        tempChgAdaptRatio_async     : YMultiCellWeighScale_get_tempChgAdaptRatio_async,
         get_compTempAvg             : YMultiCellWeighScale_get_compTempAvg,
         compTempAvg                 : YMultiCellWeighScale_get_compTempAvg,
         get_compTempAvg_async       : YMultiCellWeighScale_get_compTempAvg_async,
