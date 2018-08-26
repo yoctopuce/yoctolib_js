@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_colorledcluster.js 30667 2018-04-23 09:14:26Z seb $
+ * $Id: yocto_colorledcluster.js 31894 2018-08-24 21:29:05Z seb $
  *
  * Implements the high-level API for ColorLedCluster functions
  *
@@ -523,6 +523,27 @@ var YColorLedCluster; // definition below
      */
     function YColorLedCluster_set_rgbColorAtPowerOn(ledIndex,count,rgbValue)
     {
+        return this.sendCommand("SC"+String(Math.round(ledIndex))+","+String(Math.round(count))+","+(rgbValue).toString(16).toLowerCase());
+    }
+
+    /**
+     * Changes the  color at device startup of consecutve LEDs in the cluster, using a HSL color. Encoding
+     * is done as follows: 0xHHSSLL.
+     * Don't forget to call saveLedsConfigAtPowerOn() to make sure the modification is saved in the device
+     * flash memory.
+     *
+     * @param ledIndex :  index of the first affected LED.
+     * @param count    :  affected LED count.
+     * @param hslValue :  new color.
+     *
+     * @return YAPI_SUCCESS when the call succeeds.
+     *
+     * On failure, throws an exception or returns a negative error code.
+     */
+    function YColorLedCluster_set_hslColorAtPowerOn(ledIndex,count,hslValue)
+    {
+        var rgbValue;               // int;
+        rgbValue = this.hsl2rgb(hslValue);
         return this.sendCommand("SC"+String(Math.round(ledIndex))+","+String(Math.round(count))+","+(rgbValue).toString(16).toLowerCase());
     }
 
@@ -1309,6 +1330,78 @@ var YColorLedCluster; // definition below
         return res;
     }
 
+    function YColorLedCluster_hsl2rgbInt(temp1,temp2,temp3)
+    {
+        if (temp3 >= 170) {
+            return parseInt(((temp1 + 127)) / (255));
+        }
+        if (temp3 > 42) {
+            if (temp3 <= 127) {
+                return parseInt(((temp2 + 127)) / (255));
+            }
+            temp3 = 170 - temp3;
+        }
+        return parseInt(((temp1*255 + (temp2-temp1) * (6 * temp3) + 32512)) / (65025));
+    }
+
+    function YColorLedCluster_hsl2rgb(hslValue)
+    {
+        var R;                      // int;
+        var G;                      // int;
+        var B;                      // int;
+        var H;                      // int;
+        var S;                      // int;
+        var L;                      // int;
+        var temp1;                  // int;
+        var temp2;                  // int;
+        var temp3;                  // int;
+        var res;                    // int;
+        L = ((hslValue) & (0xff));
+        S = ((((hslValue) >> (8))) & (0xff));
+        H = ((((hslValue) >> (16))) & (0xff));
+        if (S==0) {
+            res = ((L) << (16))+((L) << (8))+L;
+            return res;
+        }
+        if (L<=127) {
+            temp2 = L * (255 + S);
+        } else {
+            temp2 = (L+S) * 255 - L*S;
+        }
+        temp1 = 510 * L - temp2;
+        // R
+        temp3 = (H + 85);
+        if (temp3 > 255) {
+            temp3 = temp3-255;
+        }
+        R = this.hsl2rgbInt(temp1, temp2, temp3);
+        // G
+        temp3 = H;
+        if (temp3 > 255) {
+            temp3 = temp3-255;
+        }
+        G = this.hsl2rgbInt(temp1, temp2, temp3);
+        // B
+        if (H >= 85) {
+            temp3 = H - 85 ;
+        } else {
+            temp3 = H + 170;
+        }
+        B = this.hsl2rgbInt(temp1, temp2, temp3);
+        // just in case
+        if (R>255) {
+            R=255;
+        }
+        if (G>255) {
+            G=255;
+        }
+        if (B>255) {
+            B=255;
+        }
+        res = ((R) << (16))+((G) << (8))+B;
+        return res;
+    }
+
     /**
      * Continues the enumeration of RGB LED clusters started using yFirstColorLedCluster().
      *
@@ -1394,6 +1487,8 @@ var YColorLedCluster; // definition below
         setRgbColor                 : YColorLedCluster_set_rgbColor,
         set_rgbColorAtPowerOn       : YColorLedCluster_set_rgbColorAtPowerOn,
         setRgbColorAtPowerOn        : YColorLedCluster_set_rgbColorAtPowerOn,
+        set_hslColorAtPowerOn       : YColorLedCluster_set_hslColorAtPowerOn,
+        setHslColorAtPowerOn        : YColorLedCluster_set_hslColorAtPowerOn,
         set_hslColor                : YColorLedCluster_set_hslColor,
         setHslColor                 : YColorLedCluster_set_hslColor,
         rgb_move                    : YColorLedCluster_rgb_move,
@@ -1445,6 +1540,8 @@ var YColorLedCluster; // definition below
         blinkSeqStateAtPowerOn      : YColorLedCluster_get_blinkSeqStateAtPowerOn,
         get_blinkSeqState           : YColorLedCluster_get_blinkSeqState,
         blinkSeqState               : YColorLedCluster_get_blinkSeqState,
+        hsl2rgbInt                  : YColorLedCluster_hsl2rgbInt,
+        hsl2rgb                     : YColorLedCluster_hsl2rgb,
         nextColorLedCluster         : YColorLedCluster_nextColorLedCluster,
         _parseAttr                  : YColorLedCluster_parseAttr
     });
