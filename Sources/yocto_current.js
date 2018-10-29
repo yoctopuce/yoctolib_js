@@ -1,10 +1,10 @@
 /*********************************************************************
  *
- * $Id: yocto_current.js 28745 2017-10-03 08:17:29Z seb $
+ *  $Id: yocto_current.js 32610 2018-10-10 06:52:20Z seb $
  *
- * Implements the high-level API for Current functions
+ *  Implements the high-level API for Current functions
  *
- * - - - - - - - - - License information: - - - - - - - - -
+ *  - - - - - - - - - License information: - - - - - - - - -
  *
  *  Copyright (C) 2011 and beyond by Yoctopuce Sarl, Switzerland.
  *

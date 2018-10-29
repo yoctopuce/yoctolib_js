@@ -1,10 +1,10 @@
 /*********************************************************************
  *
- * $Id: yocto_wakeupschedule.js 28745 2017-10-03 08:17:29Z seb $
+ *  $Id: yocto_wakeupschedule.js 32610 2018-10-10 06:52:20Z seb $
  *
- * Implements the high-level API for WakeUpSchedule functions
+ *  Implements the high-level API for WakeUpSchedule functions
  *
- * - - - - - - - - - License information: - - - - - - - - -
+ *  - - - - - - - - - License information: - - - - - - - - -
  *
  *  Copyright (C) 2011 and beyond by Yoctopuce Sarl, Switzerland.
  *

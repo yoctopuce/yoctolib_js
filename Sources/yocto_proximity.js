@@ -1,10 +1,10 @@
 /*********************************************************************
  *
- * $Id: yocto_proximity.js 29767 2018-01-26 08:53:27Z seb $
+ *  $Id: yocto_proximity.js 32610 2018-10-10 06:52:20Z seb $
  *
- * Implements the high-level API for Proximity functions
+ *  Implements the high-level API for Proximity functions
  *
- * - - - - - - - - - License information: - - - - - - - - -
+ *  - - - - - - - - - License information: - - - - - - - - -
  *
  *  Copyright (C) 2011 and beyond by Yoctopuce Sarl, Switzerland.
  *

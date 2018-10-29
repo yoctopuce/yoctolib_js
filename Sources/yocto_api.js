@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_api.js 31438 2018-08-07 15:30:32Z seb $
+ * $Id: yocto_api.js 32488 2018-10-04 12:16:24Z seb $
  *
  * High-level programming interface, common to all modules
  *
@@ -2632,7 +2632,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
      */
     function YAPI_GetAPIVersion()
     {
-        return "1.10.31897";
+        return "1.10.32759";
     }
 
     /**
@@ -5222,7 +5222,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
         var leng;                   // int;
         err = this._settings;
         leng = (err).length;
-        if (( leng >= 6) && ("error:" == (err).substr(0, 6))) {
+        if ((leng >= 6) && ("error:" == (err).substr(0, 6))) {
             this._progress = -1;
             this._progress_msg = (err).substr( 6, leng - 6);
         } else {
@@ -7457,7 +7457,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
             return null;
         }
         hwid = serial + ".dataLogger";
-        logger  = YDataLogger.FindDataLogger(hwid);
+        logger = YDataLogger.FindDataLogger(hwid);
         return logger;
     }
 
@@ -9051,6 +9051,7 @@ function yFirstDataLogger()
         this._userVar                        = Y_USERVAR_INVALID;          // Int
         this._logCallback                    = null;                       // YModuleLogCallback
         this._confChangeCallback             = null;                       // YModuleConfigChangeCallback
+        this._beaconCallback                 = null;                       // YModuleBeaconCallback
         //--- (end of generated code: YModule constructor)
 
         // automatically fill in hardware properties if they can be resolved
@@ -10142,6 +10143,11 @@ function yFirstDataLogger()
      */
     function YModule_registerConfigChangeCallback(callback)
     {
+        if (callback != null) {
+            YModule._updateModuleCallbackList(this, true);
+        } else {
+            YModule._updateModuleCallbackList(this, false);
+        }
         this._confChangeCallback = callback;
         return 0;
     }
@@ -10155,11 +10161,38 @@ function yFirstDataLogger()
     }
 
     /**
+     * Register a callback function, to be called when the localization beacon of the module
+     * has been changed. The callback function should take two arguments: the YModule object of
+     * which the beacon has changed, and an integer describing the new beacon state.
+     *
+     * @param callback : The callback function to call, or null to unregister a
+     *         previously registered callback.
+     */
+    function YModule_registerBeaconCallback(callback)
+    {
+        if (callback != null) {
+            YModule._updateModuleCallbackList(this, true);
+        } else {
+            YModule._updateModuleCallbackList(this, false);
+        }
+        this._beaconCallback = callback;
+        return 0;
+    }
+
+    function YModule_invokeBeaconCallback(beaconState)
+    {
+        if (this._beaconCallback != null) {
+            this._beaconCallback(this, beaconState);
+        }
+        return 0;
+    }
+
+    /**
      * Triggers a configuration change callback, to check if they are supported or not.
      */
     function YModule_triggerConfigChangeCallback()
     {
-        this._setAttr("persistentSettings","2");
+        this._setAttr("persistentSettings", "2");
         return 0;
     }
 
@@ -10190,7 +10223,7 @@ function yFirstDataLogger()
         }
         //may throw an exception
         serial = this.get_serialNumber();
-        tmp_res = YFirmwareUpdate.CheckFirmware(serial,path, release);
+        tmp_res = YFirmwareUpdate.CheckFirmware(serial, path, release);
         if ((tmp_res).indexOf("error:") == 0) {
             this._throw(YAPI_INVALID_ARGUMENT, tmp_res);
         }
@@ -10422,10 +10455,10 @@ function yFirstDataLogger()
         var i;                      // int;
         var fid;                    // str;
 
-        count  = this.functionCount();
+        count = this.functionCount();
         i = 0;
         while (i < count) {
-            fid  = this.functionId(i);
+            fid = this.functionId(i);
             if (fid == funcId) {
                 return true;
             }
@@ -10981,6 +11014,21 @@ function yFirstDataLogger()
     }
 
     /**
+     * Returns the unique hardware identifier of the module.
+     * The unique hardware identifier is made of the device serial
+     * number followed by string ".module".
+     *
+     * @return a string that uniquely identifies the module
+     */
+    function YModule_get_hardwareId()
+    {
+        var serial;                 // str;
+
+        serial = this.get_serialNumber();
+        return serial + ".module";
+    }
+
+    /**
      * Downloads the specified built-in file and returns a binary buffer with its content.
      *
      * @param pathname : name of the new file to load
@@ -11169,6 +11217,8 @@ function yFirstDataLogger()
         triggerFirmwareUpdate       : YModule_triggerFirmwareUpdate,
         registerConfigChangeCallback : YModule_registerConfigChangeCallback,
         _invokeConfigChangeCallback : YModule_invokeConfigChangeCallback,
+        registerBeaconCallback      : YModule_registerBeaconCallback,
+        _invokeBeaconCallback       : YModule_invokeBeaconCallback,
         triggerConfigChangeCallback : YModule_triggerConfigChangeCallback,
         checkFirmware               : YModule_checkFirmware,
         updateFirmwareEx            : YModule_updateFirmwareEx,
@@ -11190,6 +11240,8 @@ function yFirstDataLogger()
         calibConvert                : YModule_calibConvert,
         set_allSettings             : YModule_set_allSettings,
         setAllSettings              : YModule_set_allSettings,
+        get_hardwareId              : YModule_get_hardwareId,
+        hardwareId                  : YModule_get_hardwareId,
         download                    : YModule_download,
         get_icon2d                  : YModule_get_icon2d,
         icon2d                      : YModule_get_icon2d,

@@ -1,3 +1,4 @@
-Javascript v1.10.31897
+Javascript v1.10.32759
 
-- Add method set_hslColorAtPowerOn in YColorLedCluster class
+- YModule.get_hardwareId() method return last know hardwareId when the module is disconnected
+- Code clean-up in Doc-XXX examples

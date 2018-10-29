@@ -1,10 +1,10 @@
 /*********************************************************************
  *
- * $Id: yocto_pwminput.js 29970 2018-02-19 15:14:09Z seb $
+ *  $Id: yocto_pwminput.js 32610 2018-10-10 06:52:20Z seb $
  *
- * Implements the high-level API for PwmInput functions
+ *  Implements the high-level API for PwmInput functions
  *
- * - - - - - - - - - License information: - - - - - - - - -
+ *  - - - - - - - - - License information: - - - - - - - - -
  *
  *  Copyright (C) 2011 and beyond by Yoctopuce Sarl, Switzerland.
  *
@@ -126,6 +126,24 @@ var YPwmInput; // definition below
             return 1;
         }
         return _super._parseAttr.call(this, name, val, _super._super);
+    }
+
+    /**
+     * Changes the measuring unit for the measured quantity. That unit
+     * is just a string which is automatically initialized each time
+     * the measurement mode is changed. But is can be set to an
+     * arbitrary value.
+     *
+     * @param newval : a string corresponding to the measuring unit for the measured quantity
+     *
+     * @return YAPI_SUCCESS if the call succeeds.
+     *
+     * On failure, throws an exception or returns a negative error code.
+     */
+    function YPwmInput_set_unit(newval)
+    {   var rest_val;
+        rest_val = newval;
+        return this._setAttr('unit',rest_val);
     }
 
     /**
@@ -705,6 +723,8 @@ var YPwmInput; // definition below
         FirstPwmInput               : YPwmInput_FirstPwmInput
     }, {
         // Methods
+        set_unit                    : YPwmInput_set_unit,
+        setUnit                     : YPwmInput_set_unit,
         get_dutyCycle               : YPwmInput_get_dutyCycle,
         dutyCycle                   : YPwmInput_get_dutyCycle,
         get_dutyCycle_async         : YPwmInput_get_dutyCycle_async,

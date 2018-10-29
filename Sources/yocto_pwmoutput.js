@@ -1,10 +1,10 @@
 /*********************************************************************
  *
- * $Id: yocto_pwmoutput.js 31296 2018-07-19 12:34:36Z mvuilleu $
+ *  $Id: yocto_pwmoutput.js 32610 2018-10-10 06:52:20Z seb $
  *
- * Implements the high-level API for PwmOutput functions
+ *  Implements the high-level API for PwmOutput functions
  *
- * - - - - - - - - - License information: - - - - - - - - -
+ *  - - - - - - - - - License information: - - - - - - - - -
  *
  *  Copyright (C) 2011 and beyond by Yoctopuce Sarl, Switzerland.
  *

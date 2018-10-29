@@ -1,10 +1,10 @@
 /*********************************************************************
  *
- * $Id: yocto_multicellweighscale.js 31016 2018-06-04 08:45:40Z mvuilleu $
+ *  $Id: yocto_multicellweighscale.js 32610 2018-10-10 06:52:20Z seb $
  *
- * Implements the high-level API for MultiCellWeighScale functions
+ *  Implements the high-level API for MultiCellWeighScale functions
  *
- * - - - - - - - - - License information: - - - - - - - - -
+ *  - - - - - - - - - License information: - - - - - - - - -
  *
  *  Copyright (C) 2011 and beyond by Yoctopuce Sarl, Switzerland.
  *
