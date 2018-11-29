@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_refframe.js 32610 2018-10-10 06:52:20Z seb $
+ *  $Id: yocto_refframe.js 32905 2018-11-02 10:15:36Z seb $
  *
  *  Implements the high-level API for RefFrame functions
  *
@@ -1059,6 +1059,9 @@ var YRefFrame; // definition below
 
     /**
      * Continues the enumeration of reference frames started using yFirstRefFrame().
+     * Caution: You can't make any assumption about the returned reference frames order.
+     * If you want to find a specific a reference frame, use RefFrame.findRefFrame()
+     * and a hardwareID or a logical name.
      *
      * @return a pointer to a YRefFrame object, corresponding to
      *         a reference frame currently online, or a null pointer

@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_cellular.js 28745 2017-10-03 08:17:29Z seb $
+ * $Id: yocto_cellular.js 32905 2018-11-02 10:15:36Z seb $
  *
  * Implements the high-level API for Cellular functions
  *
@@ -1558,6 +1558,9 @@ var YCellular; // definition below
 
     /**
      * Continues the enumeration of cellular interfaces started using yFirstCellular().
+     * Caution: You can't make any assumption about the returned cellular interfaces order.
+     * If you want to find a specific a cellular interface, use Cellular.findCellular()
+     * and a hardwareID or a logical name.
      *
      * @return a pointer to a YCellular object, corresponding to
      *         a cellular interface currently online, or a null pointer

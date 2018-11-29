@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_display.js 30667 2018-04-23 09:14:26Z seb $
+ * $Id: yocto_display.js 32905 2018-11-02 10:15:36Z seb $
  *
  * Implements yFindDisplay(), the high-level API for Display functions
  *
@@ -1650,6 +1650,9 @@ var YDisplay; // definition below
 
     /**
      * Continues the enumeration of displays started using yFirstDisplay().
+     * Caution: You can't make any assumption about the returned displays order.
+     * If you want to find a specific a display, use Display.findDisplay()
+     * and a hardwareID or a logical name.
      *
      * @return a pointer to a YDisplay object, corresponding to
      *         a display currently online, or a null pointer

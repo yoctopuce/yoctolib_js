@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_oscontrol.js 32610 2018-10-10 06:52:20Z seb $
+ *  $Id: yocto_oscontrol.js 32905 2018-11-02 10:15:36Z seb $
  *
  *  Implements the high-level API for OsControl functions
  *
@@ -196,6 +196,9 @@ var YOsControl; // definition below
 
     /**
      * Continues the enumeration of OS control started using yFirstOsControl().
+     * Caution: You can't make any assumption about the returned OS control order.
+     * If you want to find a specific OS control, use OsControl.findOsControl()
+     * and a hardwareID or a logical name.
      *
      * @return a pointer to a YOsControl object, corresponding to
      *         OS control currently online, or a null pointer

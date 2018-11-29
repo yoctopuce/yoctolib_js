@@ -1,8 +1,8 @@
 /*********************************************************************
  *
- *  $Id: yocto_voc.js 32905 2018-11-02 10:15:36Z seb $
+ *  $Id: yocto_tvoc.js 33270 2018-11-22 08:41:15Z seb $
  *
- *  Implements the high-level API for Voc functions
+ *  Implements the high-level API for Tvoc functions
  *
  *  - - - - - - - - - License information: - - - - - - - - -
  *
@@ -39,38 +39,38 @@
 
 if(typeof YAPI == "undefined") { if(typeof yAPI != "undefined") window["YAPI"]=yAPI; else throw "YAPI is not defined, please include yocto_api.js first"; }
 
-//--- (YVoc return codes)
-//--- (end of YVoc return codes)
-//--- (YVoc definitions)
-//--- (end of YVoc definitions)
+//--- (YTvoc return codes)
+//--- (end of YTvoc return codes)
+//--- (YTvoc definitions)
+//--- (end of YTvoc definitions)
 
-//--- (YVoc class start)
+//--- (YTvoc class start)
 /**
- * YVoc Class: Voc function interface
+ * YTvoc Class: Tvoc function interface
  *
- * The Yoctopuce class YVoc allows you to read and configure Yoctopuce Volatile Organic
+ * The Yoctopuce class YTvoc allows you to read and configure Yoctopuce Total Volatile Organic
  * Compound sensors. It inherits from YSensor class the core functions to read measurements,
  * to register callback functions, to access the autonomous datalogger.
  */
-//--- (end of YVoc class start)
+//--- (end of YTvoc class start)
 
-var YVoc; // definition below
+var YTvoc; // definition below
 (function()
 {
-    function _YVoc(str_func)
+    function _YTvoc(str_func)
     {
-        //--- (YVoc constructor)
+        //--- (YTvoc constructor)
         // inherit from YSensor
         YSensor.call(this, str_func);
-        this._className = 'Voc';
+        this._className = 'Tvoc';
 
-        //--- (end of YVoc constructor)
+        //--- (end of YTvoc constructor)
     }
 
-    //--- (YVoc implementation)
+    //--- (YTvoc implementation)
 
     /**
-     * Retrieves a Volatile Organic Compound sensor for a given identifier.
+     * Retrieves a Total  Volatile Organic Compound sensor for a given identifier.
      * The identifier can be specified using several formats:
      * <ul>
      * <li>FunctionLogicalName</li>
@@ -80,11 +80,11 @@ var YVoc; // definition below
      * <li>ModuleLogicalName.FunctionLogicalName</li>
      * </ul>
      *
-     * This function does not require that the Volatile Organic Compound sensor is online at the time
+     * This function does not require that the Total  Volatile Organic Compound sensor is online at the time
      * it is invoked. The returned object is nevertheless valid.
-     * Use the method YVoc.isOnline() to test if the Volatile Organic Compound sensor is
+     * Use the method YTvoc.isOnline() to test if the Total  Volatile Organic Compound sensor is
      * indeed online at a given time. In case of ambiguity when looking for
-     * a Volatile Organic Compound sensor by logical name, no error is notified: the first instance
+     * a Total  Volatile Organic Compound sensor by logical name, no error is notified: the first instance
      * found is returned. The search is performed first by hardware name,
      * then by logical name.
      *
@@ -92,74 +92,74 @@ var YVoc; // definition below
      * you are certain that the matching device is plugged, make sure that you did
      * call registerHub() at application initialization time.
      *
-     * @param func : a string that uniquely characterizes the Volatile Organic Compound sensor
+     * @param func : a string that uniquely characterizes the Total  Volatile Organic Compound sensor
      *
-     * @return a YVoc object allowing you to drive the Volatile Organic Compound sensor.
+     * @return a YTvoc object allowing you to drive the Total  Volatile Organic Compound sensor.
      */
-    function YVoc_FindVoc(func)                                 // class method
+    function YTvoc_FindTvoc(func)                               // class method
     {
-        var obj;                    // YVoc;
-        obj = YFunction._FindFromCache("Voc", func);
+        var obj;                    // YTvoc;
+        obj = YFunction._FindFromCache("Tvoc", func);
         if (obj == null) {
-            obj = new YVoc(func);
-            YFunction._AddToCache("Voc", func, obj);
+            obj = new YTvoc(func);
+            YFunction._AddToCache("Tvoc", func, obj);
         }
         return obj;
     }
 
     /**
-     * Continues the enumeration of Volatile Organic Compound sensors started using yFirstVoc().
-     * Caution: You can't make any assumption about the returned Volatile Organic Compound sensors order.
-     * If you want to find a specific a Volatile Organic Compound sensor, use Voc.findVoc()
+     * Continues the enumeration of Total Volatile Organic Compound sensors started using yFirstTvoc().
+     * Caution: You can't make any assumption about the returned Total Volatile Organic Compound sensors order.
+     * If you want to find a specific a Total  Volatile Organic Compound sensor, use Tvoc.findTvoc()
      * and a hardwareID or a logical name.
      *
-     * @return a pointer to a YVoc object, corresponding to
-     *         a Volatile Organic Compound sensor currently online, or a null pointer
-     *         if there are no more Volatile Organic Compound sensors to enumerate.
+     * @return a pointer to a YTvoc object, corresponding to
+     *         a Total  Volatile Organic Compound sensor currently online, or a null pointer
+     *         if there are no more Total Volatile Organic Compound sensors to enumerate.
      */
-    function YVoc_nextVoc()
+    function YTvoc_nextTvoc()
     {   var resolve = YAPI.resolveFunction(this._className, this._func);
         if(resolve.errorType != YAPI_SUCCESS) return null;
         var next_hwid = YAPI.getNextHardwareId(this._className, resolve.result);
         if(next_hwid == null) return null;
-        return YVoc.FindVoc(next_hwid);
+        return YTvoc.FindTvoc(next_hwid);
     }
 
     /**
-     * Starts the enumeration of Volatile Organic Compound sensors currently accessible.
-     * Use the method YVoc.nextVoc() to iterate on
-     * next Volatile Organic Compound sensors.
+     * Starts the enumeration of Total Volatile Organic Compound sensors currently accessible.
+     * Use the method YTvoc.nextTvoc() to iterate on
+     * next Total Volatile Organic Compound sensors.
      *
-     * @return a pointer to a YVoc object, corresponding to
-     *         the first Volatile Organic Compound sensor currently online, or a null pointer
+     * @return a pointer to a YTvoc object, corresponding to
+     *         the first Total Volatile Organic Compound sensor currently online, or a null pointer
      *         if there are none.
      */
-    function YVoc_FirstVoc()
+    function YTvoc_FirstTvoc()
     {
-        var next_hwid = YAPI.getFirstHardwareId('Voc');
+        var next_hwid = YAPI.getFirstHardwareId('Tvoc');
         if(next_hwid == null) return null;
-        return YVoc.FindVoc(next_hwid);
+        return YTvoc.FindTvoc(next_hwid);
     }
 
-    //--- (end of YVoc implementation)
+    //--- (end of YTvoc implementation)
 
-    //--- (YVoc initialization)
-    YVoc = YSensor._Subclass(_YVoc, {
+    //--- (YTvoc initialization)
+    YTvoc = YSensor._Subclass(_YTvoc, {
     }, {
         // Class methods
-        FindVoc                     : YVoc_FindVoc,
-        FirstVoc                    : YVoc_FirstVoc
+        FindTvoc                    : YTvoc_FindTvoc,
+        FirstTvoc                   : YTvoc_FirstTvoc
     }, {
         // Methods
-        nextVoc                     : YVoc_nextVoc
+        nextTvoc                    : YTvoc_nextTvoc
     });
-    //--- (end of YVoc initialization)
+    //--- (end of YTvoc initialization)
 })();
 
-//--- (YVoc functions)
+//--- (YTvoc functions)
 
 /**
- * Retrieves a Volatile Organic Compound sensor for a given identifier.
+ * Retrieves a Total  Volatile Organic Compound sensor for a given identifier.
  * The identifier can be specified using several formats:
  * <ul>
  * <li>FunctionLogicalName</li>
@@ -169,11 +169,11 @@ var YVoc; // definition below
  * <li>ModuleLogicalName.FunctionLogicalName</li>
  * </ul>
  *
- * This function does not require that the Volatile Organic Compound sensor is online at the time
+ * This function does not require that the Total  Volatile Organic Compound sensor is online at the time
  * it is invoked. The returned object is nevertheless valid.
- * Use the method YVoc.isOnline() to test if the Volatile Organic Compound sensor is
+ * Use the method YTvoc.isOnline() to test if the Total  Volatile Organic Compound sensor is
  * indeed online at a given time. In case of ambiguity when looking for
- * a Volatile Organic Compound sensor by logical name, no error is notified: the first instance
+ * a Total  Volatile Organic Compound sensor by logical name, no error is notified: the first instance
  * found is returned. The search is performed first by hardware name,
  * then by logical name.
  *
@@ -181,27 +181,27 @@ var YVoc; // definition below
  * you are certain that the matching device is plugged, make sure that you did
  * call registerHub() at application initialization time.
  *
- * @param func : a string that uniquely characterizes the Volatile Organic Compound sensor
+ * @param func : a string that uniquely characterizes the Total  Volatile Organic Compound sensor
  *
- * @return a YVoc object allowing you to drive the Volatile Organic Compound sensor.
+ * @return a YTvoc object allowing you to drive the Total  Volatile Organic Compound sensor.
  */
-function yFindVoc(func)
+function yFindTvoc(func)
 {
-    return YVoc.FindVoc(func);
+    return YTvoc.FindTvoc(func);
 }
 
 /**
- * Starts the enumeration of Volatile Organic Compound sensors currently accessible.
- * Use the method YVoc.nextVoc() to iterate on
- * next Volatile Organic Compound sensors.
+ * Starts the enumeration of Total Volatile Organic Compound sensors currently accessible.
+ * Use the method YTvoc.nextTvoc() to iterate on
+ * next Total Volatile Organic Compound sensors.
  *
- * @return a pointer to a YVoc object, corresponding to
- *         the first Volatile Organic Compound sensor currently online, or a null pointer
+ * @return a pointer to a YTvoc object, corresponding to
+ *         the first Total Volatile Organic Compound sensor currently online, or a null pointer
  *         if there are none.
  */
-function yFirstVoc()
+function yFirstTvoc()
 {
-    return YVoc.FirstVoc();
+    return YTvoc.FirstTvoc();
 }
 
-//--- (end of YVoc functions)
+//--- (end of YTvoc functions)

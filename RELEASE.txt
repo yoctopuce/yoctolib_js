@@ -1,4 +1,8 @@
-Javascript v1.10.32759
+Javascript v1.10.33423
 
-- YModule.get_hardwareId() method return last know hardwareId when the module is disconnected
-- Code clean-up in Doc-XXX examples
+- Improve precision of dataLogger retrieval boundaries
+- Add support for devices with dynamic functions activation (ex: Yocto-Temperature-IR)
+- Add TVoc and MultiSensController class
+- Remove old dataLogger API (deprecated since 2014)
+- Fix restart of serial scripts after settings restoration
+- Fix timed notifications with wrong start time

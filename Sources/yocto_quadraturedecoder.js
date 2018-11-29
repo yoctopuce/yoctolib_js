@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_quadraturedecoder.js 32610 2018-10-10 06:52:20Z seb $
+ *  $Id: yocto_quadraturedecoder.js 32905 2018-11-02 10:15:36Z seb $
  *
  *  Implements the high-level API for QuadratureDecoder functions
  *
@@ -264,6 +264,9 @@ var YQuadratureDecoder; // definition below
 
     /**
      * Continues the enumeration of quadrature decoders started using yFirstQuadratureDecoder().
+     * Caution: You can't make any assumption about the returned quadrature decoders order.
+     * If you want to find a specific a quadrature decoder, use QuadratureDecoder.findQuadratureDecoder()
+     * and a hardwareID or a logical name.
      *
      * @return a pointer to a YQuadratureDecoder object, corresponding to
      *         a quadrature decoder currently online, or a null pointer

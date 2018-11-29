@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_compass.js 32610 2018-10-10 06:52:20Z seb $
+ *  $Id: yocto_compass.js 32905 2018-11-02 10:15:36Z seb $
  *
  *  Implements the high-level API for Compass functions
  *
@@ -299,6 +299,9 @@ var YCompass; // definition below
 
     /**
      * Continues the enumeration of compasses started using yFirstCompass().
+     * Caution: You can't make any assumption about the returned compasses order.
+     * If you want to find a specific a compass, use Compass.findCompass()
+     * and a hardwareID or a logical name.
      *
      * @return a pointer to a YCompass object, corresponding to
      *         a compass currently online, or a null pointer

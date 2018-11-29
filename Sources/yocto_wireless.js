@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_wireless.js 28745 2017-10-03 08:17:29Z seb $
+ * $Id: yocto_wireless.js 32905 2018-11-02 10:15:36Z seb $
  *
  * Implements yFindWireless(), the high-level API for Wireless functions
  *
@@ -721,6 +721,9 @@ var YWireless; // definition below
 
     /**
      * Continues the enumeration of wireless lan interfaces started using yFirstWireless().
+     * Caution: You can't make any assumption about the returned wireless lan interfaces order.
+     * If you want to find a specific a wireless lan interface, use Wireless.findWireless()
+     * and a hardwareID or a logical name.
      *
      * @return a pointer to a YWireless object, corresponding to
      *         a wireless lan interface currently online, or a null pointer

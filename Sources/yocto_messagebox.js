@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_messagebox.js 30667 2018-04-23 09:14:26Z seb $
+ * $Id: yocto_messagebox.js 32905 2018-11-02 10:15:36Z seb $
  *
  * Implements the high-level API for MessageBox functions
  *
@@ -2395,6 +2395,9 @@ var YMessageBox; // definition below
 
     /**
      * Continues the enumeration of MessageBox interfaces started using yFirstMessageBox().
+     * Caution: You can't make any assumption about the returned MessageBox interfaces order.
+     * If you want to find a specific a MessageBox interface, use MessageBox.findMessageBox()
+     * and a hardwareID or a logical name.
      *
      * @return a pointer to a YMessageBox object, corresponding to
      *         a MessageBox interface currently online, or a null pointer

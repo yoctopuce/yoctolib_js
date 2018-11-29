@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_led.js 32610 2018-10-10 06:52:20Z seb $
+ *  $Id: yocto_led.js 32905 2018-11-02 10:15:36Z seb $
  *
  *  Implements the high-level API for Led functions
  *
@@ -340,6 +340,9 @@ var YLed; // definition below
 
     /**
      * Continues the enumeration of LEDs started using yFirstLed().
+     * Caution: You can't make any assumption about the returned LEDs order.
+     * If you want to find a specific a LED, use Led.findLed()
+     * and a hardwareID or a logical name.
      *
      * @return a pointer to a YLed object, corresponding to
      *         a LED currently online, or a null pointer

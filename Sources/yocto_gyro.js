@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_gyro.js 28745 2017-10-03 08:17:29Z seb $
+ * $Id: yocto_gyro.js 32905 2018-11-02 10:15:36Z seb $
  *
  * Implements the high-level API for Gyro functions
  *
@@ -118,6 +118,9 @@ var YQt; // definition below
 
     /**
      * Continues the enumeration of quaternion components started using yFirstQt().
+     * Caution: You can't make any assumption about the returned quaternion components order.
+     * If you want to find a specific a quaternion component, use Qt.findQt()
+     * and a hardwareID or a logical name.
      *
      * @return a pointer to a YQt object, corresponding to
      *         a quaternion component currently online, or a null pointer
@@ -857,6 +860,9 @@ var YGyro; // definition below
 
     /**
      * Continues the enumeration of gyroscopes started using yFirstGyro().
+     * Caution: You can't make any assumption about the returned gyroscopes order.
+     * If you want to find a specific a gyroscope, use Gyro.findGyro()
+     * and a hardwareID or a logical name.
      *
      * @return a pointer to a YGyro object, corresponding to
      *         a gyroscope currently online, or a null pointer

@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_bluetoothlink.js 32610 2018-10-10 06:52:20Z seb $
+ *  $Id: yocto_bluetoothlink.js 32905 2018-11-02 10:15:36Z seb $
  *
  *  Implements the high-level API for BluetoothLink functions
  *
@@ -796,6 +796,9 @@ var YBluetoothLink; // definition below
 
     /**
      * Continues the enumeration of cellular interfaces started using yFirstBluetoothLink().
+     * Caution: You can't make any assumption about the returned cellular interfaces order.
+     * If you want to find a specific a cellular interface, use BluetoothLink.findBluetoothLink()
+     * and a hardwareID or a logical name.
      *
      * @return a pointer to a YBluetoothLink object, corresponding to
      *         a cellular interface currently online, or a null pointer

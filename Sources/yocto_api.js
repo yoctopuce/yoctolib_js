@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_api.js 32488 2018-10-04 12:16:24Z seb $
+ * $Id: yocto_api.js 33400 2018-11-27 07:58:29Z seb $
  *
  * High-level programming interface, common to all modules
  *
@@ -879,14 +879,22 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
     // Retrieve the number of functions (beside "module") in the device
     function YDevice_functionCount()
     {
-        return this._functions.length;
+        var funcPos = 0;
+        for (var key in this._functions) {
+            funcPos++;
+        }
+        return funcPos;
     }
 
     // Retrieve the Id of the nth function (beside "module") in the device
     function YDevice_functionId(int_idx)
     {
-        if(int_idx < this._functions.length) {
-            return this._functions[int_idx][0];
+        var funcPos = 0;
+        for (var key in this._functions) {
+            if(int_idx === funcPos) {
+                return this._functions[key][0];
+            }
+            funcPos++;
         }
         return "";
     }
@@ -894,11 +902,12 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
     // Retrieve the base type of the nth function (beside "module") in the device
     function YDevice_functionBaseType(int_idx)
     {
-        if(int_idx < this._functions.length) {
-            var ftype = YAPI.getFunctionBaseType(this._serialNumber+"."+this._functions[int_idx][0]);
-            for (var name in Y_BASETYPES) {
-                if (Y_BASETYPES[name] == ftype){
-                    return name;
+        var funid = this.functionId(int_idx);
+        if(funid !== '') {
+            var ftype = YAPI.getFunctionBaseType(this._serialNumber+'.'+funid);
+            for (var baseType in Y_BASETYPES) {
+                if (Y_BASETYPES[baseType] === ftype){
+                    return baseType;
                 }
             }
         }
@@ -908,15 +917,16 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
     // Retrieve the type of the nth function (beside "module") in the device
     function YDevice_functionType(int_idx)
     {
-        if(int_idx < this._functions.length) {
-            var funid = this._functions[int_idx][0];
+        var funid = this.functionId(int_idx);
+        if(funid !== '') {
             var i;
             for (i = 0; i < funid.length; i++) {
                 if (funid[i] >= '0' && funid[i] <= '9') {
                     break;
                 }
             }
-            return funid[0].toUpperCase() + funid.substr(1, i - 1);
+            var functionType = funid[0].toUpperCase() + funid.substr(1, i - 1);
+            return functionType;
         }
         return "";
     }
@@ -924,8 +934,12 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
     // Retrieve the logical name of the nth function (beside "module") in the device
     function YDevice_functionName(int_idx)
     {
-        if(int_idx < this._functions.length) {
-            return this._functions[int_idx][1];
+        var funcPos = 0;
+        for (var key in this._functions) {
+            if(int_idx === funcPos) {
+                return this._functions[key][1];
+            }
+            funcPos++;
         }
         return "";
     }
@@ -933,8 +947,9 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
     // Retrieve the advertised value of the nth function (beside "module") in the device
     function YDevice_functionValue(int_idx)
     {
-        if(int_idx < this._functions.length) {
-            return YAPI.getFunctionValue(this._serialNumber+"."+this._functions[int_idx][0]);
+        var funid = this.functionId(int_idx);
+        if(funid !== '') {
+            return YAPI.getFunctionValue(this._serialNumber+'.'+funid);
         }
         return "";
     }
@@ -2632,7 +2647,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
      */
     function YAPI_GetAPIVersion()
     {
-        return "1.10.32759";
+        return "1.10.33423";
     }
 
     /**
@@ -3159,7 +3174,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
                 // event object is an array of bytes (encoded timed report)
                 var dev = this.getDevice(evt[0]._serial);
                 if(dev) {
-                    var report = evt[0]._decodeTimedReport(evt[1], evt[2]);
+                    var report = evt[0]._decodeTimedReport(evt[1], 0, evt[2]);
                     evt[0]._invokeTimedReportCallback(report);
                 }
             }
@@ -5276,21 +5291,17 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
         this._utcStamp                       = 0;                          // u32
         this._nCols                          = 0;                          // int
         this._nRows                          = 0;                          // int
-        this._duration                       = 0;                          // int
+        this._startTime                      = 0;                          // float
+        this._duration                       = 0;                          // float
+        this._dataSamplesInterval            = 0;                          // float
+        this._firstMeasureDuration           = 0;                          // float
         this._columnNames                    = [];                         // strArr
         this._functionId                     = "";                         // str
         this._isClosed                       = 0;                          // bool
         this._isAvg                          = 0;                          // bool
-        this._isScal                         = 0;                          // bool
-        this._isScal32                       = 0;                          // bool
-        this._decimals                       = 0;                          // int
-        this._offset                         = 0;                          // float
-        this._scale                          = 0;                          // float
-        this._samplesPerHour                 = 0;                          // int
         this._minVal                         = 0;                          // float
         this._avgVal                         = 0;                          // float
         this._maxVal                         = 0;                          // float
-        this._decexp                         = 0;                          // float
         this._caltyp                         = 0;                          // int
         this._calpar                         = [];                         // intArr
         this._calraw                         = [];                         // floatArr
@@ -5312,51 +5323,45 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
         var val;                    // int;
         var i;                      // int;
         var maxpos;                 // int;
-        var iRaw;                   // int;
-        var iRef;                   // int;
+        var ms_offset;              // int;
+        var samplesPerHour;         // int;
         var fRaw;                   // float;
         var fRef;                   // float;
-        var duration_float;         // float;
         var iCalib = [];            // intArr;
         // decode sequence header to extract data
         this._runNo = encoded[0] + (((encoded[1]) << (16)));
         this._utcStamp = encoded[2] + (((encoded[3]) << (16)));
         val = encoded[4];
         this._isAvg = (((val) & (0x100)) == 0);
-        this._samplesPerHour = ((val) & (0xff));
+        samplesPerHour = ((val) & (0xff));
         if (((val) & (0x100)) != 0) {
-            this._samplesPerHour = this._samplesPerHour * 3600;
+            samplesPerHour = samplesPerHour * 3600;
         } else {
             if (((val) & (0x200)) != 0) {
-                this._samplesPerHour = this._samplesPerHour * 60;
+                samplesPerHour = samplesPerHour * 60;
             }
         }
-        val = encoded[5];
-        if (val > 32767) {
-            val = val - 65536;
+        this._dataSamplesInterval = 3600.0 / samplesPerHour;
+        ms_offset = encoded[6];
+        if (ms_offset < 1000) {
+            // new encoding . add the ms to the UTC timestamp
+            this._startTime = this._utcStamp + (ms_offset / 1000.0);
+        } else {
+            // legacy encoding subtract the measure interval form the UTC timestamp
+            this._startTime = this._utcStamp -  this._dataSamplesInterval;
         }
-        this._decimals = val;
-        this._offset = val;
-        this._scale = encoded[6];
-        this._isScal = (this._scale != 0);
-        this._isScal32 = (encoded.length >= 14);
+        this._firstMeasureDuration = encoded[5];
+        if (!(this._isAvg)) {
+            this._firstMeasureDuration = this._firstMeasureDuration / 1000.0;
+        }
         val = encoded[7];
         this._isClosed = (val != 0xffff);
         if (val == 0xffff) {
             val = 0;
         }
         this._nRows = val;
-        duration_float = this._nRows * 3600 / this._samplesPerHour;
-        this._duration = Math.round(duration_float);
+        this._duration = this._nRows * this._dataSamplesInterval;
         // precompute decoding parameters
-        this._decexp = 1.0;
-        if (this._scale == 0) {
-            i = 0;
-            while (i < this._decimals) {
-                this._decexp = this._decexp * 10.0;
-                i = i + 1;
-            }
-        }
         iCalib = dataset._get_calibration();
         this._caltyp = iCalib[0];
         if (this._caltyp != 0) {
@@ -5365,42 +5370,20 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
             this._calpar.length = 0;
             this._calraw.length = 0;
             this._calref.length = 0;
-            if (this._isScal32) {
-                i = 1;
-                while (i < maxpos) {
-                    this._calpar.push(iCalib[i]);
-                    i = i + 1;
-                }
-                i = 1;
-                while (i + 1 < maxpos) {
-                    fRaw = iCalib[i];
-                    fRaw = fRaw / 1000.0;
-                    fRef = iCalib[i + 1];
-                    fRef = fRef / 1000.0;
-                    this._calraw.push(fRaw);
-                    this._calref.push(fRef);
-                    i = i + 2;
-                }
-            } else {
-                i = 1;
-                while (i + 1 < maxpos) {
-                    iRaw = iCalib[i];
-                    iRef = iCalib[i + 1];
-                    this._calpar.push(iRaw);
-                    this._calpar.push(iRef);
-                    if (this._isScal) {
-                        fRaw = iRaw;
-                        fRaw = (fRaw - this._offset) / this._scale;
-                        fRef = iRef;
-                        fRef = (fRef - this._offset) / this._scale;
-                        this._calraw.push(fRaw);
-                        this._calref.push(fRef);
-                    } else {
-                        this._calraw.push(YAPI._decimalToDouble(iRaw));
-                        this._calref.push(YAPI._decimalToDouble(iRef));
-                    }
-                    i = i + 2;
-                }
+            i = 1;
+            while (i < maxpos) {
+                this._calpar.push(iCalib[i]);
+                i = i + 1;
+            }
+            i = 1;
+            while (i + 1 < maxpos) {
+                fRaw = iCalib[i];
+                fRaw = fRaw / 1000.0;
+                fRef = iCalib[i + 1];
+                fRef = fRef / 1000.0;
+                this._calraw.push(fRaw);
+                this._calref.push(fRef);
+                i = i + 2;
             }
         }
         // preload column names for backward-compatibility
@@ -5418,15 +5401,9 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
         }
         // decode min/avg/max values for the sequence
         if (this._nRows > 0) {
-            if (this._isScal32) {
-                this._avgVal = this._decodeAvg(encoded[8] + (((((encoded[9]) ^ (0x8000))) << (16))), 1);
-                this._minVal = this._decodeVal(encoded[10] + (((encoded[11]) << (16))));
-                this._maxVal = this._decodeVal(encoded[12] + (((encoded[13]) << (16))));
-            } else {
-                this._minVal = this._decodeVal(encoded[8]);
-                this._maxVal = this._decodeVal(encoded[9]);
-                this._avgVal = this._decodeAvg(encoded[10] + (((encoded[11]) << (16))), this._nRows);
-            }
+            this._avgVal = this._decodeAvg(encoded[8] + (((((encoded[9]) ^ (0x8000))) << (16))), 1);
+            this._minVal = this._decodeVal(encoded[10] + (((encoded[11]) << (16))));
+            this._maxVal = this._decodeVal(encoded[12] + (((encoded[13]) << (16))));
         }
         return 0;
     }
@@ -5447,34 +5424,18 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
         if (this._isAvg) {
             while (idx + 3 < udat.length) {
                 dat.length = 0;
-                if (this._isScal32) {
-                    dat.push(this._decodeVal(udat[idx + 2] + (((udat[idx + 3]) << (16)))));
-                    dat.push(this._decodeAvg(udat[idx] + (((((udat[idx + 1]) ^ (0x8000))) << (16))), 1));
-                    dat.push(this._decodeVal(udat[idx + 4] + (((udat[idx + 5]) << (16)))));
-                    idx = idx + 6;
-                } else {
-                    dat.push(this._decodeVal(udat[idx]));
-                    dat.push(this._decodeAvg(udat[idx + 2] + (((udat[idx + 3]) << (16))), 1));
-                    dat.push(this._decodeVal(udat[idx + 1]));
-                    idx = idx + 4;
-                }
+                dat.push(this._decodeVal(udat[idx + 2] + (((udat[idx + 3]) << (16)))));
+                dat.push(this._decodeAvg(udat[idx] + (((((udat[idx + 1]) ^ (0x8000))) << (16))), 1));
+                dat.push(this._decodeVal(udat[idx + 4] + (((udat[idx + 5]) << (16)))));
+                idx = idx + 6;
                 this._values.push(dat.slice());
             }
         } else {
-            if (this._isScal && !(this._isScal32)) {
-                while (idx < udat.length) {
-                    dat.length = 0;
-                    dat.push(this._decodeVal(udat[idx]));
-                    this._values.push(dat.slice());
-                    idx = idx + 1;
-                }
-            } else {
-                while (idx + 1 < udat.length) {
-                    dat.length = 0;
-                    dat.push(this._decodeAvg(udat[idx] + (((((udat[idx + 1]) ^ (0x8000))) << (16))), 1));
-                    this._values.push(dat.slice());
-                    idx = idx + 2;
-                }
+            while (idx + 1 < udat.length) {
+                dat.length = 0;
+                dat.push(this._decodeAvg(udat[idx] + (((((udat[idx + 1]) ^ (0x8000))) << (16))), 1));
+                this._values.push(dat.slice());
+                idx = idx + 2;
             }
         }
 
@@ -5498,15 +5459,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
     {
         var val;                    // float;
         val = w;
-        if (this._isScal32) {
-            val = val / 1000.0;
-        } else {
-            if (this._isScal) {
-                val = (val - this._offset) / this._scale;
-            } else {
-                val = YAPI._decimalToDouble(w);
-            }
-        }
+        val = val / 1000.0;
         if (this._caltyp != 0) {
             if (this._calhdl != null) {
                 val = this._calhdl(val, this._caltyp, this._calpar, this._calraw, this._calref);
@@ -5519,15 +5472,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
     {
         var val;                    // float;
         val = dw;
-        if (this._isScal32) {
-            val = val / 1000.0;
-        } else {
-            if (this._isScal) {
-                val = (val / (100 * count) - this._offset) / this._scale;
-            } else {
-                val = val / (count * this._decexp);
-            }
-        }
+        val = val / 1000.0;
         if (this._caltyp != 0) {
             if (this._calhdl != null) {
                 val = this._calhdl(val, this._caltyp, this._calpar, this._calraw, this._calref);
@@ -5559,7 +5504,9 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
      * If the device uses a firmware older than version 13000, value is
      * relative to the start of the time the device was powered on, and
      * is always positive.
-     * If you need an absolute UTC timestamp, use get_startTimeUTC().
+     * If you need an absolute UTC timestamp, use get_realStartTimeUTC().
+     *
+     * <b>DEPRECATED</b>: This method has been replaced by get_realStartTimeUTC().
      *
      * @return an unsigned number corresponding to the number of seconds
      *         between the start of the run and the beginning of this data
@@ -5575,13 +5522,29 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
      * If the UTC time was not set in the datalogger at the time of the recording
      * of this data stream, this method returns 0.
      *
+     * <b>DEPRECATED</b>: This method has been replaced by get_realStartTimeUTC().
+     *
      * @return an unsigned number corresponding to the number of seconds
      *         between the Jan 1, 1970 and the beginning of this data
      *         stream (i.e. Unix time representation of the absolute time).
      */
     function YDataStream_get_startTimeUTC()
     {
-        return this._utcStamp;
+        return Math.round(this._startTime);
+    }
+
+    /**
+     * Returns the start time of the data stream, relative to the Jan 1, 1970.
+     * If the UTC time was not set in the datalogger at the time of the recording
+     * of this data stream, this method returns 0.
+     *
+     * @return a floating-point number  corresponding to the number of seconds
+     *         between the Jan 1, 1970 and the beginning of this data
+     *         stream (i.e. Unix time representation of the absolute time).
+     */
+    function YDataStream_get_realStartTimeUTC()
+    {
+        return this._startTime;
     }
 
     /**
@@ -5594,12 +5557,17 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
      */
     function YDataStream_get_dataSamplesIntervalMs()
     {
-        return parseInt((3600000) / (this._samplesPerHour));
+        return Math.round(this._dataSamplesInterval*1000);
     }
 
     function YDataStream_get_dataSamplesInterval()
     {
-        return 3600.0 / this._samplesPerHour;
+        return this._dataSamplesInterval;
+    }
+
+    function YDataStream_get_firstDataSamplesInterval()
+    {
+        return this._firstMeasureDuration;
     }
 
     /**
@@ -5715,14 +5683,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
         return this._maxVal;
     }
 
-    /**
-     * Returns the approximate duration of this stream, in seconds.
-     *
-     * @return the number of seconds covered by this stream.
-     *
-     * On failure, throws an exception or returns Y_DURATION_INVALID.
-     */
-    function YDataStream_get_duration()
+    function YDataStream_get_realDuration()
     {
         if (this._isClosed) {
             return this._duration;
@@ -5801,10 +5762,14 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
     YDataStream.prototype.startTime                   = YDataStream_get_startTime;
     YDataStream.prototype.get_startTimeUTC            = YDataStream_get_startTimeUTC;
     YDataStream.prototype.startTimeUTC                = YDataStream_get_startTimeUTC;
+    YDataStream.prototype.get_realStartTimeUTC        = YDataStream_get_realStartTimeUTC;
+    YDataStream.prototype.realStartTimeUTC            = YDataStream_get_realStartTimeUTC;
     YDataStream.prototype.get_dataSamplesIntervalMs   = YDataStream_get_dataSamplesIntervalMs;
     YDataStream.prototype.dataSamplesIntervalMs       = YDataStream_get_dataSamplesIntervalMs;
     YDataStream.prototype.get_dataSamplesInterval     = YDataStream_get_dataSamplesInterval;
     YDataStream.prototype.dataSamplesInterval         = YDataStream_get_dataSamplesInterval;
+    YDataStream.prototype.get_firstDataSamplesInterval = YDataStream_get_firstDataSamplesInterval;
+    YDataStream.prototype.firstDataSamplesInterval    = YDataStream_get_firstDataSamplesInterval;
     YDataStream.prototype.get_rowCount                = YDataStream_get_rowCount;
     YDataStream.prototype.rowCount                    = YDataStream_get_rowCount;
     YDataStream.prototype.get_columnCount             = YDataStream_get_columnCount;
@@ -5817,8 +5782,8 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
     YDataStream.prototype.averageValue                = YDataStream_get_averageValue;
     YDataStream.prototype.get_maxValue                = YDataStream_get_maxValue;
     YDataStream.prototype.maxValue                    = YDataStream_get_maxValue;
-    YDataStream.prototype.get_duration                = YDataStream_get_duration;
-    YDataStream.prototype.duration                    = YDataStream_get_duration;
+    YDataStream.prototype.get_realDuration            = YDataStream_get_realDuration;
+    YDataStream.prototype.realDuration                = YDataStream_get_realDuration;
     YDataStream.prototype.get_dataRows                = YDataStream_get_dataRows;
     YDataStream.prototype.dataRows                    = YDataStream_get_dataRows;
     YDataStream.prototype.get_data                    = YDataStream_get_data;
@@ -5854,8 +5819,8 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
         this._hardwareId                     = "";                         // str
         this._functionId                     = "";                         // str
         this._unit                           = "";                         // str
-        this._startTime                      = 0;                          // u32
-        this._endTime                        = 0;                          // u32
+        this._startTime                      = 0;                          // float
+        this._endTime                        = 0;                          // float
         this._progress                       = 0;                          // int
         this._calib                          = [];                         // intArr
         this._streams                        = [];                         // YDataStreamArr
@@ -5899,10 +5864,13 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
         var strdata;                // str;
         var tim;                    // float;
         var itv;                    // float;
+        var fitv;                   // float;
+        var end_;                   // float;
         var nCols;                  // int;
         var minCol;                 // int;
         var avgCol;                 // int;
         var maxCol;                 // int;
+        var firstMeasure;           // bool;
 
         if (progress != this._progress) {
             return this._progress;
@@ -5922,8 +5890,12 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
         if (dataRows.length == 0) {
             return this.get_progress();
         }
-        tim = stream.get_startTimeUTC();
+        tim = stream.get_realStartTimeUTC();
+        fitv = stream.get_firstDataSamplesInterval();
         itv = stream.get_dataSamplesInterval();
+        if (fitv == 0) {
+            fitv = itv;
+        }
         if (tim < itv) {
             tim = itv;
         }
@@ -5940,13 +5912,19 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
             maxCol = 0;
         }
 
+        firstMeasure = true;
         for (ii in dataRows) {
             if(ii=='indexOf') continue; // IE8 Don'tEnum bug
-            if ((tim >= this._startTime) && ((this._endTime == 0) || (tim <= this._endTime))) {
-                this._measures.push(new YMeasure(tim - itv, tim, dataRows[ii][minCol], dataRows[ii][avgCol], dataRows[ii][maxCol]));
+            if (firstMeasure) {
+                end_ = tim + fitv;
+                firstMeasure = false;
+            } else {
+                end_ = tim + itv;
             }
-            tim = tim + itv;
-            tim = Math.round(tim * 1000) / 1000.0;
+            if ((tim >= this._startTime) && ((this._endTime == 0) || (end_ <= this._endTime))) {
+                this._measures.push(new YMeasure(tim, end_, dataRows[ii][minCol], dataRows[ii][avgCol], dataRows[ii][maxCol]));
+            }
+            tim = end_;
         }
         return this.get_progress();
     }
@@ -6008,11 +5986,19 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
      * to reflect the timestamp of the first measure actually found in the
      * dataLogger within the specified range.
      *
+     * <b>DEPRECATED</b>: This method has been replaced by get_summary()
+     * which contain more precise informations on the YDataSet.
+     *
      * @return an unsigned number corresponding to the number of seconds
      *         between the Jan 1, 1970 and the beginning of this data
      *         set (i.e. Unix time representation of the absolute time).
      */
     function YDataSet_get_startTimeUTC()
+    {
+        return this.imm_get_startTimeUTC();
+    }
+
+    function YDataSet_imm_get_startTimeUTC()
     {
         return this._startTime;
     }
@@ -6025,13 +6011,22 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
      * to reflect the timestamp of the last measure actually found in the
      * dataLogger within the specified range.
      *
+     * <b>DEPRECATED</b>: This method has been replaced by get_summary()
+     * which contain more precise informations on the YDataSet.
+     *
+     *
      * @return an unsigned number corresponding to the number of seconds
      *         between the Jan 1, 1970 and the end of this data
      *         set (i.e. Unix time representation of the absolute time).
      */
     function YDataSet_get_endTimeUTC()
     {
-        return this._endTime;
+        return this.imm_get_endTimeUTC();
+    }
+
+    function YDataSet_imm_get_endTimeUTC()
+    {
+        return Math.round(this._endTime);
     }
 
     /**
@@ -6070,10 +6065,10 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
         if (this._progress < 0) {
             url = "logger.json?id="+this._functionId;
             if (this._startTime != 0) {
-                url = ""+url+"&from="+String(Math.round(this._startTime));
+                url = ""+url+"&from="+String(Math.round(this.imm_get_startTimeUTC()));
             }
             if (this._endTime != 0) {
-                url = ""+url+"&to="+String(Math.round(this._endTime));
+                url = ""+url+"&to="+String(Math.round(this.imm_get_endTimeUTC()+1));
             }
         } else {
             if (this._progress >= this._streams.length) {
@@ -6148,22 +6143,23 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
     function YDataSet_get_measuresAt(measure)
     {
         var ii; // iterator
-        var startUtc;               // u32;
+        var startUtc;               // float;
         var stream;                 // YDataStream;
         var dataRows = [];          // floatArrArr;
         var measures = [];          // YMeasureArr;
         var tim;                    // float;
         var itv;                    // float;
+        var end_;                   // float;
         var nCols;                  // int;
         var minCol;                 // int;
         var avgCol;                 // int;
         var maxCol;                 // int;
 
-        startUtc = Math.round(measure.get_startTimeUTC());
+        startUtc = measure.get_startTimeUTC();
         stream = null;
         for (ii in this._streams) {
             if(ii=='indexOf') continue; // IE8 Don'tEnum bug
-            if (this._streams[ii].get_startTimeUTC() == startUtc) {
+            if (this._streams[ii].get_realStartTimeUTC() == startUtc) {
                 stream = this._streams[ii];
             }
         }
@@ -6174,7 +6170,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
         if (dataRows.length == 0) {
             return measures;
         }
-        tim = stream.get_startTimeUTC();
+        tim = stream.get_realStartTimeUTC();
         itv = stream.get_dataSamplesInterval();
         if (tim < itv) {
             tim = itv;
@@ -6194,10 +6190,11 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
 
         for (ii in dataRows) {
             if(ii=='indexOf') continue; // IE8 Don'tEnum bug
-            if ((tim >= this._startTime) && ((this._endTime == 0) || (tim <= this._endTime))) {
-                measures.push(new YMeasure(tim - itv, tim, dataRows[ii][minCol], dataRows[ii][avgCol], dataRows[ii][maxCol]));
+            end_ = tim + itv;
+            if ((tim >= this._startTime) && ((this._endTime == 0) || (end_ <= this._endTime))) {
+                measures.push(new YMeasure(tim, end_, dataRows[ii][minCol], dataRows[ii][avgCol], dataRows[ii][maxCol]));
             }
-            tim = tim + itv;
+            tim = end_;
         }
         return measures;
     }
@@ -6266,11 +6263,11 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
         this._measures   = [];
         for(var i = 0; i < loadval.streams.length; i++) {
             var stream = this._parent._findDataStream(this, loadval.streams[i]);
-            var streamEndTime = stream.get_startTimeUTC() + stream.get_duration();
-            var streamStartTime = stream.get_startTimeUTC() - parseInt(stream.get_dataSamplesIntervalMs()/1000);
+            var streamStartTime = stream.get_realStartTimeUTC();
+            var streamEndTime = streamStartTime + stream.get_realDuration();
             if(this._startTime > 0 && streamEndTime <= this._startTime) {
                 // this stream is too early, drop it
-            } else if(this._endTime > 0 && stream.get_startTimeUTC() > this._endTime) {
+            } else if(this._endTime > 0 && streamStartTime >= this._endTime) {
                 // this stream is too late, drop it
             } else {
                 this._streams.push(stream);
@@ -6280,16 +6277,16 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
                 if(endTime < streamEndTime) {
                     endTime = streamEndTime;
                 }
-                if(stream.isClosed() && stream.get_startTimeUTC() >= this._startTime &&
+                if(stream.isClosed() && streamEndTime >= this._startTime &&
                 (this._endTime == 0 || streamEndTime <= this._endTime)) {
                     if (summaryMinVal > stream.get_minValue())
                         summaryMinVal = stream.get_minValue();
                     if (summaryMaxVal < stream.get_maxValue())
                         summaryMaxVal = stream.get_maxValue();
-                    summaryTotalAvg  += stream.get_averageValue() * stream.get_duration();
-                    summaryTotalTime += stream.get_duration();
+                    summaryTotalAvg  += stream.get_averageValue() * stream.get_realDuration();
+                    summaryTotalTime += stream.get_realDuration();
 
-                    var rec = new YMeasure(stream.get_startTimeUTC(),
+                    var rec = new YMeasure(streamEndTime,
                                            streamEndTime,
                                            stream.get_minValue(),
                                            stream.get_averageValue(),
@@ -6426,8 +6423,10 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
     YDataSet.prototype.unit                        = YDataSet_get_unit;
     YDataSet.prototype.get_startTimeUTC            = YDataSet_get_startTimeUTC;
     YDataSet.prototype.startTimeUTC                = YDataSet_get_startTimeUTC;
+    YDataSet.prototype.imm_get_startTimeUTC        = YDataSet_imm_get_startTimeUTC;
     YDataSet.prototype.get_endTimeUTC              = YDataSet_get_endTimeUTC;
     YDataSet.prototype.endTimeUTC                  = YDataSet_get_endTimeUTC;
+    YDataSet.prototype.imm_get_endTimeUTC          = YDataSet_imm_get_endTimeUTC;
     YDataSet.prototype.get_progress                = YDataSet_get_progress;
     YDataSet.prototype.progress                    = YDataSet_get_progress;
     YDataSet.prototype.loadMore                    = YDataSet_loadMore;
@@ -6481,8 +6480,6 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
         this._offset                         = 0;                          // float
         this._scale                          = 0;                          // float
         this._decexp                         = 0;                          // float
-        this._isScal                         = 0;                          // bool
-        this._isScal32                       = 0;                          // bool
         this._caltyp                         = 0;                          // int
         this._calpar                         = [];                         // intArr
         this._calraw                         = [];                         // floatArr
@@ -7287,7 +7284,6 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
         var fRef;                   // float;
         this._caltyp = -1;
         this._scale = -1;
-        this._isScal32 = false;
         this._calpar.length = 0;
         this._calraw.length = 0;
         this._calref.length = 0;
@@ -7321,8 +7317,6 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
                 }
             }
             // New 32bit text format
-            this._isScal = true;
-            this._isScal32 = true;
             this._offset = 0;
             this._scale = 1000;
             maxpos = iCalib.length;
@@ -7353,23 +7347,13 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
                 return 0;
             }
             // Save variable format (scale for scalar, or decimal exponent)
-            this._isScal = (iCalib[1] > 0);
-            if (this._isScal) {
-                this._offset = iCalib[0];
-                if (this._offset > 32767) {
-                    this._offset = this._offset - 65536;
-                }
-                this._scale = iCalib[1];
-                this._decexp = 0;
-            } else {
-                this._offset = 0;
-                this._scale = 1;
-                this._decexp = 1.0;
-                position = iCalib[0];
-                while (position > 0) {
-                    this._decexp = this._decexp * 10;
-                    position = position - 1;
-                }
+            this._offset = 0;
+            this._scale = 1;
+            this._decexp = 1.0;
+            position = iCalib[0];
+            while (position > 0) {
+                this._decexp = this._decexp * 10;
+                position = position - 1;
             }
             // Shortcut when there is no calibration parameter
             if (iCalib.length == 2) {
@@ -7401,17 +7385,8 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
                 iRef = iCalib[position + 1];
                 this._calpar.push(iRaw);
                 this._calpar.push(iRef);
-                if (this._isScal) {
-                    fRaw = iRaw;
-                    fRaw = (fRaw - this._offset) / this._scale;
-                    fRef = iRef;
-                    fRef = (fRef - this._offset) / this._scale;
-                    this._calraw.push(fRaw);
-                    this._calref.push(fRef);
-                } else {
-                    this._calraw.push(YAPI._decimalToDouble(iRaw));
-                    this._calref.push(YAPI._decimalToDouble(iRef));
-                }
+                this._calraw.push(YAPI._decimalToDouble(iRaw));
+                this._calref.push(YAPI._decimalToDouble(iRef));
                 position = position + 2;
             }
         }
@@ -7641,8 +7616,6 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
         var res;                    // str;
         var npt;                    // int;
         var idx;                    // int;
-        var iRaw;                   // int;
-        var iRef;                   // int;
         npt = rawValues.length;
         if (npt != refValues.length) {
             this._throw(YAPI_INVALID_ARGUMENT, "Invalid calibration parameters (size mismatch)");
@@ -7663,36 +7636,12 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
             this._throw(YAPI_NOT_SUPPORTED, "Calibration parameters format mismatch. Please upgrade your library or firmware.");
             return "0";
         }
-        if (this._isScal32) {
-            // 32-bit fixed-point encoding
-            res = ""+String(Math.round(YOCTO_CALIB_TYPE_OFS));
-            idx = 0;
-            while (idx < npt) {
-                res = ""+res+","+String(Math.round(rawValues[idx]*1000)/1000)+","+String(Math.round(refValues[idx]*1000)/1000);
-                idx = idx + 1;
-            }
-        } else {
-            if (this._isScal) {
-                // 16-bit fixed-point encoding
-                res = ""+String(Math.round(npt));
-                idx = 0;
-                while (idx < npt) {
-                    iRaw = Math.round(rawValues[idx] * this._scale + this._offset);
-                    iRef = Math.round(refValues[idx] * this._scale + this._offset);
-                    res = ""+res+","+String(Math.round(iRaw))+","+String(Math.round(iRef));
-                    idx = idx + 1;
-                }
-            } else {
-                // 16-bit floating-point decimal encoding
-                res = ""+String(Math.round(10 + npt));
-                idx = 0;
-                while (idx < npt) {
-                    iRaw = YAPI._doubleToDecimal(rawValues[idx]);
-                    iRef = YAPI._doubleToDecimal(refValues[idx]);
-                    res = ""+res+","+String(Math.round(iRaw))+","+String(Math.round(iRef));
-                    idx = idx + 1;
-                }
-            }
+        // 32-bit fixed-point encoding
+        res = ""+String(Math.round(YOCTO_CALIB_TYPE_OFS));
+        idx = 0;
+        while (idx < npt) {
+            res = ""+res+","+String(Math.round(rawValues[idx]*1000)/1000)+","+String(Math.round(refValues[idx]*1000)/1000);
+            idx = idx + 1;
         }
         return res;
     }
@@ -7714,140 +7663,103 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
         return this._calhdl(rawValue, this._caltyp, this._calpar, this._calraw, this._calref);
     }
 
-    function YSensor_decodeTimedReport(timestamp,report)
+    function YSensor_decodeTimedReport(timestamp,duration,report)
     {
         var i;                      // int;
         var byteVal;                // int;
-        var poww;                   // int;
-        var minRaw;                 // int;
-        var avgRaw;                 // int;
-        var maxRaw;                 // int;
+        var poww;                   // float;
+        var minRaw;                 // float;
+        var avgRaw;                 // float;
+        var maxRaw;                 // float;
         var sublen;                 // int;
-        var difRaw;                 // int;
+        var difRaw;                 // float;
         var startTime;              // float;
         var endTime;                // float;
         var minVal;                 // float;
         var avgVal;                 // float;
         var maxVal;                 // float;
-        startTime = this._prevTimedReport;
+        if (duration > 0) {
+            startTime = timestamp - duration;
+        } else {
+            startTime = this._prevTimedReport;
+        }
         endTime = timestamp;
         this._prevTimedReport = endTime;
         if (startTime == 0) {
             startTime = endTime;
         }
-        if (report[0] == 2) {
-            // 32bit timed report format
-            if (report.length <= 5) {
-                // sub-second report, 1-4 bytes
-                poww = 1;
-                avgRaw = 0;
-                byteVal = 0;
-                i = 1;
-                while (i < report.length) {
-                    byteVal = report[i];
-                    avgRaw = avgRaw + poww * byteVal;
-                    poww = poww * 0x100;
-                    i = i + 1;
-                }
-                if (((byteVal) & (0x80)) != 0) {
-                    avgRaw = avgRaw - poww;
-                }
-                avgVal = avgRaw / 1000.0;
-                if (this._caltyp != 0) {
-                    if (this._calhdl != null) {
-                        avgVal = this._calhdl(avgVal, this._caltyp, this._calpar, this._calraw, this._calref);
-                    }
-                }
-                minVal = avgVal;
-                maxVal = avgVal;
-            } else {
-                // averaged report: avg,avg-min,max-avg
-                sublen = 1 + ((report[1]) & (3));
-                poww = 1;
-                avgRaw = 0;
-                byteVal = 0;
-                i = 2;
-                while ((sublen > 0) && (i < report.length)) {
-                    byteVal = report[i];
-                    avgRaw = avgRaw + poww * byteVal;
-                    poww = poww * 0x100;
-                    i = i + 1;
-                    sublen = sublen - 1;
-                }
-                if (((byteVal) & (0x80)) != 0) {
-                    avgRaw = avgRaw - poww;
-                }
-                sublen = 1 + ((((report[1]) >> (2))) & (3));
-                poww = 1;
-                difRaw = 0;
-                while ((sublen > 0) && (i < report.length)) {
-                    byteVal = report[i];
-                    difRaw = difRaw + poww * byteVal;
-                    poww = poww * 0x100;
-                    i = i + 1;
-                    sublen = sublen - 1;
-                }
-                minRaw = avgRaw - difRaw;
-                sublen = 1 + ((((report[1]) >> (4))) & (3));
-                poww = 1;
-                difRaw = 0;
-                while ((sublen > 0) && (i < report.length)) {
-                    byteVal = report[i];
-                    difRaw = difRaw + poww * byteVal;
-                    poww = poww * 0x100;
-                    i = i + 1;
-                    sublen = sublen - 1;
-                }
-                maxRaw = avgRaw + difRaw;
-                avgVal = avgRaw / 1000.0;
-                minVal = minRaw / 1000.0;
-                maxVal = maxRaw / 1000.0;
-                if (this._caltyp != 0) {
-                    if (this._calhdl != null) {
-                        avgVal = this._calhdl(avgVal, this._caltyp, this._calpar, this._calraw, this._calref);
-                        minVal = this._calhdl(minVal, this._caltyp, this._calpar, this._calraw, this._calref);
-                        maxVal = this._calhdl(maxVal, this._caltyp, this._calpar, this._calraw, this._calref);
-                    }
+        // 32bit timed report format
+        if (report.length <= 5) {
+            // sub-second report, 1-4 bytes
+            poww = 1;
+            avgRaw = 0;
+            byteVal = 0;
+            i = 1;
+            while (i < report.length) {
+                byteVal = report[i];
+                avgRaw = avgRaw + poww * byteVal;
+                poww = poww * 0x100;
+                i = i + 1;
+            }
+            if (((byteVal) & (0x80)) != 0) {
+                avgRaw = avgRaw - poww;
+            }
+            avgVal = avgRaw / 1000.0;
+            if (this._caltyp != 0) {
+                if (this._calhdl != null) {
+                    avgVal = this._calhdl(avgVal, this._caltyp, this._calpar, this._calraw, this._calref);
                 }
             }
+            minVal = avgVal;
+            maxVal = avgVal;
         } else {
-            // 16bit timed report format
-            if (report[0] == 0) {
-                // sub-second report, 1-4 bytes
-                poww = 1;
-                avgRaw = 0;
-                byteVal = 0;
-                i = 1;
-                while (i < report.length) {
-                    byteVal = report[i];
-                    avgRaw = avgRaw + poww * byteVal;
-                    poww = poww * 0x100;
-                    i = i + 1;
+            // averaged report: avg,avg-min,max-avg
+            sublen = 1 + ((report[1]) & (3));
+            poww = 1;
+            avgRaw = 0;
+            byteVal = 0;
+            i = 2;
+            while ((sublen > 0) && (i < report.length)) {
+                byteVal = report[i];
+                avgRaw = avgRaw + poww * byteVal;
+                poww = poww * 0x100;
+                i = i + 1;
+                sublen = sublen - 1;
+            }
+            if (((byteVal) & (0x80)) != 0) {
+                avgRaw = avgRaw - poww;
+            }
+            sublen = 1 + ((((report[1]) >> (2))) & (3));
+            poww = 1;
+            difRaw = 0;
+            while ((sublen > 0) && (i < report.length)) {
+                byteVal = report[i];
+                difRaw = difRaw + poww * byteVal;
+                poww = poww * 0x100;
+                i = i + 1;
+                sublen = sublen - 1;
+            }
+            minRaw = avgRaw - difRaw;
+            sublen = 1 + ((((report[1]) >> (4))) & (3));
+            poww = 1;
+            difRaw = 0;
+            while ((sublen > 0) && (i < report.length)) {
+                byteVal = report[i];
+                difRaw = difRaw + poww * byteVal;
+                poww = poww * 0x100;
+                i = i + 1;
+                sublen = sublen - 1;
+            }
+            maxRaw = avgRaw + difRaw;
+            avgVal = avgRaw / 1000.0;
+            minVal = minRaw / 1000.0;
+            maxVal = maxRaw / 1000.0;
+            if (this._caltyp != 0) {
+                if (this._calhdl != null) {
+                    avgVal = this._calhdl(avgVal, this._caltyp, this._calpar, this._calraw, this._calref);
+                    minVal = this._calhdl(minVal, this._caltyp, this._calpar, this._calraw, this._calref);
+                    maxVal = this._calhdl(maxVal, this._caltyp, this._calpar, this._calraw, this._calref);
                 }
-                if (this._isScal) {
-                    avgVal = this._decodeVal(avgRaw);
-                } else {
-                    if (((byteVal) & (0x80)) != 0) {
-                        avgRaw = avgRaw - poww;
-                    }
-                    avgVal = this._decodeAvg(avgRaw);
-                }
-                minVal = avgVal;
-                maxVal = avgVal;
-            } else {
-                // averaged report 2+4+2 bytes
-                minRaw = report[1] + 0x100 * report[2];
-                maxRaw = report[3] + 0x100 * report[4];
-                avgRaw = report[5] + 0x100 * report[6] + 0x10000 * report[7];
-                byteVal = report[8];
-                if (((byteVal) & (0x80)) == 0) {
-                    avgRaw = avgRaw + 0x1000000 * byteVal;
-                } else {
-                    avgRaw = avgRaw - 0x1000000 * (0x100 - byteVal);
-                }
-                minVal = this._decodeVal(minRaw);
-                avgVal = this._decodeAvg(avgRaw);
-                maxVal = this._decodeVal(maxRaw);
             }
         }
         return new YMeasure(startTime, endTime, minVal, avgVal, maxVal);
@@ -7857,11 +7769,6 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
     {
         var val;                    // float;
         val = w;
-        if (this._isScal) {
-            val = (val - this._offset) / this._scale;
-        } else {
-            val = YAPI._decimalToDouble(w);
-        }
         if (this._caltyp != 0) {
             if (this._calhdl != null) {
                 val = this._calhdl(val, this._caltyp, this._calpar, this._calraw, this._calref);
@@ -7874,11 +7781,6 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
     {
         var val;                    // float;
         val = dw;
-        if (this._isScal) {
-            val = (val / 100 - this._offset) / this._scale;
-        } else {
-            val = val / this._decexp;
-        }
         if (this._caltyp != 0) {
             if (this._calhdl != null) {
                 val = this._calhdl(val, this._caltyp, this._calpar, this._calraw, this._calref);
@@ -7889,6 +7791,9 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
 
     /**
      * Continues the enumeration of sensors started using yFirstSensor().
+     * Caution: You can't make any assumption about the returned sensors order.
+     * If you want to find a specific a sensor, use Sensor.findSensor()
+     * and a hardwareID or a logical name.
      *
      * @return a pointer to a YSensor object, corresponding to
      *         a sensor currently online, or a null pointer
@@ -8849,6 +8754,9 @@ var YDataLogger; // definition below
 
     /**
      * Continues the enumeration of data loggers started using yFirstDataLogger().
+     * Caution: You can't make any assumption about the returned data loggers order.
+     * If you want to find a specific a data logger, use DataLogger.findDataLogger()
+     * and a hardwareID or a logical name.
      *
      * @return a pointer to a YDataLogger object, corresponding to
      *         a data logger currently online, or a null pointer
@@ -9294,7 +9202,10 @@ function yFirstDataLogger()
        return "";
    }
 
+    function YModule_startStopDevLog(serial,start)
+    {
 
+    }
     //--- (generated code: YModule implementation)
 
     function YModule_parseAttr(name, val, _super)
@@ -10058,6 +9969,7 @@ function yFirstDataLogger()
      * found is returned. The search is performed first by hardware name,
      * then by logical name.
      *
+     *
      * If a call to this object's is_online() method returns FALSE although
      * you are certain that the device is plugged, make sure that you did
      * call registerHub() at application initialization time.
@@ -10132,6 +10044,35 @@ function yFirstDataLogger()
     function YModule_triggerFirmwareUpdate(secBeforeReboot)
     {
         return this.set_rebootCountdown(-secBeforeReboot);
+    }
+
+    //cannot be generated for JS:
+    //function YModule_startStopDevLog(serial,start)
+
+    /**
+     * Registers a device log callback function. This callback will be called each time
+     * that a module sends a new log message. Mostly useful to debug a Yoctopuce module.
+     *
+     * @param callback : the callback function to call, or a null pointer. The callback function should take two
+     *         arguments: the module object that emitted the log message, and the character string containing the log.
+     *         On failure, throws an exception or returns a negative error code.
+     */
+    function YModule_registerLogCallback(callback)
+    {
+        var serial;                 // str;
+
+        serial = this.get_serialNumber();
+        if (serial == YAPI_INVALID_STRING) {
+            return YAPI_DEVICE_NOT_FOUND;
+        }
+        this._logCallback = callback;
+        this._startStopDevLog(serial, callback != null);
+        return 0;
+    }
+
+    function YModule_get_logCallback()
+    {
+        return this._logCallback;
     }
 
     /**
@@ -10438,6 +10379,8 @@ function yFirstDataLogger()
                 this._upload(name, YAPI._hexStrToBin(data));
             }
         }
+        // Apply settings a second time for file-dependent settings and dynamic sensor nodes
+        this.set_allSettings(json_api);
         return YAPI_SUCCESS;
     }
 
@@ -11096,6 +11039,9 @@ function yFirstDataLogger()
 
     /**
      * Continues the module enumeration started using yFirstModule().
+     * Caution: You can't make any assumption about the returned modules order.
+     * If you want to find a specific module, use Module.findModule()
+     * and a hardwareID or a logical name.
      *
      * @return a pointer to a YModule object, corresponding to
      *         the next module found, or a null pointer
@@ -11215,6 +11161,10 @@ function yFirstDataLogger()
         revertFromFlash             : YModule_revertFromFlash,
         reboot                      : YModule_reboot,
         triggerFirmwareUpdate       : YModule_triggerFirmwareUpdate,
+        _startStopDevLog            : YModule_startStopDevLog,
+        registerLogCallback         : YModule_registerLogCallback,
+        get_logCallback             : YModule_get_logCallback,
+        logCallback                 : YModule_get_logCallback,
         registerConfigChangeCallback : YModule_registerConfigChangeCallback,
         _invokeConfigChangeCallback : YModule_invokeConfigChangeCallback,
         registerBeaconCallback      : YModule_registerBeaconCallback,
@@ -11707,6 +11657,7 @@ function yFirstSensor()
  * a module by logical name, no error is notified: the first instance
  * found is returned. The search is performed first by hardware name,
  * then by logical name.
+ *
  *
  * If a call to this object's is_online() method returns FALSE although
  * you are certain that the device is plugged, make sure that you did

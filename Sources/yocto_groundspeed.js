@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_groundspeed.js 32610 2018-10-10 06:52:20Z seb $
+ *  $Id: yocto_groundspeed.js 32905 2018-11-02 10:15:36Z seb $
  *
  *  Implements the high-level API for GroundSpeed functions
  *
@@ -110,6 +110,9 @@ var YGroundSpeed; // definition below
 
     /**
      * Continues the enumeration of ground speed sensors started using yFirstGroundSpeed().
+     * Caution: You can't make any assumption about the returned ground speed sensors order.
+     * If you want to find a specific a ground speed sensor, use GroundSpeed.findGroundSpeed()
+     * and a hardwareID or a logical name.
      *
      * @return a pointer to a YGroundSpeed object, corresponding to
      *         a ground speed sensor currently online, or a null pointer

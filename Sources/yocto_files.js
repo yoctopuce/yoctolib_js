@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_files.js 28745 2017-10-03 08:17:29Z seb $
+ * $Id: yocto_files.js 32905 2018-11-02 10:15:36Z seb $
  *
  * Implements yFindFiles(), the high-level API for Files functions
  *
@@ -423,6 +423,9 @@ var YFiles; // definition below
 
     /**
      * Continues the enumeration of filesystems started using yFirstFiles().
+     * Caution: You can't make any assumption about the returned filesystems order.
+     * If you want to find a specific a filesystem, use Files.findFiles()
+     * and a hardwareID or a logical name.
      *
      * @return a pointer to a YFiles object, corresponding to
      *         a filesystem currently online, or a null pointer
