@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_api.js 33400 2018-11-27 07:58:29Z seb $
+ * $Id: yocto_api.js 33505 2018-12-05 14:45:46Z seb $
  *
  * High-level programming interface, common to all modules
  *
@@ -67,6 +67,8 @@ var Y_FRIENDLYNAME_INVALID          = YAPI_INVALID_STRING;
 var Y_LOGICALNAME_INVALID           = YAPI_INVALID_STRING;
 var Y_ADVERTISEDVALUE_INVALID       = YAPI_INVALID_STRING;
 //--- (end of generated code: YFunction definitions)
+var YAPI_MAX_DOUBLE             = Number.MAX_VALUE;
+var YAPI_MIN_DOUBLE             = -Number.MAX_VALUE;
 
 //--- (generated code: YMeasure definitions)
 //--- (end of generated code: YMeasure definitions)
@@ -2647,7 +2649,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
      */
     function YAPI_GetAPIVersion()
     {
-        return "1.10.33423";
+        return "1.10.33576";
     }
 
     /**
@@ -5812,21 +5814,25 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
  */
 //--- (end of generated code: YDataSet class start)
 
-    function _YDataSet(obj_parent, str_functionId, str_unit, u32_startTime, u32_endTime)
+    function _YDataSet(obj_parent, str_functionId, str_unit, double_startTime, double_endTime)
     {
         //--- (generated code: YDataSet constructor)
         this._parent                         = null;                       // YFunction
         this._hardwareId                     = "";                         // str
         this._functionId                     = "";                         // str
         this._unit                           = "";                         // str
-        this._startTime                      = 0;                          // float
-        this._endTime                        = 0;                          // float
+        this._startTimeMs                    = 0;                          // float
+        this._endTimeMs                      = 0;                          // float
         this._progress                       = 0;                          // int
         this._calib                          = [];                         // intArr
         this._streams                        = [];                         // YDataStreamArr
         this._summary                        = null;                       // YMeasure
         this._preview                        = [];                         // YMeasureArr
         this._measures                       = [];                         // YMeasureArr
+        this._summaryMinVal                  = 0;                          // float
+        this._summaryMaxVal                  = 0;                          // float
+        this._summaryTotalAvg                = 0;                          // float
+        this._summaryTotalTime               = 0;                          // float
         //--- (end of generated code: YDataSet constructor)
         this._parse                          = YDataSet_parse;
         this.loadMore_async                  = YDataSet_loadMore_async;
@@ -5843,8 +5849,8 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
             this._parent     = obj_parent;
             this._functionId = str_functionId;
             this._unit       = str_unit;
-            this._startTime  = u32_startTime;
-            this._endTime    = u32_endTime;
+            this._startTimeMs= double_startTime;
+            this._endTimeMs  = double_endTime;
             this._progress   = -1;
         }
     }
@@ -5856,12 +5862,182 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
         return this._calib;
     }
 
+    function YDataSet_loadSummary(data)
+    {
+        var ii; // iterator
+        var dataRows = [];          // floatArrArr;
+        var tim;                    // float;
+        var mitv;                   // float;
+        var itv;                    // float;
+        var fitv;                   // float;
+        var end_;                   // float;
+        var nCols;                  // int;
+        var minCol;                 // int;
+        var avgCol;                 // int;
+        var maxCol;                 // int;
+        var res;                    // int;
+        var m_pos;                  // int;
+        var previewTotalTime;       // float;
+        var previewTotalAvg;        // float;
+        var previewMinVal;          // float;
+        var previewMaxVal;          // float;
+        var previewAvgVal;          // float;
+        var previewStartMs;         // float;
+        var previewStopMs;          // float;
+        var previewDuration;        // float;
+        var streamStartTimeMs;      // float;
+        var streamDuration;         // float;
+        var streamEndTimeMs;        // float;
+        var minVal;                 // float;
+        var avgVal;                 // float;
+        var maxVal;                 // float;
+        var summaryStartMs;         // float;
+        var summaryStopMs;          // float;
+        var summaryTotalTime;       // float;
+        var summaryTotalAvg;        // float;
+        var summaryMinVal;          // float;
+        var summaryMaxVal;          // float;
+        var url;                    // str;
+        var strdata;                // str;
+        var measure_data = [];      // floatArr;
+
+        if (this._progress < 0) {
+            strdata = data;
+            if (strdata == "{}") {
+                this._parent._throw(YAPI_VERSION_MISMATCH, "device firmware is too old");
+                return YAPI_VERSION_MISMATCH;
+            }
+            res = this._parse(strdata);
+            if (res < 0) {
+                return res;
+            }
+        }
+        summaryTotalTime = 0;
+        summaryTotalAvg = 0;
+        summaryMinVal = YAPI_MAX_DOUBLE;
+        summaryMaxVal = YAPI_MIN_DOUBLE;
+        summaryStartMs = YAPI_MAX_DOUBLE;
+        summaryStopMs = YAPI_MIN_DOUBLE;
+
+        // Parse comlete streams
+        for (ii in  this._streams) {
+            if(ii=='indexOf') continue; // IE8 Don'tEnum bug
+            streamStartTimeMs = Math.round( this._streams[ii].get_realStartTimeUTC() *1000);
+            streamDuration =  this._streams[ii].get_realDuration() ;
+            streamEndTimeMs = streamStartTimeMs + Math.round(streamDuration * 1000);
+            if ((streamStartTimeMs >= this._startTimeMs) && ((this._endTimeMs == 0) || (streamEndTimeMs <= this._endTimeMs))) {
+                // stream that are completely inside the dataset
+                previewMinVal =  this._streams[ii].get_minValue();
+                previewAvgVal =  this._streams[ii].get_averageValue();
+                previewMaxVal =  this._streams[ii].get_maxValue();
+                previewStartMs = streamStartTimeMs;
+                previewStopMs = streamEndTimeMs;
+                previewDuration = streamDuration;
+            } else {
+                // stream that are partially in the dataset
+                // we need to parse data to filter value outide the dataset
+                url =  this._streams[ii]._get_url();
+                data = this._parent._download(url);
+                this._streams[ii]._parseStream(data);
+                dataRows =  this._streams[ii].get_dataRows();
+                if (dataRows.length == 0) {
+                    return this.get_progress();
+                }
+                tim = streamStartTimeMs;
+                fitv = Math.round( this._streams[ii].get_firstDataSamplesInterval() * 1000);
+                itv = Math.round( this._streams[ii].get_dataSamplesInterval() * 1000);
+                nCols = dataRows[0].length;
+                minCol = 0;
+                if (nCols > 2) {
+                    avgCol = 1;
+                } else {
+                    avgCol = 0;
+                }
+                if (nCols > 2) {
+                    maxCol = 2;
+                } else {
+                    maxCol = 0;
+                }
+                previewTotalTime = 0;
+                previewTotalAvg = 0;
+                previewStartMs = streamEndTimeMs;
+                previewStopMs = streamStartTimeMs;
+                previewMinVal = YAPI_MAX_DOUBLE;
+                previewMaxVal = YAPI_MIN_DOUBLE;
+                m_pos = 0;
+                while (m_pos < dataRows.length) {
+                    measure_data  = dataRows[m_pos];
+                    if (m_pos == 0) {
+                        mitv = fitv;
+                    } else {
+                        mitv = itv;
+                    }
+                    end_ = tim + mitv;
+                    if ((end_ > this._startTimeMs) && ((this._endTimeMs == 0) || (tim < this._endTimeMs))) {
+                        minVal = measure_data[minCol];
+                        avgVal = measure_data[avgCol];
+                        maxVal = measure_data[maxCol];
+                        if (previewStartMs > tim) {
+                            previewStartMs = tim;
+                        }
+                        if (previewStopMs < end_) {
+                            previewStopMs = end_;
+                        }
+                        if (previewMinVal > minVal) {
+                            previewMinVal = minVal;
+                        }
+                        if (previewMaxVal < maxVal) {
+                            previewMaxVal = maxVal;
+                        }
+                        previewTotalAvg = previewTotalAvg + (avgVal * mitv);
+                        previewTotalTime = previewTotalTime + mitv;
+                    }
+                    tim = end_;
+                    m_pos = m_pos + 1;
+                }
+                if (previewTotalTime > 0) {
+                    previewAvgVal = previewTotalAvg / previewTotalTime;
+                    previewDuration = (previewStopMs - previewStartMs) / 1000.0;
+                } else {
+                    previewAvgVal = 0.0;
+                    previewDuration = 0.0;
+                }
+            }
+            this._preview.push(new YMeasure(previewStartMs / 1000.0, previewStopMs / 1000.0, previewMinVal, previewAvgVal, previewMaxVal));
+            if (summaryMinVal > previewMinVal) {
+                summaryMinVal = previewMinVal;
+            }
+            if (summaryMaxVal < previewMaxVal) {
+                summaryMaxVal = previewMaxVal;
+            }
+            if (summaryStartMs > previewStartMs) {
+                summaryStartMs = previewStartMs;
+            }
+            if (summaryStopMs < previewStopMs) {
+                summaryStopMs = previewStopMs;
+            }
+            summaryTotalAvg = summaryTotalAvg + (previewAvgVal * previewDuration);
+            summaryTotalTime = summaryTotalTime + previewDuration;
+        }
+        if ((this._startTimeMs == 0) || (this._startTimeMs > summaryStartMs)) {
+            this._startTimeMs = summaryStartMs;
+        }
+        if ((this._endTimeMs == 0) || (this._endTimeMs < summaryStopMs)) {
+            this._endTimeMs = summaryStopMs;
+        }
+        if (summaryTotalTime > 0) {
+            this._summary = new YMeasure(summaryStartMs / 1000.0, summaryStopMs / 1000.0, summaryMinVal, summaryTotalAvg / summaryTotalTime, summaryMaxVal);
+        } else {
+            this._summary = new YMeasure(0.0, 0.0, YAPI_INVALID_DOUBLE, YAPI_INVALID_DOUBLE, YAPI_INVALID_DOUBLE);
+        }
+        return this.get_progress();
+    }
+
     function YDataSet_processMore(progress,data)
     {
         var ii; // iterator
         var stream;                 // YDataStream;
         var dataRows = [];          // floatArrArr;
-        var strdata;                // str;
         var tim;                    // float;
         var itv;                    // float;
         var fitv;                   // float;
@@ -5876,12 +6052,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
             return this._progress;
         }
         if (this._progress < 0) {
-            strdata = data;
-            if (strdata == "{}") {
-                this._parent._throw(YAPI_VERSION_MISMATCH, "device firmware is too old");
-                return YAPI_VERSION_MISMATCH;
-            }
-            return this._parse(strdata);
+            return this.loadSummary(data);
         }
         stream = this._streams[this._progress];
         stream._parseStream(data);
@@ -5890,9 +6061,9 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
         if (dataRows.length == 0) {
             return this.get_progress();
         }
-        tim = stream.get_realStartTimeUTC();
-        fitv = stream.get_firstDataSamplesInterval();
-        itv = stream.get_dataSamplesInterval();
+        tim = Math.round(stream.get_realStartTimeUTC() * 1000);
+        fitv = Math.round(stream.get_firstDataSamplesInterval() * 1000);
+        itv = Math.round(stream.get_dataSamplesInterval() * 1000);
         if (fitv == 0) {
             fitv = itv;
         }
@@ -5921,8 +6092,8 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
             } else {
                 end_ = tim + itv;
             }
-            if ((tim >= this._startTime) && ((this._endTime == 0) || (end_ <= this._endTime))) {
-                this._measures.push(new YMeasure(tim, end_, dataRows[ii][minCol], dataRows[ii][avgCol], dataRows[ii][maxCol]));
+            if ((end_ > this._startTimeMs) && ((this._endTimeMs == 0) || (tim < this._endTimeMs))) {
+                this._measures.push(new YMeasure(tim / 1000, end_ / 1000, dataRows[ii][minCol], dataRows[ii][avgCol], dataRows[ii][maxCol]));
             }
             tim = end_;
         }
@@ -6000,7 +6171,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
 
     function YDataSet_imm_get_startTimeUTC()
     {
-        return this._startTime;
+        return (this._startTimeMs / 1000.0);
     }
 
     /**
@@ -6026,7 +6197,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
 
     function YDataSet_imm_get_endTimeUTC()
     {
-        return Math.round(this._endTime);
+        return Math.round(this._endTimeMs / 1000.0);
     }
 
     /**
@@ -6064,10 +6235,10 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
         var stream;                 // YDataStream;
         if (this._progress < 0) {
             url = "logger.json?id="+this._functionId;
-            if (this._startTime != 0) {
+            if (this._startTimeMs != 0) {
                 url = ""+url+"&from="+String(Math.round(this.imm_get_startTimeUTC()));
             }
-            if (this._endTime != 0) {
+            if (this._endTimeMs != 0) {
                 url = ""+url+"&to="+String(Math.round(this.imm_get_endTimeUTC()+1));
             }
         } else {
@@ -6143,7 +6314,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
     function YDataSet_get_measuresAt(measure)
     {
         var ii; // iterator
-        var startUtc;               // float;
+        var startUtcMs;             // float;
         var stream;                 // YDataStream;
         var dataRows = [];          // floatArrArr;
         var measures = [];          // YMeasureArr;
@@ -6155,11 +6326,11 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
         var avgCol;                 // int;
         var maxCol;                 // int;
 
-        startUtc = measure.get_startTimeUTC();
+        startUtcMs = measure.get_startTimeUTC() * 1000;
         stream = null;
         for (ii in this._streams) {
             if(ii=='indexOf') continue; // IE8 Don'tEnum bug
-            if (this._streams[ii].get_realStartTimeUTC() == startUtc) {
+            if (Math.round(this._streams[ii].get_realStartTimeUTC() *1000) == startUtcMs) {
                 stream = this._streams[ii];
             }
         }
@@ -6170,8 +6341,8 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
         if (dataRows.length == 0) {
             return measures;
         }
-        tim = stream.get_realStartTimeUTC();
-        itv = stream.get_dataSamplesInterval();
+        tim = Math.round(stream.get_realStartTimeUTC() * 1000);
+        itv = Math.round(stream.get_dataSamplesInterval() * 1000);
         if (tim < itv) {
             tim = itv;
         }
@@ -6191,8 +6362,8 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
         for (ii in dataRows) {
             if(ii=='indexOf') continue; // IE8 Don'tEnum bug
             end_ = tim + itv;
-            if ((tim >= this._startTime) && ((this._endTime == 0) || (end_ <= this._endTime))) {
-                measures.push(new YMeasure(tim, end_, dataRows[ii][minCol], dataRows[ii][avgCol], dataRows[ii][maxCol]));
+            if ((end_ > this._startTimeMs) && ((this._endTimeMs == 0) || (tim < this._endTimeMs))) {
+                measures.push(new YMeasure(tim / 1000.0, end_ / 1000.0, dataRows[ii][minCol], dataRows[ii][avgCol], dataRows[ii][maxCol]));
             }
             tim = end_;
         }
@@ -6234,12 +6405,6 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
     // YDataSet parser for stream list
     function YDataSet_parse(str_json)
     {
-        var summaryMinVal    = Number.MAX_VALUE;
-        var summaryMaxVal    = -Number.MAX_VALUE;
-        var summaryTotalTime = 0;
-        var summaryTotalAvg  = 0;
-        var startTime        = 0x7fffffff;
-        var endTime          = 0;
         var loadval;
 
         try {loadval = JSON.parse(str_json);} catch(err){}
@@ -6263,48 +6428,15 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
         this._measures   = [];
         for(var i = 0; i < loadval.streams.length; i++) {
             var stream = this._parent._findDataStream(this, loadval.streams[i]);
-            var streamStartTime = stream.get_realStartTimeUTC();
-            var streamEndTime = streamStartTime + stream.get_realDuration();
-            if(this._startTime > 0 && streamEndTime <= this._startTime) {
+            var streamStartTime = stream.get_realStartTimeUTC() * 1000;
+            var streamEndTime = streamStartTime + stream.get_realDuration() * 1000;
+            if(this._startTimeMs > 0 && streamEndTime <= this._startTimeMs) {
                 // this stream is too early, drop it
-            } else if(this._endTime > 0 && streamStartTime >= this._endTime) {
+            } else if(this._endTimeMs > 0 && streamStartTime >= this._endTimeMs) {
                 // this stream is too late, drop it
             } else {
                 this._streams.push(stream);
-                if(startTime > streamStartTime) {
-                    startTime = streamStartTime;
-                }
-                if(endTime < streamEndTime) {
-                    endTime = streamEndTime;
-                }
-                if(stream.isClosed() && streamEndTime >= this._startTime &&
-                (this._endTime == 0 || streamEndTime <= this._endTime)) {
-                    if (summaryMinVal > stream.get_minValue())
-                        summaryMinVal = stream.get_minValue();
-                    if (summaryMaxVal < stream.get_maxValue())
-                        summaryMaxVal = stream.get_maxValue();
-                    summaryTotalAvg  += stream.get_averageValue() * stream.get_realDuration();
-                    summaryTotalTime += stream.get_realDuration();
-
-                    var rec = new YMeasure(streamEndTime,
-                                           streamEndTime,
-                                           stream.get_minValue(),
-                                           stream.get_averageValue(),
-                                           stream.get_maxValue());
-                    this._preview.push(rec);
-                }
             }
-        }
-        if((this._streams.length > 0) && (summaryTotalTime>0)) {
-            // update time boundaries with actual data
-            if(this._startTime < startTime) {
-                this._startTime = startTime;
-            }
-            if(this._endTime == 0 || this._endTime > endTime) {
-                this._endTime = endTime;
-            }
-            this._summary = new YMeasure(this._startTime,this._endTime,
-                                         summaryMinVal,summaryTotalAvg/summaryTotalTime,summaryMaxVal);
         }
         this._progress = 0;
         return this.get_progress();
@@ -6412,6 +6544,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
     YDataSet = _YDataSet;
     // Methods
     YDataSet.prototype._get_calibration            = YDataSet_get_calibration;
+    YDataSet.prototype.loadSummary                 = YDataSet_loadSummary;
     YDataSet.prototype.processMore                 = YDataSet_processMore;
     YDataSet.prototype.get_privateDataStreams      = YDataSet_get_privateDataStreams;
     YDataSet.prototype.privateDataStreams          = YDataSet_get_privateDataStreams;
