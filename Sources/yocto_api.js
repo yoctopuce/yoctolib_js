@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_api.js 33505 2018-12-05 14:45:46Z seb $
+ * $Id: yocto_api.js 33601 2018-12-09 14:30:31Z mvuilleu $
  *
  * High-level programming interface, common to all modules
  *
@@ -2649,7 +2649,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
      */
     function YAPI_GetAPIVersion()
     {
-        return "1.10.33576";
+        return "1.10.33636";
     }
 
     /**
@@ -8079,6 +8079,7 @@ var Y_CLEARHISTORY_TRUE             = 1;
 var Y_CLEARHISTORY_INVALID          = -1;
 var Y_CURRENTRUNINDEX_INVALID       = YAPI_INVALID_UINT;
 var Y_TIMEUTC_INVALID               = YAPI_INVALID_LONG;
+var Y_USAGE_INVALID                 = YAPI_INVALID_UINT;
 //--- (end of generated code: YDataLogger definitions)
 
 var Y_DATA_INVALID                  = YAPI_INVALID_DOUBLE;
@@ -8411,6 +8412,9 @@ var YDataLogger; // definition below
             return 1;
         case "beaconDriven":
             this._beaconDriven = parseInt(val);
+            return 1;
+        case "usage":
+            this._usage = parseInt(val);
             return 1;
         case "clearHistory":
             this._clearHistory = parseInt(val);
@@ -8752,6 +8756,57 @@ var YDataLogger; // definition below
         return this._setAttr('beaconDriven',rest_val);
     }
 
+    /**
+     * Returns the percentage of datalogger memory in use.
+     *
+     * @return an integer corresponding to the percentage of datalogger memory in use
+     *
+     * On failure, throws an exception or returns Y_USAGE_INVALID.
+     */
+    function YDataLogger_get_usage()
+    {
+        var res;                    // int;
+        if (this._cacheExpiration <= YAPI.GetTickCount()) {
+            if (this.load(YAPI.defaultCacheValidity) != YAPI_SUCCESS) {
+                return Y_USAGE_INVALID;
+            }
+        }
+        res = this._usage;
+        return res;
+    }
+
+    /**
+     * Gets the percentage of datalogger memory in use.
+     *
+     * @param callback : callback function that is invoked when the result is known.
+     *         The callback function receives three arguments:
+     *         - the user-specific context object
+     *         - the YDataLogger object that invoked the callback
+     *         - the result:an integer corresponding to the percentage of datalogger memory in use
+     * @param context : user-specific object that is passed as-is to the callback function
+     *
+     * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
+     *
+     * On failure, throws an exception or returns Y_USAGE_INVALID.
+     */
+    function YDataLogger_get_usage_async(callback,context)
+    {
+        var res;                    // int;
+        var loadcb;                 // func;
+        loadcb = function(ctx,obj,res) {
+            if (res != YAPI_SUCCESS) {
+                callback(context, obj, Y_USAGE_INVALID);
+            } else {
+                callback(context, obj, obj._usage);
+            }
+        };
+        if (this._cacheExpiration <= YAPI.GetTickCount()) {
+            this.load_async(YAPI.defaultCacheValidity,loadcb,null);
+        } else {
+            loadcb(null, this, YAPI_SUCCESS);
+        }
+    }
+
     function YDataLogger_get_clearHistory()
     {
         var res;                    // enumBOOL;
@@ -8933,6 +8988,7 @@ var YDataLogger; // definition below
         this._recording                      = Y_RECORDING_INVALID;        // OffOnPending
         this._autoStart                      = Y_AUTOSTART_INVALID;        // OnOff
         this._beaconDriven                   = Y_BEACONDRIVEN_INVALID;     // OnOff
+        this._usage                          = Y_USAGE_INVALID;            // Percent
         this._clearHistory                   = Y_CLEARHISTORY_INVALID;     // Bool
         //--- (end of generated code: YDataLogger constructor)
         this.getData                         = YDataLogger_getData;
@@ -8957,6 +9013,7 @@ var YDataLogger; // definition below
         BEACONDRIVEN_OFF            : 0,
         BEACONDRIVEN_ON             : 1,
         BEACONDRIVEN_INVALID        : -1,
+        USAGE_INVALID               : YAPI_INVALID_UINT,
         CLEARHISTORY_FALSE          : 0,
         CLEARHISTORY_TRUE           : 1,
         CLEARHISTORY_INVALID        : -1
@@ -8994,6 +9051,10 @@ var YDataLogger; // definition below
         beaconDriven_async          : YDataLogger_get_beaconDriven_async,
         set_beaconDriven            : YDataLogger_set_beaconDriven,
         setBeaconDriven             : YDataLogger_set_beaconDriven,
+        get_usage                   : YDataLogger_get_usage,
+        usage                       : YDataLogger_get_usage,
+        get_usage_async             : YDataLogger_get_usage_async,
+        usage_async                 : YDataLogger_get_usage_async,
         get_clearHistory            : YDataLogger_get_clearHistory,
         clearHistory                : YDataLogger_get_clearHistory,
         get_clearHistory_async      : YDataLogger_get_clearHistory_async,
