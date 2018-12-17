@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_weighscale.js 32905 2018-11-02 10:15:36Z seb $
+ *  $Id: yocto_weighscale.js 33714 2018-12-14 14:20:39Z seb $
  *
  *  Implements the high-level API for WeighScale functions
  *
@@ -211,7 +211,7 @@ var YWeighScale; // definition below
      * Changes the averaged temperature update rate, in per mille.
      * The purpose of this adaptation ratio is to model the thermal inertia of the load cell.
      * The averaged temperature is updated every 10 seconds, by applying this adaptation rate
-     * to the difference between the measures ambiant temperature and the current compensation
+     * to the difference between the measures ambient temperature and the current compensation
      * temperature. The standard rate is 0.2 per mille, and the maximal rate is 65 per mille.
      *
      * @param newval : a floating point number corresponding to the averaged temperature update rate, in per mille
@@ -230,7 +230,7 @@ var YWeighScale; // definition below
      * Returns the averaged temperature update rate, in per mille.
      * The purpose of this adaptation ratio is to model the thermal inertia of the load cell.
      * The averaged temperature is updated every 10 seconds, by applying this adaptation rate
-     * to the difference between the measures ambiant temperature and the current compensation
+     * to the difference between the measures ambient temperature and the current compensation
      * temperature. The standard rate is 0.2 per mille, and the maximal rate is 65 per mille.
      *
      * @return a floating point number corresponding to the averaged temperature update rate, in per mille
@@ -253,7 +253,7 @@ var YWeighScale; // definition below
      * Gets the averaged temperature update rate, in per mille.
      * The purpose of this adaptation ratio is to model the thermal inertia of the load cell.
      * The averaged temperature is updated every 10 seconds, by applying this adaptation rate
-     * to the difference between the measures ambiant temperature and the current compensation
+     * to the difference between the measures ambient temperature and the current compensation
      * temperature. The standard rate is 0.2 per mille, and the maximal rate is 65 per mille.
      *
      * @param callback : callback function that is invoked when the result is known.
@@ -288,7 +288,7 @@ var YWeighScale; // definition below
     /**
      * Changes the temperature change update rate, in per mille.
      * The temperature change is updated every 10 seconds, by applying this adaptation rate
-     * to the difference between the measures ambiant temperature and the current temperature used for
+     * to the difference between the measures ambient temperature and the current temperature used for
      * change compensation. The standard rate is 0.6 per mille, and the maximal rate is 65 pour mille.
      *
      * @param newval : a floating point number corresponding to the temperature change update rate, in per mille
@@ -306,7 +306,7 @@ var YWeighScale; // definition below
     /**
      * Returns the temperature change update rate, in per mille.
      * The temperature change is updated every 10 seconds, by applying this adaptation rate
-     * to the difference between the measures ambiant temperature and the current temperature used for
+     * to the difference between the measures ambient temperature and the current temperature used for
      * change compensation. The standard rate is 0.6 per mille, and the maximal rate is 65 pour mille.
      *
      * @return a floating point number corresponding to the temperature change update rate, in per mille
@@ -328,7 +328,7 @@ var YWeighScale; // definition below
     /**
      * Gets the temperature change update rate, in per mille.
      * The temperature change is updated every 10 seconds, by applying this adaptation rate
-     * to the difference between the measures ambiant temperature and the current temperature used for
+     * to the difference between the measures ambient temperature and the current temperature used for
      * change compensation. The standard rate is 0.6 per mille, and the maximal rate is 65 pour mille.
      *
      * @param callback : callback function that is invoked when the result is known.
@@ -691,7 +691,7 @@ var YWeighScale; // definition below
      * so that the current signal corresponds to the specified reference weight.
      *
      * @param currWeight : reference weight presently on the load cell.
-     * @param maxWeight : maximum weight to be expectect on the load cell.
+     * @param maxWeight : maximum weight to be expected on the load cell.
      *
      * @return YAPI_SUCCESS if the call succeeds.
      *

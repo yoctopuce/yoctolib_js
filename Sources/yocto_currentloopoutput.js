@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_currentloopoutput.js 32905 2018-11-02 10:15:36Z seb $
+ *  $Id: yocto_currentloopoutput.js 33714 2018-12-14 14:20:39Z seb $
  *
  *  Implements the high-level API for CurrentLoopOutput functions
  *
@@ -100,7 +100,7 @@ var YCurrentLoopOutput; // definition below
 
     /**
      * Changes the current loop, the valid range is from 3 to 21mA. If the loop is
-     * not propely powered, the  target current is not reached and
+     * not properly powered, the  target current is not reached and
      * loopPower is set to LOWPWR.
      *
      * @param newval : a floating point number corresponding to the current loop, the valid range is from 3 to 21mA
@@ -376,7 +376,7 @@ var YCurrentLoopOutput; // definition below
     }
 
     /**
-     * Performs a smooth transistion of current flowing in the loop. Any current explicit
+     * Performs a smooth transition of current flowing in the loop. Any current explicit
      * change cancels any ongoing transition process.
      *
      * @param mA_target   : new current value at the end of the transition

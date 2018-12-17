@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_wireless.js 32905 2018-11-02 10:15:36Z seb $
+ * $Id: yocto_wireless.js 33714 2018-12-14 14:20:39Z seb $
  *
  * Implements yFindWireless(), the high-level API for Wireless functions
  *
@@ -693,7 +693,7 @@ var YWireless; // definition below
 
     /**
      * Returns a list of YWlanRecord objects that describe detected Wireless networks.
-     * This list is not updated when the module is already connected to an acces point (infrastructure mode).
+     * This list is not updated when the module is already connected to an access point (infrastructure mode).
      * To force an update of this list, startWlanScan() must be called.
      * Note that an languages without garbage collections, the returned list must be freed by the caller.
      *

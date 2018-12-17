@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_network.js 32905 2018-11-02 10:15:36Z seb $
+ *  $Id: yocto_network.js 33714 2018-12-14 14:20:39Z seb $
  *
  *  Implements the high-level API for Network functions
  *
@@ -990,7 +990,7 @@ var YNetwork; // definition below
 
     /**
      * Changes the default HTML page returned by the hub. If not value are set the hub return
-     * "index.html" which is the web interface of the hub. It is possible de change this page
+     * "index.html" which is the web interface of the hub. It is possible to change this page
      * for file that has been uploaded on the hub.
      *
      * @param newval : an integer corresponding to the default HTML page returned by the hub
@@ -1058,7 +1058,7 @@ var YNetwork; // definition below
 
     /**
      * Changes the default HTML page returned by the hub. If not value are set the hub return
-     * "index.html" which is the web interface of the hub. It is possible de change this page
+     * "index.html" which is the web interface of the hub. It is possible to change this page
      * for file that has been uploaded on the hub.
      *
      * @param newval : a string corresponding to the default HTML page returned by the hub
@@ -1806,12 +1806,12 @@ var YNetwork; // definition below
     }
 
     /**
-     * Returns the current consumed by the module from Power-over-Ethernet (PoE), in milli-amps.
+     * Returns the current consumed by the module from Power-over-Ethernet (PoE), in milliamps.
      * The current consumption is measured after converting PoE source to 5 Volt, and should
      * never exceed 1800 mA.
      *
      * @return an integer corresponding to the current consumed by the module from Power-over-Ethernet
-     * (PoE), in milli-amps
+     * (PoE), in milliamps
      *
      * On failure, throws an exception or returns Y_POECURRENT_INVALID.
      */
@@ -1828,7 +1828,7 @@ var YNetwork; // definition below
     }
 
     /**
-     * Gets the current consumed by the module from Power-over-Ethernet (PoE), in milli-amps.
+     * Gets the current consumed by the module from Power-over-Ethernet (PoE), in milliamps.
      * The current consumption is measured after converting PoE source to 5 Volt, and should
      * never exceed 1800 mA.
      *
@@ -1837,7 +1837,7 @@ var YNetwork; // definition below
      *         - the user-specific context object
      *         - the YNetwork object that invoked the callback
      *         - the result:an integer corresponding to the current consumed by the module from
-     *         Power-over-Ethernet (PoE), in milli-amps
+     *         Power-over-Ethernet (PoE), in milliamps
      * @param context : user-specific object that is passed as-is to the callback function
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
@@ -1908,7 +1908,7 @@ var YNetwork; // definition below
      *
      * @param fallbackIpAddr : fallback IP address, to be used when no DHCP reply is received
      * @param fallbackSubnetMaskLen : fallback subnet mask length when no DHCP reply is received, as an
-     *         integer (eg. 24 means 255.255.255.0)
+     *         integer (e.g. 24 means 255.255.255.0)
      * @param fallbackRouter : fallback router IP address, to be used when no DHCP reply is received
      *
      * @return YAPI_SUCCESS when the call succeeds.
@@ -1940,7 +1940,7 @@ var YNetwork; // definition below
      * Remember to call the saveToFlash() method and then to reboot the module to apply this setting.
      *
      * @param ipAddress : device IP address
-     * @param subnetMaskLen : subnet mask length, as an integer (eg. 24 means 255.255.255.0)
+     * @param subnetMaskLen : subnet mask length, as an integer (e.g. 24 means 255.255.255.0)
      * @param router : router IP address (default gateway)
      *
      * @return YAPI_SUCCESS when the call succeeds.
@@ -1985,7 +1985,7 @@ var YNetwork; // definition below
     }
 
     /**
-     * Setup periodic HTTP callbacks (simplifed function).
+     * Setup periodic HTTP callbacks (simplified function).
      *
      * @param interval : a string representing the callback periodicity, expressed in
      *         seconds, minutes or hours, eg. "60s", "5m", "1h", "48h".

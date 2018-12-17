@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_files.js 32905 2018-11-02 10:15:36Z seb $
+ * $Id: yocto_files.js 33714 2018-12-14 14:20:39Z seb $
  *
  * Implements yFindFiles(), the high-level API for Files functions
  *
@@ -317,7 +317,7 @@ var YFiles; // definition below
      * in the filesystem.
      *
      * @param pattern : an optional filter pattern, using star and question marks
-     *         as wildcards. When an empty pattern is provided, all file records
+     *         as wild cards. When an empty pattern is provided, all file records
      *         are returned.
      *
      * @return a list of YFileRecord objects, containing the file path
@@ -346,7 +346,7 @@ var YFiles; // definition below
      *
      * @param filename : the file name to test.
      *
-     * @return a true if the file existe, false ortherwise.
+     * @return a true if the file exist, false otherwise.
      *
      * On failure, throws an exception.
      */
@@ -460,7 +460,7 @@ var YFiles; // definition below
     /**
      * Downloads the requested file and returns a binary buffer with its content.
      * This is the asynchronous version that uses a callback to pass the result
-     * when the donwload is completed.
+     * when the download is completed.
      *
      * @param pathname : path and name of the new file to load
      * @param callback : callback function that is invoked when the w

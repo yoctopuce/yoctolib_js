@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_refframe.js 32905 2018-11-02 10:15:36Z seb $
+ *  $Id: yocto_refframe.js 33714 2018-12-14 14:20:39Z seb $
  *
  *  Implements the high-level API for RefFrame functions
  *
@@ -591,7 +591,7 @@ var YRefFrame; // definition below
      * The calibration procedure is completed when the method
      * get_3DCalibrationProgress returns 100. At this point,
      * the computed calibration parameters can be applied using method
-     * save3DCalibration. The calibration process can be canceled
+     * save3DCalibration. The calibration process can be cancelled
      * at any time using method cancel3DCalibration.
      *
      * On failure, throws an exception or returns a negative error code.
@@ -662,7 +662,7 @@ var YRefFrame; // definition below
         if (this._calibProgress == 100) {
             return YAPI_SUCCESS;
         }
-        // make sure we leave at least 160ms between samples
+        // make sure we leave at least 160 ms between samples
         currTick =  ((YAPI.GetTickCount()) & (0x7FFFFFFF));
         if (((currTick - this._calibPrevTick) & (0x7FFFFFFF)) < 160) {
             return YAPI_SUCCESS;

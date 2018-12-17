@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_buzzer.js 32905 2018-11-02 10:15:36Z seb $
+ *  $Id: yocto_buzzer.js 33714 2018-12-14 14:20:39Z seb $
  *
  *  Implements the high-level API for Buzzer functions
  *
@@ -753,7 +753,7 @@ var YBuzzer; // definition below
      * Activates the buzzer for a short duration.
      *
      * @param frequency : pulse frequency, in hertz
-     * @param duration : pulse duration in millseconds
+     * @param duration : pulse duration in milliseconds
      *
      * @return YAPI_SUCCESS if the call succeeds.
      *
@@ -768,7 +768,7 @@ var YBuzzer; // definition below
      * Makes the buzzer frequency change over a period of time.
      *
      * @param frequency : frequency to reach, in hertz. A frequency under 25Hz stops the buzzer.
-     * @param duration :  pulse duration in millseconds
+     * @param duration :  pulse duration in milliseconds
      *
      * @return YAPI_SUCCESS if the call succeeds.
      *
@@ -783,7 +783,7 @@ var YBuzzer; // definition below
      * Makes the buzzer volume change over a period of time, frequency  stays untouched.
      *
      * @param volume : volume to reach in %
-     * @param duration : change duration in millseconds
+     * @param duration : change duration in milliseconds
      *
      * @return YAPI_SUCCESS if the call succeeds.
      *

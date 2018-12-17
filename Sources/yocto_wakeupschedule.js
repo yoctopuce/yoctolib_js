@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_wakeupschedule.js 32905 2018-11-02 10:15:36Z seb $
+ *  $Id: yocto_wakeupschedule.js 33714 2018-12-14 14:20:39Z seb $
  *
  *  Implements the high-level API for WakeUpSchedule functions
  *
@@ -178,9 +178,9 @@ var YWakeUpSchedule; // definition below
     }
 
     /**
-     * Returns the minutes in the 30-59 intervalof each hour scheduled for wake up.
+     * Returns the minutes in the 30-59 interval of each hour scheduled for wake up.
      *
-     * @return an integer corresponding to the minutes in the 30-59 intervalof each hour scheduled for wake up
+     * @return an integer corresponding to the minutes in the 30-59 interval of each hour scheduled for wake up
      *
      * On failure, throws an exception or returns Y_MINUTESB_INVALID.
      */
@@ -197,13 +197,13 @@ var YWakeUpSchedule; // definition below
     }
 
     /**
-     * Gets the minutes in the 30-59 intervalof each hour scheduled for wake up.
+     * Gets the minutes in the 30-59 interval of each hour scheduled for wake up.
      *
      * @param callback : callback function that is invoked when the result is known.
      *         The callback function receives three arguments:
      *         - the user-specific context object
      *         - the YWakeUpSchedule object that invoked the callback
-     *         - the result:an integer corresponding to the minutes in the 30-59 intervalof each hour scheduled for wake up
+     *         - the result:an integer corresponding to the minutes in the 30-59 interval of each hour scheduled for wake up
      * @param context : user-specific object that is passed as-is to the callback function
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
@@ -508,9 +508,9 @@ var YWakeUpSchedule; // definition below
     }
 
     /**
-     * Returns the date/time (seconds) of the next wake up occurence.
+     * Returns the date/time (seconds) of the next wake up occurrence.
      *
-     * @return an integer corresponding to the date/time (seconds) of the next wake up occurence
+     * @return an integer corresponding to the date/time (seconds) of the next wake up occurrence
      *
      * On failure, throws an exception or returns Y_NEXTOCCURENCE_INVALID.
      */
@@ -527,13 +527,13 @@ var YWakeUpSchedule; // definition below
     }
 
     /**
-     * Gets the date/time (seconds) of the next wake up occurence.
+     * Gets the date/time (seconds) of the next wake up occurrence.
      *
      * @param callback : callback function that is invoked when the result is known.
      *         The callback function receives three arguments:
      *         - the user-specific context object
      *         - the YWakeUpSchedule object that invoked the callback
-     *         - the result:an integer corresponding to the date/time (seconds) of the next wake up occurence
+     *         - the result:an integer corresponding to the date/time (seconds) of the next wake up occurrence
      * @param context : user-specific object that is passed as-is to the callback function
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value

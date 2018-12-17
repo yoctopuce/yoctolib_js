@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_longitude.js 32905 2018-11-02 10:15:36Z seb $
+ *  $Id: yocto_longitude.js 33714 2018-12-14 14:20:39Z seb $
  *
  *  Implements the high-level API for Longitude functions
  *
@@ -49,7 +49,7 @@ if(typeof YAPI == "undefined") { if(typeof yAPI != "undefined") window["YAPI"]=y
  * YLongitude Class: Longitude function interface
  *
  * The Yoctopuce class YLongitude allows you to read the longitude from Yoctopuce
- * geolocalization sensors. It inherits from the YSensor class the core functions to
+ * geolocation sensors. It inherits from the YSensor class the core functions to
  * read measurements, register callback functions, access the autonomous
  * datalogger.
  */

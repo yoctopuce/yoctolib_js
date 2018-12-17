@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_api.js 33601 2018-12-09 14:30:31Z mvuilleu $
+ * $Id: yocto_api.js 33714 2018-12-14 14:20:39Z seb $
  *
  * High-level programming interface, common to all modules
  *
@@ -2649,7 +2649,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
      */
     function YAPI_GetAPIVersion()
     {
-        return "1.10.33636";
+        return "1.10.33736";
     }
 
     /**
@@ -2798,7 +2798,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
      * parameter will determine how the API will work. Use the following values:
      *
      * <b>usb</b>: When the usb keyword is used, the API will work with
-     * devices connected directly to the USB bus. Some programming languages such a Javascript,
+     * devices connected directly to the USB bus. Some programming languages such a JavaScript,
      * PHP, and Java don't provide direct access to USB hardware, so usb will
      * not work with these. In this case, use a VirtualHub or a networked YoctoHub (see below).
      *
@@ -3092,8 +3092,8 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
      * This function can be called as frequently as desired to refresh the device list
      * and to make the application aware of hot-plug events.
      *
-     * This asynchronous version exists only in Javascript. It uses a callback instead
-     * of a return value in order to avoid blocking Firefox Javascript VM that does not
+     * This asynchronous version exists only in JavaScript. It uses a callback instead
+     * of a return value in order to avoid blocking Firefox JavaScript VM that does not
      * implement context switching during blocking I/O calls.
      *
      * @param callback : callback function that is invoked when the result is known.
@@ -4440,7 +4440,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
      * Waits for all pending asynchronous commands on the module to complete, and invoke
      * the user-provided callback function. The callback function can therefore freely
      * issue synchronous or asynchronous commands, without risking to block the
-     * Javascript VM.
+     * JavaScript VM.
      *
      * @param callback : callback function that is invoked when all pending commands on
      *         the module are completed.
@@ -4684,10 +4684,10 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
      * By default, whenever accessing a device, all function attributes
      * are kept in cache for the standard duration (5 ms). This method can be
      * used to temporarily mark the cache as valid for a longer period, in order
-     * to reduce network trafic for instance.
+     * to reduce network traffic for instance.
      *
-     * This asynchronous version exists only in Javascript. It uses a callback instead
-     * of a return value in order to avoid blocking the Javascript virtual machine.
+     * This asynchronous version exists only in JavaScript. It uses a callback instead
+     * of a return value in order to avoid blocking the JavaScript virtual machine.
      *
      * @param msValidity : an integer corresponding to the validity of the loaded
      *         function parameters, in milliseconds
@@ -4757,10 +4757,10 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
      * Gets the YModule object for the device on which the function is located (asynchronous version).
      * If the function cannot be located on any module, the returned YModule object does not show as on-line.
      *
-     * This asynchronous version exists only in Javascript. It uses a callback instead
-     * of a return value in order to avoid blocking Firefox javascript VM that does not
+     * This asynchronous version exists only in JavaScript. It uses a callback instead
+     * of a return value in order to avoid blocking Firefox JavaScript VM that does not
      * implement context switching during blocking I/O calls. See the documentation
-     * section on asynchronous Javascript calls for more details.
+     * section on asynchronous JavasSript calls for more details.
      *
      * @param callback : callback function that is invoked when the result is known.
      *         The callback function receives three arguments: the caller-specific
@@ -5919,7 +5919,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
         summaryStartMs = YAPI_MAX_DOUBLE;
         summaryStopMs = YAPI_MIN_DOUBLE;
 
-        // Parse comlete streams
+        // Parse complete streams
         for (ii in  this._streams) {
             if(ii=='indexOf') continue; // IE8 Don'tEnum bug
             streamStartTimeMs = Math.round( this._streams[ii].get_realStartTimeUTC() *1000);
@@ -5935,7 +5935,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
                 previewDuration = streamDuration;
             } else {
                 // stream that are partially in the dataset
-                // we need to parse data to filter value outide the dataset
+                // we need to parse data to filter value outside the dataset
                 url =  this._streams[ii]._get_url();
                 data = this._parent._download(url);
                 this._streams[ii]._parseStream(data);
@@ -7111,7 +7111,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
      * Changes the timed value notification frequency for this function.
      * The frequency can be specified as samples per second,
      * as sample per minute (for instance "15/m") or in samples per
-     * hour (eg. "4/h"). To disable timed value notifications for this
+     * hour (e.g. "4/h"). To disable timed value notifications for this
      * function, use the value "OFF".
      *
      * @param newval : a string corresponding to the timed value notification frequency for this function
@@ -7449,7 +7449,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
                     return 0;
                 }
             }
-            // New 32bit text format
+            // New 32 bits text format
             this._offset = 0;
             this._scale = 1000;
             maxpos = iCalib.length;
@@ -7619,11 +7619,11 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
      * @param startTime : the start of the desired measure time interval,
      *         as a Unix timestamp, i.e. the number of seconds since
      *         January 1, 1970 UTC. The special value 0 can be used
-     *         to include any meaasure, without initial limit.
+     *         to include any measure, without initial limit.
      * @param endTime : the end of the desired measure time interval,
      *         as a Unix timestamp, i.e. the number of seconds since
      *         January 1, 1970 UTC. The special value 0 can be used
-     *         to include any meaasure, without ending limit.
+     *         to include any measure, without ending limit.
      *
      * @return an instance of YDataSet, providing access to historical
      *         data. Past measures can be loaded progressively
@@ -7821,7 +7821,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
         if (startTime == 0) {
             startTime = endTime;
         }
-        // 32bit timed report format
+        // 32 bits timed report format
         if (report.length <= 5) {
             // sub-second report, 1-4 bytes
             poww = 1;
@@ -9778,9 +9778,9 @@ function yFirstDataLogger()
     }
 
     /**
-     * Returns the luminosity of the  module informative leds (from 0 to 100).
+     * Returns the luminosity of the  module informative LEDs (from 0 to 100).
      *
-     * @return an integer corresponding to the luminosity of the  module informative leds (from 0 to 100)
+     * @return an integer corresponding to the luminosity of the  module informative LEDs (from 0 to 100)
      *
      * On failure, throws an exception or returns Y_LUMINOSITY_INVALID.
      */
@@ -9797,13 +9797,13 @@ function yFirstDataLogger()
     }
 
     /**
-     * Gets the luminosity of the  module informative leds (from 0 to 100).
+     * Gets the luminosity of the  module informative LEDs (from 0 to 100).
      *
      * @param callback : callback function that is invoked when the result is known.
      *         The callback function receives three arguments:
      *         - the user-specific context object
      *         - the YModule object that invoked the callback
-     *         - the result:an integer corresponding to the luminosity of the  module informative leds (from 0 to 100)
+     *         - the result:an integer corresponding to the luminosity of the  module informative LEDs (from 0 to 100)
      * @param context : user-specific object that is passed as-is to the callback function
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
@@ -11523,7 +11523,7 @@ function yEnableExceptions()
  * parameter will determine how the API will work. Use the following values:
  *
  * <b>usb</b>: When the usb keyword is used, the API will work with
- * devices connected directly to the USB bus. Some programming languages such a Javascript,
+ * devices connected directly to the USB bus. Some programming languages such a JavaScript,
  * PHP, and Java don't provide direct access to USB hardware, so usb will
  * not work with these. In this case, use a VirtualHub or a networked YoctoHub (see below).
  *
@@ -11628,8 +11628,8 @@ function yUpdateDeviceList(errmsg)
  * This function can be called as frequently as desired to refresh the device list
  * and to make the application aware of hot-plug events.
  *
- * This asynchronous version exists only in Javascript. It uses a callback instead
- * of a return value in order to avoid blocking Firefox Javascript VM that does not
+ * This asynchronous version exists only in JavaScript. It uses a callback instead
+ * of a return value in order to avoid blocking Firefox JavaScript VM that does not
  * implement context switching during blocking I/O calls.
  *
  * @param callback : callback function that is invoked when the result is known.

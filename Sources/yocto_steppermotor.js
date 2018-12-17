@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_steppermotor.js 32905 2018-11-02 10:15:36Z seb $
+ *  $Id: yocto_steppermotor.js 33714 2018-12-14 14:20:39Z seb $
  *
  *  Implements the high-level API for StepperMotor functions
  *
@@ -1243,7 +1243,7 @@ var YStepperMotor; // definition below
 
     /**
      * Move one step in the direction opposite the direction set when the most recent alert was raised.
-     * The move occures even if the system is still in alert mode (end switch depressed). Caution.
+     * The move occurs even if the system is still in alert mode (end switch depressed). Caution.
      * use this function with great care as it may cause mechanical damages !
      *
      * @return YAPI_SUCCESS if the call succeeds.
@@ -1256,10 +1256,10 @@ var YStepperMotor; // definition below
 
     /**
      * Move one single step in the selected direction without regards to end switches.
-     * The move occures even if the system is still in alert mode (end switch depressed). Caution.
+     * The move occurs even if the system is still in alert mode (end switch depressed). Caution.
      * use this function with great care as it may cause mechanical damages !
      *
-     * @param dir : Value +1 ou -1, according to the desired direction of the move
+     * @param dir : Value +1 or -1, according to the desired direction of the move
      *
      * @return YAPI_SUCCESS if the call succeeds.
      *         On failure, throws an exception or returns a negative error code.

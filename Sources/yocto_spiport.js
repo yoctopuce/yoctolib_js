@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_spiport.js 32905 2018-11-02 10:15:36Z seb $
+ *  $Id: yocto_spiport.js 33722 2018-12-14 15:04:43Z seb $
  *
  *  Implements the high-level API for SpiPort functions
  *
@@ -53,9 +53,9 @@ var Y_VOLTAGELEVEL_INVALID          = -1;
 var Y_SSPOLARITY_ACTIVE_LOW         = 0;
 var Y_SSPOLARITY_ACTIVE_HIGH        = 1;
 var Y_SSPOLARITY_INVALID            = -1;
-var Y_SHITFTSAMPLING_OFF            = 0;
-var Y_SHITFTSAMPLING_ON             = 1;
-var Y_SHITFTSAMPLING_INVALID        = -1;
+var Y_SHIFTSAMPLING_OFF             = 0;
+var Y_SHIFTSAMPLING_ON              = 1;
+var Y_SHIFTSAMPLING_INVALID         = -1;
 var Y_RXCOUNT_INVALID               = YAPI_INVALID_UINT;
 var Y_TXCOUNT_INVALID               = YAPI_INVALID_UINT;
 var Y_ERRCOUNT_INVALID              = YAPI_INVALID_UINT;
@@ -104,7 +104,7 @@ var YSpiPort; // definition below
         this._protocol                       = Y_PROTOCOL_INVALID;         // Protocol
         this._spiMode                        = Y_SPIMODE_INVALID;          // SpiMode
         this._ssPolarity                     = Y_SSPOLARITY_INVALID;       // Polarity
-        this._shitftSampling                 = Y_SHITFTSAMPLING_INVALID;   // OnOff
+        this._shiftSampling                  = Y_SHIFTSAMPLING_INVALID;    // OnOff
         this._rxptr                          = 0;                          // int
         this._rxbuff                         = "";                         // bin
         this._rxbuffptr                      = 0;                          // int
@@ -155,8 +155,8 @@ var YSpiPort; // definition below
         case "ssPolarity":
             this._ssPolarity = parseInt(val);
             return 1;
-        case "shitftSampling":
-            this._shitftSampling = parseInt(val);
+        case "shiftSampling":
+            this._shiftSampling = parseInt(val);
             return 1;
         }
         return _super._parseAttr.call(this, name, val, _super._super);
@@ -951,20 +951,20 @@ var YSpiPort; // definition below
     /**
      * Returns true when the SDI line phase is shifted with regards to the SDO line.
      *
-     * @return either Y_SHITFTSAMPLING_OFF or Y_SHITFTSAMPLING_ON, according to true when the SDI line
-     * phase is shifted with regards to the SDO line
+     * @return either Y_SHIFTSAMPLING_OFF or Y_SHIFTSAMPLING_ON, according to true when the SDI line phase
+     * is shifted with regards to the SDO line
      *
-     * On failure, throws an exception or returns Y_SHITFTSAMPLING_INVALID.
+     * On failure, throws an exception or returns Y_SHIFTSAMPLING_INVALID.
      */
-    function YSpiPort_get_shitftSampling()
+    function YSpiPort_get_shiftSampling()
     {
         var res;                    // enumONOFF;
         if (this._cacheExpiration <= YAPI.GetTickCount()) {
             if (this.load(YAPI.defaultCacheValidity) != YAPI_SUCCESS) {
-                return Y_SHITFTSAMPLING_INVALID;
+                return Y_SHIFTSAMPLING_INVALID;
             }
         }
-        res = this._shitftSampling;
+        res = this._shiftSampling;
         return res;
     }
 
@@ -975,23 +975,23 @@ var YSpiPort; // definition below
      *         The callback function receives three arguments:
      *         - the user-specific context object
      *         - the YSpiPort object that invoked the callback
-     *         - the result:either Y_SHITFTSAMPLING_OFF or Y_SHITFTSAMPLING_ON, according to true when the SDI
-     *         line phase is shifted with regards to the SDO line
+     *         - the result:either Y_SHIFTSAMPLING_OFF or Y_SHIFTSAMPLING_ON, according to true when the SDI line
+     *         phase is shifted with regards to the SDO line
      * @param context : user-specific object that is passed as-is to the callback function
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      *
-     * On failure, throws an exception or returns Y_SHITFTSAMPLING_INVALID.
+     * On failure, throws an exception or returns Y_SHIFTSAMPLING_INVALID.
      */
-    function YSpiPort_get_shitftSampling_async(callback,context)
+    function YSpiPort_get_shiftSampling_async(callback,context)
     {
         var res;                    // enumONOFF;
         var loadcb;                 // func;
         loadcb = function(ctx,obj,res) {
             if (res != YAPI_SUCCESS) {
-                callback(context, obj, Y_SHITFTSAMPLING_INVALID);
+                callback(context, obj, Y_SHIFTSAMPLING_INVALID);
             } else {
-                callback(context, obj, obj._shitftSampling);
+                callback(context, obj, obj._shiftSampling);
             }
         };
         if (this._cacheExpiration <= YAPI.GetTickCount()) {
@@ -1006,16 +1006,16 @@ var YSpiPort; // definition below
      * sampled in the middle of data output time. When enabled, SDI line is
      * samples at the end of data output time.
      *
-     * @param newval : either Y_SHITFTSAMPLING_OFF or Y_SHITFTSAMPLING_ON, according to the SDI line sampling shift
+     * @param newval : either Y_SHIFTSAMPLING_OFF or Y_SHIFTSAMPLING_ON, according to the SDI line sampling shift
      *
      * @return YAPI_SUCCESS if the call succeeds.
      *
      * On failure, throws an exception or returns a negative error code.
      */
-    function YSpiPort_set_shitftSampling(newval)
+    function YSpiPort_set_shiftSampling(newval)
     {   var rest_val;
         rest_val = String(newval);
-        return this._setAttr('shitftSampling',rest_val);
+        return this._setAttr('shiftSampling',rest_val);
     }
 
     /**
@@ -1756,9 +1756,9 @@ var YSpiPort; // definition below
         SSPOLARITY_ACTIVE_LOW       : 0,
         SSPOLARITY_ACTIVE_HIGH      : 1,
         SSPOLARITY_INVALID          : -1,
-        SHITFTSAMPLING_OFF          : 0,
-        SHITFTSAMPLING_ON           : 1,
-        SHITFTSAMPLING_INVALID      : -1
+        SHIFTSAMPLING_OFF           : 0,
+        SHIFTSAMPLING_ON            : 1,
+        SHIFTSAMPLING_INVALID       : -1
     }, {
         // Class methods
         FindSpiPort                 : YSpiPort_FindSpiPort,
@@ -1831,12 +1831,12 @@ var YSpiPort; // definition below
         ssPolarity_async            : YSpiPort_get_ssPolarity_async,
         set_ssPolarity              : YSpiPort_set_ssPolarity,
         setSsPolarity               : YSpiPort_set_ssPolarity,
-        get_shitftSampling          : YSpiPort_get_shitftSampling,
-        shitftSampling              : YSpiPort_get_shitftSampling,
-        get_shitftSampling_async    : YSpiPort_get_shitftSampling_async,
-        shitftSampling_async        : YSpiPort_get_shitftSampling_async,
-        set_shitftSampling          : YSpiPort_set_shitftSampling,
-        setShitftSampling           : YSpiPort_set_shitftSampling,
+        get_shiftSampling           : YSpiPort_get_shiftSampling,
+        shiftSampling               : YSpiPort_get_shiftSampling,
+        get_shiftSampling_async     : YSpiPort_get_shiftSampling_async,
+        shiftSampling_async         : YSpiPort_get_shiftSampling_async,
+        set_shiftSampling           : YSpiPort_set_shiftSampling,
+        setShiftSampling            : YSpiPort_set_shiftSampling,
         sendCommand                 : YSpiPort_sendCommand,
         reset                       : YSpiPort_reset,
         writeByte                   : YSpiPort_writeByte,

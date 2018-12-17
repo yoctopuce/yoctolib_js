@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_quadraturedecoder.js 32905 2018-11-02 10:15:36Z seb $
+ *  $Id: yocto_quadraturedecoder.js 33714 2018-12-14 14:20:39Z seb $
  *
  *  Implements the high-level API for QuadratureDecoder functions
  *
@@ -90,7 +90,7 @@ var YQuadratureDecoder; // definition below
 
     /**
      * Changes the current expected position of the quadrature decoder.
-     * Invoking this function implicitely activates the quadrature decoder.
+     * Invoking this function implicitly activates the quadrature decoder.
      *
      * @param newval : a floating point number corresponding to the current expected position of the quadrature decoder
      *

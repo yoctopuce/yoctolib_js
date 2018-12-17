@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_proximity.js 32905 2018-11-02 10:15:36Z seb $
+ *  $Id: yocto_proximity.js 33714 2018-12-14 14:20:39Z seb $
  *
  *  Implements the high-level API for Proximity functions
  *
@@ -341,10 +341,10 @@ var YProximity; // definition below
     }
 
     /**
-     * Returns the minimal detection duration before signaling a presence event. Any shorter detection is
+     * Returns the minimal detection duration before signalling a presence event. Any shorter detection is
      * considered as noise or bounce (false positive) and filtered out.
      *
-     * @return an integer corresponding to the minimal detection duration before signaling a presence event
+     * @return an integer corresponding to the minimal detection duration before signalling a presence event
      *
      * On failure, throws an exception or returns Y_PRESENCEMINTIME_INVALID.
      */
@@ -361,14 +361,14 @@ var YProximity; // definition below
     }
 
     /**
-     * Gets the minimal detection duration before signaling a presence event. Any shorter detection is
+     * Gets the minimal detection duration before signalling a presence event. Any shorter detection is
      * considered as noise or bounce (false positive) and filtered out.
      *
      * @param callback : callback function that is invoked when the result is known.
      *         The callback function receives three arguments:
      *         - the user-specific context object
      *         - the YProximity object that invoked the callback
-     *         - the result:an integer corresponding to the minimal detection duration before signaling a presence event
+     *         - the result:an integer corresponding to the minimal detection duration before signalling a presence event
      * @param context : user-specific object that is passed as-is to the callback function
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
@@ -394,10 +394,10 @@ var YProximity; // definition below
     }
 
     /**
-     * Changes the minimal detection duration before signaling a presence event. Any shorter detection is
+     * Changes the minimal detection duration before signalling a presence event. Any shorter detection is
      * considered as noise or bounce (false positive) and filtered out.
      *
-     * @param newval : an integer corresponding to the minimal detection duration before signaling a presence event
+     * @param newval : an integer corresponding to the minimal detection duration before signalling a presence event
      *
      * @return YAPI_SUCCESS if the call succeeds.
      *
@@ -410,10 +410,10 @@ var YProximity; // definition below
     }
 
     /**
-     * Returns the minimal detection duration before signaling a removal event. Any shorter detection is
+     * Returns the minimal detection duration before signalling a removal event. Any shorter detection is
      * considered as noise or bounce (false positive) and filtered out.
      *
-     * @return an integer corresponding to the minimal detection duration before signaling a removal event
+     * @return an integer corresponding to the minimal detection duration before signalling a removal event
      *
      * On failure, throws an exception or returns Y_REMOVALMINTIME_INVALID.
      */
@@ -430,14 +430,14 @@ var YProximity; // definition below
     }
 
     /**
-     * Gets the minimal detection duration before signaling a removal event. Any shorter detection is
+     * Gets the minimal detection duration before signalling a removal event. Any shorter detection is
      * considered as noise or bounce (false positive) and filtered out.
      *
      * @param callback : callback function that is invoked when the result is known.
      *         The callback function receives three arguments:
      *         - the user-specific context object
      *         - the YProximity object that invoked the callback
-     *         - the result:an integer corresponding to the minimal detection duration before signaling a removal event
+     *         - the result:an integer corresponding to the minimal detection duration before signalling a removal event
      * @param context : user-specific object that is passed as-is to the callback function
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
@@ -463,10 +463,10 @@ var YProximity; // definition below
     }
 
     /**
-     * Changes the minimal detection duration before signaling a removal event. Any shorter detection is
+     * Changes the minimal detection duration before signalling a removal event. Any shorter detection is
      * considered as noise or bounce (false positive) and filtered out.
      *
-     * @param newval : an integer corresponding to the minimal detection duration before signaling a removal event
+     * @param newval : an integer corresponding to the minimal detection duration before signalling a removal event
      *
      * @return YAPI_SUCCESS if the call succeeds.
      *

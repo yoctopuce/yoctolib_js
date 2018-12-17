@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_display.js 32905 2018-11-02 10:15:36Z seb $
+ * $Id: yocto_display.js 33714 2018-12-14 14:20:39Z seb $
  *
  * Implements yFindDisplay(), the high-level API for Display functions
  *
@@ -196,7 +196,7 @@ var YDisplayLayer; // definition below
     /**
      * Selects the pen gray level for all subsequent drawing functions,
      * including text drawing. The gray level is provided as a number between
-     * 0 (black) and 255 (white, or whichever the lighest color is).
+     * 0 (black) and 255 (white, or whichever the lightest color is).
      * For monochrome displays (without gray levels), any value
      * lower than 128 is rendered as black, and any value equal
      * or above to 128 is non-black.
@@ -230,13 +230,13 @@ var YDisplayLayer; // definition below
     /**
      * Enables or disables anti-aliasing for drawing oblique lines and circles.
      * Anti-aliasing provides a smoother aspect when looked from far enough,
-     * but it can add fuzzyness when the display is looked from very close.
+     * but it can add fuzziness when the display is looked from very close.
      * At the end of the day, it is your personal choice.
      * Anti-aliasing is enabled by default on grayscale and color displays,
      * but you can disable it if you prefer. This setting has no effect
      * on monochrome displays.
      *
-     * @param mode : true to enable antialiasing, false to
+     * @param mode : true to enable anti-aliasing, false to
      *         disable it.
      *
      * @return YAPI_SUCCESS if the call succeeds.
@@ -500,7 +500,7 @@ var YDisplayLayer; // definition below
     }
 
     /**
-     * Sets up the wrapping behaviour used by the consoleOut function.
+     * Sets up the wrapping behavior used by the consoleOut function.
      *
      * @param wordwrap : true to wrap only between words,
      *         false to wrap on the last column anyway.
@@ -547,7 +547,7 @@ var YDisplayLayer; // definition below
     }
 
     /**
-     * Hides the layer. The state of the layer is perserved but the layer is not displayed
+     * Hides the layer. The state of the layer is preserved but the layer is not displayed
      * on the screen until the next call to unhide(). Hiding the layer can positively
      * affect the drawing speed, since it postpones the rendering until all operations are
      * completed (double-buffering).
@@ -939,9 +939,9 @@ var YDisplay; // definition below
     }
 
     /**
-     * Returns the luminosity of the  module informative leds (from 0 to 100).
+     * Returns the luminosity of the  module informative LEDs (from 0 to 100).
      *
-     * @return an integer corresponding to the luminosity of the  module informative leds (from 0 to 100)
+     * @return an integer corresponding to the luminosity of the  module informative LEDs (from 0 to 100)
      *
      * On failure, throws an exception or returns Y_BRIGHTNESS_INVALID.
      */
@@ -958,13 +958,13 @@ var YDisplay; // definition below
     }
 
     /**
-     * Gets the luminosity of the  module informative leds (from 0 to 100).
+     * Gets the luminosity of the  module informative LEDs (from 0 to 100).
      *
      * @param callback : callback function that is invoked when the result is known.
      *         The callback function receives three arguments:
      *         - the user-specific context object
      *         - the YDisplay object that invoked the callback
-     *         - the result:an integer corresponding to the luminosity of the  module informative leds (from 0 to 100)
+     *         - the result:an integer corresponding to the luminosity of the  module informative LEDs (from 0 to 100)
      * @param context : user-specific object that is passed as-is to the callback function
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
@@ -1631,7 +1631,7 @@ var YDisplay; // definition below
      * Swaps the whole content of two layers. The color and transparency of all the pixels from
      * the two layers are swapped. This method only affects the displayed content, but does
      * not change any property of the layer objects. In particular, the visibility of each
-     * layer stays unchanged. When used between onae hidden layer and a visible layer,
+     * layer stays unchanged. When used between one hidden layer and a visible layer,
      * this method makes it possible to easily implement double-buffering.
      * Note that layer 0 has no transparency support (it is always completely opaque).
      *
