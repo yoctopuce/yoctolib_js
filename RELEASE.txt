@@ -1,3 +1,4 @@
-Javascript v1.10.33736
+Javascript v1.10.34131
 
-- Fix some typos in error messages
+- Add get_serialNumber() method to YFunction class
+- Fixed some typos
