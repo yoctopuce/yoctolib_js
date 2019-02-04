@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_buzzer.js 33714 2018-12-14 14:20:39Z seb $
+ *  $Id: yocto_buzzer.js 34289 2019-02-03 21:12:49Z mvuilleu $
  *
  *  Implements the high-level API for Buzzer functions
  *
@@ -750,6 +750,28 @@ var YBuzzer; // definition below
     }
 
     /**
+     * Saves the preprogrammed playing sequence to flash memory.
+     *
+     * @return YAPI_SUCCESS if the call succeeds.
+     *         On failure, throws an exception or returns a negative error code.
+     */
+    function YBuzzer_savePlaySeq()
+    {
+        return this.sendCommand("W");
+    }
+
+    /**
+     * Reloads the preprogrammed playing sequence from the flash memory.
+     *
+     * @return YAPI_SUCCESS if the call succeeds.
+     *         On failure, throws an exception or returns a negative error code.
+     */
+    function YBuzzer_reloadPlaySeq()
+    {
+        return this.sendCommand("R");
+    }
+
+    /**
      * Activates the buzzer for a short duration.
      *
      * @param frequency : pulse frequency, in hertz
@@ -904,6 +926,8 @@ var YBuzzer; // definition below
         stopPlaySeq                 : YBuzzer_stopPlaySeq,
         resetPlaySeq                : YBuzzer_resetPlaySeq,
         oncePlaySeq                 : YBuzzer_oncePlaySeq,
+        savePlaySeq                 : YBuzzer_savePlaySeq,
+        reloadPlaySeq               : YBuzzer_reloadPlaySeq,
         pulse                       : YBuzzer_pulse,
         freqMove                    : YBuzzer_freqMove,
         volumeMove                  : YBuzzer_volumeMove,
