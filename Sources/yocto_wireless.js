@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_wireless.js 33714 2018-12-14 14:20:39Z seb $
+ * $Id: yocto_wireless.js 34651 2019-03-15 17:21:54Z seb $
  *
  * Implements yFindWireless(), the high-level API for Wireless functions
  *
@@ -65,7 +65,9 @@ var Y_WLANCONFIG_INVALID            = YAPI_INVALID_STRING;
 /**
  * YWlanRecord Class: Description of a wireless network
  *
- *
+ * YWlanRecord objects are used to describe a wireless network.
+ * These objects are  used in particular in conjunction with the
+ * YWireless class.
  */
 //--- (end of generated code: YWlanRecord class start)
 
@@ -90,21 +92,41 @@ var YWlanRecord; // definition below
 
     //--- (generated code: YWlanRecord implementation)
 
+    /**
+     * Returns the name of the wireless network (SSID).
+     *
+     * @return a string with the name of the wireless network (SSID).
+     */
     function YWlanRecord_get_ssid()
     {
         return this._ssid;
     }
 
+    /**
+     * Returns the 802.11 channel.
+     *
+     * @return the 802.11 channel.
+     */
     function YWlanRecord_get_channel()
     {
         return this._channel;
     }
 
+    /**
+     * Returns the security algorithm used by the wireless network.
+     *
+     * @return a string with the security algorithm.
+     */
     function YWlanRecord_get_security()
     {
         return this._sec;
     }
 
+    /**
+     * Returns the quality of the wireless network link, in per cents.
+     *
+     * @return the quality of the wireless network link, in per cents.
+     */
     function YWlanRecord_get_linkQuality()
     {
         return this._rssi;

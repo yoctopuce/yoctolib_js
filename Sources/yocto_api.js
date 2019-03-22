@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_api.js 33903 2018-12-28 08:49:26Z seb $
+ * $Id: yocto_api.js 34755 2019-03-22 10:13:28Z seb $
  *
  * High-level programming interface, common to all modules
  *
@@ -168,11 +168,39 @@ var YOCTO_PUBVAL_LEN = 16;
 var YOCTO_PUBVAL_SIZE = 6;
 
 
+//--- (generated code: YDataLogger definitions)
+var Y_RECORDING_OFF                 = 0;
+var Y_RECORDING_ON                  = 1;
+var Y_RECORDING_PENDING             = 2;
+var Y_RECORDING_INVALID             = -1;
+var Y_AUTOSTART_OFF                 = 0;
+var Y_AUTOSTART_ON                  = 1;
+var Y_AUTOSTART_INVALID             = -1;
+var Y_BEACONDRIVEN_OFF              = 0;
+var Y_BEACONDRIVEN_ON               = 1;
+var Y_BEACONDRIVEN_INVALID          = -1;
+var Y_CLEARHISTORY_FALSE            = 0;
+var Y_CLEARHISTORY_TRUE             = 1;
+var Y_CLEARHISTORY_INVALID          = -1;
+var Y_CURRENTRUNINDEX_INVALID       = YAPI_INVALID_UINT;
+var Y_TIMEUTC_INVALID               = YAPI_INVALID_LONG;
+var Y_USAGE_INVALID                 = YAPI_INVALID_UINT;
+//--- (end of generated code: YDataLogger definitions)
+
+var Y_DATA_INVALID                  = YAPI_INVALID_DOUBLE;
+var Y_MINVALUE_INVALID              = YAPI_INVALID_DOUBLE;
+var Y_AVERAGEVALUE_INVALID          = YAPI_INVALID_DOUBLE;
+var Y_MAXVALUE_INVALID              = YAPI_INVALID_DOUBLE;
+
+
+
 var yAPI, YAPI;
 var YFunction;
 var YMeasure;
 var YDataStream;
 var YDataSet;
+var YOldDataStream;
+var YDataLogger;
 var YSensor;
 var YModule;
 
@@ -2649,7 +2677,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
      */
     function YAPI_GetAPIVersion()
     {
-        return "1.10.34302";
+        return "1.10.34765";
     }
 
     /**
@@ -8100,41 +8128,6 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
     //--- (end of generated code: YSensor initialization)
 
 
-//--- (generated code: YDataLogger definitions)
-var Y_RECORDING_OFF                 = 0;
-var Y_RECORDING_ON                  = 1;
-var Y_RECORDING_PENDING             = 2;
-var Y_RECORDING_INVALID             = -1;
-var Y_AUTOSTART_OFF                 = 0;
-var Y_AUTOSTART_ON                  = 1;
-var Y_AUTOSTART_INVALID             = -1;
-var Y_BEACONDRIVEN_OFF              = 0;
-var Y_BEACONDRIVEN_ON               = 1;
-var Y_BEACONDRIVEN_INVALID          = -1;
-var Y_CLEARHISTORY_FALSE            = 0;
-var Y_CLEARHISTORY_TRUE             = 1;
-var Y_CLEARHISTORY_INVALID          = -1;
-var Y_CURRENTRUNINDEX_INVALID       = YAPI_INVALID_UINT;
-var Y_TIMEUTC_INVALID               = YAPI_INVALID_LONG;
-var Y_USAGE_INVALID                 = YAPI_INVALID_UINT;
-//--- (end of generated code: YDataLogger definitions)
-
-var Y_DATA_INVALID                  = YAPI_INVALID_DOUBLE;
-var Y_MINVALUE_INVALID              = YAPI_INVALID_DOUBLE;
-var Y_AVERAGEVALUE_INVALID          = YAPI_INVALID_DOUBLE;
-var Y_MAXVALUE_INVALID              = YAPI_INVALID_DOUBLE;
-
-/**
- * YOldDataStream Class: Sequence of measured data, returned by the data logger
- *
- * A data stream is a small collection of consecutive measures for a set
- * of sensors. A few properties are available directly from the object itself
- * (they are preloaded at instantiation time), while most other properties and
- * the actual data are loaded on demand when accessed for the first time.
- */
-var YOldDataStream; // definition below
-(function()
-{
     // Internal function to preload all values into object
     //
     function YOldDataStream_loadStream()
@@ -8333,23 +8326,7 @@ var YOldDataStream; // definition below
     YOldDataStream.prototype.startTime               = YOldDataStream_get_startTime;
     YOldDataStream.prototype.get_dataSamplesInterval = YOldDataStream_get_dataSamplesInterval;
     YOldDataStream.prototype.dataSamplesInterval     = YOldDataStream_get_dataSamplesInterval;
-})();
 
-//--- (generated code: YDataLogger class start)
-/**
- * YDataLogger Class: DataLogger function interface
- *
- * Yoctopuce sensors include a non-volatile memory capable of storing ongoing measured
- * data automatically, without requiring a permanent connection to a computer.
- * The DataLogger function controls the global parameters of the internal data
- * logger. Recording control (start/stop) as well as data retreival is done at
- * sensor objects level.
- */
-//--- (end of generated code: YDataLogger class start)
-
-var YDataLogger; // definition below
-(function()
-{
     // Internal function to retrieve datalogger memory
     //
     function YDataLogger_getData(runIdx, timeIdx)
@@ -9109,57 +9086,7 @@ var YDataLogger; // definition below
         _parseAttr                  : YDataLogger_parseAttr
     });
     //--- (end of generated code: YDataLogger initialization)
-})();
 
-//--- (generated code: YDataLogger functions)
-
-/**
- * Retrieves a data logger for a given identifier.
- * The identifier can be specified using several formats:
- * <ul>
- * <li>FunctionLogicalName</li>
- * <li>ModuleSerialNumber.FunctionIdentifier</li>
- * <li>ModuleSerialNumber.FunctionLogicalName</li>
- * <li>ModuleLogicalName.FunctionIdentifier</li>
- * <li>ModuleLogicalName.FunctionLogicalName</li>
- * </ul>
- *
- * This function does not require that the data logger is online at the time
- * it is invoked. The returned object is nevertheless valid.
- * Use the method YDataLogger.isOnline() to test if the data logger is
- * indeed online at a given time. In case of ambiguity when looking for
- * a data logger by logical name, no error is notified: the first instance
- * found is returned. The search is performed first by hardware name,
- * then by logical name.
- *
- * If a call to this object's is_online() method returns FALSE although
- * you are certain that the matching device is plugged, make sure that you did
- * call registerHub() at application initialization time.
- *
- * @param func : a string that uniquely characterizes the data logger
- *
- * @return a YDataLogger object allowing you to drive the data logger.
- */
-function yFindDataLogger(func)
-{
-    return YDataLogger.FindDataLogger(func);
-}
-
-/**
- * Starts the enumeration of data loggers currently accessible.
- * Use the method YDataLogger.nextDataLogger() to iterate on
- * next data loggers.
- *
- * @return a pointer to a YDataLogger object, corresponding to
- *         the first data logger currently online, or a null pointer
- *         if there are none.
- */
-function yFirstDataLogger()
-{
-    return YDataLogger.FirstDataLogger();
-}
-
-//--- (end of generated code: YDataLogger functions)
 
 
 //--- (generated code: YModule class start)
@@ -11926,3 +11853,54 @@ function yFirstModule()
 
 //--- (end of generated code: YModule functions)
 
+
+
+//--- (generated code: YDataLogger functions)
+
+/**
+ * Retrieves a data logger for a given identifier.
+ * The identifier can be specified using several formats:
+ * <ul>
+ * <li>FunctionLogicalName</li>
+ * <li>ModuleSerialNumber.FunctionIdentifier</li>
+ * <li>ModuleSerialNumber.FunctionLogicalName</li>
+ * <li>ModuleLogicalName.FunctionIdentifier</li>
+ * <li>ModuleLogicalName.FunctionLogicalName</li>
+ * </ul>
+ *
+ * This function does not require that the data logger is online at the time
+ * it is invoked. The returned object is nevertheless valid.
+ * Use the method YDataLogger.isOnline() to test if the data logger is
+ * indeed online at a given time. In case of ambiguity when looking for
+ * a data logger by logical name, no error is notified: the first instance
+ * found is returned. The search is performed first by hardware name,
+ * then by logical name.
+ *
+ * If a call to this object's is_online() method returns FALSE although
+ * you are certain that the matching device is plugged, make sure that you did
+ * call registerHub() at application initialization time.
+ *
+ * @param func : a string that uniquely characterizes the data logger
+ *
+ * @return a YDataLogger object allowing you to drive the data logger.
+ */
+function yFindDataLogger(func)
+{
+    return YDataLogger.FindDataLogger(func);
+}
+
+/**
+ * Starts the enumeration of data loggers currently accessible.
+ * Use the method YDataLogger.nextDataLogger() to iterate on
+ * next data loggers.
+ *
+ * @return a pointer to a YDataLogger object, corresponding to
+ *         the first data logger currently online, or a null pointer
+ *         if there are none.
+ */
+function yFirstDataLogger()
+{
+    return YDataLogger.FirstDataLogger();
+}
+
+//--- (end of generated code: YDataLogger functions)

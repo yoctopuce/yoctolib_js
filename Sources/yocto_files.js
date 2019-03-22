@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_files.js 33714 2018-12-14 14:20:39Z seb $
+ * $Id: yocto_files.js 34651 2019-03-15 17:21:54Z seb $
  *
  * Implements yFindFiles(), the high-level API for Files functions
  *
@@ -51,7 +51,8 @@ var Y_FREESPACE_INVALID             = YAPI_INVALID_UINT;
 /**
  * YFileRecord Class: Description of a file on the device filesystem
  *
- *
+ * YFileRecord objects are used to describe a file that is stored on a Yoctopuce device.
+ * These objects are used in particular in conjunction with the YFiles class.
  */
 //--- (end of generated code: YFileRecord class start)
 
@@ -73,16 +74,31 @@ var YFileRecord; // definition below
 
     //--- (generated code: YFileRecord implementation)
 
+    /**
+     * Returns the name of the file.
+     *
+     * @return a string with the name of the file.
+     */
     function YFileRecord_get_name()
     {
         return this._name;
     }
 
+    /**
+     * Returns the size of the file in bytes.
+     *
+     * @return the size of the file.
+     */
     function YFileRecord_get_size()
     {
         return this._size;
     }
 
+    /**
+     * Returns the 32-bit CRC of the file content.
+     *
+     * @return the 32-bit CRC of the file content.
+     */
     function YFileRecord_get_crc()
     {
         return this._crc;
