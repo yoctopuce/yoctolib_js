@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_relay.js 33714 2018-12-14 14:20:39Z seb $
+ *  $Id: yocto_relay.js 34976 2019-04-05 06:47:49Z seb $
  *
  *  Implements the high-level API for Relay functions
  *
@@ -91,6 +91,7 @@ var YRelay; // definition below
         this._pulseTimer                     = Y_PULSETIMER_INVALID;       // Time
         this._delayedPulseTimer              = Y_DELAYEDPULSETIMER_INVALID; // DelayedPulse
         this._countdown                      = Y_COUNTDOWN_INVALID;        // Time
+        this._firm                           = 0;                          // int
         //--- (end of YRelay constructor)
     }
 
@@ -714,6 +715,42 @@ var YRelay; // definition below
     }
 
     /**
+     * Switch the relay to the opposite state.
+     *
+     * @return YAPI_SUCCESS if the call succeeds.
+     *
+     * On failure, throws an exception or returns a negative error code.
+     */
+    function YRelay_toggle()
+    {
+        var sta;                    // int;
+        var fw;                     // str;
+        var mo;                     // YModule;
+        if (this._firm == 0) {
+            mo = this.get_module();
+            fw = mo.get_firmwareRelease();
+            if (fw == YModule.FIRMWARERELEASE_INVALID) {
+                return Y_STATE_INVALID;
+            }
+            this._firm = YAPI._atoi(fw);
+        }
+        if (this._firm < 34921) {
+            sta = this.get_state();
+            if (sta == Y_STATE_INVALID) {
+                return Y_STATE_INVALID;
+            }
+            if (sta == Y_STATE_B) {
+                this.set_state(Y_STATE_A);
+            } else {
+                this.set_state(Y_STATE_B);
+            }
+            return YAPI_SUCCESS;
+        } else {
+            return this._setAttr("state","X");
+        }
+    }
+
+    /**
      * Continues the enumeration of relays started using yFirstRelay().
      * Caution: You can't make any assumption about the returned relays order.
      * If you want to find a specific a relay, use Relay.findRelay()
@@ -820,6 +857,7 @@ var YRelay; // definition below
         countdown                   : YRelay_get_countdown,
         get_countdown_async         : YRelay_get_countdown_async,
         countdown_async             : YRelay_get_countdown_async,
+        toggle                      : YRelay_toggle,
         nextRelay                   : YRelay_nextRelay,
         _parseAttr                  : YRelay_parseAttr
     });

@@ -1,3 +1,3 @@
-Javascript v1.10.34765
+Javascript v1.10.34990
 
-- Fix missing YDatalogger class definition
+- Add toggle() method in YRelay class
