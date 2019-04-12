@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_serialport.js 32905 2018-11-02 10:15:36Z seb $
+ * $Id: yocto_serialport.js 35124 2019-04-12 09:03:41Z seb $
  *
  * Implements the high-level API for SerialPort functions
  *
@@ -1563,7 +1563,7 @@ var YSerialPort; // definition below
         var msglen;                 // int;
         var res;                    // str;
 
-        url = "rxmsg.json?len=1&maxw="+String(Math.round(maxWait))+"&cmd=!"+query;
+        url = "rxmsg.json?len=1&maxw="+String(Math.round(maxWait))+"&cmd=!"+this._escapeAttr(query);
         msgbin = this._download(url);
         msgarr = this._json_get_array(msgbin);
         msglen = msgarr.length;

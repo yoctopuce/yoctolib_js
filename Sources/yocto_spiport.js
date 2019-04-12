@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_spiport.js 33722 2018-12-14 15:04:43Z seb $
+ *  $Id: yocto_spiport.js 35124 2019-04-12 09:03:41Z seb $
  *
  *  Implements the high-level API for SpiPort functions
  *
@@ -1630,7 +1630,7 @@ var YSpiPort; // definition below
         var msglen;                 // int;
         var res;                    // str;
 
-        url = "rxmsg.json?len=1&maxw="+String(Math.round(maxWait))+"&cmd=!"+query;
+        url = "rxmsg.json?len=1&maxw="+String(Math.round(maxWait))+"&cmd=!"+this._escapeAttr(query);
         msgbin = this._download(url);
         msgarr = this._json_get_array(msgbin);
         msglen = msgarr.length;
