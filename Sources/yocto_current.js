@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_current.js 32905 2018-11-02 10:15:36Z seb $
+ *  $Id: yocto_current.js 35360 2019-05-09 09:02:29Z mvuilleu $
  *
  *  Implements the high-level API for Current functions
  *
@@ -83,6 +83,13 @@ var YCurrent; // definition below
         return _super._parseAttr.call(this, name, val, _super._super);
     }
 
+    /**
+     * Returns the activation state of this input.
+     *
+     * @return either Y_ENABLED_FALSE or Y_ENABLED_TRUE, according to the activation state of this input
+     *
+     * On failure, throws an exception or returns Y_ENABLED_INVALID.
+     */
     function YCurrent_get_enabled()
     {
         var res;                    // enumBOOL;
@@ -96,15 +103,18 @@ var YCurrent; // definition below
     }
 
     /**
+     * Gets the activation state of this input.
      *
      * @param callback : callback function that is invoked when the result is known.
      *         The callback function receives three arguments:
      *         - the user-specific context object
      *         - the YCurrent object that invoked the callback
-     *         - the result:
+     *         - the result:either Y_ENABLED_FALSE or Y_ENABLED_TRUE, according to the activation state of this input
      * @param context : user-specific object that is passed as-is to the callback function
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
+     *
+     * On failure, throws an exception or returns Y_ENABLED_INVALID.
      */
     function YCurrent_get_enabled_async(callback,context)
     {
@@ -124,6 +134,17 @@ var YCurrent; // definition below
         }
     }
 
+    /**
+     * Changes the activation state of this input. When an input is disabled,
+     * its value is no more updated. On some devices, disabling an input can
+     * improve the refresh rate of the other active inputs.
+     *
+     * @param newval : either Y_ENABLED_FALSE or Y_ENABLED_TRUE, according to the activation state of this input
+     *
+     * @return YAPI_SUCCESS if the call succeeds.
+     *
+     * On failure, throws an exception or returns a negative error code.
+     */
     function YCurrent_set_enabled(newval)
     {   var rest_val;
         rest_val = String(newval);

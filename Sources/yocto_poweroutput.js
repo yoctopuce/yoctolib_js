@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_poweroutput.js 33714 2018-12-14 14:20:39Z seb $
+ *  $Id: yocto_poweroutput.js 35466 2019-05-16 14:41:19Z seb $
  *
  *  Implements the high-level API for PowerOutput functions
  *
@@ -45,6 +45,8 @@ if(typeof YAPI == "undefined") { if(typeof yAPI != "undefined") window["YAPI"]=y
 var Y_VOLTAGE_OFF                   = 0;
 var Y_VOLTAGE_OUT3V3                = 1;
 var Y_VOLTAGE_OUT5V                 = 2;
+var Y_VOLTAGE_OUT4V7                = 3;
+var Y_VOLTAGE_OUT1V8                = 4;
 var Y_VOLTAGE_INVALID               = -1;
 //--- (end of YPowerOutput definitions)
 
@@ -86,8 +88,8 @@ var YPowerOutput; // definition below
     /**
      * Returns the voltage on the power output featured by the module.
      *
-     * @return a value among Y_VOLTAGE_OFF, Y_VOLTAGE_OUT3V3 and Y_VOLTAGE_OUT5V corresponding to the
-     * voltage on the power output featured by the module
+     * @return a value among Y_VOLTAGE_OFF, Y_VOLTAGE_OUT3V3, Y_VOLTAGE_OUT5V, Y_VOLTAGE_OUT4V7 and
+     * Y_VOLTAGE_OUT1V8 corresponding to the voltage on the power output featured by the module
      *
      * On failure, throws an exception or returns Y_VOLTAGE_INVALID.
      */
@@ -110,8 +112,8 @@ var YPowerOutput; // definition below
      *         The callback function receives three arguments:
      *         - the user-specific context object
      *         - the YPowerOutput object that invoked the callback
-     *         - the result:a value among Y_VOLTAGE_OFF, Y_VOLTAGE_OUT3V3 and Y_VOLTAGE_OUT5V corresponding to the
-     *         voltage on the power output featured by the module
+     *         - the result:a value among Y_VOLTAGE_OFF, Y_VOLTAGE_OUT3V3, Y_VOLTAGE_OUT5V, Y_VOLTAGE_OUT4V7 and
+     *         Y_VOLTAGE_OUT1V8 corresponding to the voltage on the power output featured by the module
      * @param context : user-specific object that is passed as-is to the callback function
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
@@ -141,8 +143,8 @@ var YPowerOutput; // definition below
      * module. Remember to call the saveToFlash() method of the module if the
      * modification must be kept.
      *
-     * @param newval : a value among Y_VOLTAGE_OFF, Y_VOLTAGE_OUT3V3 and Y_VOLTAGE_OUT5V corresponding to
-     * the voltage on the power output provided by the
+     * @param newval : a value among Y_VOLTAGE_OFF, Y_VOLTAGE_OUT3V3, Y_VOLTAGE_OUT5V, Y_VOLTAGE_OUT4V7
+     * and Y_VOLTAGE_OUT1V8 corresponding to the voltage on the power output provided by the
      *         module
      *
      * @return YAPI_SUCCESS if the call succeeds.
@@ -235,6 +237,8 @@ var YPowerOutput; // definition below
         VOLTAGE_OFF                 : 0,
         VOLTAGE_OUT3V3              : 1,
         VOLTAGE_OUT5V               : 2,
+        VOLTAGE_OUT4V7              : 3,
+        VOLTAGE_OUT1V8              : 4,
         VOLTAGE_INVALID             : -1
     }, {
         // Class methods

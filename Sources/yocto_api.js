@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_api.js 34755 2019-03-22 10:13:28Z seb $
+ * $Id: yocto_api.js 35620 2019-06-04 08:29:58Z seb $
  *
  * High-level programming interface, common to all modules
  *
@@ -2677,7 +2677,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
      */
     function YAPI_GetAPIVersion()
     {
-        return "1.10.35153";
+        return "1.10.35622";
     }
 
     /**
@@ -3720,6 +3720,16 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
         //--- (end of generated code: YFunction constructor)
     }
 
+    function YFunction_isReadOnly()
+    {
+        try {
+            var serial = this.get_serialNumber();
+            return YAPI.isReadOnly(serial);
+        } catch (e) {
+            return true;
+        }
+    }
+
     //--- (generated code: YFunction implementation)
 
     function YFunction_parseAttr(name, val, _super)
@@ -3993,6 +4003,9 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
         attrVal = this._download(url);
         return attrVal;
     }
+
+    //cannot be generated for JS:
+    //function YFunction_isReadOnly()
 
     /**
      * Returns the serial number of the module, as set by the factory.
@@ -4971,6 +4984,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
     YFunction.prototype.muteValueCallbacks          = YFunction_muteValueCallbacks;
     YFunction.prototype.unmuteValueCallbacks        = YFunction_unmuteValueCallbacks;
     YFunction.prototype.loadAttribute               = YFunction_loadAttribute;
+    YFunction.prototype.isReadOnly                  = YFunction_isReadOnly;
     YFunction.prototype.get_serialNumber            = YFunction_get_serialNumber;
     YFunction.prototype.serialNumber                = YFunction_get_serialNumber;
     YFunction.prototype._parserHelper               = YFunction_parserHelper;
@@ -10144,10 +10158,17 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
     function YModule_FindModule(func)                           // class method
     {
         var obj;                    // YModule;
-        obj = YFunction._FindFromCache("Module", func);
+        var cleanHwId;              // str;
+        var modpos;                 // int;
+        cleanHwId = func;
+        modpos = (func).indexOf(".module");
+        if (modpos != ((func).length - 7)) {
+            cleanHwId = func + ".module";
+        }
+        obj = YFunction._FindFromCache("Module", cleanHwId);
         if (obj == null) {
-            obj = new YModule(func);
-            YFunction._AddToCache("Module", func, obj);
+            obj = new YModule(cleanHwId);
+            YFunction._AddToCache("Module", cleanHwId, obj);
         }
         return obj;
     }
@@ -10407,15 +10428,17 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
             if (YAPI._atoi(this.get_firmwareRelease()) > 9000) {
                 url = "api/"+ templist[ii]+"/sensorType";
                 t_type = this._download(url);
-                if (t_type == "RES_NTC") {
+                if (t_type == "RES_NTC" || t_type == "RES_LINEAR") {
                     id = ( templist[ii]).substr( 11, ( templist[ii]).length - 11);
-                    temp_data_bin = this._download("extra.json?page="+id);
-                    if ((temp_data_bin).length == 0) {
-                        return temp_data_bin;
+                    if (id == "") {
+                        id = "1";
                     }
-                    item = ""+sep+"{\"fid\":\""+ templist[ii]+"\", \"json\":"+temp_data_bin+"}\n";
-                    ext_settings = ext_settings + item;
-                    sep = ",";
+                    temp_data_bin = this._download("extra.json?page="+id);
+                    if ((temp_data_bin).length > 0) {
+                        item = ""+sep+"{\"fid\":\""+ templist[ii]+"\", \"json\":"+temp_data_bin+"}\n";
+                        ext_settings = ext_settings + item;
+                        sep = ",";
+                    }
                 }
             }
         }
@@ -10461,7 +10484,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
         while (ofs + 1 < size) {
             curr = values[ofs];
             currTemp = values[ofs + 1];
-            url = "api/"+funcId+"/.json?command=m"+curr+":"+currTemp;
+            url = "api/"+funcId+".json?command=m"+curr+":"+currTemp;
             this._download(url);
             ofs = ofs + 2;
         }

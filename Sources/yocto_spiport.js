@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_spiport.js 35124 2019-04-12 09:03:41Z seb $
+ *  $Id: yocto_spiport.js 35466 2019-05-16 14:41:19Z seb $
  *
  *  Implements the high-level API for SpiPort functions
  *
@@ -49,6 +49,7 @@ var Y_VOLTAGELEVEL_TTL5V            = 3;
 var Y_VOLTAGELEVEL_TTL5VR           = 4;
 var Y_VOLTAGELEVEL_RS232            = 5;
 var Y_VOLTAGELEVEL_RS485            = 6;
+var Y_VOLTAGELEVEL_TTL1V8           = 7;
 var Y_VOLTAGELEVEL_INVALID          = -1;
 var Y_SSPOLARITY_ACTIVE_LOW         = 0;
 var Y_SSPOLARITY_ACTIVE_HIGH        = 1;
@@ -655,8 +656,8 @@ var YSpiPort; // definition below
      * Returns the voltage level used on the serial line.
      *
      * @return a value among Y_VOLTAGELEVEL_OFF, Y_VOLTAGELEVEL_TTL3V, Y_VOLTAGELEVEL_TTL3VR,
-     * Y_VOLTAGELEVEL_TTL5V, Y_VOLTAGELEVEL_TTL5VR, Y_VOLTAGELEVEL_RS232 and Y_VOLTAGELEVEL_RS485
-     * corresponding to the voltage level used on the serial line
+     * Y_VOLTAGELEVEL_TTL5V, Y_VOLTAGELEVEL_TTL5VR, Y_VOLTAGELEVEL_RS232, Y_VOLTAGELEVEL_RS485 and
+     * Y_VOLTAGELEVEL_TTL1V8 corresponding to the voltage level used on the serial line
      *
      * On failure, throws an exception or returns Y_VOLTAGELEVEL_INVALID.
      */
@@ -680,8 +681,8 @@ var YSpiPort; // definition below
      *         - the user-specific context object
      *         - the YSpiPort object that invoked the callback
      *         - the result:a value among Y_VOLTAGELEVEL_OFF, Y_VOLTAGELEVEL_TTL3V, Y_VOLTAGELEVEL_TTL3VR,
-     *         Y_VOLTAGELEVEL_TTL5V, Y_VOLTAGELEVEL_TTL5VR, Y_VOLTAGELEVEL_RS232 and Y_VOLTAGELEVEL_RS485
-     *         corresponding to the voltage level used on the serial line
+     *         Y_VOLTAGELEVEL_TTL5V, Y_VOLTAGELEVEL_TTL5VR, Y_VOLTAGELEVEL_RS232, Y_VOLTAGELEVEL_RS485 and
+     *         Y_VOLTAGELEVEL_TTL1V8 corresponding to the voltage level used on the serial line
      * @param context : user-specific object that is passed as-is to the callback function
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
@@ -714,8 +715,8 @@ var YSpiPort; // definition below
      * Trying to set an invalid value will have no effect.
      *
      * @param newval : a value among Y_VOLTAGELEVEL_OFF, Y_VOLTAGELEVEL_TTL3V, Y_VOLTAGELEVEL_TTL3VR,
-     * Y_VOLTAGELEVEL_TTL5V, Y_VOLTAGELEVEL_TTL5VR, Y_VOLTAGELEVEL_RS232 and Y_VOLTAGELEVEL_RS485
-     * corresponding to the voltage type used on the serial line
+     * Y_VOLTAGELEVEL_TTL5V, Y_VOLTAGELEVEL_TTL5VR, Y_VOLTAGELEVEL_RS232, Y_VOLTAGELEVEL_RS485 and
+     * Y_VOLTAGELEVEL_TTL1V8 corresponding to the voltage type used on the serial line
      *
      * @return YAPI_SUCCESS if the call succeeds.
      *
@@ -1750,6 +1751,7 @@ var YSpiPort; // definition below
         VOLTAGELEVEL_TTL5VR         : 4,
         VOLTAGELEVEL_RS232          : 5,
         VOLTAGELEVEL_RS485          : 6,
+        VOLTAGELEVEL_TTL1V8         : 7,
         VOLTAGELEVEL_INVALID        : -1,
         PROTOCOL_INVALID            : YAPI_INVALID_STRING,
         SPIMODE_INVALID             : YAPI_INVALID_STRING,

@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_genericsensor.js 33714 2018-12-14 14:20:39Z seb $
+ *  $Id: yocto_genericsensor.js 35360 2019-05-09 09:02:29Z mvuilleu $
  *
  *  Implements the high-level API for GenericSensor functions
  *
@@ -48,6 +48,9 @@ var Y_SIGNALSAMPLING_LOW_NOISE      = 2;
 var Y_SIGNALSAMPLING_LOW_NOISE_FILTERED = 3;
 var Y_SIGNALSAMPLING_HIGHEST_RATE   = 4;
 var Y_SIGNALSAMPLING_INVALID        = -1;
+var Y_ENABLED_FALSE                 = 0;
+var Y_ENABLED_TRUE                  = 1;
+var Y_ENABLED_INVALID               = -1;
 var Y_SIGNALVALUE_INVALID           = YAPI_INVALID_DOUBLE;
 var Y_SIGNALUNIT_INVALID            = YAPI_INVALID_STRING;
 var Y_SIGNALRANGE_INVALID           = YAPI_INVALID_STRING;
@@ -83,6 +86,7 @@ var YGenericSensor; // definition below
         this._valueRange                     = Y_VALUERANGE_INVALID;       // ValueRange
         this._signalBias                     = Y_SIGNALBIAS_INVALID;       // MeasureVal
         this._signalSampling                 = Y_SIGNALSAMPLING_INVALID;   // SignalSampling
+        this._enabled                        = Y_ENABLED_INVALID;          // Bool
         //--- (end of YGenericSensor constructor)
     }
 
@@ -108,6 +112,9 @@ var YGenericSensor; // definition below
             return 1;
         case "signalSampling":
             this._signalSampling = parseInt(val);
+            return 1;
+        case "enabled":
+            this._enabled = parseInt(val);
             return 1;
         }
         return _super._parseAttr.call(this, name, val, _super._super);
@@ -527,6 +534,74 @@ var YGenericSensor; // definition below
     }
 
     /**
+     * Returns the activation state of this input.
+     *
+     * @return either Y_ENABLED_FALSE or Y_ENABLED_TRUE, according to the activation state of this input
+     *
+     * On failure, throws an exception or returns Y_ENABLED_INVALID.
+     */
+    function YGenericSensor_get_enabled()
+    {
+        var res;                    // enumBOOL;
+        if (this._cacheExpiration <= YAPI.GetTickCount()) {
+            if (this.load(YAPI.defaultCacheValidity) != YAPI_SUCCESS) {
+                return Y_ENABLED_INVALID;
+            }
+        }
+        res = this._enabled;
+        return res;
+    }
+
+    /**
+     * Gets the activation state of this input.
+     *
+     * @param callback : callback function that is invoked when the result is known.
+     *         The callback function receives three arguments:
+     *         - the user-specific context object
+     *         - the YGenericSensor object that invoked the callback
+     *         - the result:either Y_ENABLED_FALSE or Y_ENABLED_TRUE, according to the activation state of this input
+     * @param context : user-specific object that is passed as-is to the callback function
+     *
+     * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
+     *
+     * On failure, throws an exception or returns Y_ENABLED_INVALID.
+     */
+    function YGenericSensor_get_enabled_async(callback,context)
+    {
+        var res;                    // enumBOOL;
+        var loadcb;                 // func;
+        loadcb = function(ctx,obj,res) {
+            if (res != YAPI_SUCCESS) {
+                callback(context, obj, Y_ENABLED_INVALID);
+            } else {
+                callback(context, obj, obj._enabled);
+            }
+        };
+        if (this._cacheExpiration <= YAPI.GetTickCount()) {
+            this.load_async(YAPI.defaultCacheValidity,loadcb,null);
+        } else {
+            loadcb(null, this, YAPI_SUCCESS);
+        }
+    }
+
+    /**
+     * Changes the activation state of this input. When an input is disabled,
+     * its value is no more updated. On some devices, disabling an input can
+     * improve the refresh rate of the other active inputs.
+     *
+     * @param newval : either Y_ENABLED_FALSE or Y_ENABLED_TRUE, according to the activation state of this input
+     *
+     * @return YAPI_SUCCESS if the call succeeds.
+     *
+     * On failure, throws an exception or returns a negative error code.
+     */
+    function YGenericSensor_set_enabled(newval)
+    {   var rest_val;
+        rest_val = String(newval);
+        return this._setAttr('enabled',rest_val);
+    }
+
+    /**
      * Retrieves a generic sensor for a given identifier.
      * The identifier can be specified using several formats:
      * <ul>
@@ -630,7 +705,10 @@ var YGenericSensor; // definition below
         SIGNALSAMPLING_LOW_NOISE    : 2,
         SIGNALSAMPLING_LOW_NOISE_FILTERED : 3,
         SIGNALSAMPLING_HIGHEST_RATE : 4,
-        SIGNALSAMPLING_INVALID      : -1
+        SIGNALSAMPLING_INVALID      : -1,
+        ENABLED_FALSE               : 0,
+        ENABLED_TRUE                : 1,
+        ENABLED_INVALID             : -1
     }, {
         // Class methods
         FindGenericSensor           : YGenericSensor_FindGenericSensor,
@@ -671,6 +749,12 @@ var YGenericSensor; // definition below
         signalSampling_async        : YGenericSensor_get_signalSampling_async,
         set_signalSampling          : YGenericSensor_set_signalSampling,
         setSignalSampling           : YGenericSensor_set_signalSampling,
+        get_enabled                 : YGenericSensor_get_enabled,
+        enabled                     : YGenericSensor_get_enabled,
+        get_enabled_async           : YGenericSensor_get_enabled_async,
+        enabled_async               : YGenericSensor_get_enabled_async,
+        set_enabled                 : YGenericSensor_set_enabled,
+        setEnabled                  : YGenericSensor_set_enabled,
         zeroAdjust                  : YGenericSensor_zeroAdjust,
         nextGenericSensor           : YGenericSensor_nextGenericSensor,
         _parseAttr                  : YGenericSensor_parseAttr

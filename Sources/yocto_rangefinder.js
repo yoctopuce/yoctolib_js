@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_rangefinder.js 32905 2018-11-02 10:15:36Z seb $
+ *  $Id: yocto_rangefinder.js 35185 2019-04-16 19:43:18Z mvuilleu $
  *
  *  Implements the high-level API for RangeFinder functions
  *
@@ -47,6 +47,8 @@ var Y_RANGEFINDERMODE_LONG_RANGE    = 1;
 var Y_RANGEFINDERMODE_HIGH_ACCURACY = 2;
 var Y_RANGEFINDERMODE_HIGH_SPEED    = 3;
 var Y_RANGEFINDERMODE_INVALID       = -1;
+var Y_TIMEFRAME_INVALID             = YAPI_INVALID_LONG;
+var Y_QUALITY_INVALID               = YAPI_INVALID_UINT;
 var Y_HARDWARECALIBRATION_INVALID   = YAPI_INVALID_STRING;
 var Y_CURRENTTEMPERATURE_INVALID    = YAPI_INVALID_DOUBLE;
 var Y_COMMAND_INVALID               = YAPI_INVALID_STRING;
@@ -75,6 +77,8 @@ var YRangeFinder; // definition below
         this._className = 'RangeFinder';
 
         this._rangeFinderMode                = Y_RANGEFINDERMODE_INVALID;  // RangeFinderMode
+        this._timeFrame                      = Y_TIMEFRAME_INVALID;        // Time
+        this._quality                        = Y_QUALITY_INVALID;          // Percent
         this._hardwareCalibration            = Y_HARDWARECALIBRATION_INVALID; // RangeFinderCalib
         this._currentTemperature             = Y_CURRENTTEMPERATURE_INVALID; // MeasureVal
         this._command                        = Y_COMMAND_INVALID;          // Text
@@ -88,6 +92,12 @@ var YRangeFinder; // definition below
         switch(name) {
         case "rangeFinderMode":
             this._rangeFinderMode = parseInt(val);
+            return 1;
+        case "timeFrame":
+            this._timeFrame = parseInt(val);
+            return 1;
+        case "quality":
+            this._quality = parseInt(val);
             return 1;
         case "hardwareCalibration":
             this._hardwareCalibration = val;
@@ -193,6 +203,131 @@ var YRangeFinder; // definition below
     {   var rest_val;
         rest_val = String(newval);
         return this._setAttr('rangeFinderMode',rest_val);
+    }
+
+    /**
+     * Returns the time frame used to measure the distance and estimate the measure
+     * reliability. The time frame is expressed in milliseconds.
+     *
+     * @return an integer corresponding to the time frame used to measure the distance and estimate the measure
+     *         reliability
+     *
+     * On failure, throws an exception or returns Y_TIMEFRAME_INVALID.
+     */
+    function YRangeFinder_get_timeFrame()
+    {
+        var res;                    // long;
+        if (this._cacheExpiration <= YAPI.GetTickCount()) {
+            if (this.load(YAPI.defaultCacheValidity) != YAPI_SUCCESS) {
+                return Y_TIMEFRAME_INVALID;
+            }
+        }
+        res = this._timeFrame;
+        return res;
+    }
+
+    /**
+     * Gets the time frame used to measure the distance and estimate the measure
+     * reliability. The time frame is expressed in milliseconds.
+     *
+     * @param callback : callback function that is invoked when the result is known.
+     *         The callback function receives three arguments:
+     *         - the user-specific context object
+     *         - the YRangeFinder object that invoked the callback
+     *         - the result:an integer corresponding to the time frame used to measure the distance and estimate the measure
+     *         reliability
+     * @param context : user-specific object that is passed as-is to the callback function
+     *
+     * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
+     *
+     * On failure, throws an exception or returns Y_TIMEFRAME_INVALID.
+     */
+    function YRangeFinder_get_timeFrame_async(callback,context)
+    {
+        var res;                    // long;
+        var loadcb;                 // func;
+        loadcb = function(ctx,obj,res) {
+            if (res != YAPI_SUCCESS) {
+                callback(context, obj, Y_TIMEFRAME_INVALID);
+            } else {
+                callback(context, obj, obj._timeFrame);
+            }
+        };
+        if (this._cacheExpiration <= YAPI.GetTickCount()) {
+            this.load_async(YAPI.defaultCacheValidity,loadcb,null);
+        } else {
+            loadcb(null, this, YAPI_SUCCESS);
+        }
+    }
+
+    /**
+     * Changes the time frame used to measure the distance and estimate the measure
+     * reliability. The time frame is expressed in milliseconds. A larger timeframe
+     * improves stability and reliability, at the cost of higher latency, but prevents
+     * the detection of events shorter than the time frame.
+     *
+     * @param newval : an integer corresponding to the time frame used to measure the distance and estimate the measure
+     *         reliability
+     *
+     * @return YAPI_SUCCESS if the call succeeds.
+     *
+     * On failure, throws an exception or returns a negative error code.
+     */
+    function YRangeFinder_set_timeFrame(newval)
+    {   var rest_val;
+        rest_val = String(newval);
+        return this._setAttr('timeFrame',rest_val);
+    }
+
+    /**
+     * Returns a measure quality estimate, based on measured dispersion.
+     *
+     * @return an integer corresponding to a measure quality estimate, based on measured dispersion
+     *
+     * On failure, throws an exception or returns Y_QUALITY_INVALID.
+     */
+    function YRangeFinder_get_quality()
+    {
+        var res;                    // int;
+        if (this._cacheExpiration <= YAPI.GetTickCount()) {
+            if (this.load(YAPI.defaultCacheValidity) != YAPI_SUCCESS) {
+                return Y_QUALITY_INVALID;
+            }
+        }
+        res = this._quality;
+        return res;
+    }
+
+    /**
+     * Gets a measure quality estimate, based on measured dispersion.
+     *
+     * @param callback : callback function that is invoked when the result is known.
+     *         The callback function receives three arguments:
+     *         - the user-specific context object
+     *         - the YRangeFinder object that invoked the callback
+     *         - the result:an integer corresponding to a measure quality estimate, based on measured dispersion
+     * @param context : user-specific object that is passed as-is to the callback function
+     *
+     * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
+     *
+     * On failure, throws an exception or returns Y_QUALITY_INVALID.
+     */
+    function YRangeFinder_get_quality_async(callback,context)
+    {
+        var res;                    // int;
+        var loadcb;                 // func;
+        loadcb = function(ctx,obj,res) {
+            if (res != YAPI_SUCCESS) {
+                callback(context, obj, Y_QUALITY_INVALID);
+            } else {
+                callback(context, obj, obj._quality);
+            }
+        };
+        if (this._cacheExpiration <= YAPI.GetTickCount()) {
+            this.load_async(YAPI.defaultCacheValidity,loadcb,null);
+        } else {
+            loadcb(null, this, YAPI_SUCCESS);
+        }
     }
 
     function YRangeFinder_get_hardwareCalibration()
@@ -527,6 +662,8 @@ var YRangeFinder; // definition below
         RANGEFINDERMODE_HIGH_ACCURACY : 2,
         RANGEFINDERMODE_HIGH_SPEED  : 3,
         RANGEFINDERMODE_INVALID     : -1,
+        TIMEFRAME_INVALID           : YAPI_INVALID_LONG,
+        QUALITY_INVALID             : YAPI_INVALID_UINT,
         HARDWARECALIBRATION_INVALID : YAPI_INVALID_STRING,
         CURRENTTEMPERATURE_INVALID  : YAPI_INVALID_DOUBLE,
         COMMAND_INVALID             : YAPI_INVALID_STRING
@@ -544,6 +681,16 @@ var YRangeFinder; // definition below
         rangeFinderMode_async       : YRangeFinder_get_rangeFinderMode_async,
         set_rangeFinderMode         : YRangeFinder_set_rangeFinderMode,
         setRangeFinderMode          : YRangeFinder_set_rangeFinderMode,
+        get_timeFrame               : YRangeFinder_get_timeFrame,
+        timeFrame                   : YRangeFinder_get_timeFrame,
+        get_timeFrame_async         : YRangeFinder_get_timeFrame_async,
+        timeFrame_async             : YRangeFinder_get_timeFrame_async,
+        set_timeFrame               : YRangeFinder_set_timeFrame,
+        setTimeFrame                : YRangeFinder_set_timeFrame,
+        get_quality                 : YRangeFinder_get_quality,
+        quality                     : YRangeFinder_get_quality,
+        get_quality_async           : YRangeFinder_get_quality_async,
+        quality_async               : YRangeFinder_get_quality_async,
         get_hardwareCalibration     : YRangeFinder_get_hardwareCalibration,
         hardwareCalibration         : YRangeFinder_get_hardwareCalibration,
         get_hardwareCalibration_async : YRangeFinder_get_hardwareCalibration_async,
