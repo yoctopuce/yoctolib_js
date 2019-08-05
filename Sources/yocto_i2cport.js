@@ -1,8 +1,8 @@
 /*********************************************************************
  *
- *  $Id: yocto_spiport.js 36048 2019-06-28 17:43:51Z mvuilleu $
+ *  $Id: yocto_i2cport.js 36207 2019-07-10 20:46:18Z mvuilleu $
  *
- *  Implements the high-level API for SpiPort functions
+ *  Implements the high-level API for I2cPort functions
  *
  *  - - - - - - - - - License information: - - - - - - - - -
  *
@@ -39,9 +39,9 @@
 
 if(typeof YAPI == "undefined") { if(typeof yAPI != "undefined") window["YAPI"]=yAPI; else throw "YAPI is not defined, please include yocto_api.js first"; }
 
-//--- (YSpiPort return codes)
-//--- (end of YSpiPort return codes)
-//--- (YSpiPort definitions)
+//--- (YI2cPort return codes)
+//--- (end of YI2cPort return codes)
+//--- (YI2cPort definitions)
 var Y_VOLTAGELEVEL_OFF              = 0;
 var Y_VOLTAGELEVEL_TTL3V            = 1;
 var Y_VOLTAGELEVEL_TTL3VR           = 2;
@@ -51,12 +51,6 @@ var Y_VOLTAGELEVEL_RS232            = 5;
 var Y_VOLTAGELEVEL_RS485            = 6;
 var Y_VOLTAGELEVEL_TTL1V8           = 7;
 var Y_VOLTAGELEVEL_INVALID          = -1;
-var Y_SSPOLARITY_ACTIVE_LOW         = 0;
-var Y_SSPOLARITY_ACTIVE_HIGH        = 1;
-var Y_SSPOLARITY_INVALID            = -1;
-var Y_SHIFTSAMPLING_OFF             = 0;
-var Y_SHIFTSAMPLING_ON              = 1;
-var Y_SHIFTSAMPLING_INVALID         = -1;
 var Y_RXCOUNT_INVALID               = YAPI_INVALID_UINT;
 var Y_TXCOUNT_INVALID               = YAPI_INVALID_UINT;
 var Y_ERRCOUNT_INVALID              = YAPI_INVALID_UINT;
@@ -67,30 +61,30 @@ var Y_CURRENTJOB_INVALID            = YAPI_INVALID_STRING;
 var Y_STARTUPJOB_INVALID            = YAPI_INVALID_STRING;
 var Y_COMMAND_INVALID               = YAPI_INVALID_STRING;
 var Y_PROTOCOL_INVALID              = YAPI_INVALID_STRING;
-var Y_SPIMODE_INVALID               = YAPI_INVALID_STRING;
-//--- (end of YSpiPort definitions)
+var Y_I2CMODE_INVALID               = YAPI_INVALID_STRING;
+//--- (end of YI2cPort definitions)
 
-//--- (YSpiPort class start)
+//--- (YI2cPort class start)
 /**
- * YSpiPort Class: SPI Port function interface
+ * YI2cPort Class: I2C Port function interface
  *
- * The SpiPort function interface allows you to fully drive a Yoctopuce
- * SPI port, to send and receive data, and to configure communication
- * parameters (baud rate, bit count, parity, flow control and protocol).
- * Note that Yoctopuce SPI ports are not exposed as virtual COM ports.
+ * The I2cPort function interface allows you to fully drive a Yoctopuce
+ * I2C port, to send and receive data, and to configure communication
+ * parameters (baud rate, etc).
+ * Note that Yoctopuce I2C ports are not exposed as virtual COM ports.
  * They are meant to be used in the same way as all Yoctopuce devices.
  */
-//--- (end of YSpiPort class start)
+//--- (end of YI2cPort class start)
 
-var YSpiPort; // definition below
+var YI2cPort; // definition below
 (function()
 {
-    function _YSpiPort(str_func)
+    function _YI2cPort(str_func)
     {
-        //--- (YSpiPort constructor)
+        //--- (YI2cPort constructor)
         // inherit from YFunction
         YFunction.call(this, str_func);
-        this._className = 'SpiPort';
+        this._className = 'I2cPort';
 
         this._rxCount                        = Y_RXCOUNT_INVALID;          // UInt31
         this._txCount                        = Y_TXCOUNT_INVALID;          // UInt31
@@ -103,18 +97,16 @@ var YSpiPort; // definition below
         this._command                        = Y_COMMAND_INVALID;          // Text
         this._voltageLevel                   = Y_VOLTAGELEVEL_INVALID;     // SerialVoltageLevel
         this._protocol                       = Y_PROTOCOL_INVALID;         // Protocol
-        this._spiMode                        = Y_SPIMODE_INVALID;          // SpiMode
-        this._ssPolarity                     = Y_SSPOLARITY_INVALID;       // Polarity
-        this._shiftSampling                  = Y_SHIFTSAMPLING_INVALID;    // OnOff
+        this._i2cMode                        = Y_I2CMODE_INVALID;          // I2cMode
         this._rxptr                          = 0;                          // int
         this._rxbuff                         = "";                         // bin
         this._rxbuffptr                      = 0;                          // int
-        //--- (end of YSpiPort constructor)
+        //--- (end of YI2cPort constructor)
     }
 
-    //--- (YSpiPort implementation)
+    //--- (YI2cPort implementation)
 
-    function YSpiPort_parseAttr(name, val, _super)
+    function YI2cPort_parseAttr(name, val, _super)
     {
         switch(name) {
         case "rxCount":
@@ -150,14 +142,8 @@ var YSpiPort; // definition below
         case "protocol":
             this._protocol = val;
             return 1;
-        case "spiMode":
-            this._spiMode = val;
-            return 1;
-        case "ssPolarity":
-            this._ssPolarity = parseInt(val);
-            return 1;
-        case "shiftSampling":
-            this._shiftSampling = parseInt(val);
+        case "i2cMode":
+            this._i2cMode = val;
             return 1;
         }
         return _super._parseAttr.call(this, name, val, _super._super);
@@ -170,7 +156,7 @@ var YSpiPort; // definition below
      *
      * On failure, throws an exception or returns Y_RXCOUNT_INVALID.
      */
-    function YSpiPort_get_rxCount()
+    function YI2cPort_get_rxCount()
     {
         var res;                    // int;
         if (this._cacheExpiration <= YAPI.GetTickCount()) {
@@ -188,7 +174,7 @@ var YSpiPort; // definition below
      * @param callback : callback function that is invoked when the result is known.
      *         The callback function receives three arguments:
      *         - the user-specific context object
-     *         - the YSpiPort object that invoked the callback
+     *         - the YI2cPort object that invoked the callback
      *         - the result:an integer corresponding to the total number of bytes received since last reset
      * @param context : user-specific object that is passed as-is to the callback function
      *
@@ -196,7 +182,7 @@ var YSpiPort; // definition below
      *
      * On failure, throws an exception or returns Y_RXCOUNT_INVALID.
      */
-    function YSpiPort_get_rxCount_async(callback,context)
+    function YI2cPort_get_rxCount_async(callback,context)
     {
         var res;                    // int;
         var loadcb;                 // func;
@@ -221,7 +207,7 @@ var YSpiPort; // definition below
      *
      * On failure, throws an exception or returns Y_TXCOUNT_INVALID.
      */
-    function YSpiPort_get_txCount()
+    function YI2cPort_get_txCount()
     {
         var res;                    // int;
         if (this._cacheExpiration <= YAPI.GetTickCount()) {
@@ -239,7 +225,7 @@ var YSpiPort; // definition below
      * @param callback : callback function that is invoked when the result is known.
      *         The callback function receives three arguments:
      *         - the user-specific context object
-     *         - the YSpiPort object that invoked the callback
+     *         - the YI2cPort object that invoked the callback
      *         - the result:an integer corresponding to the total number of bytes transmitted since last reset
      * @param context : user-specific object that is passed as-is to the callback function
      *
@@ -247,7 +233,7 @@ var YSpiPort; // definition below
      *
      * On failure, throws an exception or returns Y_TXCOUNT_INVALID.
      */
-    function YSpiPort_get_txCount_async(callback,context)
+    function YI2cPort_get_txCount_async(callback,context)
     {
         var res;                    // int;
         var loadcb;                 // func;
@@ -272,7 +258,7 @@ var YSpiPort; // definition below
      *
      * On failure, throws an exception or returns Y_ERRCOUNT_INVALID.
      */
-    function YSpiPort_get_errCount()
+    function YI2cPort_get_errCount()
     {
         var res;                    // int;
         if (this._cacheExpiration <= YAPI.GetTickCount()) {
@@ -290,7 +276,7 @@ var YSpiPort; // definition below
      * @param callback : callback function that is invoked when the result is known.
      *         The callback function receives three arguments:
      *         - the user-specific context object
-     *         - the YSpiPort object that invoked the callback
+     *         - the YI2cPort object that invoked the callback
      *         - the result:an integer corresponding to the total number of communication errors detected since last reset
      * @param context : user-specific object that is passed as-is to the callback function
      *
@@ -298,7 +284,7 @@ var YSpiPort; // definition below
      *
      * On failure, throws an exception or returns Y_ERRCOUNT_INVALID.
      */
-    function YSpiPort_get_errCount_async(callback,context)
+    function YI2cPort_get_errCount_async(callback,context)
     {
         var res;                    // int;
         var loadcb;                 // func;
@@ -323,7 +309,7 @@ var YSpiPort; // definition below
      *
      * On failure, throws an exception or returns Y_RXMSGCOUNT_INVALID.
      */
-    function YSpiPort_get_rxMsgCount()
+    function YI2cPort_get_rxMsgCount()
     {
         var res;                    // int;
         if (this._cacheExpiration <= YAPI.GetTickCount()) {
@@ -341,7 +327,7 @@ var YSpiPort; // definition below
      * @param callback : callback function that is invoked when the result is known.
      *         The callback function receives three arguments:
      *         - the user-specific context object
-     *         - the YSpiPort object that invoked the callback
+     *         - the YI2cPort object that invoked the callback
      *         - the result:an integer corresponding to the total number of messages received since last reset
      * @param context : user-specific object that is passed as-is to the callback function
      *
@@ -349,7 +335,7 @@ var YSpiPort; // definition below
      *
      * On failure, throws an exception or returns Y_RXMSGCOUNT_INVALID.
      */
-    function YSpiPort_get_rxMsgCount_async(callback,context)
+    function YI2cPort_get_rxMsgCount_async(callback,context)
     {
         var res;                    // int;
         var loadcb;                 // func;
@@ -374,7 +360,7 @@ var YSpiPort; // definition below
      *
      * On failure, throws an exception or returns Y_TXMSGCOUNT_INVALID.
      */
-    function YSpiPort_get_txMsgCount()
+    function YI2cPort_get_txMsgCount()
     {
         var res;                    // int;
         if (this._cacheExpiration <= YAPI.GetTickCount()) {
@@ -392,7 +378,7 @@ var YSpiPort; // definition below
      * @param callback : callback function that is invoked when the result is known.
      *         The callback function receives three arguments:
      *         - the user-specific context object
-     *         - the YSpiPort object that invoked the callback
+     *         - the YI2cPort object that invoked the callback
      *         - the result:an integer corresponding to the total number of messages send since last reset
      * @param context : user-specific object that is passed as-is to the callback function
      *
@@ -400,7 +386,7 @@ var YSpiPort; // definition below
      *
      * On failure, throws an exception or returns Y_TXMSGCOUNT_INVALID.
      */
-    function YSpiPort_get_txMsgCount_async(callback,context)
+    function YI2cPort_get_txMsgCount_async(callback,context)
     {
         var res;                    // int;
         var loadcb;                 // func;
@@ -425,7 +411,7 @@ var YSpiPort; // definition below
      *
      * On failure, throws an exception or returns Y_LASTMSG_INVALID.
      */
-    function YSpiPort_get_lastMsg()
+    function YI2cPort_get_lastMsg()
     {
         var res;                    // string;
         if (this._cacheExpiration <= YAPI.GetTickCount()) {
@@ -443,7 +429,7 @@ var YSpiPort; // definition below
      * @param callback : callback function that is invoked when the result is known.
      *         The callback function receives three arguments:
      *         - the user-specific context object
-     *         - the YSpiPort object that invoked the callback
+     *         - the YI2cPort object that invoked the callback
      *         - the result:a string corresponding to the latest message fully received (for Line and Frame protocols)
      * @param context : user-specific object that is passed as-is to the callback function
      *
@@ -451,7 +437,7 @@ var YSpiPort; // definition below
      *
      * On failure, throws an exception or returns Y_LASTMSG_INVALID.
      */
-    function YSpiPort_get_lastMsg_async(callback,context)
+    function YI2cPort_get_lastMsg_async(callback,context)
     {
         var res;                    // string;
         var loadcb;                 // func;
@@ -476,7 +462,7 @@ var YSpiPort; // definition below
      *
      * On failure, throws an exception or returns Y_CURRENTJOB_INVALID.
      */
-    function YSpiPort_get_currentJob()
+    function YI2cPort_get_currentJob()
     {
         var res;                    // string;
         if (this._cacheExpiration <= YAPI.GetTickCount()) {
@@ -494,7 +480,7 @@ var YSpiPort; // definition below
      * @param callback : callback function that is invoked when the result is known.
      *         The callback function receives three arguments:
      *         - the user-specific context object
-     *         - the YSpiPort object that invoked the callback
+     *         - the YI2cPort object that invoked the callback
      *         - the result:a string corresponding to the name of the job file currently in use
      * @param context : user-specific object that is passed as-is to the callback function
      *
@@ -502,7 +488,7 @@ var YSpiPort; // definition below
      *
      * On failure, throws an exception or returns Y_CURRENTJOB_INVALID.
      */
-    function YSpiPort_get_currentJob_async(callback,context)
+    function YI2cPort_get_currentJob_async(callback,context)
     {
         var res;                    // string;
         var loadcb;                 // func;
@@ -531,7 +517,7 @@ var YSpiPort; // definition below
      *
      * On failure, throws an exception or returns a negative error code.
      */
-    function YSpiPort_set_currentJob(newval)
+    function YI2cPort_set_currentJob(newval)
     {   var rest_val;
         rest_val = newval;
         return this._setAttr('currentJob',rest_val);
@@ -544,7 +530,7 @@ var YSpiPort; // definition below
      *
      * On failure, throws an exception or returns Y_STARTUPJOB_INVALID.
      */
-    function YSpiPort_get_startupJob()
+    function YI2cPort_get_startupJob()
     {
         var res;                    // string;
         if (this._cacheExpiration <= YAPI.GetTickCount()) {
@@ -562,7 +548,7 @@ var YSpiPort; // definition below
      * @param callback : callback function that is invoked when the result is known.
      *         The callback function receives three arguments:
      *         - the user-specific context object
-     *         - the YSpiPort object that invoked the callback
+     *         - the YI2cPort object that invoked the callback
      *         - the result:a string corresponding to the job file to use when the device is powered on
      * @param context : user-specific object that is passed as-is to the callback function
      *
@@ -570,7 +556,7 @@ var YSpiPort; // definition below
      *
      * On failure, throws an exception or returns Y_STARTUPJOB_INVALID.
      */
-    function YSpiPort_get_startupJob_async(callback,context)
+    function YI2cPort_get_startupJob_async(callback,context)
     {
         var res;                    // string;
         var loadcb;                 // func;
@@ -599,13 +585,13 @@ var YSpiPort; // definition below
      *
      * On failure, throws an exception or returns a negative error code.
      */
-    function YSpiPort_set_startupJob(newval)
+    function YI2cPort_set_startupJob(newval)
     {   var rest_val;
         rest_val = newval;
         return this._setAttr('startupJob',rest_val);
     }
 
-    function YSpiPort_get_command()
+    function YI2cPort_get_command()
     {
         var res;                    // string;
         if (this._cacheExpiration <= YAPI.GetTickCount()) {
@@ -622,13 +608,13 @@ var YSpiPort; // definition below
      * @param callback : callback function that is invoked when the result is known.
      *         The callback function receives three arguments:
      *         - the user-specific context object
-     *         - the YSpiPort object that invoked the callback
+     *         - the YI2cPort object that invoked the callback
      *         - the result:
      * @param context : user-specific object that is passed as-is to the callback function
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      */
-    function YSpiPort_get_command_async(callback,context)
+    function YI2cPort_get_command_async(callback,context)
     {
         var res;                    // string;
         var loadcb;                 // func;
@@ -646,7 +632,7 @@ var YSpiPort; // definition below
         }
     }
 
-    function YSpiPort_set_command(newval)
+    function YI2cPort_set_command(newval)
     {   var rest_val;
         rest_val = newval;
         return this._setAttr('command',rest_val);
@@ -661,7 +647,7 @@ var YSpiPort; // definition below
      *
      * On failure, throws an exception or returns Y_VOLTAGELEVEL_INVALID.
      */
-    function YSpiPort_get_voltageLevel()
+    function YI2cPort_get_voltageLevel()
     {
         var res;                    // enumSERIALVOLTAGELEVEL;
         if (this._cacheExpiration <= YAPI.GetTickCount()) {
@@ -679,7 +665,7 @@ var YSpiPort; // definition below
      * @param callback : callback function that is invoked when the result is known.
      *         The callback function receives three arguments:
      *         - the user-specific context object
-     *         - the YSpiPort object that invoked the callback
+     *         - the YI2cPort object that invoked the callback
      *         - the result:a value among Y_VOLTAGELEVEL_OFF, Y_VOLTAGELEVEL_TTL3V, Y_VOLTAGELEVEL_TTL3VR,
      *         Y_VOLTAGELEVEL_TTL5V, Y_VOLTAGELEVEL_TTL5VR, Y_VOLTAGELEVEL_RS232, Y_VOLTAGELEVEL_RS485 and
      *         Y_VOLTAGELEVEL_TTL1V8 corresponding to the voltage level used on the serial line
@@ -689,7 +675,7 @@ var YSpiPort; // definition below
      *
      * On failure, throws an exception or returns Y_VOLTAGELEVEL_INVALID.
      */
-    function YSpiPort_get_voltageLevel_async(callback,context)
+    function YI2cPort_get_voltageLevel_async(callback,context)
     {
         var res;                    // enumSERIALVOLTAGELEVEL;
         var loadcb;                 // func;
@@ -722,7 +708,7 @@ var YSpiPort; // definition below
      *
      * On failure, throws an exception or returns a negative error code.
      */
-    function YSpiPort_set_voltageLevel(newval)
+    function YI2cPort_set_voltageLevel(newval)
     {   var rest_val;
         rest_val = String(newval);
         return this._setAttr('voltageLevel',rest_val);
@@ -730,16 +716,15 @@ var YSpiPort; // definition below
 
     /**
      * Returns the type of protocol used over the serial line, as a string.
-     * Possible values are "Line" for ASCII messages separated by CR and/or LF,
-     * "Frame:[timeout]ms" for binary messages separated by a delay time,
-     * "Char" for a continuous ASCII stream or
-     * "Byte" for a continuous binary stream.
+     * Possible values are
+     * "Line" for messages separated by LF or
+     * "Char" for continuous stream of codes.
      *
      * @return a string corresponding to the type of protocol used over the serial line, as a string
      *
      * On failure, throws an exception or returns Y_PROTOCOL_INVALID.
      */
-    function YSpiPort_get_protocol()
+    function YI2cPort_get_protocol()
     {
         var res;                    // string;
         if (this._cacheExpiration <= YAPI.GetTickCount()) {
@@ -753,15 +738,14 @@ var YSpiPort; // definition below
 
     /**
      * Gets the type of protocol used over the serial line, as a string.
-     * Possible values are "Line" for ASCII messages separated by CR and/or LF,
-     * "Frame:[timeout]ms" for binary messages separated by a delay time,
-     * "Char" for a continuous ASCII stream or
-     * "Byte" for a continuous binary stream.
+     * Possible values are
+     * "Line" for messages separated by LF or
+     * "Char" for continuous stream of codes.
      *
      * @param callback : callback function that is invoked when the result is known.
      *         The callback function receives three arguments:
      *         - the user-specific context object
-     *         - the YSpiPort object that invoked the callback
+     *         - the YI2cPort object that invoked the callback
      *         - the result:a string corresponding to the type of protocol used over the serial line, as a string
      * @param context : user-specific object that is passed as-is to the callback function
      *
@@ -769,7 +753,7 @@ var YSpiPort; // definition below
      *
      * On failure, throws an exception or returns Y_PROTOCOL_INVALID.
      */
-    function YSpiPort_get_protocol_async(callback,context)
+    function YI2cPort_get_protocol_async(callback,context)
     {
         var res;                    // string;
         var loadcb;                 // func;
@@ -789,12 +773,11 @@ var YSpiPort; // definition below
 
     /**
      * Changes the type of protocol used over the serial line.
-     * Possible values are "Line" for ASCII messages separated by CR and/or LF,
-     * "Frame:[timeout]ms" for binary messages separated by a delay time,
-     * "Char" for a continuous ASCII stream or
-     * "Byte" for a continuous binary stream.
+     * Possible values are
+     * "Line" for messages separated by LF or
+     * "Char" for continuous stream of codes.
      * The suffix "/[wait]ms" can be added to reduce the transmit rate so that there
-     * is always at lest the specified number of milliseconds between each bytes sent.
+     * is always at lest the specified number of milliseconds between each message sent.
      *
      * @param newval : a string corresponding to the type of protocol used over the serial line
      *
@@ -802,7 +785,7 @@ var YSpiPort; // definition below
      *
      * On failure, throws an exception or returns a negative error code.
      */
-    function YSpiPort_set_protocol(newval)
+    function YI2cPort_set_protocol(newval)
     {   var rest_val;
         rest_val = newval;
         return this._setAttr('protocol',rest_val);
@@ -810,52 +793,52 @@ var YSpiPort; // definition below
 
     /**
      * Returns the SPI port communication parameters, as a string such as
-     * "125000,0,msb". The string includes the baud rate, the SPI mode (between
-     * 0 and 3) and the bit order.
+     * "400kbps,2000ms". The string includes the baud rate and  th  e recovery delay
+     * after communications errors.
      *
      * @return a string corresponding to the SPI port communication parameters, as a string such as
-     *         "125000,0,msb"
+     *         "400kbps,2000ms"
      *
-     * On failure, throws an exception or returns Y_SPIMODE_INVALID.
+     * On failure, throws an exception or returns Y_I2CMODE_INVALID.
      */
-    function YSpiPort_get_spiMode()
+    function YI2cPort_get_i2cMode()
     {
         var res;                    // string;
         if (this._cacheExpiration <= YAPI.GetTickCount()) {
             if (this.load(YAPI.defaultCacheValidity) != YAPI_SUCCESS) {
-                return Y_SPIMODE_INVALID;
+                return Y_I2CMODE_INVALID;
             }
         }
-        res = this._spiMode;
+        res = this._i2cMode;
         return res;
     }
 
     /**
      * Gets the SPI port communication parameters, as a string such as
-     * "125000,0,msb". The string includes the baud rate, the SPI mode (between
-     * 0 and 3) and the bit order.
+     * "400kbps,2000ms". The string includes the baud rate and  th  e recovery delay
+     * after communications errors.
      *
      * @param callback : callback function that is invoked when the result is known.
      *         The callback function receives three arguments:
      *         - the user-specific context object
-     *         - the YSpiPort object that invoked the callback
+     *         - the YI2cPort object that invoked the callback
      *         - the result:a string corresponding to the SPI port communication parameters, as a string such as
-     *         "125000,0,msb"
+     *         "400kbps,2000ms"
      * @param context : user-specific object that is passed as-is to the callback function
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      *
-     * On failure, throws an exception or returns Y_SPIMODE_INVALID.
+     * On failure, throws an exception or returns Y_I2CMODE_INVALID.
      */
-    function YSpiPort_get_spiMode_async(callback,context)
+    function YI2cPort_get_i2cMode_async(callback,context)
     {
         var res;                    // string;
         var loadcb;                 // func;
         loadcb = function(ctx,obj,res) {
             if (res != YAPI_SUCCESS) {
-                callback(context, obj, Y_SPIMODE_INVALID);
+                callback(context, obj, Y_I2CMODE_INVALID);
             } else {
-                callback(context, obj, obj._spiMode);
+                callback(context, obj, obj._i2cMode);
             }
         };
         if (this._cacheExpiration <= YAPI.GetTickCount()) {
@@ -867,160 +850,24 @@ var YSpiPort; // definition below
 
     /**
      * Changes the SPI port communication parameters, with a string such as
-     * "125000,0,msb". The string includes the baud rate, the SPI mode (between
-     * 0 and 3) and the bit order.
+     * "400kbps,2000ms". The string includes the baud rate and the recovery delay
+     * after communications errors.
      *
      * @param newval : a string corresponding to the SPI port communication parameters, with a string such as
-     *         "125000,0,msb"
+     *         "400kbps,2000ms"
      *
      * @return YAPI_SUCCESS if the call succeeds.
      *
      * On failure, throws an exception or returns a negative error code.
      */
-    function YSpiPort_set_spiMode(newval)
+    function YI2cPort_set_i2cMode(newval)
     {   var rest_val;
         rest_val = newval;
-        return this._setAttr('spiMode',rest_val);
+        return this._setAttr('i2cMode',rest_val);
     }
 
     /**
-     * Returns the SS line polarity.
-     *
-     * @return either Y_SSPOLARITY_ACTIVE_LOW or Y_SSPOLARITY_ACTIVE_HIGH, according to the SS line polarity
-     *
-     * On failure, throws an exception or returns Y_SSPOLARITY_INVALID.
-     */
-    function YSpiPort_get_ssPolarity()
-    {
-        var res;                    // enumPOLARITY;
-        if (this._cacheExpiration <= YAPI.GetTickCount()) {
-            if (this.load(YAPI.defaultCacheValidity) != YAPI_SUCCESS) {
-                return Y_SSPOLARITY_INVALID;
-            }
-        }
-        res = this._ssPolarity;
-        return res;
-    }
-
-    /**
-     * Gets the SS line polarity.
-     *
-     * @param callback : callback function that is invoked when the result is known.
-     *         The callback function receives three arguments:
-     *         - the user-specific context object
-     *         - the YSpiPort object that invoked the callback
-     *         - the result:either Y_SSPOLARITY_ACTIVE_LOW or Y_SSPOLARITY_ACTIVE_HIGH, according to the SS line polarity
-     * @param context : user-specific object that is passed as-is to the callback function
-     *
-     * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
-     *
-     * On failure, throws an exception or returns Y_SSPOLARITY_INVALID.
-     */
-    function YSpiPort_get_ssPolarity_async(callback,context)
-    {
-        var res;                    // enumPOLARITY;
-        var loadcb;                 // func;
-        loadcb = function(ctx,obj,res) {
-            if (res != YAPI_SUCCESS) {
-                callback(context, obj, Y_SSPOLARITY_INVALID);
-            } else {
-                callback(context, obj, obj._ssPolarity);
-            }
-        };
-        if (this._cacheExpiration <= YAPI.GetTickCount()) {
-            this.load_async(YAPI.defaultCacheValidity,loadcb,null);
-        } else {
-            loadcb(null, this, YAPI_SUCCESS);
-        }
-    }
-
-    /**
-     * Changes the SS line polarity.
-     *
-     * @param newval : either Y_SSPOLARITY_ACTIVE_LOW or Y_SSPOLARITY_ACTIVE_HIGH, according to the SS line polarity
-     *
-     * @return YAPI_SUCCESS if the call succeeds.
-     *
-     * On failure, throws an exception or returns a negative error code.
-     */
-    function YSpiPort_set_ssPolarity(newval)
-    {   var rest_val;
-        rest_val = String(newval);
-        return this._setAttr('ssPolarity',rest_val);
-    }
-
-    /**
-     * Returns true when the SDI line phase is shifted with regards to the SDO line.
-     *
-     * @return either Y_SHIFTSAMPLING_OFF or Y_SHIFTSAMPLING_ON, according to true when the SDI line phase
-     * is shifted with regards to the SDO line
-     *
-     * On failure, throws an exception or returns Y_SHIFTSAMPLING_INVALID.
-     */
-    function YSpiPort_get_shiftSampling()
-    {
-        var res;                    // enumONOFF;
-        if (this._cacheExpiration <= YAPI.GetTickCount()) {
-            if (this.load(YAPI.defaultCacheValidity) != YAPI_SUCCESS) {
-                return Y_SHIFTSAMPLING_INVALID;
-            }
-        }
-        res = this._shiftSampling;
-        return res;
-    }
-
-    /**
-     * Gets true when the SDI line phase is shifted with regards to the SDO line.
-     *
-     * @param callback : callback function that is invoked when the result is known.
-     *         The callback function receives three arguments:
-     *         - the user-specific context object
-     *         - the YSpiPort object that invoked the callback
-     *         - the result:either Y_SHIFTSAMPLING_OFF or Y_SHIFTSAMPLING_ON, according to true when the SDI line
-     *         phase is shifted with regards to the SDO line
-     * @param context : user-specific object that is passed as-is to the callback function
-     *
-     * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
-     *
-     * On failure, throws an exception or returns Y_SHIFTSAMPLING_INVALID.
-     */
-    function YSpiPort_get_shiftSampling_async(callback,context)
-    {
-        var res;                    // enumONOFF;
-        var loadcb;                 // func;
-        loadcb = function(ctx,obj,res) {
-            if (res != YAPI_SUCCESS) {
-                callback(context, obj, Y_SHIFTSAMPLING_INVALID);
-            } else {
-                callback(context, obj, obj._shiftSampling);
-            }
-        };
-        if (this._cacheExpiration <= YAPI.GetTickCount()) {
-            this.load_async(YAPI.defaultCacheValidity,loadcb,null);
-        } else {
-            loadcb(null, this, YAPI_SUCCESS);
-        }
-    }
-
-    /**
-     * Changes the SDI line sampling shift. When disabled, SDI line is
-     * sampled in the middle of data output time. When enabled, SDI line is
-     * samples at the end of data output time.
-     *
-     * @param newval : either Y_SHIFTSAMPLING_OFF or Y_SHIFTSAMPLING_ON, according to the SDI line sampling shift
-     *
-     * @return YAPI_SUCCESS if the call succeeds.
-     *
-     * On failure, throws an exception or returns a negative error code.
-     */
-    function YSpiPort_set_shiftSampling(newval)
-    {   var rest_val;
-        rest_val = String(newval);
-        return this._setAttr('shiftSampling',rest_val);
-    }
-
-    /**
-     * Retrieves a SPI port for a given identifier.
+     * Retrieves an I2C port for a given identifier.
      * The identifier can be specified using several formats:
      * <ul>
      * <li>FunctionLogicalName</li>
@@ -1030,11 +877,11 @@ var YSpiPort; // definition below
      * <li>ModuleLogicalName.FunctionLogicalName</li>
      * </ul>
      *
-     * This function does not require that the SPI port is online at the time
+     * This function does not require that the I2C port is online at the time
      * it is invoked. The returned object is nevertheless valid.
-     * Use the method YSpiPort.isOnline() to test if the SPI port is
+     * Use the method YI2cPort.isOnline() to test if the I2C port is
      * indeed online at a given time. In case of ambiguity when looking for
-     * a SPI port by logical name, no error is notified: the first instance
+     * an I2C port by logical name, no error is notified: the first instance
      * found is returned. The search is performed first by hardware name,
      * then by logical name.
      *
@@ -1042,22 +889,22 @@ var YSpiPort; // definition below
      * you are certain that the matching device is plugged, make sure that you did
      * call registerHub() at application initialization time.
      *
-     * @param func : a string that uniquely characterizes the SPI port
+     * @param func : a string that uniquely characterizes the I2C port
      *
-     * @return a YSpiPort object allowing you to drive the SPI port.
+     * @return a YI2cPort object allowing you to drive the I2C port.
      */
-    function YSpiPort_FindSpiPort(func)                         // class method
+    function YI2cPort_FindI2cPort(func)                         // class method
     {
-        var obj;                    // YSpiPort;
-        obj = YFunction._FindFromCache("SpiPort", func);
+        var obj;                    // YI2cPort;
+        obj = YFunction._FindFromCache("I2cPort", func);
         if (obj == null) {
-            obj = new YSpiPort(func);
-            YFunction._AddToCache("SpiPort", func, obj);
+            obj = new YI2cPort(func);
+            YFunction._AddToCache("I2cPort", func, obj);
         }
         return obj;
     }
 
-    function YSpiPort_sendCommand(text)
+    function YI2cPort_sendCommand(text)
     {
         return this.set_command(text);
     }
@@ -1075,7 +922,7 @@ var YSpiPort; // definition below
      *
      * On failure, throws an exception or returns a negative error code.
      */
-    function YSpiPort_readLine()
+    function YI2cPort_readLine()
     {
         var url;                    // str;
         var msgbin;                 // bin;
@@ -1121,7 +968,7 @@ var YSpiPort; // definition below
      *
      * On failure, throws an exception or returns an empty array.
      */
-    function YSpiPort_readMessages(pattern,maxWait)
+    function YI2cPort_readMessages(pattern,maxWait)
     {
         var url;                    // str;
         var msgbin;                 // bin;
@@ -1157,7 +1004,7 @@ var YSpiPort; // definition below
      *
      * @return nothing.
      */
-    function YSpiPort_read_seek(absPos)
+    function YI2cPort_read_seek(absPos)
     {
         this._rxptr = absPos;
         return YAPI_SUCCESS;
@@ -1168,7 +1015,7 @@ var YSpiPort; // definition below
      *
      * @return the absolute position index for next read operations.
      */
-    function YSpiPort_read_tell()
+    function YI2cPort_read_tell()
     {
         return this._rxptr;
     }
@@ -1179,7 +1026,7 @@ var YSpiPort; // definition below
      *
      * @return the number of bytes available to read
      */
-    function YSpiPort_read_avail()
+    function YI2cPort_read_avail()
     {
         var buff;                   // bin;
         var bufflen;                // int;
@@ -1206,7 +1053,7 @@ var YSpiPort; // definition below
      *
      * On failure, throws an exception or returns an empty string.
      */
-    function YSpiPort_queryLine(query,maxWait)
+    function YI2cPort_queryLine(query,maxWait)
     {
         var url;                    // str;
         var msgbin;                 // bin;
@@ -1242,7 +1089,7 @@ var YSpiPort; // definition below
      *
      * On failure, throws an exception or returns a negative error code.
      */
-    function YSpiPort_uploadJob(jobfile,jsonDef)
+    function YI2cPort_uploadJob(jobfile,jsonDef)
     {
         this._upload(jobfile, jsonDef);
         return YAPI_SUCCESS;
@@ -1259,7 +1106,7 @@ var YSpiPort; // definition below
      *
      * On failure, throws an exception or returns a negative error code.
      */
-    function YSpiPort_selectJob(jobfile)
+    function YI2cPort_selectJob(jobfile)
     {
         return this.set_currentJob(jobfile);
     }
@@ -1271,7 +1118,7 @@ var YSpiPort; // definition below
      *
      * On failure, throws an exception or returns a negative error code.
      */
-    function YSpiPort_reset()
+    function YI2cPort_reset()
     {
         this._rxptr = 0;
         this._rxbuffptr = 0;
@@ -1281,7 +1128,286 @@ var YSpiPort; // definition below
     }
 
     /**
-     * Sends a single byte to the serial port.
+     * Sends a one-way message (provided as a a binary buffer) to a device on the I2C bus.
+     * This function checks and reports communication errors on the I2C bus.
+     *
+     * @param slaveAddr : the 7-bit address of the slave device (without the direction bit)
+     * @param buff : the binary buffer to be sent
+     *
+     * @return YAPI_SUCCESS if the call succeeds.
+     *
+     * On failure, throws an exception or returns a negative error code.
+     */
+    function YI2cPort_i2cSendBin(slaveAddr,buff)
+    {
+        var nBytes;                 // int;
+        var idx;                    // int;
+        var val;                    // int;
+        var msg;                    // str;
+        var reply;                  // str;
+        msg = "@"+('00'+(slaveAddr).toString(16)).slice(-2).toLowerCase()+":";
+        nBytes = (buff).length;
+        idx = 0;
+        while (idx < nBytes) {
+            val = (buff).charCodeAt(idx);
+            msg = ""+msg+""+('00'+(val).toString(16)).slice(-2).toLowerCase();
+            idx = idx + 1;
+        }
+
+        reply = this.queryLine(msg,1000);
+        if (!((reply).length > 0)) {
+            return this._throw(YAPI_IO_ERROR,"no response from device",YAPI_IO_ERROR);
+        }
+        idx = (reply).indexOf("[N]!");
+        if (!(idx < 0)) {
+            return this._throw(YAPI_IO_ERROR,"No ACK received",YAPI_IO_ERROR);
+        }
+        idx = (reply).indexOf("!");
+        if (!(idx < 0)) {
+            return this._throw(YAPI_IO_ERROR,"Protocol error",YAPI_IO_ERROR);
+        }
+        return YAPI_SUCCESS;
+    }
+
+    /**
+     * Sends a one-way message (provided as a list of integer) to a device on the I2C bus.
+     * This function checks and reports communication errors on the I2C bus.
+     *
+     * @param slaveAddr : the 7-bit address of the slave device (without the direction bit)
+     * @param values : a list of data bytes to be sent
+     *
+     * @return YAPI_SUCCESS if the call succeeds.
+     *
+     * On failure, throws an exception or returns a negative error code.
+     */
+    function YI2cPort_i2cSendArray(slaveAddr,values)
+    {
+        var nBytes;                 // int;
+        var idx;                    // int;
+        var val;                    // int;
+        var msg;                    // str;
+        var reply;                  // str;
+        msg = "@"+('00'+(slaveAddr).toString(16)).slice(-2).toLowerCase()+":";
+        nBytes = values.length;
+        idx = 0;
+        while (idx < nBytes) {
+            val = values[idx];
+            msg = ""+msg+""+('00'+(val).toString(16)).slice(-2).toLowerCase();
+            idx = idx + 1;
+        }
+
+        reply = this.queryLine(msg,1000);
+        if (!((reply).length > 0)) {
+            return this._throw(YAPI_IO_ERROR,"no response from device",YAPI_IO_ERROR);
+        }
+        idx = (reply).indexOf("[N]!");
+        if (!(idx < 0)) {
+            return this._throw(YAPI_IO_ERROR,"No ACK received",YAPI_IO_ERROR);
+        }
+        idx = (reply).indexOf("!");
+        if (!(idx < 0)) {
+            return this._throw(YAPI_IO_ERROR,"Protocol error",YAPI_IO_ERROR);
+        }
+        return YAPI_SUCCESS;
+    }
+
+    /**
+     * Sends a one-way message (provided as a a binary buffer) to a device on the I2C bus,
+     * then read back the specified number of bytes from device.
+     * This function checks and reports communication errors on the I2C bus.
+     *
+     * @param slaveAddr : the 7-bit address of the slave device (without the direction bit)
+     * @param buff : the binary buffer to be sent
+     * @param rcvCount : the number of bytes to receive once the data bytes are sent
+     *
+     * @return a list of bytes with the data received from slave device.
+     *
+     * On failure, throws an exception or returns an empty binary buffer.
+     */
+    function YI2cPort_i2cSendAndReceiveBin(slaveAddr,buff,rcvCount)
+    {
+        var nBytes;                 // int;
+        var idx;                    // int;
+        var val;                    // int;
+        var msg;                    // str;
+        var reply;                  // str;
+        var rcvbytes;               // bin;
+        msg = "@"+('00'+(slaveAddr).toString(16)).slice(-2).toLowerCase()+":";
+        nBytes = (buff).length;
+        idx = 0;
+        while (idx < nBytes) {
+            val = (buff).charCodeAt(idx);
+            msg = ""+msg+""+('00'+(val).toString(16)).slice(-2).toLowerCase();
+            idx = idx + 1;
+        }
+        idx = 0;
+        while (idx < rcvCount) {
+            msg = ""+msg+"xx";
+            idx = idx + 1;
+        }
+
+        reply = this.queryLine(msg,1000);
+        rcvbytes = new Uint8Array(0);
+        if (!((reply).length > 0)) {
+            return this._throw(YAPI_IO_ERROR,"no response from device",rcvbytes);
+        }
+        idx = (reply).indexOf("[N]!");
+        if (!(idx < 0)) {
+            return this._throw(YAPI_IO_ERROR,"No ACK received",rcvbytes);
+        }
+        idx = (reply).indexOf("!");
+        if (!(idx < 0)) {
+            return this._throw(YAPI_IO_ERROR,"Protocol error",rcvbytes);
+        }
+        reply = (reply).substr( (reply).length-2*rcvCount, 2*rcvCount);
+        rcvbytes = YAPI._hexStrToBin(reply);
+        return rcvbytes;
+    }
+
+    /**
+     * Sends a one-way message (provided as a list of integer) to a device on the I2C bus,
+     * then read back the specified number of bytes from device.
+     * This function checks and reports communication errors on the I2C bus.
+     *
+     * @param slaveAddr : the 7-bit address of the slave device (without the direction bit)
+     * @param values : a list of data bytes to be sent
+     * @param rcvCount : the number of bytes to receive once the data bytes are sent
+     *
+     * @return a list of bytes with the data received from slave device.
+     *
+     * On failure, throws an exception or returns an empty array.
+     */
+    function YI2cPort_i2cSendAndReceiveArray(slaveAddr,values,rcvCount)
+    {
+        var nBytes;                 // int;
+        var idx;                    // int;
+        var val;                    // int;
+        var msg;                    // str;
+        var reply;                  // str;
+        var rcvbytes;               // bin;
+        var res = [];               // intArr;
+        msg = "@"+('00'+(slaveAddr).toString(16)).slice(-2).toLowerCase()+":";
+        nBytes = values.length;
+        idx = 0;
+        while (idx < nBytes) {
+            val = values[idx];
+            msg = ""+msg+""+('00'+(val).toString(16)).slice(-2).toLowerCase();
+            idx = idx + 1;
+        }
+        idx = 0;
+        while (idx < rcvCount) {
+            msg = ""+msg+"xx";
+            idx = idx + 1;
+        }
+
+        reply = this.queryLine(msg,1000);
+        if (!((reply).length > 0)) {
+            return this._throw(YAPI_IO_ERROR,"no response from device",res);
+        }
+        idx = (reply).indexOf("[N]!");
+        if (!(idx < 0)) {
+            return this._throw(YAPI_IO_ERROR,"No ACK received",res);
+        }
+        idx = (reply).indexOf("!");
+        if (!(idx < 0)) {
+            return this._throw(YAPI_IO_ERROR,"Protocol error",res);
+        }
+        reply = (reply).substr( (reply).length-2*rcvCount, 2*rcvCount);
+        rcvbytes = YAPI._hexStrToBin(reply);
+        res.length = 0;
+        idx = 0;
+        while (idx < rcvCount) {
+            val = (rcvbytes).charCodeAt(idx);
+            res.push(val);
+            idx = idx + 1;
+        }
+        return res;
+    }
+
+    /**
+     * Sends a text-encoded I2C code stream to the I2C bus, as is.
+     * An I2C code stream is a string made of hexadecimal data bytes,
+     * but that may also include the I2C state transitions code:
+     * "{S}" to emit a start condition,
+     * "{R}" for a repeated start condition,
+     * "{P}" for a stop condition,
+     * "xx" for receiving a data byte,
+     * "{A}" to ack a data byte received and
+     * "{N}" to nack a data byte received.
+     * If a newline ("\n") is included in the stream, the message
+     * will be terminated and a newline will also be added to the
+     * receive stream.
+     *
+     * @param codes : the code stream to send
+     *
+     * @return YAPI_SUCCESS if the call succeeds.
+     *
+     * On failure, throws an exception or returns a negative error code.
+     */
+    function YI2cPort_writeStr(codes)
+    {
+        var bufflen;                // int;
+        var buff;                   // bin;
+        var idx;                    // int;
+        var ch;                     // int;
+        buff = codes;
+        bufflen = (buff).length;
+        if (bufflen < 100) {
+            // if string is pure text, we can send it as a simple command (faster)
+            ch = 0x20;
+            idx = 0;
+            while ((idx < bufflen) && (ch != 0)) {
+                ch = (buff).charCodeAt(idx);
+                if ((ch >= 0x20) && (ch < 0x7f)) {
+                    idx = idx + 1;
+                } else {
+                    ch = 0;
+                }
+            }
+            if (idx >= bufflen) {
+                return this.sendCommand("+"+codes);
+            }
+        }
+        // send string using file upload
+        return this._upload("txdata", buff);
+    }
+
+    /**
+     * Sends a text-encoded I2C code stream to the I2C bus, and terminate
+     * the message en relâchant le bus.
+     * An I2C code stream is a string made of hexadecimal data bytes,
+     * but that may also include the I2C state transitions code:
+     * "{S}" to emit a start condition,
+     * "{R}" for a repeated start condition,
+     * "{P}" for a stop condition,
+     * "xx" for receiving a data byte,
+     * "{A}" to ack a data byte received and
+     * "{N}" to nack a data byte received.
+     * At the end of the stream, a stop condition is added if missing
+     * and a newline is added to the receive buffer as well.
+     *
+     * @param codes : the code stream to send
+     *
+     * @return YAPI_SUCCESS if the call succeeds.
+     *
+     * On failure, throws an exception or returns a negative error code.
+     */
+    function YI2cPort_writeLine(codes)
+    {
+        var bufflen;                // int;
+        var buff;                   // bin;
+        bufflen = (codes).length;
+        if (bufflen < 100) {
+            return this.sendCommand("!"+codes);
+        }
+        // send string using file upload
+        buff = ""+codes+"\n";
+        return this._upload("txdata", buff);
+    }
+
+    /**
+     * Sends a single byte to the I2C bus. Depending on the I2C bus state, the byte
+     * will be interpreted as an address byte or a data byte.
      *
      * @param code : the byte to send
      *
@@ -1289,93 +1415,15 @@ var YSpiPort; // definition below
      *
      * On failure, throws an exception or returns a negative error code.
      */
-    function YSpiPort_writeByte(code)
+    function YI2cPort_writeByte(code)
     {
-        return this.sendCommand("$"+('00'+(code).toString(16)).slice(-2).toUpperCase());
+        return this.sendCommand("+"+('00'+(code).toString(16)).slice(-2).toUpperCase());
     }
 
     /**
-     * Sends an ASCII string to the serial port, as is.
-     *
-     * @param text : the text string to send
-     *
-     * @return YAPI_SUCCESS if the call succeeds.
-     *
-     * On failure, throws an exception or returns a negative error code.
-     */
-    function YSpiPort_writeStr(text)
-    {
-        var buff;                   // bin;
-        var bufflen;                // int;
-        var idx;                    // int;
-        var ch;                     // int;
-        buff = text;
-        bufflen = (buff).length;
-        if (bufflen < 100) {
-            // if string is pure text, we can send it as a simple command (faster)
-            ch = 0x20;
-            idx = 0;
-            while ((idx < bufflen) && (ch != 0)) {
-                ch = (buff).charCodeAt(idx);
-                if ((ch >= 0x20) && (ch < 0x7f)) {
-                    idx = idx + 1;
-                } else {
-                    ch = 0;
-                }
-            }
-            if (idx >= bufflen) {
-                return this.sendCommand("+"+text);
-            }
-        }
-        // send string using file upload
-        return this._upload("txdata", buff);
-    }
-
-    /**
-     * Sends a binary buffer to the serial port, as is.
-     *
-     * @param buff : the binary buffer to send
-     *
-     * @return YAPI_SUCCESS if the call succeeds.
-     *
-     * On failure, throws an exception or returns a negative error code.
-     */
-    function YSpiPort_writeBin(buff)
-    {
-        return this._upload("txdata", buff);
-    }
-
-    /**
-     * Sends a byte sequence (provided as a list of bytes) to the serial port.
-     *
-     * @param byteList : a list of byte codes
-     *
-     * @return YAPI_SUCCESS if the call succeeds.
-     *
-     * On failure, throws an exception or returns a negative error code.
-     */
-    function YSpiPort_writeArray(byteList)
-    {
-        var buff;                   // bin;
-        var bufflen;                // int;
-        var idx;                    // int;
-        var hexb;                   // int;
-        var res;                    // int;
-        bufflen = byteList.length;
-        buff = new Uint8Array(bufflen);
-        idx = 0;
-        while (idx < bufflen) {
-            hexb = byteList[idx];
-            buff[idx] = hexb;
-            idx = idx + 1;
-        }
-
-        res = this._upload("txdata", buff);
-        return res;
-    }
-
-    /**
-     * Sends a byte sequence (provided as a hexadecimal string) to the serial port.
+     * Sends a byte sequence (provided as a hexadecimal string) to the I2C bus.
+     * Depending on the I2C bus state, the first byte will be interpreted as an
+     * address byte or a data byte.
      *
      * @param hexString : a string of hexadecimal byte codes
      *
@@ -1383,357 +1431,115 @@ var YSpiPort; // definition below
      *
      * On failure, throws an exception or returns a negative error code.
      */
-    function YSpiPort_writeHex(hexString)
+    function YI2cPort_writeHex(hexString)
     {
-        var buff;                   // bin;
         var bufflen;                // int;
-        var idx;                    // int;
-        var hexb;                   // int;
-        var res;                    // int;
+        var buff;                   // bin;
         bufflen = (hexString).length;
         if (bufflen < 100) {
-            return this.sendCommand("$"+hexString);
+            return this.sendCommand("+"+hexString);
         }
-        bufflen = ((bufflen) >> (1));
-        buff = new Uint8Array(bufflen);
-        idx = 0;
-        while (idx < bufflen) {
-            hexb = parseInt((hexString).substr( 2 * idx, 2), 16);
-            buff[idx] = hexb;
-            idx = idx + 1;
-        }
+        buff = hexString;
 
-        res = this._upload("txdata", buff);
-        return res;
-    }
-
-    /**
-     * Sends an ASCII string to the serial port, followed by a line break (CR LF).
-     *
-     * @param text : the text string to send
-     *
-     * @return YAPI_SUCCESS if the call succeeds.
-     *
-     * On failure, throws an exception or returns a negative error code.
-     */
-    function YSpiPort_writeLine(text)
-    {
-        var buff;                   // bin;
-        var bufflen;                // int;
-        var idx;                    // int;
-        var ch;                     // int;
-        buff = ""+text+"\r\n";
-        bufflen = (buff).length-2;
-        if (bufflen < 100) {
-            // if string is pure text, we can send it as a simple command (faster)
-            ch = 0x20;
-            idx = 0;
-            while ((idx < bufflen) && (ch != 0)) {
-                ch = (buff).charCodeAt(idx);
-                if ((ch >= 0x20) && (ch < 0x7f)) {
-                    idx = idx + 1;
-                } else {
-                    ch = 0;
-                }
-            }
-            if (idx >= bufflen) {
-                return this.sendCommand("!"+text);
-            }
-        }
-        // send string using file upload
         return this._upload("txdata", buff);
     }
 
     /**
-     * Reads one byte from the receive buffer, starting at current stream position.
-     * If data at current stream position is not available anymore in the receive buffer,
-     * or if there is no data available yet, the function returns YAPI_NO_MORE_DATA.
+     * Sends a binary buffer to the I2C bus, as is.
+     * Depending on the I2C bus state, the first byte will be interpreted
+     * as an address byte or a data byte.
      *
-     * @return the next byte
-     *
-     * On failure, throws an exception or returns a negative error code.
-     */
-    function YSpiPort_readByte()
-    {
-        var currpos;                // int;
-        var reqlen;                 // int;
-        var buff;                   // bin;
-        var bufflen;                // int;
-        var mult;                   // int;
-        var endpos;                 // int;
-        var res;                    // int;
-        // first check if we have the requested character in the look-ahead buffer
-        bufflen = (this._rxbuff).length;
-        if ((this._rxptr >= this._rxbuffptr) && (this._rxptr < this._rxbuffptr+bufflen)) {
-            res = (this._rxbuff).charCodeAt(this._rxptr-this._rxbuffptr);
-            this._rxptr = this._rxptr + 1;
-            return res;
-        }
-        // try to preload more than one byte to speed-up byte-per-byte access
-        currpos = this._rxptr;
-        reqlen = 1024;
-        buff = this.readBin(reqlen);
-        bufflen = (buff).length;
-        if (this._rxptr == currpos+bufflen) {
-            res = (buff).charCodeAt(0);
-            this._rxptr = currpos+1;
-            this._rxbuffptr = currpos;
-            this._rxbuff = buff;
-            return res;
-        }
-        // mixed bidirectional data, retry with a smaller block
-        this._rxptr = currpos;
-        reqlen = 16;
-        buff = this.readBin(reqlen);
-        bufflen = (buff).length;
-        if (this._rxptr == currpos+bufflen) {
-            res = (buff).charCodeAt(0);
-            this._rxptr = currpos+1;
-            this._rxbuffptr = currpos;
-            this._rxbuff = buff;
-            return res;
-        }
-        // still mixed, need to process character by character
-        this._rxptr = currpos;
-
-        buff = this._download("rxdata.bin?pos="+String(Math.round(this._rxptr))+"&len=1");
-        bufflen = (buff).length - 1;
-        endpos = 0;
-        mult = 1;
-        while ((bufflen > 0) && ((buff).charCodeAt(bufflen) != 64)) {
-            endpos = endpos + mult * ((buff).charCodeAt(bufflen) - 48);
-            mult = mult * 10;
-            bufflen = bufflen - 1;
-        }
-        this._rxptr = endpos;
-        if (bufflen == 0) {
-            return YAPI_NO_MORE_DATA;
-        }
-        res = (buff).charCodeAt(0);
-        return res;
-    }
-
-    /**
-     * Reads data from the receive buffer as a string, starting at current stream position.
-     * If data at current stream position is not available anymore in the receive buffer, the
-     * function performs a short read.
-     *
-     * @param nChars : the maximum number of characters to read
-     *
-     * @return a string with receive buffer contents
-     *
-     * On failure, throws an exception or returns a negative error code.
-     */
-    function YSpiPort_readStr(nChars)
-    {
-        var buff;                   // bin;
-        var bufflen;                // int;
-        var mult;                   // int;
-        var endpos;                 // int;
-        var res;                    // str;
-        if (nChars > 65535) {
-            nChars = 65535;
-        }
-
-        buff = this._download("rxdata.bin?pos="+String(Math.round(this._rxptr))+"&len="+String(Math.round(nChars)));
-        bufflen = (buff).length - 1;
-        endpos = 0;
-        mult = 1;
-        while ((bufflen > 0) && ((buff).charCodeAt(bufflen) != 64)) {
-            endpos = endpos + mult * ((buff).charCodeAt(bufflen) - 48);
-            mult = mult * 10;
-            bufflen = bufflen - 1;
-        }
-        this._rxptr = endpos;
-        res = (buff).substr( 0, bufflen);
-        return res;
-    }
-
-    /**
-     * Reads data from the receive buffer as a binary buffer, starting at current stream position.
-     * If data at current stream position is not available anymore in the receive buffer, the
-     * function performs a short read.
-     *
-     * @param nChars : the maximum number of bytes to read
-     *
-     * @return a binary object with receive buffer contents
-     *
-     * On failure, throws an exception or returns a negative error code.
-     */
-    function YSpiPort_readBin(nChars)
-    {
-        var buff;                   // bin;
-        var bufflen;                // int;
-        var mult;                   // int;
-        var endpos;                 // int;
-        var idx;                    // int;
-        var res;                    // bin;
-        if (nChars > 65535) {
-            nChars = 65535;
-        }
-
-        buff = this._download("rxdata.bin?pos="+String(Math.round(this._rxptr))+"&len="+String(Math.round(nChars)));
-        bufflen = (buff).length - 1;
-        endpos = 0;
-        mult = 1;
-        while ((bufflen > 0) && ((buff).charCodeAt(bufflen) != 64)) {
-            endpos = endpos + mult * ((buff).charCodeAt(bufflen) - 48);
-            mult = mult * 10;
-            bufflen = bufflen - 1;
-        }
-        this._rxptr = endpos;
-        res = new Uint8Array(bufflen);
-        idx = 0;
-        while (idx < bufflen) {
-            res[idx] = (buff).charCodeAt(idx);
-            idx = idx + 1;
-        }
-        return res;
-    }
-
-    /**
-     * Reads data from the receive buffer as a list of bytes, starting at current stream position.
-     * If data at current stream position is not available anymore in the receive buffer, the
-     * function performs a short read.
-     *
-     * @param nChars : the maximum number of bytes to read
-     *
-     * @return a sequence of bytes with receive buffer contents
-     *
-     * On failure, throws an exception or returns an empty array.
-     */
-    function YSpiPort_readArray(nChars)
-    {
-        var buff;                   // bin;
-        var bufflen;                // int;
-        var mult;                   // int;
-        var endpos;                 // int;
-        var idx;                    // int;
-        var b;                      // int;
-        var res = [];               // intArr;
-        if (nChars > 65535) {
-            nChars = 65535;
-        }
-
-        buff = this._download("rxdata.bin?pos="+String(Math.round(this._rxptr))+"&len="+String(Math.round(nChars)));
-        bufflen = (buff).length - 1;
-        endpos = 0;
-        mult = 1;
-        while ((bufflen > 0) && ((buff).charCodeAt(bufflen) != 64)) {
-            endpos = endpos + mult * ((buff).charCodeAt(bufflen) - 48);
-            mult = mult * 10;
-            bufflen = bufflen - 1;
-        }
-        this._rxptr = endpos;
-        res.length = 0;
-        idx = 0;
-        while (idx < bufflen) {
-            b = (buff).charCodeAt(idx);
-            res.push(b);
-            idx = idx + 1;
-        }
-        return res;
-    }
-
-    /**
-     * Reads data from the receive buffer as a hexadecimal string, starting at current stream position.
-     * If data at current stream position is not available anymore in the receive buffer, the
-     * function performs a short read.
-     *
-     * @param nBytes : the maximum number of bytes to read
-     *
-     * @return a string with receive buffer contents, encoded in hexadecimal
-     *
-     * On failure, throws an exception or returns a negative error code.
-     */
-    function YSpiPort_readHex(nBytes)
-    {
-        var buff;                   // bin;
-        var bufflen;                // int;
-        var mult;                   // int;
-        var endpos;                 // int;
-        var ofs;                    // int;
-        var res;                    // str;
-        if (nBytes > 65535) {
-            nBytes = 65535;
-        }
-
-        buff = this._download("rxdata.bin?pos="+String(Math.round(this._rxptr))+"&len="+String(Math.round(nBytes)));
-        bufflen = (buff).length - 1;
-        endpos = 0;
-        mult = 1;
-        while ((bufflen > 0) && ((buff).charCodeAt(bufflen) != 64)) {
-            endpos = endpos + mult * ((buff).charCodeAt(bufflen) - 48);
-            mult = mult * 10;
-            bufflen = bufflen - 1;
-        }
-        this._rxptr = endpos;
-        res = "";
-        ofs = 0;
-        while (ofs + 3 < bufflen) {
-            res = ""+res+""+('00'+((buff).charCodeAt(ofs)).toString(16)).slice(-2).toUpperCase()+""+('00'+((buff).charCodeAt(ofs + 1)).toString(16)).slice(-2).toUpperCase()+""+('00'+((buff).charCodeAt(ofs + 2)).toString(16)).slice(-2).toUpperCase()+""+('00'+((buff).charCodeAt(ofs + 3)).toString(16)).slice(-2).toUpperCase();
-            ofs = ofs + 4;
-        }
-        while (ofs < bufflen) {
-            res = ""+res+""+('00'+((buff).charCodeAt(ofs)).toString(16)).slice(-2).toUpperCase();
-            ofs = ofs + 1;
-        }
-        return res;
-    }
-
-    /**
-     * Manually sets the state of the SS line. This function has no effect when
-     * the SS line is handled automatically.
-     *
-     * @param val : 1 to turn SS active, 0 to release SS.
+     * @param buff : the binary buffer to send
      *
      * @return YAPI_SUCCESS if the call succeeds.
      *
      * On failure, throws an exception or returns a negative error code.
      */
-    function YSpiPort_set_SS(val)
+    function YI2cPort_writeBin(buff)
     {
-        return this.sendCommand("S"+String(Math.round(val)));
+        var nBytes;                 // int;
+        var idx;                    // int;
+        var val;                    // int;
+        var msg;                    // str;
+        msg = "";
+        nBytes = (buff).length;
+        idx = 0;
+        while (idx < nBytes) {
+            val = (buff).charCodeAt(idx);
+            msg = ""+msg+""+('00'+(val).toString(16)).slice(-2).toLowerCase();
+            idx = idx + 1;
+        }
+
+        return this.writeHex(msg);
     }
 
     /**
-     * Continues the enumeration of SPI ports started using yFirstSpiPort().
-     * Caution: You can't make any assumption about the returned SPI ports order.
-     * If you want to find a specific a SPI port, use SpiPort.findSpiPort()
+     * Sends a byte sequence (provided as a list of bytes) to the I2C bus.
+     * Depending on the I2C bus state, the first byte will be interpreted as an
+     * address byte or a data byte.
+     *
+     * @param byteList : a list of byte codes
+     *
+     * @return YAPI_SUCCESS if the call succeeds.
+     *
+     * On failure, throws an exception or returns a negative error code.
+     */
+    function YI2cPort_writeArray(byteList)
+    {
+        var nBytes;                 // int;
+        var idx;                    // int;
+        var val;                    // int;
+        var msg;                    // str;
+        msg = "";
+        nBytes = byteList.length;
+        idx = 0;
+        while (idx < nBytes) {
+            val = byteList[idx];
+            msg = ""+msg+""+('00'+(val).toString(16)).slice(-2).toLowerCase();
+            idx = idx + 1;
+        }
+
+        return this.writeHex(msg);
+    }
+
+    /**
+     * Continues the enumeration of I2C ports started using yFirstI2cPort().
+     * Caution: You can't make any assumption about the returned I2C ports order.
+     * If you want to find a specific an I2C port, use I2cPort.findI2cPort()
      * and a hardwareID or a logical name.
      *
-     * @return a pointer to a YSpiPort object, corresponding to
-     *         a SPI port currently online, or a null pointer
-     *         if there are no more SPI ports to enumerate.
+     * @return a pointer to a YI2cPort object, corresponding to
+     *         an I2C port currently online, or a null pointer
+     *         if there are no more I2C ports to enumerate.
      */
-    function YSpiPort_nextSpiPort()
+    function YI2cPort_nextI2cPort()
     {   var resolve = YAPI.resolveFunction(this._className, this._func);
         if(resolve.errorType != YAPI_SUCCESS) return null;
         var next_hwid = YAPI.getNextHardwareId(this._className, resolve.result);
         if(next_hwid == null) return null;
-        return YSpiPort.FindSpiPort(next_hwid);
+        return YI2cPort.FindI2cPort(next_hwid);
     }
 
     /**
-     * Starts the enumeration of SPI ports currently accessible.
-     * Use the method YSpiPort.nextSpiPort() to iterate on
-     * next SPI ports.
+     * Starts the enumeration of I2C ports currently accessible.
+     * Use the method YI2cPort.nextI2cPort() to iterate on
+     * next I2C ports.
      *
-     * @return a pointer to a YSpiPort object, corresponding to
-     *         the first SPI port currently online, or a null pointer
+     * @return a pointer to a YI2cPort object, corresponding to
+     *         the first I2C port currently online, or a null pointer
      *         if there are none.
      */
-    function YSpiPort_FirstSpiPort()
+    function YI2cPort_FirstI2cPort()
     {
-        var next_hwid = YAPI.getFirstHardwareId('SpiPort');
+        var next_hwid = YAPI.getFirstHardwareId('I2cPort');
         if(next_hwid == null) return null;
-        return YSpiPort.FindSpiPort(next_hwid);
+        return YI2cPort.FindI2cPort(next_hwid);
     }
 
-    //--- (end of YSpiPort implementation)
+    //--- (end of YI2cPort implementation)
 
-    //--- (YSpiPort initialization)
-    YSpiPort = YFunction._Subclass(_YSpiPort, {
+    //--- (YI2cPort initialization)
+    YI2cPort = YFunction._Subclass(_YI2cPort, {
         // Constants
         RXCOUNT_INVALID             : YAPI_INVALID_UINT,
         TXCOUNT_INVALID             : YAPI_INVALID_UINT,
@@ -1754,124 +1560,103 @@ var YSpiPort; // definition below
         VOLTAGELEVEL_TTL1V8         : 7,
         VOLTAGELEVEL_INVALID        : -1,
         PROTOCOL_INVALID            : YAPI_INVALID_STRING,
-        SPIMODE_INVALID             : YAPI_INVALID_STRING,
-        SSPOLARITY_ACTIVE_LOW       : 0,
-        SSPOLARITY_ACTIVE_HIGH      : 1,
-        SSPOLARITY_INVALID          : -1,
-        SHIFTSAMPLING_OFF           : 0,
-        SHIFTSAMPLING_ON            : 1,
-        SHIFTSAMPLING_INVALID       : -1
+        I2CMODE_INVALID             : YAPI_INVALID_STRING
     }, {
         // Class methods
-        FindSpiPort                 : YSpiPort_FindSpiPort,
-        FirstSpiPort                : YSpiPort_FirstSpiPort
+        FindI2cPort                 : YI2cPort_FindI2cPort,
+        FirstI2cPort                : YI2cPort_FirstI2cPort
     }, {
         // Methods
-        get_rxCount                 : YSpiPort_get_rxCount,
-        rxCount                     : YSpiPort_get_rxCount,
-        get_rxCount_async           : YSpiPort_get_rxCount_async,
-        rxCount_async               : YSpiPort_get_rxCount_async,
-        get_txCount                 : YSpiPort_get_txCount,
-        txCount                     : YSpiPort_get_txCount,
-        get_txCount_async           : YSpiPort_get_txCount_async,
-        txCount_async               : YSpiPort_get_txCount_async,
-        get_errCount                : YSpiPort_get_errCount,
-        errCount                    : YSpiPort_get_errCount,
-        get_errCount_async          : YSpiPort_get_errCount_async,
-        errCount_async              : YSpiPort_get_errCount_async,
-        get_rxMsgCount              : YSpiPort_get_rxMsgCount,
-        rxMsgCount                  : YSpiPort_get_rxMsgCount,
-        get_rxMsgCount_async        : YSpiPort_get_rxMsgCount_async,
-        rxMsgCount_async            : YSpiPort_get_rxMsgCount_async,
-        get_txMsgCount              : YSpiPort_get_txMsgCount,
-        txMsgCount                  : YSpiPort_get_txMsgCount,
-        get_txMsgCount_async        : YSpiPort_get_txMsgCount_async,
-        txMsgCount_async            : YSpiPort_get_txMsgCount_async,
-        get_lastMsg                 : YSpiPort_get_lastMsg,
-        lastMsg                     : YSpiPort_get_lastMsg,
-        get_lastMsg_async           : YSpiPort_get_lastMsg_async,
-        lastMsg_async               : YSpiPort_get_lastMsg_async,
-        get_currentJob              : YSpiPort_get_currentJob,
-        currentJob                  : YSpiPort_get_currentJob,
-        get_currentJob_async        : YSpiPort_get_currentJob_async,
-        currentJob_async            : YSpiPort_get_currentJob_async,
-        set_currentJob              : YSpiPort_set_currentJob,
-        setCurrentJob               : YSpiPort_set_currentJob,
-        get_startupJob              : YSpiPort_get_startupJob,
-        startupJob                  : YSpiPort_get_startupJob,
-        get_startupJob_async        : YSpiPort_get_startupJob_async,
-        startupJob_async            : YSpiPort_get_startupJob_async,
-        set_startupJob              : YSpiPort_set_startupJob,
-        setStartupJob               : YSpiPort_set_startupJob,
-        get_command                 : YSpiPort_get_command,
-        command                     : YSpiPort_get_command,
-        get_command_async           : YSpiPort_get_command_async,
-        command_async               : YSpiPort_get_command_async,
-        set_command                 : YSpiPort_set_command,
-        setCommand                  : YSpiPort_set_command,
-        get_voltageLevel            : YSpiPort_get_voltageLevel,
-        voltageLevel                : YSpiPort_get_voltageLevel,
-        get_voltageLevel_async      : YSpiPort_get_voltageLevel_async,
-        voltageLevel_async          : YSpiPort_get_voltageLevel_async,
-        set_voltageLevel            : YSpiPort_set_voltageLevel,
-        setVoltageLevel             : YSpiPort_set_voltageLevel,
-        get_protocol                : YSpiPort_get_protocol,
-        protocol                    : YSpiPort_get_protocol,
-        get_protocol_async          : YSpiPort_get_protocol_async,
-        protocol_async              : YSpiPort_get_protocol_async,
-        set_protocol                : YSpiPort_set_protocol,
-        setProtocol                 : YSpiPort_set_protocol,
-        get_spiMode                 : YSpiPort_get_spiMode,
-        spiMode                     : YSpiPort_get_spiMode,
-        get_spiMode_async           : YSpiPort_get_spiMode_async,
-        spiMode_async               : YSpiPort_get_spiMode_async,
-        set_spiMode                 : YSpiPort_set_spiMode,
-        setSpiMode                  : YSpiPort_set_spiMode,
-        get_ssPolarity              : YSpiPort_get_ssPolarity,
-        ssPolarity                  : YSpiPort_get_ssPolarity,
-        get_ssPolarity_async        : YSpiPort_get_ssPolarity_async,
-        ssPolarity_async            : YSpiPort_get_ssPolarity_async,
-        set_ssPolarity              : YSpiPort_set_ssPolarity,
-        setSsPolarity               : YSpiPort_set_ssPolarity,
-        get_shiftSampling           : YSpiPort_get_shiftSampling,
-        shiftSampling               : YSpiPort_get_shiftSampling,
-        get_shiftSampling_async     : YSpiPort_get_shiftSampling_async,
-        shiftSampling_async         : YSpiPort_get_shiftSampling_async,
-        set_shiftSampling           : YSpiPort_set_shiftSampling,
-        setShiftSampling            : YSpiPort_set_shiftSampling,
-        sendCommand                 : YSpiPort_sendCommand,
-        readLine                    : YSpiPort_readLine,
-        readMessages                : YSpiPort_readMessages,
-        read_seek                   : YSpiPort_read_seek,
-        read_tell                   : YSpiPort_read_tell,
-        read_avail                  : YSpiPort_read_avail,
-        queryLine                   : YSpiPort_queryLine,
-        uploadJob                   : YSpiPort_uploadJob,
-        selectJob                   : YSpiPort_selectJob,
-        reset                       : YSpiPort_reset,
-        writeByte                   : YSpiPort_writeByte,
-        writeStr                    : YSpiPort_writeStr,
-        writeBin                    : YSpiPort_writeBin,
-        writeArray                  : YSpiPort_writeArray,
-        writeHex                    : YSpiPort_writeHex,
-        writeLine                   : YSpiPort_writeLine,
-        readByte                    : YSpiPort_readByte,
-        readStr                     : YSpiPort_readStr,
-        readBin                     : YSpiPort_readBin,
-        readArray                   : YSpiPort_readArray,
-        readHex                     : YSpiPort_readHex,
-        set_SS                      : YSpiPort_set_SS,
-        setSS                       : YSpiPort_set_SS,
-        nextSpiPort                 : YSpiPort_nextSpiPort,
-        _parseAttr                  : YSpiPort_parseAttr
+        get_rxCount                 : YI2cPort_get_rxCount,
+        rxCount                     : YI2cPort_get_rxCount,
+        get_rxCount_async           : YI2cPort_get_rxCount_async,
+        rxCount_async               : YI2cPort_get_rxCount_async,
+        get_txCount                 : YI2cPort_get_txCount,
+        txCount                     : YI2cPort_get_txCount,
+        get_txCount_async           : YI2cPort_get_txCount_async,
+        txCount_async               : YI2cPort_get_txCount_async,
+        get_errCount                : YI2cPort_get_errCount,
+        errCount                    : YI2cPort_get_errCount,
+        get_errCount_async          : YI2cPort_get_errCount_async,
+        errCount_async              : YI2cPort_get_errCount_async,
+        get_rxMsgCount              : YI2cPort_get_rxMsgCount,
+        rxMsgCount                  : YI2cPort_get_rxMsgCount,
+        get_rxMsgCount_async        : YI2cPort_get_rxMsgCount_async,
+        rxMsgCount_async            : YI2cPort_get_rxMsgCount_async,
+        get_txMsgCount              : YI2cPort_get_txMsgCount,
+        txMsgCount                  : YI2cPort_get_txMsgCount,
+        get_txMsgCount_async        : YI2cPort_get_txMsgCount_async,
+        txMsgCount_async            : YI2cPort_get_txMsgCount_async,
+        get_lastMsg                 : YI2cPort_get_lastMsg,
+        lastMsg                     : YI2cPort_get_lastMsg,
+        get_lastMsg_async           : YI2cPort_get_lastMsg_async,
+        lastMsg_async               : YI2cPort_get_lastMsg_async,
+        get_currentJob              : YI2cPort_get_currentJob,
+        currentJob                  : YI2cPort_get_currentJob,
+        get_currentJob_async        : YI2cPort_get_currentJob_async,
+        currentJob_async            : YI2cPort_get_currentJob_async,
+        set_currentJob              : YI2cPort_set_currentJob,
+        setCurrentJob               : YI2cPort_set_currentJob,
+        get_startupJob              : YI2cPort_get_startupJob,
+        startupJob                  : YI2cPort_get_startupJob,
+        get_startupJob_async        : YI2cPort_get_startupJob_async,
+        startupJob_async            : YI2cPort_get_startupJob_async,
+        set_startupJob              : YI2cPort_set_startupJob,
+        setStartupJob               : YI2cPort_set_startupJob,
+        get_command                 : YI2cPort_get_command,
+        command                     : YI2cPort_get_command,
+        get_command_async           : YI2cPort_get_command_async,
+        command_async               : YI2cPort_get_command_async,
+        set_command                 : YI2cPort_set_command,
+        setCommand                  : YI2cPort_set_command,
+        get_voltageLevel            : YI2cPort_get_voltageLevel,
+        voltageLevel                : YI2cPort_get_voltageLevel,
+        get_voltageLevel_async      : YI2cPort_get_voltageLevel_async,
+        voltageLevel_async          : YI2cPort_get_voltageLevel_async,
+        set_voltageLevel            : YI2cPort_set_voltageLevel,
+        setVoltageLevel             : YI2cPort_set_voltageLevel,
+        get_protocol                : YI2cPort_get_protocol,
+        protocol                    : YI2cPort_get_protocol,
+        get_protocol_async          : YI2cPort_get_protocol_async,
+        protocol_async              : YI2cPort_get_protocol_async,
+        set_protocol                : YI2cPort_set_protocol,
+        setProtocol                 : YI2cPort_set_protocol,
+        get_i2cMode                 : YI2cPort_get_i2cMode,
+        i2cMode                     : YI2cPort_get_i2cMode,
+        get_i2cMode_async           : YI2cPort_get_i2cMode_async,
+        i2cMode_async               : YI2cPort_get_i2cMode_async,
+        set_i2cMode                 : YI2cPort_set_i2cMode,
+        setI2cMode                  : YI2cPort_set_i2cMode,
+        sendCommand                 : YI2cPort_sendCommand,
+        readLine                    : YI2cPort_readLine,
+        readMessages                : YI2cPort_readMessages,
+        read_seek                   : YI2cPort_read_seek,
+        read_tell                   : YI2cPort_read_tell,
+        read_avail                  : YI2cPort_read_avail,
+        queryLine                   : YI2cPort_queryLine,
+        uploadJob                   : YI2cPort_uploadJob,
+        selectJob                   : YI2cPort_selectJob,
+        reset                       : YI2cPort_reset,
+        i2cSendBin                  : YI2cPort_i2cSendBin,
+        i2cSendArray                : YI2cPort_i2cSendArray,
+        i2cSendAndReceiveBin        : YI2cPort_i2cSendAndReceiveBin,
+        i2cSendAndReceiveArray      : YI2cPort_i2cSendAndReceiveArray,
+        writeStr                    : YI2cPort_writeStr,
+        writeLine                   : YI2cPort_writeLine,
+        writeByte                   : YI2cPort_writeByte,
+        writeHex                    : YI2cPort_writeHex,
+        writeBin                    : YI2cPort_writeBin,
+        writeArray                  : YI2cPort_writeArray,
+        nextI2cPort                 : YI2cPort_nextI2cPort,
+        _parseAttr                  : YI2cPort_parseAttr
     });
-    //--- (end of YSpiPort initialization)
+    //--- (end of YI2cPort initialization)
 })();
 
-//--- (YSpiPort functions)
+//--- (YI2cPort functions)
 
 /**
- * Retrieves a SPI port for a given identifier.
+ * Retrieves an I2C port for a given identifier.
  * The identifier can be specified using several formats:
  * <ul>
  * <li>FunctionLogicalName</li>
@@ -1881,11 +1666,11 @@ var YSpiPort; // definition below
  * <li>ModuleLogicalName.FunctionLogicalName</li>
  * </ul>
  *
- * This function does not require that the SPI port is online at the time
+ * This function does not require that the I2C port is online at the time
  * it is invoked. The returned object is nevertheless valid.
- * Use the method YSpiPort.isOnline() to test if the SPI port is
+ * Use the method YI2cPort.isOnline() to test if the I2C port is
  * indeed online at a given time. In case of ambiguity when looking for
- * a SPI port by logical name, no error is notified: the first instance
+ * an I2C port by logical name, no error is notified: the first instance
  * found is returned. The search is performed first by hardware name,
  * then by logical name.
  *
@@ -1893,27 +1678,27 @@ var YSpiPort; // definition below
  * you are certain that the matching device is plugged, make sure that you did
  * call registerHub() at application initialization time.
  *
- * @param func : a string that uniquely characterizes the SPI port
+ * @param func : a string that uniquely characterizes the I2C port
  *
- * @return a YSpiPort object allowing you to drive the SPI port.
+ * @return a YI2cPort object allowing you to drive the I2C port.
  */
-function yFindSpiPort(func)
+function yFindI2cPort(func)
 {
-    return YSpiPort.FindSpiPort(func);
+    return YI2cPort.FindI2cPort(func);
 }
 
 /**
- * Starts the enumeration of SPI ports currently accessible.
- * Use the method YSpiPort.nextSpiPort() to iterate on
- * next SPI ports.
+ * Starts the enumeration of I2C ports currently accessible.
+ * Use the method YI2cPort.nextI2cPort() to iterate on
+ * next I2C ports.
  *
- * @return a pointer to a YSpiPort object, corresponding to
- *         the first SPI port currently online, or a null pointer
+ * @return a pointer to a YI2cPort object, corresponding to
+ *         the first I2C port currently online, or a null pointer
  *         if there are none.
  */
-function yFirstSpiPort()
+function yFirstI2cPort()
 {
-    return YSpiPort.FirstSpiPort();
+    return YI2cPort.FirstI2cPort();
 }
 
-//--- (end of YSpiPort functions)
+//--- (end of YI2cPort functions)

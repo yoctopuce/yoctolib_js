@@ -1,3 +1,4 @@
-Javascript v1.10.35983
+Javascript v1.10.36692
 
-- Add YArithmeticSensor class
+- Add method to get product name and revision
+- Fix Invalid end time in datalogger preview.

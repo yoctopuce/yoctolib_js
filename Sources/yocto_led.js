@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_led.js 32905 2018-11-02 10:15:36Z seb $
+ *  $Id: yocto_led.js 36554 2019-07-29 12:21:31Z mvuilleu $
  *
  *  Implements the high-level API for Led functions
  *
@@ -217,7 +217,8 @@ var YLed; // definition below
     }
 
     /**
-     * Changes the current LED intensity (in per cent).
+     * Changes the current LED intensity (in per cent). Remember to call the
+     * saveToFlash() method of the module if the modification must be kept.
      *
      * @param newval : an integer corresponding to the current LED intensity (in per cent)
      *

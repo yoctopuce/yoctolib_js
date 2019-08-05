@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_api.js 35620 2019-06-04 08:29:58Z seb $
+ * $Id: yocto_api.js 36629 2019-07-31 13:03:53Z seb $
  *
  * High-level programming interface, common to all modules
  *
@@ -2677,7 +2677,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
      */
     function YAPI_GetAPIVersion()
     {
-        return "1.10.35983";
+        return "1.10.36692";
     }
 
     /**
@@ -5422,7 +5422,15 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
             val = 0;
         }
         this._nRows = val;
-        this._duration = this._nRows * this._dataSamplesInterval;
+        if (this._nRows > 0) {
+            if (this._firstMeasureDuration > 0) {
+                this._duration = this._firstMeasureDuration + (this._nRows - 1) * this._dataSamplesInterval;
+            } else {
+                this._duration = this._nRows * this._dataSamplesInterval;
+            }
+        } else {
+            this._duration = 0;
+        }
         // precompute decoding parameters
         iCalib = dataset._get_calibration();
         this._caltyp = iCalib[0];
@@ -6998,11 +7006,11 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
     }
 
     /**
-     * Returns the uncalibrated, unrounded raw value returned by the sensor, in the specified unit, as a
-     * floating point number.
+     * Returns the uncalibrated, unrounded raw value returned by the
+     * sensor, in the specified unit, as a floating point number.
      *
-     * @return a floating point number corresponding to the uncalibrated, unrounded raw value returned by
-     * the sensor, in the specified unit, as a floating point number
+     * @return a floating point number corresponding to the uncalibrated, unrounded raw value returned by the
+     *         sensor, in the specified unit, as a floating point number
      *
      * On failure, throws an exception or returns Y_CURRENTRAWVALUE_INVALID.
      */
@@ -7019,15 +7027,15 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
     }
 
     /**
-     * Gets the uncalibrated, unrounded raw value returned by the sensor, in the specified unit, as a
-     * floating point number.
+     * Gets the uncalibrated, unrounded raw value returned by the
+     * sensor, in the specified unit, as a floating point number.
      *
      * @param callback : callback function that is invoked when the result is known.
      *         The callback function receives three arguments:
      *         - the user-specific context object
      *         - the YSensor object that invoked the callback
-     *         - the result:a floating point number corresponding to the uncalibrated, unrounded raw value
-     *         returned by the sensor, in the specified unit, as a floating point number
+     *         - the result:a floating point number corresponding to the uncalibrated, unrounded raw value returned by the
+     *         sensor, in the specified unit, as a floating point number
      * @param context : user-specific object that is passed as-is to the callback function
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
@@ -9598,16 +9606,17 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
     }
 
     /**
-     * Returns the hardware release version of the module.
+     * Returns the release number of the module hardware, preprogrammed at the factory.
+     * The original hardware release returns value 1, revision B returns value 2, etc.
      *
-     * @return an integer corresponding to the hardware release version of the module
+     * @return an integer corresponding to the release number of the module hardware, preprogrammed at the factory
      *
      * On failure, throws an exception or returns Y_PRODUCTRELEASE_INVALID.
      */
     function YModule_get_productRelease()
     {
         var res;                    // int;
-        if (this._cacheExpiration <= YAPI.GetTickCount()) {
+        if (this._cacheExpiration == 0) {
             if (this.load(YAPI.defaultCacheValidity) != YAPI_SUCCESS) {
                 return Y_PRODUCTRELEASE_INVALID;
             }
@@ -9617,13 +9626,14 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
     }
 
     /**
-     * Gets the hardware release version of the module.
+     * Gets the release number of the module hardware, preprogrammed at the factory.
+     * The original hardware release returns value 1, revision B returns value 2, etc.
      *
      * @param callback : callback function that is invoked when the result is known.
      *         The callback function receives three arguments:
      *         - the user-specific context object
      *         - the YModule object that invoked the callback
-     *         - the result:an integer corresponding to the hardware release version of the module
+     *         - the result:an integer corresponding to the release number of the module hardware, preprogrammed at the factory
      * @param context : user-specific object that is passed as-is to the callback function
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
@@ -9641,7 +9651,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
                 callback(context, obj, obj._productRelease);
             }
         };
-        if (this._cacheExpiration <= YAPI.GetTickCount()) {
+        if (this._cacheExpiration == 0) {
             this.load_async(YAPI.defaultCacheValidity,loadcb,null);
         } else {
             loadcb(null, this, YAPI_SUCCESS);
@@ -10171,6 +10181,22 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
             YFunction._AddToCache("Module", cleanHwId, obj);
         }
         return obj;
+    }
+
+    function YModule_get_productNameAndRevision()
+    {
+        var prodname;               // str;
+        var prodrel;                // int;
+        var fullname;               // str;
+
+        prodname = this.get_productName();
+        prodrel = this.get_productRelease();
+        if (prodrel > 1) {
+            fullname = ""+prodname+" rev. "+String.fromCharCode(64+prodrel);
+        } else {
+            fullname = prodname;
+        }
+        return fullname;
     }
 
     /**
@@ -11341,6 +11367,8 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
         userVar_async               : YModule_get_userVar_async,
         set_userVar                 : YModule_set_userVar,
         setUserVar                  : YModule_set_userVar,
+        get_productNameAndRevision  : YModule_get_productNameAndRevision,
+        productNameAndRevision      : YModule_get_productNameAndRevision,
         saveToFlash                 : YModule_saveToFlash,
         revertFromFlash             : YModule_revertFromFlash,
         reboot                      : YModule_reboot,

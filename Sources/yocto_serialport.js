@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_serialport.js 35466 2019-05-16 14:41:19Z seb $
+ * $Id: yocto_serialport.js 36048 2019-06-28 17:43:51Z mvuilleu $
  *
  * Implements the high-level API for SerialPort functions
  *
@@ -996,6 +996,208 @@ var YSerialPort; // definition below
     }
 
     /**
+     * Reads a single line (or message) from the receive buffer, starting at current stream position.
+     * This function is intended to be used when the serial port is configured for a message protocol,
+     * such as 'Line' mode or frame protocols.
+     *
+     * If data at current stream position is not available anymore in the receive buffer,
+     * the function returns the oldest available line and moves the stream position just after.
+     * If no new full line is received, the function returns an empty line.
+     *
+     * @return a string with a single line of text
+     *
+     * On failure, throws an exception or returns a negative error code.
+     */
+    function YSerialPort_readLine()
+    {
+        var url;                    // str;
+        var msgbin;                 // bin;
+        var msgarr = [];            // strArr;
+        var msglen;                 // int;
+        var res;                    // str;
+
+        url = "rxmsg.json?pos="+String(Math.round(this._rxptr))+"&len=1&maxw=1";
+        msgbin = this._download(url);
+        msgarr = this._json_get_array(msgbin);
+        msglen = msgarr.length;
+        if (msglen == 0) {
+            return "";
+        }
+        // last element of array is the new position
+        msglen = msglen - 1;
+        this._rxptr = YAPI._atoi(msgarr[msglen]);
+        if (msglen == 0) {
+            return "";
+        }
+        res = this._json_get_string(msgarr[0]);
+        return res;
+    }
+
+    /**
+     * Searches for incoming messages in the serial port receive buffer matching a given pattern,
+     * starting at current position. This function will only compare and return printable characters
+     * in the message strings. Binary protocols are handled as hexadecimal strings.
+     *
+     * The search returns all messages matching the expression provided as argument in the buffer.
+     * If no matching message is found, the search waits for one up to the specified maximum timeout
+     * (in milliseconds).
+     *
+     * @param pattern : a limited regular expression describing the expected message format,
+     *         or an empty string if all messages should be returned (no filtering).
+     *         When using binary protocols, the format applies to the hexadecimal
+     *         representation of the message.
+     * @param maxWait : the maximum number of milliseconds to wait for a message if none is found
+     *         in the receive buffer.
+     *
+     * @return an array of strings containing the messages found, if any.
+     *         Binary messages are converted to hexadecimal representation.
+     *
+     * On failure, throws an exception or returns an empty array.
+     */
+    function YSerialPort_readMessages(pattern,maxWait)
+    {
+        var url;                    // str;
+        var msgbin;                 // bin;
+        var msgarr = [];            // strArr;
+        var msglen;                 // int;
+        var res = [];               // strArr;
+        var idx;                    // int;
+
+        url = "rxmsg.json?pos="+String(Math.round(this._rxptr))+"&maxw="+String(Math.round(maxWait))+"&pat="+pattern;
+        msgbin = this._download(url);
+        msgarr = this._json_get_array(msgbin);
+        msglen = msgarr.length;
+        if (msglen == 0) {
+            return res;
+        }
+        // last element of array is the new position
+        msglen = msglen - 1;
+        this._rxptr = YAPI._atoi(msgarr[msglen]);
+        idx = 0;
+        while (idx < msglen) {
+            res.push(this._json_get_string(msgarr[idx]));
+            idx = idx + 1;
+        }
+        return res;
+    }
+
+    /**
+     * Changes the current internal stream position to the specified value. This function
+     * does not affect the device, it only changes the value stored in the API object
+     * for the next read operations.
+     *
+     * @param absPos : the absolute position index for next read operations.
+     *
+     * @return nothing.
+     */
+    function YSerialPort_read_seek(absPos)
+    {
+        this._rxptr = absPos;
+        return YAPI_SUCCESS;
+    }
+
+    /**
+     * Returns the current absolute stream position pointer of the API object.
+     *
+     * @return the absolute position index for next read operations.
+     */
+    function YSerialPort_read_tell()
+    {
+        return this._rxptr;
+    }
+
+    /**
+     * Returns the number of bytes available to read in the input buffer starting from the
+     * current absolute stream position pointer of the API object.
+     *
+     * @return the number of bytes available to read
+     */
+    function YSerialPort_read_avail()
+    {
+        var buff;                   // bin;
+        var bufflen;                // int;
+        var res;                    // int;
+
+        buff = this._download("rxcnt.bin?pos="+String(Math.round(this._rxptr)));
+        bufflen = (buff).length - 1;
+        while ((bufflen > 0) && ((buff).charCodeAt(bufflen) != 64)) {
+            bufflen = bufflen - 1;
+        }
+        res = YAPI._atoi((buff).substr( 0, bufflen));
+        return res;
+    }
+
+    /**
+     * Sends a text line query to the serial port, and reads the reply, if any.
+     * This function is intended to be used when the serial port is configured for 'Line' protocol.
+     *
+     * @param query : the line query to send (without CR/LF)
+     * @param maxWait : the maximum number of milliseconds to wait for a reply.
+     *
+     * @return the next text line received after sending the text query, as a string.
+     *         Additional lines can be obtained by calling readLine or readMessages.
+     *
+     * On failure, throws an exception or returns an empty string.
+     */
+    function YSerialPort_queryLine(query,maxWait)
+    {
+        var url;                    // str;
+        var msgbin;                 // bin;
+        var msgarr = [];            // strArr;
+        var msglen;                 // int;
+        var res;                    // str;
+
+        url = "rxmsg.json?len=1&maxw="+String(Math.round(maxWait))+"&cmd=!"+this._escapeAttr(query);
+        msgbin = this._download(url);
+        msgarr = this._json_get_array(msgbin);
+        msglen = msgarr.length;
+        if (msglen == 0) {
+            return "";
+        }
+        // last element of array is the new position
+        msglen = msglen - 1;
+        this._rxptr = YAPI._atoi(msgarr[msglen]);
+        if (msglen == 0) {
+            return "";
+        }
+        res = this._json_get_string(msgarr[0]);
+        return res;
+    }
+
+    /**
+     * Saves the job definition string (JSON data) into a job file.
+     * The job file can be later enabled using selectJob().
+     *
+     * @param jobfile : name of the job file to save on the device filesystem
+     * @param jsonDef : a string containing a JSON definition of the job
+     *
+     * @return YAPI_SUCCESS if the call succeeds.
+     *
+     * On failure, throws an exception or returns a negative error code.
+     */
+    function YSerialPort_uploadJob(jobfile,jsonDef)
+    {
+        this._upload(jobfile, jsonDef);
+        return YAPI_SUCCESS;
+    }
+
+    /**
+     * Load and start processing the specified job file. The file must have
+     * been previously created using the user interface or uploaded on the
+     * device filesystem using the uploadJob() function.
+     *
+     * @param jobfile : name of the job file (on the device filesystem)
+     *
+     * @return YAPI_SUCCESS if the call succeeds.
+     *
+     * On failure, throws an exception or returns a negative error code.
+     */
+    function YSerialPort_selectJob(jobfile)
+    {
+        return this.set_currentJob(jobfile);
+    }
+
+    /**
      * Clears the serial port buffer and resets counters to zero.
      *
      * @return YAPI_SUCCESS if the call succeeds.
@@ -1331,7 +1533,7 @@ var YSerialPort; // definition below
      *
      * @return a sequence of bytes with receive buffer contents
      *
-     * On failure, throws an exception or returns a negative error code.
+     * On failure, throws an exception or returns an empty array.
      */
     function YSerialPort_readArray(nChars)
     {
@@ -1410,208 +1612,6 @@ var YSerialPort; // definition below
             ofs = ofs + 1;
         }
         return res;
-    }
-
-    /**
-     * Reads a single line (or message) from the receive buffer, starting at current stream position.
-     * This function is intended to be used when the serial port is configured for a message protocol,
-     * such as 'Line' mode or frame protocols.
-     *
-     * If data at current stream position is not available anymore in the receive buffer,
-     * the function returns the oldest available line and moves the stream position just after.
-     * If no new full line is received, the function returns an empty line.
-     *
-     * @return a string with a single line of text
-     *
-     * On failure, throws an exception or returns a negative error code.
-     */
-    function YSerialPort_readLine()
-    {
-        var url;                    // str;
-        var msgbin;                 // bin;
-        var msgarr = [];            // strArr;
-        var msglen;                 // int;
-        var res;                    // str;
-
-        url = "rxmsg.json?pos="+String(Math.round(this._rxptr))+"&len=1&maxw=1";
-        msgbin = this._download(url);
-        msgarr = this._json_get_array(msgbin);
-        msglen = msgarr.length;
-        if (msglen == 0) {
-            return "";
-        }
-        // last element of array is the new position
-        msglen = msglen - 1;
-        this._rxptr = YAPI._atoi(msgarr[msglen]);
-        if (msglen == 0) {
-            return "";
-        }
-        res = this._json_get_string(msgarr[0]);
-        return res;
-    }
-
-    /**
-     * Searches for incoming messages in the serial port receive buffer matching a given pattern,
-     * starting at current position. This function will only compare and return printable characters
-     * in the message strings. Binary protocols are handled as hexadecimal strings.
-     *
-     * The search returns all messages matching the expression provided as argument in the buffer.
-     * If no matching message is found, the search waits for one up to the specified maximum timeout
-     * (in milliseconds).
-     *
-     * @param pattern : a limited regular expression describing the expected message format,
-     *         or an empty string if all messages should be returned (no filtering).
-     *         When using binary protocols, the format applies to the hexadecimal
-     *         representation of the message.
-     * @param maxWait : the maximum number of milliseconds to wait for a message if none is found
-     *         in the receive buffer.
-     *
-     * @return an array of strings containing the messages found, if any.
-     *         Binary messages are converted to hexadecimal representation.
-     *
-     * On failure, throws an exception or returns an empty array.
-     */
-    function YSerialPort_readMessages(pattern,maxWait)
-    {
-        var url;                    // str;
-        var msgbin;                 // bin;
-        var msgarr = [];            // strArr;
-        var msglen;                 // int;
-        var res = [];               // strArr;
-        var idx;                    // int;
-
-        url = "rxmsg.json?pos="+String(Math.round(this._rxptr))+"&maxw="+String(Math.round(maxWait))+"&pat="+pattern;
-        msgbin = this._download(url);
-        msgarr = this._json_get_array(msgbin);
-        msglen = msgarr.length;
-        if (msglen == 0) {
-            return res;
-        }
-        // last element of array is the new position
-        msglen = msglen - 1;
-        this._rxptr = YAPI._atoi(msgarr[msglen]);
-        idx = 0;
-        while (idx < msglen) {
-            res.push(this._json_get_string(msgarr[idx]));
-            idx = idx + 1;
-        }
-        return res;
-    }
-
-    /**
-     * Changes the current internal stream position to the specified value. This function
-     * does not affect the device, it only changes the value stored in the API object
-     * for the next read operations.
-     *
-     * @param absPos : the absolute position index for next read operations.
-     *
-     * @return nothing.
-     */
-    function YSerialPort_read_seek(absPos)
-    {
-        this._rxptr = absPos;
-        return YAPI_SUCCESS;
-    }
-
-    /**
-     * Returns the current absolute stream position pointer of the API object.
-     *
-     * @return the absolute position index for next read operations.
-     */
-    function YSerialPort_read_tell()
-    {
-        return this._rxptr;
-    }
-
-    /**
-     * Returns the number of bytes available to read in the input buffer starting from the
-     * current absolute stream position pointer of the API object.
-     *
-     * @return the number of bytes available to read
-     */
-    function YSerialPort_read_avail()
-    {
-        var buff;                   // bin;
-        var bufflen;                // int;
-        var res;                    // int;
-
-        buff = this._download("rxcnt.bin?pos="+String(Math.round(this._rxptr)));
-        bufflen = (buff).length - 1;
-        while ((bufflen > 0) && ((buff).charCodeAt(bufflen) != 64)) {
-            bufflen = bufflen - 1;
-        }
-        res = YAPI._atoi((buff).substr( 0, bufflen));
-        return res;
-    }
-
-    /**
-     * Sends a text line query to the serial port, and reads the reply, if any.
-     * This function is intended to be used when the serial port is configured for 'Line' protocol.
-     *
-     * @param query : the line query to send (without CR/LF)
-     * @param maxWait : the maximum number of milliseconds to wait for a reply.
-     *
-     * @return the next text line received after sending the text query, as a string.
-     *         Additional lines can be obtained by calling readLine or readMessages.
-     *
-     * On failure, throws an exception or returns an empty array.
-     */
-    function YSerialPort_queryLine(query,maxWait)
-    {
-        var url;                    // str;
-        var msgbin;                 // bin;
-        var msgarr = [];            // strArr;
-        var msglen;                 // int;
-        var res;                    // str;
-
-        url = "rxmsg.json?len=1&maxw="+String(Math.round(maxWait))+"&cmd=!"+this._escapeAttr(query);
-        msgbin = this._download(url);
-        msgarr = this._json_get_array(msgbin);
-        msglen = msgarr.length;
-        if (msglen == 0) {
-            return "";
-        }
-        // last element of array is the new position
-        msglen = msglen - 1;
-        this._rxptr = YAPI._atoi(msgarr[msglen]);
-        if (msglen == 0) {
-            return "";
-        }
-        res = this._json_get_string(msgarr[0]);
-        return res;
-    }
-
-    /**
-     * Saves the job definition string (JSON data) into a job file.
-     * The job file can be later enabled using selectJob().
-     *
-     * @param jobfile : name of the job file to save on the device filesystem
-     * @param jsonDef : a string containing a JSON definition of the job
-     *
-     * @return YAPI_SUCCESS if the call succeeds.
-     *
-     * On failure, throws an exception or returns a negative error code.
-     */
-    function YSerialPort_uploadJob(jobfile,jsonDef)
-    {
-        this._upload(jobfile, jsonDef);
-        return YAPI_SUCCESS;
-    }
-
-    /**
-     * Load and start processing the specified job file. The file must have
-     * been previously created using the user interface or uploaded on the
-     * device filesystem using the uploadJob() function.
-     *
-     * @param jobfile : name of the job file (on the device filesystem)
-     *
-     * @return YAPI_SUCCESS if the call succeeds.
-     *
-     * On failure, throws an exception or returns a negative error code.
-     */
-    function YSerialPort_selectJob(jobfile)
-    {
-        return this.set_currentJob(jobfile);
     }
 
     /**
@@ -2360,6 +2360,14 @@ var YSerialPort; // definition below
         set_serialMode              : YSerialPort_set_serialMode,
         setSerialMode               : YSerialPort_set_serialMode,
         sendCommand                 : YSerialPort_sendCommand,
+        readLine                    : YSerialPort_readLine,
+        readMessages                : YSerialPort_readMessages,
+        read_seek                   : YSerialPort_read_seek,
+        read_tell                   : YSerialPort_read_tell,
+        read_avail                  : YSerialPort_read_avail,
+        queryLine                   : YSerialPort_queryLine,
+        uploadJob                   : YSerialPort_uploadJob,
+        selectJob                   : YSerialPort_selectJob,
         reset                       : YSerialPort_reset,
         writeByte                   : YSerialPort_writeByte,
         writeStr                    : YSerialPort_writeStr,
@@ -2372,14 +2380,6 @@ var YSerialPort; // definition below
         readBin                     : YSerialPort_readBin,
         readArray                   : YSerialPort_readArray,
         readHex                     : YSerialPort_readHex,
-        readLine                    : YSerialPort_readLine,
-        readMessages                : YSerialPort_readMessages,
-        read_seek                   : YSerialPort_read_seek,
-        read_tell                   : YSerialPort_read_tell,
-        read_avail                  : YSerialPort_read_avail,
-        queryLine                   : YSerialPort_queryLine,
-        uploadJob                   : YSerialPort_uploadJob,
-        selectJob                   : YSerialPort_selectJob,
         set_RTS                     : YSerialPort_set_RTS,
         setRTS                      : YSerialPort_set_RTS,
         get_CTS                     : YSerialPort_get_CTS,
