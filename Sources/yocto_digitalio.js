@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_digitalio.js 33722 2018-12-14 15:04:43Z seb $
+ *  $Id: yocto_digitalio.js 37149 2019-09-12 21:24:53Z mvuilleu $
  *
  *  Implements the high-level API for DigitalIO functions
  *
@@ -504,7 +504,7 @@ var YDigitalIO; // definition below
     function YDigitalIO_get_portSize()
     {
         var res;                    // int;
-        if (this._cacheExpiration <= YAPI.GetTickCount()) {
+        if (this._cacheExpiration == 0) {
             if (this.load(YAPI.defaultCacheValidity) != YAPI_SUCCESS) {
                 return Y_PORTSIZE_INVALID;
             }
@@ -538,7 +538,7 @@ var YDigitalIO; // definition below
                 callback(context, obj, obj._portSize);
             }
         };
-        if (this._cacheExpiration <= YAPI.GetTickCount()) {
+        if (this._cacheExpiration == 0) {
             this.load_async(YAPI.defaultCacheValidity,loadcb,null);
         } else {
             loadcb(null, this, YAPI_SUCCESS);

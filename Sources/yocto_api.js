@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_api.js 36629 2019-07-31 13:03:53Z seb $
+ * $Id: yocto_api.js 37168 2019-09-13 17:25:10Z mvuilleu $
  *
  * High-level programming interface, common to all modules
  *
@@ -2677,7 +2677,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
      */
     function YAPI_GetAPIVersion()
     {
-        return "1.10.36692";
+        return "1.10.37304";
     }
 
     /**
@@ -7123,6 +7123,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
      * the value "OFF". Note that setting the  datalogger recording frequency
      * to a greater value than the sensor native sampling frequency is useless,
      * and even counterproductive: those two frequencies are not related.
+     * Remember to call the saveToFlash() method of the module if the modification must be kept.
      *
      * @param newval : a string corresponding to the datalogger recording frequency for this function
      *
@@ -7200,6 +7201,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
      * notification frequency to a greater value than the sensor native
      * sampling frequency is unless, and even counterproductive: those two
      * frequencies are not related.
+     * Remember to call the saveToFlash() method of the module if the modification must be kept.
      *
      * @param newval : a string corresponding to the timed value notification frequency for this function
      *
@@ -7268,6 +7270,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
 
     /**
      * Changes the measuring mode used for the advertised value pushed to the parent hub.
+     * Remember to call the saveToFlash() method of the module if the modification must be kept.
      *
      * @param newval : a value among Y_ADVMODE_IMMEDIATE, Y_ADVMODE_PERIOD_AVG, Y_ADVMODE_PERIOD_MIN and
      * Y_ADVMODE_PERIOD_MAX corresponding to the measuring mode used for the advertised value pushed to the parent hub
@@ -7332,6 +7335,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
     /**
      * Changes the resolution of the measured physical values. The resolution corresponds to the numerical precision
      * when displaying value. It does not change the precision of the measure itself.
+     * Remember to call the saveToFlash() method of the module if the modification must be kept.
      *
      * @param newval : a floating point number corresponding to the resolution of the measured physical values
      *
@@ -7348,6 +7352,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
     /**
      * Returns the resolution of the measured values. The resolution corresponds to the numerical precision
      * of the measures, which is not always the same as the actual precision of the sensor.
+     * Remember to call the saveToFlash() method of the module if the modification must be kept.
      *
      * @return a floating point number corresponding to the resolution of the measured values
      *
@@ -7368,6 +7373,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
     /**
      * Gets the resolution of the measured values. The resolution corresponds to the numerical precision
      * of the measures, which is not always the same as the actual precision of the sensor.
+     * Remember to call the saveToFlash() method of the module if the modification must be kept.
      *
      * @param callback : callback function that is invoked when the result is known.
      *         The callback function receives three arguments:
@@ -10590,8 +10596,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
             }
         }
         // Apply settings a second time for file-dependent settings and dynamic sensor nodes
-        this.set_allSettings(json_api);
-        return YAPI_SUCCESS;
+        return this.set_allSettings(json_api);
     }
 
     /**
@@ -10876,6 +10881,30 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
         return param;
     }
 
+    function YModule_tryExec(url)
+    {
+        var res;                    // int;
+        var done;                   // int;
+        res = YAPI_SUCCESS;
+        done = 1;
+        try {
+            this._download(url);
+        } catch {
+            done = 0;
+        }
+        if (done == 0) {
+            // retry silently after a short wait
+            try {
+                YAPI.Sleep(500);
+                this._download(url);
+            } catch {
+                // second failure, return error code
+                res = this.get_errorType();
+            }
+        }
+        return res;
+    }
+
     /**
      * Restores all the settings of the device. Useful to restore all the logical names and calibrations parameters
      * of a module from a backup.Remember to call the saveToFlash() method of the module if the
@@ -10906,6 +10935,8 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
         var leng;                   // int;
         var i;                      // int;
         var j;                      // int;
+        var subres;                 // int;
+        var res;                    // int;
         var njpath;                 // str;
         var jpath;                  // str;
         var fun;                    // str;
@@ -10922,6 +10953,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
         var each_str;               // str;
         var do_update;              // bool;
         var found;                  // bool;
+        res = YAPI_SUCCESS;
         tmp = settings;
         tmp = this._get_json_path(tmp, "api");
         if (!(tmp == "")) {
@@ -10949,7 +10981,13 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
             old_val_arr.push(value);
         }
 
-        actualSettings = this._download("api.json");
+        try {
+            actualSettings = this._download("api.json");
+        } catch {
+            // retry silently after a short wait
+            YAPI.Sleep(500);
+            actualSettings = this._download("api.json");
+        }
         actualSettings = this._flattenJsonStruct(actualSettings);
         new_dslist = this._json_get_array(actualSettings);
         for (ii in new_dslist) {
@@ -11039,6 +11077,9 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
             if ((do_update) && (attr == "message")) {
                 do_update = false;
             }
+            if ((do_update) && (attr == "signalValue")) {
+                do_update = false;
+            }
             if ((do_update) && (attr == "currentValue")) {
                 do_update = false;
             }
@@ -11091,6 +11132,12 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
                 do_update = false;
             }
             if ((do_update) && (attr == "msgCount")) {
+                do_update = false;
+            }
+            if ((do_update) && (attr == "rxMsgCount")) {
+                do_update = false;
+            }
+            if ((do_update) && (attr == "txMsgCount")) {
                 do_update = false;
             }
             if (do_update) {
@@ -11146,13 +11193,19 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
                     }
                     newval = this.calibConvert(old_calib, new_val_arr[i], unit_name, sensorType);
                     url = "api/" + fun + ".json?" + attr + "=" + this._escapeAttr(newval);
-                    this._download(url);
+                    subres = this._tryExec(url);
+                    if ((res == YAPI_SUCCESS) && (subres != YAPI_SUCCESS)) {
+                        res = subres;
+                    }
                 } else {
                     url = "api/" + fun + ".json?" + attr + "=" + this._escapeAttr(oldval);
                     if (attr == "resolution") {
                         restoreLast.push(url);
                     } else {
-                        this._download(url);
+                        subres = this._tryExec(url);
+                        if ((res == YAPI_SUCCESS) && (subres != YAPI_SUCCESS)) {
+                            res = subres;
+                        }
                     }
                 }
             }
@@ -11160,10 +11213,13 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
         }
         for (ii in restoreLast) {
             if(ii=='indexOf') continue; // IE8 Don'tEnum bug
-            this._download(restoreLast[ii]);
+            subres = this._tryExec(restoreLast[ii]);
+            if ((res == YAPI_SUCCESS) && (subres != YAPI_SUCCESS)) {
+                res = subres;
+            }
         }
         this.clearCache();
-        return YAPI_SUCCESS;
+        return res;
     }
 
     /**
@@ -11400,6 +11456,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
         calibScale                  : YModule_calibScale,
         calibOffset                 : YModule_calibOffset,
         calibConvert                : YModule_calibConvert,
+        _tryExec                    : YModule_tryExec,
         set_allSettings             : YModule_set_allSettings,
         setAllSettings              : YModule_set_allSettings,
         get_hardwareId              : YModule_get_hardwareId,

@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_display.js 33877 2018-12-26 12:19:48Z seb $
+ * $Id: yocto_display.js 37000 2019-09-03 06:40:17Z mvuilleu $
  *
  * Implements yFindDisplay(), the high-level API for Display functions
  *
@@ -1087,7 +1087,7 @@ var YDisplay; // definition below
     function YDisplay_get_displayWidth()
     {
         var res;                    // int;
-        if (this._cacheExpiration <= YAPI.GetTickCount()) {
+        if (this._cacheExpiration == 0) {
             if (this.load(YAPI.defaultCacheValidity) != YAPI_SUCCESS) {
                 return Y_DISPLAYWIDTH_INVALID;
             }
@@ -1121,7 +1121,7 @@ var YDisplay; // definition below
                 callback(context, obj, obj._displayWidth);
             }
         };
-        if (this._cacheExpiration <= YAPI.GetTickCount()) {
+        if (this._cacheExpiration == 0) {
             this.load_async(YAPI.defaultCacheValidity,loadcb,null);
         } else {
             loadcb(null, this, YAPI_SUCCESS);
@@ -1138,7 +1138,7 @@ var YDisplay; // definition below
     function YDisplay_get_displayHeight()
     {
         var res;                    // int;
-        if (this._cacheExpiration <= YAPI.GetTickCount()) {
+        if (this._cacheExpiration == 0) {
             if (this.load(YAPI.defaultCacheValidity) != YAPI_SUCCESS) {
                 return Y_DISPLAYHEIGHT_INVALID;
             }
@@ -1172,7 +1172,7 @@ var YDisplay; // definition below
                 callback(context, obj, obj._displayHeight);
             }
         };
-        if (this._cacheExpiration <= YAPI.GetTickCount()) {
+        if (this._cacheExpiration == 0) {
             this.load_async(YAPI.defaultCacheValidity,loadcb,null);
         } else {
             loadcb(null, this, YAPI_SUCCESS);

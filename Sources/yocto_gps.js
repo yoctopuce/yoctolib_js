@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_gps.js 33714 2018-12-14 14:20:39Z seb $
+ *  $Id: yocto_gps.js 37165 2019-09-13 16:57:27Z mvuilleu $
  *
  *  Implements the high-level API for Gps functions
  *
@@ -49,6 +49,14 @@ var Y_COORDSYSTEM_GPS_DMS           = 0;
 var Y_COORDSYSTEM_GPS_DM            = 1;
 var Y_COORDSYSTEM_GPS_D             = 2;
 var Y_COORDSYSTEM_INVALID           = -1;
+var Y_CONSTELLATION_GPS             = 0;
+var Y_CONSTELLATION_GLONASS         = 1;
+var Y_CONSTELLATION_GALLILEO        = 2;
+var Y_CONSTELLATION_GNSS            = 3;
+var Y_CONSTELLATION_GPS_GLONASS     = 4;
+var Y_CONSTELLATION_GPS_GALLILEO    = 5;
+var Y_CONSTELLATION_GLONASS_GALLELIO = 6;
+var Y_CONSTELLATION_INVALID         = -1;
 var Y_SATCOUNT_INVALID              = YAPI_INVALID_LONG;
 var Y_LATITUDE_INVALID              = YAPI_INVALID_STRING;
 var Y_LONGITUDE_INVALID             = YAPI_INVALID_STRING;
@@ -87,6 +95,7 @@ var YGps; // definition below
         this._isFixed                        = Y_ISFIXED_INVALID;          // Bool
         this._satCount                       = Y_SATCOUNT_INVALID;         // UInt
         this._coordSystem                    = Y_COORDSYSTEM_INVALID;      // GPSCoordinateSystem
+        this._constellation                  = Y_CONSTELLATION_INVALID;    // GPSConstellation
         this._latitude                       = Y_LATITUDE_INVALID;         // Text
         this._longitude                      = Y_LONGITUDE_INVALID;        // Text
         this._dilution                       = Y_DILUTION_INVALID;         // MeasureVal
@@ -113,6 +122,9 @@ var YGps; // definition below
             return 1;
         case "coordSystem":
             this._coordSystem = parseInt(val);
+            return 1;
+        case "constellation":
+            this._constellation = parseInt(val);
             return 1;
         case "latitude":
             this._latitude = val;
@@ -307,6 +319,8 @@ var YGps; // definition below
 
     /**
      * Changes the representation system used for positioning data.
+     * Remember to call the saveToFlash() method of the module if the
+     * modification must be kept.
      *
      * @param newval : a value among Y_COORDSYSTEM_GPS_DMS, Y_COORDSYSTEM_GPS_DM and Y_COORDSYSTEM_GPS_D
      * corresponding to the representation system used for positioning data
@@ -319,6 +333,86 @@ var YGps; // definition below
     {   var rest_val;
         rest_val = String(newval);
         return this._setAttr('coordSystem',rest_val);
+    }
+
+    /**
+     * Returns the the satellites constellation used to compute
+     * positioning data.
+     *
+     * @return a value among Y_CONSTELLATION_GPS, Y_CONSTELLATION_GLONASS, Y_CONSTELLATION_GALLILEO,
+     * Y_CONSTELLATION_GNSS, Y_CONSTELLATION_GPS_GLONASS, Y_CONSTELLATION_GPS_GALLILEO and
+     * Y_CONSTELLATION_GLONASS_GALLELIO corresponding to the the satellites constellation used to compute
+     *         positioning data
+     *
+     * On failure, throws an exception or returns Y_CONSTELLATION_INVALID.
+     */
+    function YGps_get_constellation()
+    {
+        var res;                    // enumGPSCONSTELLATION;
+        if (this._cacheExpiration <= YAPI.GetTickCount()) {
+            if (this.load(YAPI.defaultCacheValidity) != YAPI_SUCCESS) {
+                return Y_CONSTELLATION_INVALID;
+            }
+        }
+        res = this._constellation;
+        return res;
+    }
+
+    /**
+     * Gets the the satellites constellation used to compute
+     * positioning data.
+     *
+     * @param callback : callback function that is invoked when the result is known.
+     *         The callback function receives three arguments:
+     *         - the user-specific context object
+     *         - the YGps object that invoked the callback
+     *         - the result:a value among Y_CONSTELLATION_GPS, Y_CONSTELLATION_GLONASS, Y_CONSTELLATION_GALLILEO,
+     *         Y_CONSTELLATION_GNSS, Y_CONSTELLATION_GPS_GLONASS, Y_CONSTELLATION_GPS_GALLILEO and
+     *         Y_CONSTELLATION_GLONASS_GALLELIO corresponding to the the satellites constellation used to compute
+     *         positioning data
+     * @param context : user-specific object that is passed as-is to the callback function
+     *
+     * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
+     *
+     * On failure, throws an exception or returns Y_CONSTELLATION_INVALID.
+     */
+    function YGps_get_constellation_async(callback,context)
+    {
+        var res;                    // enumGPSCONSTELLATION;
+        var loadcb;                 // func;
+        loadcb = function(ctx,obj,res) {
+            if (res != YAPI_SUCCESS) {
+                callback(context, obj, Y_CONSTELLATION_INVALID);
+            } else {
+                callback(context, obj, obj._constellation);
+            }
+        };
+        if (this._cacheExpiration <= YAPI.GetTickCount()) {
+            this.load_async(YAPI.defaultCacheValidity,loadcb,null);
+        } else {
+            loadcb(null, this, YAPI_SUCCESS);
+        }
+    }
+
+    /**
+     * Changes the satellites constellation used to compute
+     * positioning data. Possible  constellations are GPS, Glonass, Galileo ,
+     * GNSS ( = GPS + Glonass + Galileo) and the 3 possible pairs. This seeting has effect on Yocto-GPS rev A.
+     *
+     * @param newval : a value among Y_CONSTELLATION_GPS, Y_CONSTELLATION_GLONASS,
+     * Y_CONSTELLATION_GALLILEO, Y_CONSTELLATION_GNSS, Y_CONSTELLATION_GPS_GLONASS,
+     * Y_CONSTELLATION_GPS_GALLILEO and Y_CONSTELLATION_GLONASS_GALLELIO corresponding to the satellites
+     * constellation used to compute
+     *         positioning data
+     *
+     * @return YAPI_SUCCESS if the call succeeds.
+     *
+     * On failure, throws an exception or returns a negative error code.
+     */
+    function YGps_set_constellation(newval)
+    {   var rest_val;
+        rest_val = String(newval);
+        return this._setAttr('constellation',rest_val);
     }
 
     /**
@@ -798,6 +892,8 @@ var YGps; // definition below
      * Changes the number of seconds between current time and UTC time (time zone).
      * The timezone is automatically rounded to the nearest multiple of 15 minutes.
      * If current UTC time is known, the current time is automatically be updated according to the selected time zone.
+     * Remember to call the saveToFlash() method of the module if the
+     * modification must be kept.
      *
      * @param newval : an integer corresponding to the number of seconds between current time and UTC time (time zone)
      *
@@ -943,6 +1039,14 @@ var YGps; // definition below
         COORDSYSTEM_GPS_DM          : 1,
         COORDSYSTEM_GPS_D           : 2,
         COORDSYSTEM_INVALID         : -1,
+        CONSTELLATION_GPS           : 0,
+        CONSTELLATION_GLONASS       : 1,
+        CONSTELLATION_GALLILEO      : 2,
+        CONSTELLATION_GNSS          : 3,
+        CONSTELLATION_GPS_GLONASS   : 4,
+        CONSTELLATION_GPS_GALLILEO  : 5,
+        CONSTELLATION_GLONASS_GALLELIO : 6,
+        CONSTELLATION_INVALID       : -1,
         LATITUDE_INVALID            : YAPI_INVALID_STRING,
         LONGITUDE_INVALID           : YAPI_INVALID_STRING,
         DILUTION_INVALID            : YAPI_INVALID_DOUBLE,
@@ -973,6 +1077,12 @@ var YGps; // definition below
         coordSystem_async           : YGps_get_coordSystem_async,
         set_coordSystem             : YGps_set_coordSystem,
         setCoordSystem              : YGps_set_coordSystem,
+        get_constellation           : YGps_get_constellation,
+        constellation               : YGps_get_constellation,
+        get_constellation_async     : YGps_get_constellation_async,
+        constellation_async         : YGps_get_constellation_async,
+        set_constellation           : YGps_set_constellation,
+        setConstellation            : YGps_set_constellation,
         get_latitude                : YGps_get_latitude,
         latitude                    : YGps_get_latitude,
         get_latitude_async          : YGps_get_latitude_async,

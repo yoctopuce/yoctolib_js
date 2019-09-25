@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_i2cport.js 36207 2019-07-10 20:46:18Z mvuilleu $
+ *  $Id: yocto_i2cport.js 37168 2019-09-13 17:25:10Z mvuilleu $
  *
  *  Implements the high-level API for I2cPort functions
  *
@@ -42,15 +42,10 @@ if(typeof YAPI == "undefined") { if(typeof yAPI != "undefined") window["YAPI"]=y
 //--- (YI2cPort return codes)
 //--- (end of YI2cPort return codes)
 //--- (YI2cPort definitions)
-var Y_VOLTAGELEVEL_OFF              = 0;
-var Y_VOLTAGELEVEL_TTL3V            = 1;
-var Y_VOLTAGELEVEL_TTL3VR           = 2;
-var Y_VOLTAGELEVEL_TTL5V            = 3;
-var Y_VOLTAGELEVEL_TTL5VR           = 4;
-var Y_VOLTAGELEVEL_RS232            = 5;
-var Y_VOLTAGELEVEL_RS485            = 6;
-var Y_VOLTAGELEVEL_TTL1V8           = 7;
-var Y_VOLTAGELEVEL_INVALID          = -1;
+var Y_I2CVOLTAGELEVEL_OFF           = 0;
+var Y_I2CVOLTAGELEVEL_3V3           = 1;
+var Y_I2CVOLTAGELEVEL_1V8           = 2;
+var Y_I2CVOLTAGELEVEL_INVALID       = -1;
 var Y_RXCOUNT_INVALID               = YAPI_INVALID_UINT;
 var Y_TXCOUNT_INVALID               = YAPI_INVALID_UINT;
 var Y_ERRCOUNT_INVALID              = YAPI_INVALID_UINT;
@@ -95,8 +90,8 @@ var YI2cPort; // definition below
         this._currentJob                     = Y_CURRENTJOB_INVALID;       // Text
         this._startupJob                     = Y_STARTUPJOB_INVALID;       // Text
         this._command                        = Y_COMMAND_INVALID;          // Text
-        this._voltageLevel                   = Y_VOLTAGELEVEL_INVALID;     // SerialVoltageLevel
         this._protocol                       = Y_PROTOCOL_INVALID;         // Protocol
+        this._i2cVoltageLevel                = Y_I2CVOLTAGELEVEL_INVALID;  // I2cVoltageLevel
         this._i2cMode                        = Y_I2CMODE_INVALID;          // I2cMode
         this._rxptr                          = 0;                          // int
         this._rxbuff                         = "";                         // bin
@@ -136,11 +131,11 @@ var YI2cPort; // definition below
         case "command":
             this._command = val;
             return 1;
-        case "voltageLevel":
-            this._voltageLevel = parseInt(val);
-            return 1;
         case "protocol":
             this._protocol = val;
+            return 1;
+        case "i2cVoltageLevel":
+            this._i2cVoltageLevel = parseInt(val);
             return 1;
         case "i2cMode":
             this._i2cMode = val;
@@ -507,11 +502,10 @@ var YI2cPort; // definition below
     }
 
     /**
-     * Changes the job to use when the device is powered on.
-     * Remember to call the saveToFlash() method of the module if the
-     * modification must be kept.
+     * Selects a job file to run immediately. If an empty string is
+     * given as argument, stops running current job file.
      *
-     * @param newval : a string corresponding to the job to use when the device is powered on
+     * @param newval : a string
      *
      * @return YAPI_SUCCESS if the call succeeds.
      *
@@ -639,88 +633,12 @@ var YI2cPort; // definition below
     }
 
     /**
-     * Returns the voltage level used on the serial line.
-     *
-     * @return a value among Y_VOLTAGELEVEL_OFF, Y_VOLTAGELEVEL_TTL3V, Y_VOLTAGELEVEL_TTL3VR,
-     * Y_VOLTAGELEVEL_TTL5V, Y_VOLTAGELEVEL_TTL5VR, Y_VOLTAGELEVEL_RS232, Y_VOLTAGELEVEL_RS485 and
-     * Y_VOLTAGELEVEL_TTL1V8 corresponding to the voltage level used on the serial line
-     *
-     * On failure, throws an exception or returns Y_VOLTAGELEVEL_INVALID.
-     */
-    function YI2cPort_get_voltageLevel()
-    {
-        var res;                    // enumSERIALVOLTAGELEVEL;
-        if (this._cacheExpiration <= YAPI.GetTickCount()) {
-            if (this.load(YAPI.defaultCacheValidity) != YAPI_SUCCESS) {
-                return Y_VOLTAGELEVEL_INVALID;
-            }
-        }
-        res = this._voltageLevel;
-        return res;
-    }
-
-    /**
-     * Gets the voltage level used on the serial line.
-     *
-     * @param callback : callback function that is invoked when the result is known.
-     *         The callback function receives three arguments:
-     *         - the user-specific context object
-     *         - the YI2cPort object that invoked the callback
-     *         - the result:a value among Y_VOLTAGELEVEL_OFF, Y_VOLTAGELEVEL_TTL3V, Y_VOLTAGELEVEL_TTL3VR,
-     *         Y_VOLTAGELEVEL_TTL5V, Y_VOLTAGELEVEL_TTL5VR, Y_VOLTAGELEVEL_RS232, Y_VOLTAGELEVEL_RS485 and
-     *         Y_VOLTAGELEVEL_TTL1V8 corresponding to the voltage level used on the serial line
-     * @param context : user-specific object that is passed as-is to the callback function
-     *
-     * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
-     *
-     * On failure, throws an exception or returns Y_VOLTAGELEVEL_INVALID.
-     */
-    function YI2cPort_get_voltageLevel_async(callback,context)
-    {
-        var res;                    // enumSERIALVOLTAGELEVEL;
-        var loadcb;                 // func;
-        loadcb = function(ctx,obj,res) {
-            if (res != YAPI_SUCCESS) {
-                callback(context, obj, Y_VOLTAGELEVEL_INVALID);
-            } else {
-                callback(context, obj, obj._voltageLevel);
-            }
-        };
-        if (this._cacheExpiration <= YAPI.GetTickCount()) {
-            this.load_async(YAPI.defaultCacheValidity,loadcb,null);
-        } else {
-            loadcb(null, this, YAPI_SUCCESS);
-        }
-    }
-
-    /**
-     * Changes the voltage type used on the serial line. Valid
-     * values  will depend on the Yoctopuce device model featuring
-     * the serial port feature.  Check your device documentation
-     * to find out which values are valid for that specific model.
-     * Trying to set an invalid value will have no effect.
-     *
-     * @param newval : a value among Y_VOLTAGELEVEL_OFF, Y_VOLTAGELEVEL_TTL3V, Y_VOLTAGELEVEL_TTL3VR,
-     * Y_VOLTAGELEVEL_TTL5V, Y_VOLTAGELEVEL_TTL5VR, Y_VOLTAGELEVEL_RS232, Y_VOLTAGELEVEL_RS485 and
-     * Y_VOLTAGELEVEL_TTL1V8 corresponding to the voltage type used on the serial line
-     *
-     * @return YAPI_SUCCESS if the call succeeds.
-     *
-     * On failure, throws an exception or returns a negative error code.
-     */
-    function YI2cPort_set_voltageLevel(newval)
-    {   var rest_val;
-        rest_val = String(newval);
-        return this._setAttr('voltageLevel',rest_val);
-    }
-
-    /**
-     * Returns the type of protocol used over the serial line, as a string.
+     * Returns the type of protocol used to send I2C messages, as a string.
      * Possible values are
      * "Line" for messages separated by LF or
      * "Char" for continuous stream of codes.
      *
-     * @return a string corresponding to the type of protocol used over the serial line, as a string
+     * @return a string corresponding to the type of protocol used to send I2C messages, as a string
      *
      * On failure, throws an exception or returns Y_PROTOCOL_INVALID.
      */
@@ -737,7 +655,7 @@ var YI2cPort; // definition below
     }
 
     /**
-     * Gets the type of protocol used over the serial line, as a string.
+     * Gets the type of protocol used to send I2C messages, as a string.
      * Possible values are
      * "Line" for messages separated by LF or
      * "Char" for continuous stream of codes.
@@ -746,7 +664,7 @@ var YI2cPort; // definition below
      *         The callback function receives three arguments:
      *         - the user-specific context object
      *         - the YI2cPort object that invoked the callback
-     *         - the result:a string corresponding to the type of protocol used over the serial line, as a string
+     *         - the result:a string corresponding to the type of protocol used to send I2C messages, as a string
      * @param context : user-specific object that is passed as-is to the callback function
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
@@ -772,14 +690,16 @@ var YI2cPort; // definition below
     }
 
     /**
-     * Changes the type of protocol used over the serial line.
+     * Changes the type of protocol used to send I2C messages.
      * Possible values are
      * "Line" for messages separated by LF or
      * "Char" for continuous stream of codes.
      * The suffix "/[wait]ms" can be added to reduce the transmit rate so that there
      * is always at lest the specified number of milliseconds between each message sent.
+     * Remember to call the saveToFlash() method of the module if the
+     * modification must be kept.
      *
-     * @param newval : a string corresponding to the type of protocol used over the serial line
+     * @param newval : a string corresponding to the type of protocol used to send I2C messages
      *
      * @return YAPI_SUCCESS if the call succeeds.
      *
@@ -792,12 +712,85 @@ var YI2cPort; // definition below
     }
 
     /**
+     * Returns the voltage level used on the I2C bus.
+     *
+     * @return a value among Y_I2CVOLTAGELEVEL_OFF, Y_I2CVOLTAGELEVEL_3V3 and Y_I2CVOLTAGELEVEL_1V8
+     * corresponding to the voltage level used on the I2C bus
+     *
+     * On failure, throws an exception or returns Y_I2CVOLTAGELEVEL_INVALID.
+     */
+    function YI2cPort_get_i2cVoltageLevel()
+    {
+        var res;                    // enumI2CVOLTAGELEVEL;
+        if (this._cacheExpiration <= YAPI.GetTickCount()) {
+            if (this.load(YAPI.defaultCacheValidity) != YAPI_SUCCESS) {
+                return Y_I2CVOLTAGELEVEL_INVALID;
+            }
+        }
+        res = this._i2cVoltageLevel;
+        return res;
+    }
+
+    /**
+     * Gets the voltage level used on the I2C bus.
+     *
+     * @param callback : callback function that is invoked when the result is known.
+     *         The callback function receives three arguments:
+     *         - the user-specific context object
+     *         - the YI2cPort object that invoked the callback
+     *         - the result:a value among Y_I2CVOLTAGELEVEL_OFF, Y_I2CVOLTAGELEVEL_3V3 and Y_I2CVOLTAGELEVEL_1V8
+     *         corresponding to the voltage level used on the I2C bus
+     * @param context : user-specific object that is passed as-is to the callback function
+     *
+     * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
+     *
+     * On failure, throws an exception or returns Y_I2CVOLTAGELEVEL_INVALID.
+     */
+    function YI2cPort_get_i2cVoltageLevel_async(callback,context)
+    {
+        var res;                    // enumI2CVOLTAGELEVEL;
+        var loadcb;                 // func;
+        loadcb = function(ctx,obj,res) {
+            if (res != YAPI_SUCCESS) {
+                callback(context, obj, Y_I2CVOLTAGELEVEL_INVALID);
+            } else {
+                callback(context, obj, obj._i2cVoltageLevel);
+            }
+        };
+        if (this._cacheExpiration <= YAPI.GetTickCount()) {
+            this.load_async(YAPI.defaultCacheValidity,loadcb,null);
+        } else {
+            loadcb(null, this, YAPI_SUCCESS);
+        }
+    }
+
+    /**
+     * Changes the voltage level used on the I2C bus.
+     * Remember to call the saveToFlash() method of the module if the
+     * modification must be kept.
+     *
+     * @param newval : a value among Y_I2CVOLTAGELEVEL_OFF, Y_I2CVOLTAGELEVEL_3V3 and
+     * Y_I2CVOLTAGELEVEL_1V8 corresponding to the voltage level used on the I2C bus
+     *
+     * @return YAPI_SUCCESS if the call succeeds.
+     *
+     * On failure, throws an exception or returns a negative error code.
+     */
+    function YI2cPort_set_i2cVoltageLevel(newval)
+    {   var rest_val;
+        rest_val = String(newval);
+        return this._setAttr('i2cVoltageLevel',rest_val);
+    }
+
+    /**
      * Returns the SPI port communication parameters, as a string such as
-     * "400kbps,2000ms". The string includes the baud rate and  th  e recovery delay
-     * after communications errors.
+     * "400kbps,2000ms,NoRestart". The string includes the baud rate, the
+     * recovery delay after communications errors, and if needed the option
+     * NoRestart to use a Stop/Start sequence instead of the
+     * Restart state when performing read on the I2C bus.
      *
      * @return a string corresponding to the SPI port communication parameters, as a string such as
-     *         "400kbps,2000ms"
+     *         "400kbps,2000ms,NoRestart"
      *
      * On failure, throws an exception or returns Y_I2CMODE_INVALID.
      */
@@ -815,15 +808,17 @@ var YI2cPort; // definition below
 
     /**
      * Gets the SPI port communication parameters, as a string such as
-     * "400kbps,2000ms". The string includes the baud rate and  th  e recovery delay
-     * after communications errors.
+     * "400kbps,2000ms,NoRestart". The string includes the baud rate, the
+     * recovery delay after communications errors, and if needed the option
+     * NoRestart to use a Stop/Start sequence instead of the
+     * Restart state when performing read on the I2C bus.
      *
      * @param callback : callback function that is invoked when the result is known.
      *         The callback function receives three arguments:
      *         - the user-specific context object
      *         - the YI2cPort object that invoked the callback
      *         - the result:a string corresponding to the SPI port communication parameters, as a string such as
-     *         "400kbps,2000ms"
+     *         "400kbps,2000ms,NoRestart"
      * @param context : user-specific object that is passed as-is to the callback function
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
@@ -850,8 +845,12 @@ var YI2cPort; // definition below
 
     /**
      * Changes the SPI port communication parameters, with a string such as
-     * "400kbps,2000ms". The string includes the baud rate and the recovery delay
-     * after communications errors.
+     * "400kbps,2000ms". The string includes the baud rate, the
+     * recovery delay after communications errors, and if needed the option
+     * NoRestart to use a Stop/Start sequence instead of the
+     * Restart state when performing read on the I2C bus.
+     * Remember to call the saveToFlash() method of the module if the
+     * modification must be kept.
      *
      * @param newval : a string corresponding to the SPI port communication parameters, with a string such as
      *         "400kbps,2000ms"
@@ -1156,15 +1155,15 @@ var YI2cPort; // definition below
 
         reply = this.queryLine(msg,1000);
         if (!((reply).length > 0)) {
-            return this._throw(YAPI_IO_ERROR,"no response from device",YAPI_IO_ERROR);
+            return this._throw(YAPI_IO_ERROR,"No response from I2C device",YAPI_IO_ERROR);
         }
         idx = (reply).indexOf("[N]!");
         if (!(idx < 0)) {
-            return this._throw(YAPI_IO_ERROR,"No ACK received",YAPI_IO_ERROR);
+            return this._throw(YAPI_IO_ERROR,"No I2C ACK received",YAPI_IO_ERROR);
         }
         idx = (reply).indexOf("!");
         if (!(idx < 0)) {
-            return this._throw(YAPI_IO_ERROR,"Protocol error",YAPI_IO_ERROR);
+            return this._throw(YAPI_IO_ERROR,"I2C protocol error",YAPI_IO_ERROR);
         }
         return YAPI_SUCCESS;
     }
@@ -1198,15 +1197,15 @@ var YI2cPort; // definition below
 
         reply = this.queryLine(msg,1000);
         if (!((reply).length > 0)) {
-            return this._throw(YAPI_IO_ERROR,"no response from device",YAPI_IO_ERROR);
+            return this._throw(YAPI_IO_ERROR,"No response from I2C device",YAPI_IO_ERROR);
         }
         idx = (reply).indexOf("[N]!");
         if (!(idx < 0)) {
-            return this._throw(YAPI_IO_ERROR,"No ACK received",YAPI_IO_ERROR);
+            return this._throw(YAPI_IO_ERROR,"No I2C ACK received",YAPI_IO_ERROR);
         }
         idx = (reply).indexOf("!");
         if (!(idx < 0)) {
-            return this._throw(YAPI_IO_ERROR,"Protocol error",YAPI_IO_ERROR);
+            return this._throw(YAPI_IO_ERROR,"I2C protocol error",YAPI_IO_ERROR);
         }
         return YAPI_SUCCESS;
     }
@@ -1249,15 +1248,15 @@ var YI2cPort; // definition below
         reply = this.queryLine(msg,1000);
         rcvbytes = new Uint8Array(0);
         if (!((reply).length > 0)) {
-            return this._throw(YAPI_IO_ERROR,"no response from device",rcvbytes);
+            return this._throw(YAPI_IO_ERROR,"No response from I2C device",rcvbytes);
         }
         idx = (reply).indexOf("[N]!");
         if (!(idx < 0)) {
-            return this._throw(YAPI_IO_ERROR,"No ACK received",rcvbytes);
+            return this._throw(YAPI_IO_ERROR,"No I2C ACK received",rcvbytes);
         }
         idx = (reply).indexOf("!");
         if (!(idx < 0)) {
-            return this._throw(YAPI_IO_ERROR,"Protocol error",rcvbytes);
+            return this._throw(YAPI_IO_ERROR,"I2C protocol error",rcvbytes);
         }
         reply = (reply).substr( (reply).length-2*rcvCount, 2*rcvCount);
         rcvbytes = YAPI._hexStrToBin(reply);
@@ -1302,15 +1301,15 @@ var YI2cPort; // definition below
 
         reply = this.queryLine(msg,1000);
         if (!((reply).length > 0)) {
-            return this._throw(YAPI_IO_ERROR,"no response from device",res);
+            return this._throw(YAPI_IO_ERROR,"No response from I2C device",res);
         }
         idx = (reply).indexOf("[N]!");
         if (!(idx < 0)) {
-            return this._throw(YAPI_IO_ERROR,"No ACK received",res);
+            return this._throw(YAPI_IO_ERROR,"No I2C ACK received",res);
         }
         idx = (reply).indexOf("!");
         if (!(idx < 0)) {
-            return this._throw(YAPI_IO_ERROR,"Protocol error",res);
+            return this._throw(YAPI_IO_ERROR,"I2C protocol error",res);
         }
         reply = (reply).substr( (reply).length-2*rcvCount, 2*rcvCount);
         rcvbytes = YAPI._hexStrToBin(reply);
@@ -1550,16 +1549,11 @@ var YI2cPort; // definition below
         CURRENTJOB_INVALID          : YAPI_INVALID_STRING,
         STARTUPJOB_INVALID          : YAPI_INVALID_STRING,
         COMMAND_INVALID             : YAPI_INVALID_STRING,
-        VOLTAGELEVEL_OFF            : 0,
-        VOLTAGELEVEL_TTL3V          : 1,
-        VOLTAGELEVEL_TTL3VR         : 2,
-        VOLTAGELEVEL_TTL5V          : 3,
-        VOLTAGELEVEL_TTL5VR         : 4,
-        VOLTAGELEVEL_RS232          : 5,
-        VOLTAGELEVEL_RS485          : 6,
-        VOLTAGELEVEL_TTL1V8         : 7,
-        VOLTAGELEVEL_INVALID        : -1,
         PROTOCOL_INVALID            : YAPI_INVALID_STRING,
+        I2CVOLTAGELEVEL_OFF         : 0,
+        I2CVOLTAGELEVEL_3V3         : 1,
+        I2CVOLTAGELEVEL_1V8         : 2,
+        I2CVOLTAGELEVEL_INVALID     : -1,
         I2CMODE_INVALID             : YAPI_INVALID_STRING
     }, {
         // Class methods
@@ -1609,18 +1603,18 @@ var YI2cPort; // definition below
         command_async               : YI2cPort_get_command_async,
         set_command                 : YI2cPort_set_command,
         setCommand                  : YI2cPort_set_command,
-        get_voltageLevel            : YI2cPort_get_voltageLevel,
-        voltageLevel                : YI2cPort_get_voltageLevel,
-        get_voltageLevel_async      : YI2cPort_get_voltageLevel_async,
-        voltageLevel_async          : YI2cPort_get_voltageLevel_async,
-        set_voltageLevel            : YI2cPort_set_voltageLevel,
-        setVoltageLevel             : YI2cPort_set_voltageLevel,
         get_protocol                : YI2cPort_get_protocol,
         protocol                    : YI2cPort_get_protocol,
         get_protocol_async          : YI2cPort_get_protocol_async,
         protocol_async              : YI2cPort_get_protocol_async,
         set_protocol                : YI2cPort_set_protocol,
         setProtocol                 : YI2cPort_set_protocol,
+        get_i2cVoltageLevel         : YI2cPort_get_i2cVoltageLevel,
+        i2cVoltageLevel             : YI2cPort_get_i2cVoltageLevel,
+        get_i2cVoltageLevel_async   : YI2cPort_get_i2cVoltageLevel_async,
+        i2cVoltageLevel_async       : YI2cPort_get_i2cVoltageLevel_async,
+        set_i2cVoltageLevel         : YI2cPort_set_i2cVoltageLevel,
+        setI2cVoltageLevel          : YI2cPort_set_i2cVoltageLevel,
         get_i2cMode                 : YI2cPort_get_i2cMode,
         i2cMode                     : YI2cPort_get_i2cMode,
         get_i2cMode_async           : YI2cPort_get_i2cMode_async,

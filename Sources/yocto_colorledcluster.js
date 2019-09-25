@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_colorledcluster.js 33714 2018-12-14 14:20:39Z seb $
+ *  $Id: yocto_colorledcluster.js 37000 2019-09-03 06:40:17Z mvuilleu $
  *
  *  Implements the high-level API for ColorLedCluster functions
  *
@@ -166,6 +166,8 @@ var YColorLedCluster; // definition below
 
     /**
      * Changes the number of LEDs currently handled by the device.
+     * Remember to call the matching module
+     * saveToFlash() method to save the setting permanently.
      *
      * @param newval : an integer corresponding to the number of LEDs currently handled by the device
      *
@@ -233,6 +235,8 @@ var YColorLedCluster; // definition below
 
     /**
      * Changes the RGB LED type currently handled by the device.
+     * Remember to call the matching module
+     * saveToFlash() method to save the setting permanently.
      *
      * @param newval : either Y_LEDTYPE_RGB or Y_LEDTYPE_RGBW, according to the RGB LED type currently
      * handled by the device

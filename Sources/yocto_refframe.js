@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_refframe.js 33714 2018-12-14 14:20:39Z seb $
+ *  $Id: yocto_refframe.js 37000 2019-09-03 06:40:17Z mvuilleu $
  *
  *  Implements the high-level API for RefFrame functions
  *
@@ -313,6 +313,14 @@ var YRefFrame; // definition below
         return this._setAttr('calibrationParam',rest_val);
     }
 
+    /**
+     * Returns the BNO055 fusion mode. Note this feature is only availabe on Yocto-3D-V2.
+     *
+     * @return a value among Y_FUSIONMODE_NDOF, Y_FUSIONMODE_NDOF_FMC_OFF, Y_FUSIONMODE_M4G,
+     * Y_FUSIONMODE_COMPASS and Y_FUSIONMODE_IMU corresponding to the BNO055 fusion mode
+     *
+     * On failure, throws an exception or returns Y_FUSIONMODE_INVALID.
+     */
     function YRefFrame_get_fusionMode()
     {
         var res;                    // enumFUSIONMODE;
@@ -326,15 +334,19 @@ var YRefFrame; // definition below
     }
 
     /**
+     * Gets the BNO055 fusion mode. Note this feature is only availabe on Yocto-3D-V2.
      *
      * @param callback : callback function that is invoked when the result is known.
      *         The callback function receives three arguments:
      *         - the user-specific context object
      *         - the YRefFrame object that invoked the callback
-     *         - the result:
+     *         - the result:a value among Y_FUSIONMODE_NDOF, Y_FUSIONMODE_NDOF_FMC_OFF, Y_FUSIONMODE_M4G,
+     *         Y_FUSIONMODE_COMPASS and Y_FUSIONMODE_IMU corresponding to the BNO055 fusion mode
      * @param context : user-specific object that is passed as-is to the callback function
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
+     *
+     * On failure, throws an exception or returns Y_FUSIONMODE_INVALID.
      */
     function YRefFrame_get_fusionMode_async(callback,context)
     {
@@ -354,6 +366,17 @@ var YRefFrame; // definition below
         }
     }
 
+    /**
+     * Change the BNO055 fusion mode. Note: this feature is only availabe on Yocto-3D-V2.
+     * Remember to call the matching module saveToFlash() method to save the setting permanently.
+     *
+     * @param newval : a value among Y_FUSIONMODE_NDOF, Y_FUSIONMODE_NDOF_FMC_OFF, Y_FUSIONMODE_M4G,
+     * Y_FUSIONMODE_COMPASS and Y_FUSIONMODE_IMU
+     *
+     * @return YAPI_SUCCESS if the call succeeds.
+     *
+     * On failure, throws an exception or returns a negative error code.
+     */
     function YRefFrame_set_fusionMode(newval)
     {   var rest_val;
         rest_val = String(newval);

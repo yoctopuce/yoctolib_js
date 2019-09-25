@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_wakeupmonitor.js 32905 2018-11-02 10:15:36Z seb $
+ *  $Id: yocto_wakeupmonitor.js 37000 2019-09-03 06:40:17Z mvuilleu $
  *
  *  Implements the high-level API for WakeUpMonitor functions
  *
@@ -168,6 +168,8 @@ var YWakeUpMonitor; // definition below
 
     /**
      * Changes the maximal wake up time (seconds) before automatically going to sleep.
+     * Remember to call the saveToFlash() method of the module if the
+     * modification must be kept.
      *
      * @param newval : an integer corresponding to the maximal wake up time (seconds) before automatically
      * going to sleep

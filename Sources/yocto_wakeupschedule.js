@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_wakeupschedule.js 33714 2018-12-14 14:20:39Z seb $
+ *  $Id: yocto_wakeupschedule.js 37000 2019-09-03 06:40:17Z mvuilleu $
  *
  *  Implements the high-level API for WakeUpSchedule functions
  *
@@ -164,6 +164,8 @@ var YWakeUpSchedule; // definition below
 
     /**
      * Changes the minutes in the 00-29 interval when a wake up must take place.
+     * Remember to call the saveToFlash() method of the module if the
+     * modification must be kept.
      *
      * @param newval : an integer corresponding to the minutes in the 00-29 interval when a wake up must take place
      *
@@ -230,6 +232,8 @@ var YWakeUpSchedule; // definition below
 
     /**
      * Changes the minutes in the 30-59 interval when a wake up must take place.
+     * Remember to call the saveToFlash() method of the module if the
+     * modification must be kept.
      *
      * @param newval : an integer corresponding to the minutes in the 30-59 interval when a wake up must take place
      *
@@ -296,6 +300,8 @@ var YWakeUpSchedule; // definition below
 
     /**
      * Changes the hours when a wake up must take place.
+     * Remember to call the saveToFlash() method of the module if the
+     * modification must be kept.
      *
      * @param newval : an integer corresponding to the hours when a wake up must take place
      *
@@ -362,6 +368,8 @@ var YWakeUpSchedule; // definition below
 
     /**
      * Changes the days of the week when a wake up must take place.
+     * Remember to call the saveToFlash() method of the module if the
+     * modification must be kept.
      *
      * @param newval : an integer corresponding to the days of the week when a wake up must take place
      *
@@ -428,6 +436,8 @@ var YWakeUpSchedule; // definition below
 
     /**
      * Changes the days of the month when a wake up must take place.
+     * Remember to call the saveToFlash() method of the module if the
+     * modification must be kept.
      *
      * @param newval : an integer corresponding to the days of the month when a wake up must take place
      *
@@ -494,6 +504,8 @@ var YWakeUpSchedule; // definition below
 
     /**
      * Changes the months when a wake up must take place.
+     * Remember to call the saveToFlash() method of the module if the
+     * modification must be kept.
      *
      * @param newval : an integer corresponding to the months when a wake up must take place
      *

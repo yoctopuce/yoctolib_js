@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_spiport.js 36048 2019-06-28 17:43:51Z mvuilleu $
+ *  $Id: yocto_spiport.js 37141 2019-09-12 12:37:10Z mvuilleu $
  *
  *  Implements the high-level API for SpiPort functions
  *
@@ -101,8 +101,8 @@ var YSpiPort; // definition below
         this._currentJob                     = Y_CURRENTJOB_INVALID;       // Text
         this._startupJob                     = Y_STARTUPJOB_INVALID;       // Text
         this._command                        = Y_COMMAND_INVALID;          // Text
-        this._voltageLevel                   = Y_VOLTAGELEVEL_INVALID;     // SerialVoltageLevel
         this._protocol                       = Y_PROTOCOL_INVALID;         // Protocol
+        this._voltageLevel                   = Y_VOLTAGELEVEL_INVALID;     // SerialVoltageLevel
         this._spiMode                        = Y_SPIMODE_INVALID;          // SpiMode
         this._ssPolarity                     = Y_SSPOLARITY_INVALID;       // Polarity
         this._shiftSampling                  = Y_SHIFTSAMPLING_INVALID;    // OnOff
@@ -144,11 +144,11 @@ var YSpiPort; // definition below
         case "command":
             this._command = val;
             return 1;
-        case "voltageLevel":
-            this._voltageLevel = parseInt(val);
-            return 1;
         case "protocol":
             this._protocol = val;
+            return 1;
+        case "voltageLevel":
+            this._voltageLevel = parseInt(val);
             return 1;
         case "spiMode":
             this._spiMode = val;
@@ -521,11 +521,10 @@ var YSpiPort; // definition below
     }
 
     /**
-     * Changes the job to use when the device is powered on.
-     * Remember to call the saveToFlash() method of the module if the
-     * modification must be kept.
+     * Selects a job file to run immediately. If an empty string is
+     * given as argument, stops running current job file.
      *
-     * @param newval : a string corresponding to the job to use when the device is powered on
+     * @param newval : a string
      *
      * @return YAPI_SUCCESS if the call succeeds.
      *
@@ -653,82 +652,6 @@ var YSpiPort; // definition below
     }
 
     /**
-     * Returns the voltage level used on the serial line.
-     *
-     * @return a value among Y_VOLTAGELEVEL_OFF, Y_VOLTAGELEVEL_TTL3V, Y_VOLTAGELEVEL_TTL3VR,
-     * Y_VOLTAGELEVEL_TTL5V, Y_VOLTAGELEVEL_TTL5VR, Y_VOLTAGELEVEL_RS232, Y_VOLTAGELEVEL_RS485 and
-     * Y_VOLTAGELEVEL_TTL1V8 corresponding to the voltage level used on the serial line
-     *
-     * On failure, throws an exception or returns Y_VOLTAGELEVEL_INVALID.
-     */
-    function YSpiPort_get_voltageLevel()
-    {
-        var res;                    // enumSERIALVOLTAGELEVEL;
-        if (this._cacheExpiration <= YAPI.GetTickCount()) {
-            if (this.load(YAPI.defaultCacheValidity) != YAPI_SUCCESS) {
-                return Y_VOLTAGELEVEL_INVALID;
-            }
-        }
-        res = this._voltageLevel;
-        return res;
-    }
-
-    /**
-     * Gets the voltage level used on the serial line.
-     *
-     * @param callback : callback function that is invoked when the result is known.
-     *         The callback function receives three arguments:
-     *         - the user-specific context object
-     *         - the YSpiPort object that invoked the callback
-     *         - the result:a value among Y_VOLTAGELEVEL_OFF, Y_VOLTAGELEVEL_TTL3V, Y_VOLTAGELEVEL_TTL3VR,
-     *         Y_VOLTAGELEVEL_TTL5V, Y_VOLTAGELEVEL_TTL5VR, Y_VOLTAGELEVEL_RS232, Y_VOLTAGELEVEL_RS485 and
-     *         Y_VOLTAGELEVEL_TTL1V8 corresponding to the voltage level used on the serial line
-     * @param context : user-specific object that is passed as-is to the callback function
-     *
-     * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
-     *
-     * On failure, throws an exception or returns Y_VOLTAGELEVEL_INVALID.
-     */
-    function YSpiPort_get_voltageLevel_async(callback,context)
-    {
-        var res;                    // enumSERIALVOLTAGELEVEL;
-        var loadcb;                 // func;
-        loadcb = function(ctx,obj,res) {
-            if (res != YAPI_SUCCESS) {
-                callback(context, obj, Y_VOLTAGELEVEL_INVALID);
-            } else {
-                callback(context, obj, obj._voltageLevel);
-            }
-        };
-        if (this._cacheExpiration <= YAPI.GetTickCount()) {
-            this.load_async(YAPI.defaultCacheValidity,loadcb,null);
-        } else {
-            loadcb(null, this, YAPI_SUCCESS);
-        }
-    }
-
-    /**
-     * Changes the voltage type used on the serial line. Valid
-     * values  will depend on the Yoctopuce device model featuring
-     * the serial port feature.  Check your device documentation
-     * to find out which values are valid for that specific model.
-     * Trying to set an invalid value will have no effect.
-     *
-     * @param newval : a value among Y_VOLTAGELEVEL_OFF, Y_VOLTAGELEVEL_TTL3V, Y_VOLTAGELEVEL_TTL3VR,
-     * Y_VOLTAGELEVEL_TTL5V, Y_VOLTAGELEVEL_TTL5VR, Y_VOLTAGELEVEL_RS232, Y_VOLTAGELEVEL_RS485 and
-     * Y_VOLTAGELEVEL_TTL1V8 corresponding to the voltage type used on the serial line
-     *
-     * @return YAPI_SUCCESS if the call succeeds.
-     *
-     * On failure, throws an exception or returns a negative error code.
-     */
-    function YSpiPort_set_voltageLevel(newval)
-    {   var rest_val;
-        rest_val = String(newval);
-        return this._setAttr('voltageLevel',rest_val);
-    }
-
-    /**
      * Returns the type of protocol used over the serial line, as a string.
      * Possible values are "Line" for ASCII messages separated by CR and/or LF,
      * "Frame:[timeout]ms" for binary messages separated by a delay time,
@@ -795,6 +718,8 @@ var YSpiPort; // definition below
      * "Byte" for a continuous binary stream.
      * The suffix "/[wait]ms" can be added to reduce the transmit rate so that there
      * is always at lest the specified number of milliseconds between each bytes sent.
+     * Remember to call the saveToFlash() method of the module if the
+     * modification must be kept.
      *
      * @param newval : a string corresponding to the type of protocol used over the serial line
      *
@@ -806,6 +731,84 @@ var YSpiPort; // definition below
     {   var rest_val;
         rest_val = newval;
         return this._setAttr('protocol',rest_val);
+    }
+
+    /**
+     * Returns the voltage level used on the serial line.
+     *
+     * @return a value among Y_VOLTAGELEVEL_OFF, Y_VOLTAGELEVEL_TTL3V, Y_VOLTAGELEVEL_TTL3VR,
+     * Y_VOLTAGELEVEL_TTL5V, Y_VOLTAGELEVEL_TTL5VR, Y_VOLTAGELEVEL_RS232, Y_VOLTAGELEVEL_RS485 and
+     * Y_VOLTAGELEVEL_TTL1V8 corresponding to the voltage level used on the serial line
+     *
+     * On failure, throws an exception or returns Y_VOLTAGELEVEL_INVALID.
+     */
+    function YSpiPort_get_voltageLevel()
+    {
+        var res;                    // enumSERIALVOLTAGELEVEL;
+        if (this._cacheExpiration <= YAPI.GetTickCount()) {
+            if (this.load(YAPI.defaultCacheValidity) != YAPI_SUCCESS) {
+                return Y_VOLTAGELEVEL_INVALID;
+            }
+        }
+        res = this._voltageLevel;
+        return res;
+    }
+
+    /**
+     * Gets the voltage level used on the serial line.
+     *
+     * @param callback : callback function that is invoked when the result is known.
+     *         The callback function receives three arguments:
+     *         - the user-specific context object
+     *         - the YSpiPort object that invoked the callback
+     *         - the result:a value among Y_VOLTAGELEVEL_OFF, Y_VOLTAGELEVEL_TTL3V, Y_VOLTAGELEVEL_TTL3VR,
+     *         Y_VOLTAGELEVEL_TTL5V, Y_VOLTAGELEVEL_TTL5VR, Y_VOLTAGELEVEL_RS232, Y_VOLTAGELEVEL_RS485 and
+     *         Y_VOLTAGELEVEL_TTL1V8 corresponding to the voltage level used on the serial line
+     * @param context : user-specific object that is passed as-is to the callback function
+     *
+     * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
+     *
+     * On failure, throws an exception or returns Y_VOLTAGELEVEL_INVALID.
+     */
+    function YSpiPort_get_voltageLevel_async(callback,context)
+    {
+        var res;                    // enumSERIALVOLTAGELEVEL;
+        var loadcb;                 // func;
+        loadcb = function(ctx,obj,res) {
+            if (res != YAPI_SUCCESS) {
+                callback(context, obj, Y_VOLTAGELEVEL_INVALID);
+            } else {
+                callback(context, obj, obj._voltageLevel);
+            }
+        };
+        if (this._cacheExpiration <= YAPI.GetTickCount()) {
+            this.load_async(YAPI.defaultCacheValidity,loadcb,null);
+        } else {
+            loadcb(null, this, YAPI_SUCCESS);
+        }
+    }
+
+    /**
+     * Changes the voltage type used on the serial line. Valid
+     * values  will depend on the Yoctopuce device model featuring
+     * the serial port feature.  Check your device documentation
+     * to find out which values are valid for that specific model.
+     * Trying to set an invalid value will have no effect.
+     * Remember to call the saveToFlash() method of the module if the
+     * modification must be kept.
+     *
+     * @param newval : a value among Y_VOLTAGELEVEL_OFF, Y_VOLTAGELEVEL_TTL3V, Y_VOLTAGELEVEL_TTL3VR,
+     * Y_VOLTAGELEVEL_TTL5V, Y_VOLTAGELEVEL_TTL5VR, Y_VOLTAGELEVEL_RS232, Y_VOLTAGELEVEL_RS485 and
+     * Y_VOLTAGELEVEL_TTL1V8 corresponding to the voltage type used on the serial line
+     *
+     * @return YAPI_SUCCESS if the call succeeds.
+     *
+     * On failure, throws an exception or returns a negative error code.
+     */
+    function YSpiPort_set_voltageLevel(newval)
+    {   var rest_val;
+        rest_val = String(newval);
+        return this._setAttr('voltageLevel',rest_val);
     }
 
     /**
@@ -869,6 +872,8 @@ var YSpiPort; // definition below
      * Changes the SPI port communication parameters, with a string such as
      * "125000,0,msb". The string includes the baud rate, the SPI mode (between
      * 0 and 3) and the bit order.
+     * Remember to call the saveToFlash() method of the module if the
+     * modification must be kept.
      *
      * @param newval : a string corresponding to the SPI port communication parameters, with a string such as
      *         "125000,0,msb"
@@ -936,6 +941,8 @@ var YSpiPort; // definition below
 
     /**
      * Changes the SS line polarity.
+     * Remember to call the saveToFlash() method of the module if the
+     * modification must be kept.
      *
      * @param newval : either Y_SSPOLARITY_ACTIVE_LOW or Y_SSPOLARITY_ACTIVE_HIGH, according to the SS line polarity
      *
@@ -1006,6 +1013,8 @@ var YSpiPort; // definition below
      * Changes the SDI line sampling shift. When disabled, SDI line is
      * sampled in the middle of data output time. When enabled, SDI line is
      * samples at the end of data output time.
+     * Remember to call the saveToFlash() method of the module if the
+     * modification must be kept.
      *
      * @param newval : either Y_SHIFTSAMPLING_OFF or Y_SHIFTSAMPLING_ON, according to the SDI line sampling shift
      *
@@ -1744,6 +1753,7 @@ var YSpiPort; // definition below
         CURRENTJOB_INVALID          : YAPI_INVALID_STRING,
         STARTUPJOB_INVALID          : YAPI_INVALID_STRING,
         COMMAND_INVALID             : YAPI_INVALID_STRING,
+        PROTOCOL_INVALID            : YAPI_INVALID_STRING,
         VOLTAGELEVEL_OFF            : 0,
         VOLTAGELEVEL_TTL3V          : 1,
         VOLTAGELEVEL_TTL3VR         : 2,
@@ -1753,7 +1763,6 @@ var YSpiPort; // definition below
         VOLTAGELEVEL_RS485          : 6,
         VOLTAGELEVEL_TTL1V8         : 7,
         VOLTAGELEVEL_INVALID        : -1,
-        PROTOCOL_INVALID            : YAPI_INVALID_STRING,
         SPIMODE_INVALID             : YAPI_INVALID_STRING,
         SSPOLARITY_ACTIVE_LOW       : 0,
         SSPOLARITY_ACTIVE_HIGH      : 1,
@@ -1809,18 +1818,18 @@ var YSpiPort; // definition below
         command_async               : YSpiPort_get_command_async,
         set_command                 : YSpiPort_set_command,
         setCommand                  : YSpiPort_set_command,
-        get_voltageLevel            : YSpiPort_get_voltageLevel,
-        voltageLevel                : YSpiPort_get_voltageLevel,
-        get_voltageLevel_async      : YSpiPort_get_voltageLevel_async,
-        voltageLevel_async          : YSpiPort_get_voltageLevel_async,
-        set_voltageLevel            : YSpiPort_set_voltageLevel,
-        setVoltageLevel             : YSpiPort_set_voltageLevel,
         get_protocol                : YSpiPort_get_protocol,
         protocol                    : YSpiPort_get_protocol,
         get_protocol_async          : YSpiPort_get_protocol_async,
         protocol_async              : YSpiPort_get_protocol_async,
         set_protocol                : YSpiPort_set_protocol,
         setProtocol                 : YSpiPort_set_protocol,
+        get_voltageLevel            : YSpiPort_get_voltageLevel,
+        voltageLevel                : YSpiPort_get_voltageLevel,
+        get_voltageLevel_async      : YSpiPort_get_voltageLevel_async,
+        voltageLevel_async          : YSpiPort_get_voltageLevel_async,
+        set_voltageLevel            : YSpiPort_set_voltageLevel,
+        setVoltageLevel             : YSpiPort_set_voltageLevel,
         get_spiMode                 : YSpiPort_get_spiMode,
         spiMode                     : YSpiPort_get_spiMode,
         get_spiMode_async           : YSpiPort_get_spiMode_async,
