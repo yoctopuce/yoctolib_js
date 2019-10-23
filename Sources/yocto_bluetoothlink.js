@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_bluetoothlink.js 32905 2018-11-02 10:15:36Z seb $
+ *  $Id: yocto_bluetoothlink.js 37619 2019-10-11 11:52:42Z mvuilleu $
  *
  *  Implements the high-level API for BluetoothLink functions
  *
@@ -316,6 +316,8 @@ var YBluetoothLink; // definition below
 
     /**
      * Changes the MAC-48 address defining which remote device to connect to.
+     * Remember to call the saveToFlash()
+     * method of the module if the modification must be kept.
      *
      * @param newval : a string corresponding to the MAC-48 address defining which remote device to connect to
      *
@@ -500,6 +502,8 @@ var YBluetoothLink; // definition below
 
     /**
      * Changes the audio pre-amplifier volume, in per cents.
+     * Remember to call the saveToFlash()
+     * method of the module if the modification must be kept.
      *
      * @param newval : an integer corresponding to the audio pre-amplifier volume, in per cents
      *

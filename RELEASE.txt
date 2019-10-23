@@ -1,5 +1,4 @@
-Javascript v1.10.37304
+Javascript v1.10.37780
 
-- Fix some comments
-- Add missing YI2cPort methods
-- Add robustness to firmware update in case of failure when setting one attribute
+- Add missing "saveToFlash" hints
+- Fix Yocto-3D-V2 mount position handling

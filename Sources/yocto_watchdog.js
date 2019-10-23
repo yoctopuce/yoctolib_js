@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_watchdog.js 34976 2019-04-05 06:47:49Z seb $
+ *  $Id: yocto_watchdog.js 37619 2019-10-11 11:52:42Z mvuilleu $
  *
  *  Implements the high-level API for Watchdog functions
  *
@@ -278,11 +278,14 @@ var YWatchdog; // definition below
     }
 
     /**
-     * Preset the state of the watchdog at device startup (A for the idle position,
-     * B for the active position, UNCHANGED for no modification). Remember to call the matching module saveToFlash()
+     * Changes the state of the watchdog at device startup (A for the idle position,
+     * B for the active position, UNCHANGED for no modification).
+     * Remember to call the matching module saveToFlash()
      * method, otherwise this call will have no effect.
      *
      * @param newval : a value among Y_STATEATPOWERON_UNCHANGED, Y_STATEATPOWERON_A and Y_STATEATPOWERON_B
+     * corresponding to the state of the watchdog at device startup (A for the idle position,
+     *         B for the active position, UNCHANGED for no modification)
      *
      * @return YAPI_SUCCESS if the call succeeds.
      *
@@ -295,10 +298,11 @@ var YWatchdog; // definition below
     }
 
     /**
-     * Retourne the maximum time (ms) allowed for $THEFUNCTIONS$ to stay in state A before automatically
-     * switching back in to B state. Zero means no maximum time.
+     * Returns the maximum time (ms) allowed for $THEFUNCTIONS$ to stay in state
+     * A before automatically switching back in to B state. Zero means no time limit.
      *
-     * @return an integer
+     * @return an integer corresponding to the maximum time (ms) allowed for $THEFUNCTIONS$ to stay in state
+     *         A before automatically switching back in to B state
      *
      * On failure, throws an exception or returns Y_MAXTIMEONSTATEA_INVALID.
      */
@@ -315,14 +319,15 @@ var YWatchdog; // definition below
     }
 
     /**
-     * Retourne the maximum time (ms) allowed for $THEFUNCTIONS$ to stay in state A before automatically
-     * switching back in to B state. Zero means no maximum time.
+     * Gets the maximum time (ms) allowed for $THEFUNCTIONS$ to stay in state
+     * A before automatically switching back in to B state. Zero means no time limit.
      *
      * @param callback : callback function that is invoked when the result is known.
      *         The callback function receives three arguments:
      *         - the user-specific context object
      *         - the YWatchdog object that invoked the callback
-     *         - the result:an integer
+     *         - the result:an integer corresponding to the maximum time (ms) allowed for $THEFUNCTIONS$ to stay in state
+     *         A before automatically switching back in to B state
      * @param context : user-specific object that is passed as-is to the callback function
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
@@ -348,10 +353,13 @@ var YWatchdog; // definition below
     }
 
     /**
-     * Sets the maximum time (ms) allowed for $THEFUNCTIONS$ to stay in state A before automatically
-     * switching back in to B state. Use zero for no maximum time.
+     * Changes the maximum time (ms) allowed for $THEFUNCTIONS$ to stay in state A
+     * before automatically switching back in to B state. Use zero for no time limit.
+     * Remember to call the saveToFlash()
+     * method of the module if the modification must be kept.
      *
-     * @param newval : an integer
+     * @param newval : an integer corresponding to the maximum time (ms) allowed for $THEFUNCTIONS$ to stay in state A
+     *         before automatically switching back in to B state
      *
      * @return YAPI_SUCCESS if the call succeeds.
      *
@@ -364,8 +372,8 @@ var YWatchdog; // definition below
     }
 
     /**
-     * Retourne the maximum time (ms) allowed for $THEFUNCTIONS$ to stay in state B before automatically
-     * switching back in to A state. Zero means no maximum time.
+     * Retourne the maximum time (ms) allowed for $THEFUNCTIONS$ to stay in state B
+     * before automatically switching back in to A state. Zero means no time limit.
      *
      * @return an integer
      *
@@ -384,8 +392,8 @@ var YWatchdog; // definition below
     }
 
     /**
-     * Retourne the maximum time (ms) allowed for $THEFUNCTIONS$ to stay in state B before automatically
-     * switching back in to A state. Zero means no maximum time.
+     * Retourne the maximum time (ms) allowed for $THEFUNCTIONS$ to stay in state B
+     * before automatically switching back in to A state. Zero means no time limit.
      *
      * @param callback : callback function that is invoked when the result is known.
      *         The callback function receives three arguments:
@@ -417,10 +425,14 @@ var YWatchdog; // definition below
     }
 
     /**
-     * Sets the maximum time (ms) allowed for $THEFUNCTIONS$ to stay in state B before automatically
-     * switching back in to A state. Use zero for no maximum time.
+     * Changes the maximum time (ms) allowed for $THEFUNCTIONS$ to stay in state B before
+     * automatically switching back in to A state. Use zero for no time limit.
+     * Remember to call the saveToFlash()
+     * method of the module if the modification must be kept.
      *
-     * @param newval : an integer
+     * @param newval : an integer corresponding to the maximum time (ms) allowed for $THEFUNCTIONS$ to
+     * stay in state B before
+     *         automatically switching back in to A state
      *
      * @return YAPI_SUCCESS if the call succeeds.
      *
@@ -903,10 +915,12 @@ var YWatchdog; // definition below
     }
 
     /**
-     * Changes the waiting delay before a reset is triggered by the watchdog, in milliseconds.
+     * Changes the waiting delay before a reset is triggered by the watchdog,
+     * in milliseconds. Remember to call the saveToFlash()
+     * method of the module if the modification must be kept.
      *
-     * @param newval : an integer corresponding to the waiting delay before a reset is triggered by the
-     * watchdog, in milliseconds
+     * @param newval : an integer corresponding to the waiting delay before a reset is triggered by the watchdog,
+     *         in milliseconds
      *
      * @return YAPI_SUCCESS if the call succeeds.
      *
@@ -971,6 +985,8 @@ var YWatchdog; // definition below
 
     /**
      * Changes the duration of resets caused by the watchdog, in milliseconds.
+     * Remember to call the saveToFlash()
+     * method of the module if the modification must be kept.
      *
      * @param newval : an integer corresponding to the duration of resets caused by the watchdog, in milliseconds
      *
