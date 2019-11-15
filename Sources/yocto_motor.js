@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_motor.js 37619 2019-10-11 11:52:42Z mvuilleu $
+ *  $Id: yocto_motor.js 38030 2019-11-04 17:56:01Z mvuilleu $
  *
  *  Implements the high-level API for Motor functions
  *
@@ -54,9 +54,9 @@ var Y_MOTORSTATUS_INVALID           = -1;
 var Y_DRIVINGFORCE_INVALID          = YAPI_INVALID_DOUBLE;
 var Y_BRAKINGFORCE_INVALID          = YAPI_INVALID_DOUBLE;
 var Y_CUTOFFVOLTAGE_INVALID         = YAPI_INVALID_DOUBLE;
-var Y_OVERCURRENTLIMIT_INVALID      = YAPI_INVALID_INT;
+var Y_OVERCURRENTLIMIT_INVALID      = YAPI_INVALID_UINT;
 var Y_FREQUENCY_INVALID             = YAPI_INVALID_DOUBLE;
-var Y_STARTERTIME_INVALID           = YAPI_INVALID_INT;
+var Y_STARTERTIME_INVALID           = YAPI_INVALID_UINT;
 var Y_FAILSAFETIMEOUT_INVALID       = YAPI_INVALID_UINT;
 var Y_COMMAND_INVALID               = YAPI_INVALID_STRING;
 //--- (end of YMotor definitions)
@@ -65,7 +65,8 @@ var Y_COMMAND_INVALID               = YAPI_INVALID_STRING;
 /**
  * YMotor Class: Motor function interface
  *
- * Yoctopuce application programming interface allows you to drive the
+ * The YMotor class allows you to drive a DC motor, for instance using a Yocto-Motor-DC. It can be
+ * used to configure the
  * power sent to the motor to make it turn both ways, but also to drive accelerations
  * and decelerations. The motor will then accelerate automatically: you will not
  * have to monitor it. The API also allows to slow down the motor by shortening
@@ -87,9 +88,9 @@ var YMotor; // definition below
         this._drivingForce                   = Y_DRIVINGFORCE_INVALID;     // MeasureVal
         this._brakingForce                   = Y_BRAKINGFORCE_INVALID;     // MeasureVal
         this._cutOffVoltage                  = Y_CUTOFFVOLTAGE_INVALID;    // MeasureVal
-        this._overCurrentLimit               = Y_OVERCURRENTLIMIT_INVALID; // Int
+        this._overCurrentLimit               = Y_OVERCURRENTLIMIT_INVALID; // UInt31
         this._frequency                      = Y_FREQUENCY_INVALID;        // MeasureVal
-        this._starterTime                    = Y_STARTERTIME_INVALID;      // Int
+        this._starterTime                    = Y_STARTERTIME_INVALID;      // UInt31
         this._failSafeTimeout                = Y_FAILSAFETIMEOUT_INVALID;  // UInt31
         this._command                        = Y_COMMAND_INVALID;          // Text
         //--- (end of YMotor constructor)
@@ -437,6 +438,15 @@ var YMotor; // definition below
         }
     }
 
+    /**
+     * Returns the current threshold (in mA) above which the controller automatically
+     * switches to error state. A zero value means that there is no limit.
+     *
+     * @return an integer corresponding to the current threshold (in mA) above which the controller automatically
+     *         switches to error state
+     *
+     * On failure, throws an exception or returns Y_OVERCURRENTLIMIT_INVALID.
+     */
     function YMotor_get_overCurrentLimit()
     {
         var res;                    // int;
@@ -450,15 +460,20 @@ var YMotor; // definition below
     }
 
     /**
+     * Gets the current threshold (in mA) above which the controller automatically
+     * switches to error state. A zero value means that there is no limit.
      *
      * @param callback : callback function that is invoked when the result is known.
      *         The callback function receives three arguments:
      *         - the user-specific context object
      *         - the YMotor object that invoked the callback
-     *         - the result:
+     *         - the result:an integer corresponding to the current threshold (in mA) above which the controller automatically
+     *         switches to error state
      * @param context : user-specific object that is passed as-is to the callback function
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
+     *
+     * On failure, throws an exception or returns Y_OVERCURRENTLIMIT_INVALID.
      */
     function YMotor_get_overCurrentLimit_async(callback,context)
     {
@@ -798,7 +813,8 @@ var YMotor; // definition below
      * you are certain that the matching device is plugged, make sure that you did
      * call registerHub() at application initialization time.
      *
-     * @param func : a string that uniquely characterizes the motor
+     * @param func : a string that uniquely characterizes the motor, for instance
+     *         MOTORCTL.motor.
      *
      * @return a YMotor object allowing you to drive the motor.
      */
@@ -914,9 +930,9 @@ var YMotor; // definition below
         DRIVINGFORCE_INVALID        : YAPI_INVALID_DOUBLE,
         BRAKINGFORCE_INVALID        : YAPI_INVALID_DOUBLE,
         CUTOFFVOLTAGE_INVALID       : YAPI_INVALID_DOUBLE,
-        OVERCURRENTLIMIT_INVALID    : YAPI_INVALID_INT,
+        OVERCURRENTLIMIT_INVALID    : YAPI_INVALID_UINT,
         FREQUENCY_INVALID           : YAPI_INVALID_DOUBLE,
-        STARTERTIME_INVALID         : YAPI_INVALID_INT,
+        STARTERTIME_INVALID         : YAPI_INVALID_UINT,
         FAILSAFETIMEOUT_INVALID     : YAPI_INVALID_UINT,
         COMMAND_INVALID             : YAPI_INVALID_STRING
     }, {
@@ -1014,7 +1030,8 @@ var YMotor; // definition below
  * you are certain that the matching device is plugged, make sure that you did
  * call registerHub() at application initialization time.
  *
- * @param func : a string that uniquely characterizes the motor
+ * @param func : a string that uniquely characterizes the motor, for instance
+ *         MOTORCTL.motor.
  *
  * @return a YMotor object allowing you to drive the motor.
  */

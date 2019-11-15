@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_servo.js 32905 2018-11-02 10:15:36Z seb $
+ *  $Id: yocto_servo.js 37827 2019-10-25 13:07:48Z mvuilleu $
  *
  *  Implements the high-level API for Servo functions
  *
@@ -59,7 +59,8 @@ var Y_POSITIONATPOWERON_INVALID     = YAPI_INVALID_INT;
 /**
  * YServo Class: Servo function interface
  *
- * Yoctopuce application programming interface allows you not only to move
+ * The YServo class is designed to drive remote-control servo motors
+ * outputs, for instance using a Yocto-Servo. This class allows you not only to move
  * a servo to a given position, but also to specify the time interval
  * in which the move should be performed. This makes it possible to
  * synchronize two servos involved in a same move.
@@ -614,7 +615,8 @@ var YServo; // definition below
      * you are certain that the matching device is plugged, make sure that you did
      * call registerHub() at application initialization time.
      *
-     * @param func : a string that uniquely characterizes the servo
+     * @param func : a string that uniquely characterizes the servo, for instance
+     *         SERVORC1.servo1.
      *
      * @return a YServo object allowing you to drive the servo.
      */
@@ -757,7 +759,8 @@ var YServo; // definition below
  * you are certain that the matching device is plugged, make sure that you did
  * call registerHub() at application initialization time.
  *
- * @param func : a string that uniquely characterizes the servo
+ * @param func : a string that uniquely characterizes the servo, for instance
+ *         SERVORC1.servo1.
  *
  * @return a YServo object allowing you to drive the servo.
  */

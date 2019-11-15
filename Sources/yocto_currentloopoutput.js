@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_currentloopoutput.js 33714 2018-12-14 14:20:39Z seb $
+ *  $Id: yocto_currentloopoutput.js 37827 2019-10-25 13:07:48Z mvuilleu $
  *
  *  Implements the high-level API for CurrentLoopOutput functions
  *
@@ -55,8 +55,8 @@ var Y_CURRENTATSTARTUP_INVALID      = YAPI_INVALID_DOUBLE;
 /**
  * YCurrentLoopOutput Class: CurrentLoopOutput function interface
  *
- * The Yoctopuce application programming interface allows you to change the value of the 4-20mA
- * output as well as to know the current loop state.
+ * The YCurrentLoopOutput class allows you to drive a 4-20mA output, for instance using a Yocto-4-20mA-Tx.
+ * It can also provide information about the power state of the current loop.
  */
 //--- (end of YCurrentLoopOutput class start)
 
@@ -360,7 +360,8 @@ var YCurrentLoopOutput; // definition below
      * you are certain that the matching device is plugged, make sure that you did
      * call registerHub() at application initialization time.
      *
-     * @param func : a string that uniquely characterizes the 4-20mA output
+     * @param func : a string that uniquely characterizes the 4-20mA output, for instance
+     *         TX420MA1.currentLoopOutput.
      *
      * @return a YCurrentLoopOutput object allowing you to drive the 4-20mA output.
      */
@@ -505,7 +506,8 @@ var YCurrentLoopOutput; // definition below
  * you are certain that the matching device is plugged, make sure that you did
  * call registerHub() at application initialization time.
  *
- * @param func : a string that uniquely characterizes the 4-20mA output
+ * @param func : a string that uniquely characterizes the 4-20mA output, for instance
+ *         TX420MA1.currentLoopOutput.
  *
  * @return a YCurrentLoopOutput object allowing you to drive the 4-20mA output.
  */

@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_tvoc.js 33270 2018-11-22 08:41:15Z seb $
+ *  $Id: yocto_tvoc.js 37827 2019-10-25 13:07:48Z mvuilleu $
  *
  *  Implements the high-level API for Tvoc functions
  *
@@ -48,8 +48,9 @@ if(typeof YAPI == "undefined") { if(typeof yAPI != "undefined") window["YAPI"]=y
 /**
  * YTvoc Class: Tvoc function interface
  *
- * The Yoctopuce class YTvoc allows you to read and configure Yoctopuce Total Volatile Organic
- * Compound sensors. It inherits from YSensor class the core functions to read measurements,
+ * The YTvoc class allows you to read and configure Yoctopuce Total Volatile Organic
+ * Compound sensors, for instance using a Yocto-VOC-V3. It inherits from YSensor class the core
+ * functions to read measurements,
  * to register callback functions, to access the autonomous datalogger.
  */
 //--- (end of YTvoc class start)
@@ -92,7 +93,8 @@ var YTvoc; // definition below
      * you are certain that the matching device is plugged, make sure that you did
      * call registerHub() at application initialization time.
      *
-     * @param func : a string that uniquely characterizes the Total  Volatile Organic Compound sensor
+     * @param func : a string that uniquely characterizes the Total  Volatile Organic Compound sensor, for instance
+     *         YVOCMK03.tvoc.
      *
      * @return a YTvoc object allowing you to drive the Total  Volatile Organic Compound sensor.
      */
@@ -181,7 +183,8 @@ var YTvoc; // definition below
  * you are certain that the matching device is plugged, make sure that you did
  * call registerHub() at application initialization time.
  *
- * @param func : a string that uniquely characterizes the Total  Volatile Organic Compound sensor
+ * @param func : a string that uniquely characterizes the Total  Volatile Organic Compound sensor, for instance
+ *         YVOCMK03.tvoc.
  *
  * @return a YTvoc object allowing you to drive the Total  Volatile Organic Compound sensor.
  */

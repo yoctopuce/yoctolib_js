@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_multicellweighscale.js 37165 2019-09-13 16:57:27Z mvuilleu $
+ *  $Id: yocto_multicellweighscale.js 37827 2019-10-25 13:07:48Z mvuilleu $
  *
  *  Implements the high-level API for MultiCellWeighScale functions
  *
@@ -60,8 +60,9 @@ var Y_COMMAND_INVALID               = YAPI_INVALID_STRING;
 /**
  * YMultiCellWeighScale Class: MultiCellWeighScale function interface
  *
- * The YMultiCellWeighScale class provides a weight measurement from a set of ratiometric load cells
- * sensor. It can be used to control the bridge excitation parameters, in order to avoid
+ * The YMultiCellWeighScale class provides a weight measurement from a set of ratiometric
+ * sensors, for instance using a Yocto-MaxiBridge. It can be used to control the bridge excitation
+ * parameters, in order to avoid
  * measure shifts caused by temperature variation in the electronics, and can also
  * automatically apply an additional correction factor based on temperature to
  * compensate for offsets in the load cells themselves.
@@ -738,7 +739,8 @@ var YMultiCellWeighScale; // definition below
      * you are certain that the matching device is plugged, make sure that you did
      * call registerHub() at application initialization time.
      *
-     * @param func : a string that uniquely characterizes the multi-cell weighing scale sensor
+     * @param func : a string that uniquely characterizes the multi-cell weighing scale sensor, for instance
+     *         YWMBRDG1.multiCellWeighScale.
      *
      * @return a YMultiCellWeighScale object allowing you to drive the multi-cell weighing scale sensor.
      */
@@ -923,7 +925,8 @@ var YMultiCellWeighScale; // definition below
  * you are certain that the matching device is plugged, make sure that you did
  * call registerHub() at application initialization time.
  *
- * @param func : a string that uniquely characterizes the multi-cell weighing scale sensor
+ * @param func : a string that uniquely characterizes the multi-cell weighing scale sensor, for instance
+ *         YWMBRDG1.multiCellWeighScale.
  *
  * @return a YMultiCellWeighScale object allowing you to drive the multi-cell weighing scale sensor.
  */

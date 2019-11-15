@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_audioout.js 37619 2019-10-11 11:52:42Z mvuilleu $
+ *  $Id: yocto_audioout.js 37827 2019-10-25 13:07:48Z mvuilleu $
  *
  *  Implements the high-level API for AudioOut functions
  *
@@ -55,7 +55,7 @@ var Y_NOSIGNALFOR_INVALID           = YAPI_INVALID_INT;
 /**
  * YAudioOut Class: AudioOut function interface
  *
- * The Yoctopuce application programming interface allows you to configure the volume of the outout.
+ * The YAudioOut class allows you to configure the volume of an audio outout.
  */
 //--- (end of YAudioOut class start)
 
@@ -418,7 +418,8 @@ var YAudioOut; // definition below
      * you are certain that the matching device is plugged, make sure that you did
      * call registerHub() at application initialization time.
      *
-     * @param func : a string that uniquely characterizes the audio output
+     * @param func : a string that uniquely characterizes the audio output, for instance
+     *         MyDevice.audioOut1.
      *
      * @return a YAudioOut object allowing you to drive the audio output.
      */
@@ -540,7 +541,8 @@ var YAudioOut; // definition below
  * you are certain that the matching device is plugged, make sure that you did
  * call registerHub() at application initialization time.
  *
- * @param func : a string that uniquely characterizes the audio output
+ * @param func : a string that uniquely characterizes the audio output, for instance
+ *         MyDevice.audioOut1.
  *
  * @return a YAudioOut object allowing you to drive the audio output.
  */

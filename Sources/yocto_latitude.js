@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_latitude.js 33714 2018-12-14 14:20:39Z seb $
+ *  $Id: yocto_latitude.js 37827 2019-10-25 13:07:48Z mvuilleu $
  *
  *  Implements the high-level API for Latitude functions
  *
@@ -48,8 +48,8 @@ if(typeof YAPI == "undefined") { if(typeof yAPI != "undefined") window["YAPI"]=y
 /**
  * YLatitude Class: Latitude function interface
  *
- * The Yoctopuce class YLatitude allows you to read the latitude from Yoctopuce
- * geolocation sensors. It inherits from the YSensor class the core functions to
+ * The YLatitude class allows you to read the latitude from Yoctopuce
+ * geolocation sensors, for instance using a Yocto-GPS. It inherits from the YSensor class the core functions to
  * read measurements, to register callback functions, to access the autonomous
  * datalogger.
  */
@@ -93,7 +93,8 @@ var YLatitude; // definition below
      * you are certain that the matching device is plugged, make sure that you did
      * call registerHub() at application initialization time.
      *
-     * @param func : a string that uniquely characterizes the latitude sensor
+     * @param func : a string that uniquely characterizes the latitude sensor, for instance
+     *         YGNSSMK1.latitude.
      *
      * @return a YLatitude object allowing you to drive the latitude sensor.
      */
@@ -182,7 +183,8 @@ var YLatitude; // definition below
  * you are certain that the matching device is plugged, make sure that you did
  * call registerHub() at application initialization time.
  *
- * @param func : a string that uniquely characterizes the latitude sensor
+ * @param func : a string that uniquely characterizes the latitude sensor, for instance
+ *         YGNSSMK1.latitude.
  *
  * @return a YLatitude object allowing you to drive the latitude sensor.
  */

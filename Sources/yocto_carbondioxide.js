@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_carbondioxide.js 33714 2018-12-14 14:20:39Z seb $
+ *  $Id: yocto_carbondioxide.js 38030 2019-11-04 17:56:01Z mvuilleu $
  *
  *  Implements the high-level API for CarbonDioxide functions
  *
@@ -42,7 +42,7 @@ if(typeof YAPI == "undefined") { if(typeof yAPI != "undefined") window["YAPI"]=y
 //--- (YCarbonDioxide return codes)
 //--- (end of YCarbonDioxide return codes)
 //--- (YCarbonDioxide definitions)
-var Y_ABCPERIOD_INVALID             = YAPI_INVALID_INT;
+var Y_ABCPERIOD_INVALID             = YAPI_INVALID_UINT;
 var Y_COMMAND_INVALID               = YAPI_INVALID_STRING;
 //--- (end of YCarbonDioxide definitions)
 
@@ -50,8 +50,9 @@ var Y_COMMAND_INVALID               = YAPI_INVALID_STRING;
 /**
  * YCarbonDioxide Class: CarbonDioxide function interface
  *
- * The Yoctopuce class YCarbonDioxide allows you to read and configure Yoctopuce CO2
- * sensors. It inherits from YSensor class the core functions to read measurements,
+ * The YCarbonDioxide class allows you to read and configure Yoctopuce CO2
+ * sensors, for instance using a Yocto-CO2-V2. It inherits from YSensor class the core functions to
+ * read measurements,
  * to register callback functions,  to access the autonomous datalogger.
  * This class adds the ability to perform manual calibration if required.
  */
@@ -67,7 +68,7 @@ var YCarbonDioxide; // definition below
         YSensor.call(this, str_func);
         this._className = 'CarbonDioxide';
 
-        this._abcPeriod                      = Y_ABCPERIOD_INVALID;        // Int
+        this._abcPeriod                      = Y_ABCPERIOD_INVALID;        // UInt31
         this._command                        = Y_COMMAND_INVALID;          // Text
         //--- (end of YCarbonDioxide constructor)
     }
@@ -229,7 +230,8 @@ var YCarbonDioxide; // definition below
      * you are certain that the matching device is plugged, make sure that you did
      * call registerHub() at application initialization time.
      *
-     * @param func : a string that uniquely characterizes the CO2 sensor
+     * @param func : a string that uniquely characterizes the CO2 sensor, for instance
+     *         YCO2MK02.carbonDioxide.
      *
      * @return a YCarbonDioxide object allowing you to drive the CO2 sensor.
      */
@@ -333,7 +335,7 @@ var YCarbonDioxide; // definition below
     //--- (YCarbonDioxide initialization)
     YCarbonDioxide = YSensor._Subclass(_YCarbonDioxide, {
         // Constants
-        ABCPERIOD_INVALID           : YAPI_INVALID_INT,
+        ABCPERIOD_INVALID           : YAPI_INVALID_UINT,
         COMMAND_INVALID             : YAPI_INVALID_STRING
     }, {
         // Class methods
@@ -388,7 +390,8 @@ var YCarbonDioxide; // definition below
  * you are certain that the matching device is plugged, make sure that you did
  * call registerHub() at application initialization time.
  *
- * @param func : a string that uniquely characterizes the CO2 sensor
+ * @param func : a string that uniquely characterizes the CO2 sensor, for instance
+ *         YCO2MK02.carbonDioxide.
  *
  * @return a YCarbonDioxide object allowing you to drive the CO2 sensor.
  */

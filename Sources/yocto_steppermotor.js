@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_steppermotor.js 33714 2018-12-14 14:20:39Z seb $
+ *  $Id: yocto_steppermotor.js 37827 2019-10-25 13:07:48Z mvuilleu $
  *
  *  Implements the high-level API for StepperMotor functions
  *
@@ -74,7 +74,7 @@ var Y_COMMAND_INVALID               = YAPI_INVALID_STRING;
 /**
  * YStepperMotor Class: StepperMotor function interface
  *
- * The Yoctopuce application programming interface allows you to drive a stepper motor.
+ * The YStepperMotor class allows you to drive a stepper motor.
  */
 //--- (end of YStepperMotor class start)
 
@@ -1093,7 +1093,8 @@ var YStepperMotor; // definition below
      * you are certain that the matching device is plugged, make sure that you did
      * call registerHub() at application initialization time.
      *
-     * @param func : a string that uniquely characterizes the stepper motor
+     * @param func : a string that uniquely characterizes the stepper motor, for instance
+     *         MyDevice.stepperMotor1.
      *
      * @return a YStepperMotor object allowing you to drive the stepper motor.
      */
@@ -1496,7 +1497,8 @@ var YStepperMotor; // definition below
  * you are certain that the matching device is plugged, make sure that you did
  * call registerHub() at application initialization time.
  *
- * @param func : a string that uniquely characterizes the stepper motor
+ * @param func : a string that uniquely characterizes the stepper motor, for instance
+ *         MyDevice.stepperMotor1.
  *
  * @return a YStepperMotor object allowing you to drive the stepper motor.
  */

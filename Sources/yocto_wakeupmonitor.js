@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_wakeupmonitor.js 37000 2019-09-03 06:40:17Z mvuilleu $
+ *  $Id: yocto_wakeupmonitor.js 38030 2019-11-04 17:56:01Z mvuilleu $
  *
  *  Implements the high-level API for WakeUpMonitor functions
  *
@@ -52,8 +52,8 @@ var Y_WAKEUPREASON_INVALID          = -1;
 var Y_WAKEUPSTATE_SLEEPING          = 0;
 var Y_WAKEUPSTATE_AWAKE             = 1;
 var Y_WAKEUPSTATE_INVALID           = -1;
-var Y_POWERDURATION_INVALID         = YAPI_INVALID_INT;
-var Y_SLEEPCOUNTDOWN_INVALID        = YAPI_INVALID_INT;
+var Y_POWERDURATION_INVALID         = YAPI_INVALID_UINT;
+var Y_SLEEPCOUNTDOWN_INVALID        = YAPI_INVALID_UINT;
 var Y_NEXTWAKEUP_INVALID            = YAPI_INVALID_LONG;
 var Y_RTCTIME_INVALID               = YAPI_INVALID_LONG;
 //--- (end of YWakeUpMonitor definitions)
@@ -62,8 +62,9 @@ var Y_RTCTIME_INVALID               = YAPI_INVALID_LONG;
 /**
  * YWakeUpMonitor Class: WakeUpMonitor function interface
  *
- * The WakeUpMonitor function handles globally all wake-up sources, as well
- * as automated sleep mode.
+ * The YWakeUpMonitor class handles globally all wake-up sources, as well
+ * as automated sleep mode, for instance using a YoctoHub-Wireless-g, a YoctoHub-GSM-3G-NA, a
+ * YoctoHub-GSM-3G-EU or a YoctoHub-Wireless-SR.
  */
 //--- (end of YWakeUpMonitor class start)
 
@@ -77,8 +78,8 @@ var YWakeUpMonitor; // definition below
         YFunction.call(this, str_func);
         this._className = 'WakeUpMonitor';
 
-        this._powerDuration                  = Y_POWERDURATION_INVALID;    // Int
-        this._sleepCountdown                 = Y_SLEEPCOUNTDOWN_INVALID;   // Int
+        this._powerDuration                  = Y_POWERDURATION_INVALID;    // UInt31
+        this._sleepCountdown                 = Y_SLEEPCOUNTDOWN_INVALID;   // UInt31
         this._nextWakeUp                     = Y_NEXTWAKEUP_INVALID;       // UTCTime
         this._wakeUpReason                   = Y_WAKEUPREASON_INVALID;     // WakeUpReason
         this._wakeUpState                    = Y_WAKEUPSTATE_INVALID;      // WakeUpState
@@ -493,7 +494,8 @@ var YWakeUpMonitor; // definition below
      * you are certain that the matching device is plugged, make sure that you did
      * call registerHub() at application initialization time.
      *
-     * @param func : a string that uniquely characterizes the monitor
+     * @param func : a string that uniquely characterizes the monitor, for instance
+     *         YHUBWLN3.wakeUpMonitor.
      *
      * @return a YWakeUpMonitor object allowing you to drive the monitor.
      */
@@ -638,8 +640,8 @@ var YWakeUpMonitor; // definition below
     //--- (YWakeUpMonitor initialization)
     YWakeUpMonitor = YFunction._Subclass(_YWakeUpMonitor, {
         // Constants
-        POWERDURATION_INVALID       : YAPI_INVALID_INT,
-        SLEEPCOUNTDOWN_INVALID      : YAPI_INVALID_INT,
+        POWERDURATION_INVALID       : YAPI_INVALID_UINT,
+        SLEEPCOUNTDOWN_INVALID      : YAPI_INVALID_UINT,
         NEXTWAKEUP_INVALID          : YAPI_INVALID_LONG,
         WAKEUPREASON_USBPOWER       : 0,
         WAKEUPREASON_EXTPOWER       : 1,
@@ -726,7 +728,8 @@ var YWakeUpMonitor; // definition below
  * you are certain that the matching device is plugged, make sure that you did
  * call registerHub() at application initialization time.
  *
- * @param func : a string that uniquely characterizes the monitor
+ * @param func : a string that uniquely characterizes the monitor, for instance
+ *         YHUBWLN3.wakeUpMonitor.
  *
  * @return a YWakeUpMonitor object allowing you to drive the monitor.
  */

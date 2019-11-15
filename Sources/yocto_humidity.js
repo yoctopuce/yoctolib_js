@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_humidity.js 32905 2018-11-02 10:15:36Z seb $
+ *  $Id: yocto_humidity.js 37827 2019-10-25 13:07:48Z mvuilleu $
  *
  *  Implements the high-level API for Humidity functions
  *
@@ -50,8 +50,9 @@ var Y_ABSHUM_INVALID                = YAPI_INVALID_DOUBLE;
 /**
  * YHumidity Class: Humidity function interface
  *
- * The Yoctopuce class YHumidity allows you to read and configure Yoctopuce humidity
- * sensors. It inherits from YSensor class the core functions to read measurements,
+ * The YHumidity class allows you to read and configure Yoctopuce humidity
+ * sensors, for instance using a Yocto-Meteo-V2, a Yocto-VOC-V3 or a Yocto-CO2-V2. It inherits from
+ * YSensor class the core functions to read measurements,
  * to register callback functions, to access the autonomous datalogger.
  */
 //--- (end of YHumidity class start)
@@ -233,7 +234,8 @@ var YHumidity; // definition below
      * you are certain that the matching device is plugged, make sure that you did
      * call registerHub() at application initialization time.
      *
-     * @param func : a string that uniquely characterizes the humidity sensor
+     * @param func : a string that uniquely characterizes the humidity sensor, for instance
+     *         METEOMK2.humidity.
      *
      * @return a YHumidity object allowing you to drive the humidity sensor.
      */
@@ -336,7 +338,8 @@ var YHumidity; // definition below
  * you are certain that the matching device is plugged, make sure that you did
  * call registerHub() at application initialization time.
  *
- * @param func : a string that uniquely characterizes the humidity sensor
+ * @param func : a string that uniquely characterizes the humidity sensor, for instance
+ *         METEOMK2.humidity.
  *
  * @return a YHumidity object allowing you to drive the humidity sensor.
  */

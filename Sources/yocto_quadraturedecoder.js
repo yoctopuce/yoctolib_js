@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_quadraturedecoder.js 37619 2019-10-11 11:52:42Z mvuilleu $
+ *  $Id: yocto_quadraturedecoder.js 37827 2019-10-25 13:07:48Z mvuilleu $
  *
  *  Implements the high-level API for QuadratureDecoder functions
  *
@@ -52,8 +52,9 @@ var Y_SPEED_INVALID                 = YAPI_INVALID_DOUBLE;
 /**
  * YQuadratureDecoder Class: QuadratureDecoder function interface
  *
- * The class YQuadratureDecoder allows you to decode a two-wire signal produced by a
- * quadrature encoder. It inherits from YSensor class the core functions to read measurements,
+ * The YQuadratureDecoder class allows you to decode a two-wire signal produced by a
+ * quadrature encoder, for instance using a Yocto-PWM-Rx. It inherits from YSensor class the core
+ * functions to read measurements,
  * to register callback functions, to access the autonomous datalogger.
  */
 //--- (end of YQuadratureDecoder class start)
@@ -249,7 +250,8 @@ var YQuadratureDecoder; // definition below
      * you are certain that the matching device is plugged, make sure that you did
      * call registerHub() at application initialization time.
      *
-     * @param func : a string that uniquely characterizes the quadrature decoder
+     * @param func : a string that uniquely characterizes the quadrature decoder, for instance
+     *         YPWMRX01.quadratureDecoder.
      *
      * @return a YQuadratureDecoder object allowing you to drive the quadrature decoder.
      */
@@ -356,7 +358,8 @@ var YQuadratureDecoder; // definition below
  * you are certain that the matching device is plugged, make sure that you did
  * call registerHub() at application initialization time.
  *
- * @param func : a string that uniquely characterizes the quadrature decoder
+ * @param func : a string that uniquely characterizes the quadrature decoder, for instance
+ *         YPWMRX01.quadratureDecoder.
  *
  * @return a YQuadratureDecoder object allowing you to drive the quadrature decoder.
  */

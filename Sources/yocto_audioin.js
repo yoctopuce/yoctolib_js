@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_audioin.js 37619 2019-10-11 11:52:42Z mvuilleu $
+ *  $Id: yocto_audioin.js 37827 2019-10-25 13:07:48Z mvuilleu $
  *
  *  Implements the high-level API for AudioIn functions
  *
@@ -55,7 +55,7 @@ var Y_NOSIGNALFOR_INVALID           = YAPI_INVALID_INT;
 /**
  * YAudioIn Class: AudioIn function interface
  *
- * The Yoctopuce application programming interface allows you to configure the volume of the input channel.
+ * The YAudioIn class allows you to configure the volume of an audio input.
  */
 //--- (end of YAudioIn class start)
 
@@ -418,7 +418,8 @@ var YAudioIn; // definition below
      * you are certain that the matching device is plugged, make sure that you did
      * call registerHub() at application initialization time.
      *
-     * @param func : a string that uniquely characterizes the audio input
+     * @param func : a string that uniquely characterizes the audio input, for instance
+     *         MyDevice.audioIn1.
      *
      * @return a YAudioIn object allowing you to drive the audio input.
      */
@@ -540,7 +541,8 @@ var YAudioIn; // definition below
  * you are certain that the matching device is plugged, make sure that you did
  * call registerHub() at application initialization time.
  *
- * @param func : a string that uniquely characterizes the audio input
+ * @param func : a string that uniquely characterizes the audio input, for instance
+ *         MyDevice.audioIn1.
  *
  * @return a YAudioIn object allowing you to drive the audio input.
  */
