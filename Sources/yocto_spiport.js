@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_spiport.js 37827 2019-10-25 13:07:48Z mvuilleu $
+ *  $Id: yocto_spiport.js 38899 2019-12-20 17:21:03Z mvuilleu $
  *
  *  Implements the high-level API for SpiPort functions
  *
@@ -65,6 +65,8 @@ var Y_TXMSGCOUNT_INVALID            = YAPI_INVALID_UINT;
 var Y_LASTMSG_INVALID               = YAPI_INVALID_STRING;
 var Y_CURRENTJOB_INVALID            = YAPI_INVALID_STRING;
 var Y_STARTUPJOB_INVALID            = YAPI_INVALID_STRING;
+var Y_JOBMAXTASK_INVALID            = YAPI_INVALID_UINT;
+var Y_JOBMAXSIZE_INVALID            = YAPI_INVALID_UINT;
 var Y_COMMAND_INVALID               = YAPI_INVALID_STRING;
 var Y_PROTOCOL_INVALID              = YAPI_INVALID_STRING;
 var Y_SPIMODE_INVALID               = YAPI_INVALID_STRING;
@@ -72,9 +74,9 @@ var Y_SPIMODE_INVALID               = YAPI_INVALID_STRING;
 
 //--- (YSpiPort class start)
 /**
- * YSpiPort Class: SPI Port function interface
+ * YSpiPort Class: SPI port control interface, available for instance in the Yocto-SPI
  *
- * The YSpiPort class allows you to fully drive a Yoctopuce SPI port, for instance using a Yocto-SPI.
+ * The YSpiPort class allows you to fully drive a Yoctopuce SPI port.
  * It can be used to send and receive data, and to configure communication
  * parameters (baud rate, bit count, parity, flow control and protocol).
  * Note that Yoctopuce SPI ports are not exposed as virtual COM ports.
@@ -100,6 +102,8 @@ var YSpiPort; // definition below
         this._lastMsg                        = Y_LASTMSG_INVALID;          // Text
         this._currentJob                     = Y_CURRENTJOB_INVALID;       // Text
         this._startupJob                     = Y_STARTUPJOB_INVALID;       // Text
+        this._jobMaxTask                     = Y_JOBMAXTASK_INVALID;       // UInt31
+        this._jobMaxSize                     = Y_JOBMAXSIZE_INVALID;       // UInt31
         this._command                        = Y_COMMAND_INVALID;          // Text
         this._protocol                       = Y_PROTOCOL_INVALID;         // Protocol
         this._voltageLevel                   = Y_VOLTAGELEVEL_INVALID;     // SerialVoltageLevel
@@ -140,6 +144,12 @@ var YSpiPort; // definition below
             return 1;
         case "startupJob":
             this._startupJob = val;
+            return 1;
+        case "jobMaxTask":
+            this._jobMaxTask = parseInt(val);
+            return 1;
+        case "jobMaxSize":
+            this._jobMaxSize = parseInt(val);
             return 1;
         case "command":
             this._command = val;
@@ -602,6 +612,108 @@ var YSpiPort; // definition below
     {   var rest_val;
         rest_val = newval;
         return this._setAttr('startupJob',rest_val);
+    }
+
+    /**
+     * Returns the maximum number of tasks in a job that the device can handle.
+     *
+     * @return an integer corresponding to the maximum number of tasks in a job that the device can handle
+     *
+     * On failure, throws an exception or returns Y_JOBMAXTASK_INVALID.
+     */
+    function YSpiPort_get_jobMaxTask()
+    {
+        var res;                    // int;
+        if (this._cacheExpiration == 0) {
+            if (this.load(YAPI.defaultCacheValidity) != YAPI_SUCCESS) {
+                return Y_JOBMAXTASK_INVALID;
+            }
+        }
+        res = this._jobMaxTask;
+        return res;
+    }
+
+    /**
+     * Gets the maximum number of tasks in a job that the device can handle.
+     *
+     * @param callback : callback function that is invoked when the result is known.
+     *         The callback function receives three arguments:
+     *         - the user-specific context object
+     *         - the YSpiPort object that invoked the callback
+     *         - the result:an integer corresponding to the maximum number of tasks in a job that the device can handle
+     * @param context : user-specific object that is passed as-is to the callback function
+     *
+     * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
+     *
+     * On failure, throws an exception or returns Y_JOBMAXTASK_INVALID.
+     */
+    function YSpiPort_get_jobMaxTask_async(callback,context)
+    {
+        var res;                    // int;
+        var loadcb;                 // func;
+        loadcb = function(ctx,obj,res) {
+            if (res != YAPI_SUCCESS) {
+                callback(context, obj, Y_JOBMAXTASK_INVALID);
+            } else {
+                callback(context, obj, obj._jobMaxTask);
+            }
+        };
+        if (this._cacheExpiration == 0) {
+            this.load_async(YAPI.defaultCacheValidity,loadcb,null);
+        } else {
+            loadcb(null, this, YAPI_SUCCESS);
+        }
+    }
+
+    /**
+     * Returns maximum size allowed for job files.
+     *
+     * @return an integer corresponding to maximum size allowed for job files
+     *
+     * On failure, throws an exception or returns Y_JOBMAXSIZE_INVALID.
+     */
+    function YSpiPort_get_jobMaxSize()
+    {
+        var res;                    // int;
+        if (this._cacheExpiration == 0) {
+            if (this.load(YAPI.defaultCacheValidity) != YAPI_SUCCESS) {
+                return Y_JOBMAXSIZE_INVALID;
+            }
+        }
+        res = this._jobMaxSize;
+        return res;
+    }
+
+    /**
+     * Gets maximum size allowed for job files.
+     *
+     * @param callback : callback function that is invoked when the result is known.
+     *         The callback function receives three arguments:
+     *         - the user-specific context object
+     *         - the YSpiPort object that invoked the callback
+     *         - the result:an integer corresponding to maximum size allowed for job files
+     * @param context : user-specific object that is passed as-is to the callback function
+     *
+     * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
+     *
+     * On failure, throws an exception or returns Y_JOBMAXSIZE_INVALID.
+     */
+    function YSpiPort_get_jobMaxSize_async(callback,context)
+    {
+        var res;                    // int;
+        var loadcb;                 // func;
+        loadcb = function(ctx,obj,res) {
+            if (res != YAPI_SUCCESS) {
+                callback(context, obj, Y_JOBMAXSIZE_INVALID);
+            } else {
+                callback(context, obj, obj._jobMaxSize);
+            }
+        };
+        if (this._cacheExpiration == 0) {
+            this.load_async(YAPI.defaultCacheValidity,loadcb,null);
+        } else {
+            loadcb(null, this, YAPI_SUCCESS);
+        }
     }
 
     function YSpiPort_get_command()
@@ -1753,6 +1865,8 @@ var YSpiPort; // definition below
         LASTMSG_INVALID             : YAPI_INVALID_STRING,
         CURRENTJOB_INVALID          : YAPI_INVALID_STRING,
         STARTUPJOB_INVALID          : YAPI_INVALID_STRING,
+        JOBMAXTASK_INVALID          : YAPI_INVALID_UINT,
+        JOBMAXSIZE_INVALID          : YAPI_INVALID_UINT,
         COMMAND_INVALID             : YAPI_INVALID_STRING,
         PROTOCOL_INVALID            : YAPI_INVALID_STRING,
         VOLTAGELEVEL_OFF            : 0,
@@ -1813,6 +1927,14 @@ var YSpiPort; // definition below
         startupJob_async            : YSpiPort_get_startupJob_async,
         set_startupJob              : YSpiPort_set_startupJob,
         setStartupJob               : YSpiPort_set_startupJob,
+        get_jobMaxTask              : YSpiPort_get_jobMaxTask,
+        jobMaxTask                  : YSpiPort_get_jobMaxTask,
+        get_jobMaxTask_async        : YSpiPort_get_jobMaxTask_async,
+        jobMaxTask_async            : YSpiPort_get_jobMaxTask_async,
+        get_jobMaxSize              : YSpiPort_get_jobMaxSize,
+        jobMaxSize                  : YSpiPort_get_jobMaxSize,
+        get_jobMaxSize_async        : YSpiPort_get_jobMaxSize_async,
+        jobMaxSize_async            : YSpiPort_get_jobMaxSize_async,
         get_command                 : YSpiPort_get_command,
         command                     : YSpiPort_get_command,
         get_command_async           : YSpiPort_get_command_async,

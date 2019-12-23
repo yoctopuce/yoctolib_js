@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_display.js 37827 2019-10-25 13:07:48Z mvuilleu $
+ * $Id: yocto_display.js 38899 2019-12-20 17:21:03Z mvuilleu $
  *
  * Implements yFindDisplay(), the high-level API for Display functions
  *
@@ -83,10 +83,10 @@ var Y_ALIGN_BOTTOM_RIGHT            = 15;
 
 //--- (generated code: YDisplayLayer class start)
 /**
- * YDisplayLayer Class: DisplayLayer object interface
+ * YDisplayLayer Class: Interface for drawing into display layers, obtained by calling display.get_displayLayer.
  *
- * A DisplayLayer is an image layer containing objects to display
- * (bitmaps, text, etc.). The content is displayed only when
+ * Each DisplayLayer represents an image layer containing objects
+ * to display (bitmaps, text, etc.). The content is displayed only when
  * the layer is active on the screen (and not masked by other
  * overlapping layers).
  */
@@ -724,15 +724,20 @@ var YDisplayLayer; // definition below
 
 //--- (generated code: YDisplay class start)
 /**
- * YDisplay Class: Display function interface
+ * YDisplay Class: display control interface, available for instance in the Yocto-Display, the
+ * Yocto-MaxiDisplay, the Yocto-MaxiDisplay-G or the Yocto-MiniDisplay
  *
- * The YDisplay class allows to drive Yoctopuce displays, for instance using a Yocto-MaxiDisplay, a
- * Yocto-MiniDisplay, a Yocto-MaxiDisplay-G or a Yocto-Display.
+ * The YDisplay class allows to drive Yoctopuce displays.
  * Yoctopuce display interface has been designed to easily
  * show information and images. The device provides built-in
  * multi-layer rendering. Layers can be drawn offline, individually,
  * and freely moved on the display. It can also replay recorded
  * sequences (animations).
+ *
+ * In order to draw on the screen, you should use the
+ * display.get_displayLayer method to retrieve the layer(s) on
+ * which you want to draw, and then use methods defined in
+ * YDisplayLayer to draw on the layers.
  */
 //--- (end of generated code: YDisplay class start)
 
@@ -1458,7 +1463,7 @@ var YDisplay; // definition below
      * call registerHub() at application initialization time.
      *
      * @param func : a string that uniquely characterizes the display, for instance
-     *         YD128X64.display.
+     *         YD128X32.display.
      *
      * @return a YDisplay object allowing you to drive the display.
      */
@@ -1872,7 +1877,7 @@ var YDisplay; // definition below
  * call registerHub() at application initialization time.
  *
  * @param func : a string that uniquely characterizes the display, for instance
- *         YD128X64.display.
+ *         YD128X32.display.
  *
  * @return a YDisplay object allowing you to drive the display.
  */

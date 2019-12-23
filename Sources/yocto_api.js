@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_api.js 37827 2019-10-25 13:07:48Z mvuilleu $
+ * $Id: yocto_api.js 38913 2019-12-20 18:59:49Z mvuilleu $
  *
  * High-level programming interface, common to all modules
  *
@@ -2677,7 +2677,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
      */
     function YAPI_GetAPIVersion()
     {
-        return "1.10.38168";
+        return "1.10.38914";
     }
 
     /**
@@ -3026,8 +3026,8 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
 
 
     /**
-     * Fault-tolerant alternative to RegisterHub(). This function has the same
-     * purpose and same arguments as RegisterHub(), but does not trigger
+     * Fault-tolerant alternative to yRegisterHub(). This function has the same
+     * purpose and same arguments as yRegisterHub(), but does not trigger
      * an error when the selected hub is not available at the time of the function call.
      * This makes it possible to register a network hub independently of the current
      * connectivity, and to try to contact it only when a device is actively needed.
@@ -5053,11 +5053,13 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
 
 //--- (generated code: YMeasure class start)
 /**
- * YMeasure Class: Measured value
+ * YMeasure Class: Measured value, returned in particular by the methods of the YDataSet class.
  *
  * YMeasure objects are used within the API to represent
  * a value measured at a specified time. These objects are
- * used in particular in conjunction with the YDataSet class.
+ * used in particular in conjunction with the YDataSet class,
+ * but also for sensors periodic timed reports
+ * (see sensor.registerTimedReportCallback).
  */
 //--- (end of generated code: YMeasure class start)
 
@@ -5083,7 +5085,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
      * (Unix timestamp). When the recording rate is higher then 1 sample
      * per second, the timestamp may have a fractional part.
      *
-     * @return an floating point number corresponding to the number of seconds
+     * @return a floating point number corresponding to the number of seconds
      *         between the Jan 1, 1970 UTC and the beginning of this measure.
      */
     function YMeasure_get_startTimeUTC()
@@ -5096,7 +5098,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
      * (Unix timestamp). When the recording rate is higher than 1 sample
      * per second, the timestamp may have a fractional part.
      *
-     * @return an floating point number corresponding to the number of seconds
+     * @return a floating point number corresponding to the number of seconds
      *         between the Jan 1, 1970 UTC and the end of this measure.
      */
     function YMeasure_get_endTimeUTC()
@@ -5180,11 +5182,11 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
 
 //--- (generated code: YFirmwareUpdate class start)
 /**
- * YFirmwareUpdate Class: Control interface for the firmware update process
+ * YFirmwareUpdate Class: Firmware update process control interface, returned by module.updateFirmware method.
  *
  * The YFirmwareUpdate class let you control the firmware update of a Yoctopuce
- * module. This class should not be instantiate directly, instead the method
- * updateFirmware should be called to get an instance of YFirmwareUpdate.
+ * module. This class should not be instantiate directly, but instances should be retrieved
+ * using the YModule method module.updateFirmware.
  */
 //--- (end of generated code: YFirmwareUpdate class start)
 
@@ -5333,12 +5335,12 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
 /**
  * YDataStream Class: Unformatted data sequence
  *
- * YDataStream objects represent bare recorded measure sequences,
+ * DataStream objects represent bare recorded measure sequences,
  * exactly as found within the data logger present on Yoctopuce
  * sensors.
  *
- * In most cases, it is not necessary to use YDataStream objects
- * directly, as the YDataSet objects (returned by the
+ * In most cases, it is not necessary to use DataStream objects
+ * directly, as the DataSet objects (returned by the
  * get_recordedData() method from sensors and the
  * get_dataSets() method from the data logger) provide
  * a more convenient interface.
@@ -5863,12 +5865,12 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
 
 //--- (generated code: YDataSet class start)
 /**
- * YDataSet Class: Recorded data sequence
+ * YDataSet Class: Recorded data sequence, as returned by sensor.get_recordedData()
  *
  * YDataSet objects make it possible to retrieve a set of recorded measures
  * for a given sensor and a specified time interval. They can be used
  * to load data points with a progress report. When the YDataSet object is
- * instantiated by the get_recordedData()  function, no data is
+ * instantiated by the sensor.get_recordedData()  function, no data is
  * yet loaded from the module. It is only when the loadMore()
  * method is called over and over than data will be effectively loaded
  * from the dataLogger.
@@ -5878,7 +5880,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
  * once. Measures themselves are available using function get_measures()
  * when loaded by subsequent calls to loadMore().
  *
- * This class can only be used on devices that use a recent firmware,
+ * This class can only be used on devices that use a relatively recent firmware,
  * as YDataSet objects are not supported by firmwares older than version 13000.
  */
 //--- (end of generated code: YDataSet class start)
@@ -6220,14 +6222,14 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
 
     /**
      * Returns the start time of the dataset, relative to the Jan 1, 1970.
-     * When the YDataSet is created, the start time is the value passed
+     * When the YDataSet object is created, the start time is the value passed
      * in parameter to the get_dataSet() function. After the
      * very first call to loadMore(), the start time is updated
      * to reflect the timestamp of the first measure actually found in the
      * dataLogger within the specified range.
      *
      * <b>DEPRECATED</b>: This method has been replaced by get_summary()
-     * which contain more precise informations on the YDataSet.
+     * which contain more precise informations.
      *
      * @return an unsigned number corresponding to the number of seconds
      *         between the Jan 1, 1970 and the beginning of this data
@@ -6245,15 +6247,14 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
 
     /**
      * Returns the end time of the dataset, relative to the Jan 1, 1970.
-     * When the YDataSet is created, the end time is the value passed
+     * When the YDataSet object is created, the end time is the value passed
      * in parameter to the get_dataSet() function. After the
      * very first call to loadMore(), the end time is updated
      * to reflect the timestamp of the last measure actually found in the
      * dataLogger within the specified range.
      *
      * <b>DEPRECATED</b>: This method has been replaced by get_summary()
-     * which contain more precise informations on the YDataSet.
-     *
+     * which contain more precise informations.
      *
      * @return an unsigned number corresponding to the number of seconds
      *         between the Jan 1, 1970 and the end of this data
@@ -6327,7 +6328,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
 
     /**
      * Returns an YMeasure object which summarizes the whole
-     * DataSet. In includes the following information:
+     * YDataSet. In includes the following information:
      * - the start of a time interval
      * - the end of a time interval
      * - the minimal value observed during the time interval
@@ -6644,7 +6645,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
 
 //--- (generated code: YSensor class start)
 /**
- * YSensor Class: Sensor function interface
+ * YSensor Class: Sensor function interface.
  *
  * The YSensor class is the parent class for all Yoctopuce sensor types. It can be
  * used to read the current value and unit of any sensor, read the min/max
@@ -7641,11 +7642,11 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
     }
 
     /**
-     * Returns the YDatalogger object of the device hosting the sensor. This method returns an object of
-     * class YDatalogger that can control global parameters of the data logger. The returned object
+     * Returns the YDatalogger object of the device hosting the sensor. This method returns an object
+     * that can control global parameters of the data logger. The returned object
      * should not be freed.
      *
-     * @return an YDataLogger object or null on error.
+     * @return an YDatalogger object, or null on error.
      */
     function YSensor_get_dataLogger()
     {
@@ -7699,16 +7700,16 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
     }
 
     /**
-     * Retrieves a DataSet object holding historical data for this
+     * Retrieves a YDataSet object holding historical data for this
      * sensor, for a specified time interval. The measures will be
      * retrieved from the data logger, which must have been turned
-     * on at the desired time. See the documentation of the DataSet
+     * on at the desired time. See the documentation of the YDataSet
      * class for information on how to get an overview of the
      * recorded data, and how to load progressively a large set
      * of measures from the data logger.
      *
      * This function only works if the device uses a recent firmware,
-     * as DataSet objects are not supported by firmwares older than
+     * as YDataSet objects are not supported by firmwares older than
      * version 13000.
      *
      * @param startTime : the start of the desired measure time interval,
@@ -8388,23 +8389,6 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
         return JSON.parse(yreq.result, true);
     }
 
-    /**
-     * Builds a list of all data streams hold by the data logger (legacy method).
-     * The caller must pass by reference an empty array to hold YDataStream
-     * objects, and the function fills it with objects describing available
-     * data sequences.
-     *
-     * This is the old way to retrieve data from the DataLogger.
-     * For new applications, you should rather use get_dataSets()
-     * method, or call directly get_recordedData() on the
-     * sensor object.
-     *
-     * @param v : an array of YDataStream objects to be filled in
-     *
-     * @return YAPI_SUCCESS if the call succeeds.
-     *
-     * On failure, throws an exception or returns a negative error code.
-     */
     function YDataLogger_get_dataStreams(v)
     {
         var loadval = this.getData(null, null);
@@ -8925,7 +8909,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
      * call registerHub() at application initialization time.
      *
      * @param func : a string that uniquely characterizes the data logger, for instance
-     *         LIGHTMK3.dataLogger.
+     *         Y3DMK002.dataLogger.
      *
      * @return a YDataLogger object allowing you to drive the data logger.
      */
@@ -9122,7 +9106,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
 
 //--- (generated code: YModule class start)
 /**
- * YModule Class: Module control interface
+ * YModule Class: Global parameters control interface for all Yoctopuce devices
  *
  * The YModule class can be used with all Yoctopuce USB devices.
  * It can be used to control the module global parameters, and
@@ -11646,8 +11630,8 @@ function yRegisterHub(url,errmsg)
 }
 
 /**
- * Fault-tolerant alternative to RegisterHub(). This function has the same
- * purpose and same arguments as RegisterHub(), but does not trigger
+ * Fault-tolerant alternative to yRegisterHub(). This function has the same
+ * purpose and same arguments as yRegisterHub(), but does not trigger
  * an error when the selected hub is not available at the time of the function call.
  * This makes it possible to register a network hub independently of the current
  * connectivity, and to try to contact it only when a device is actively needed.
@@ -11993,7 +11977,7 @@ function yFirstModule()
  * call registerHub() at application initialization time.
  *
  * @param func : a string that uniquely characterizes the data logger, for instance
- *         LIGHTMK3.dataLogger.
+ *         Y3DMK002.dataLogger.
  *
  * @return a YDataLogger object allowing you to drive the data logger.
  */

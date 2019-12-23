@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_serialport.js 37827 2019-10-25 13:07:48Z mvuilleu $
+ * $Id: yocto_serialport.js 38899 2019-12-20 17:21:03Z mvuilleu $
  *
  * Implements the high-level API for SerialPort functions
  *
@@ -59,6 +59,8 @@ var Y_TXMSGCOUNT_INVALID            = YAPI_INVALID_UINT;
 var Y_LASTMSG_INVALID               = YAPI_INVALID_STRING;
 var Y_CURRENTJOB_INVALID            = YAPI_INVALID_STRING;
 var Y_STARTUPJOB_INVALID            = YAPI_INVALID_STRING;
+var Y_JOBMAXTASK_INVALID            = YAPI_INVALID_UINT;
+var Y_JOBMAXSIZE_INVALID            = YAPI_INVALID_UINT;
 var Y_COMMAND_INVALID               = YAPI_INVALID_STRING;
 var Y_PROTOCOL_INVALID              = YAPI_INVALID_STRING;
 var Y_SERIALMODE_INVALID            = YAPI_INVALID_STRING;
@@ -70,7 +72,7 @@ var Y_SERIALMODE_INVALID            = YAPI_INVALID_STRING;
 
 //--- (generated code: YSnoopingRecord class start)
 /**
- * YSnoopingRecord Class: Description of a message intercepted
+ * YSnoopingRecord Class: Intercepted message description, returned by serialPort.snoopMessages method
  *
  *
  */
@@ -96,16 +98,31 @@ var YSnoopingRecord; // definition below
 
     //--- (generated code: YSnoopingRecord implementation)
 
+    /**
+     * Returns the elapsed time, in ms, since the beginning of the preceding message.
+     *
+     * @return the elapsed time, in ms, since the beginning of the preceding message.
+     */
     function YSnoopingRecord_get_time()
     {
         return this._tim;
     }
 
+    /**
+     * Returns the message direction (RX=0 , TX=1) .
+     *
+     * @return the message direction (RX=0 , TX=1) .
+     */
     function YSnoopingRecord_get_direction()
     {
         return this._dir;
     }
 
+    /**
+     * Returns the message content.
+     *
+     * @return the message content.
+     */
     function YSnoopingRecord_get_message()
     {
         return this._msg;
@@ -128,10 +145,10 @@ var YSnoopingRecord; // definition below
 
 //--- (generated code: YSerialPort class start)
 /**
- * YSerialPort Class: SerialPort function interface
+ * YSerialPort Class: serial port control interface, available for instance in the Yocto-RS232, the
+ * Yocto-RS485-V2 or the Yocto-Serial
  *
- * The YSerialPort class allows you to fully drive a Yoctopuce serial port, for instance using a
- * Yocto-RS232, a Yocto-RS485 or a Yocto-Serial.
+ * The YSerialPort class allows you to fully drive a Yoctopuce serial port.
  * It can be used to send and receive data, and to configure communication
  * parameters (baud rate, bit count, parity, flow control and protocol).
  * Note that Yoctopuce serial ports are not exposed as virtual COM ports.
@@ -157,6 +174,8 @@ var YSerialPort; // definition below
         this._lastMsg                        = Y_LASTMSG_INVALID;          // Text
         this._currentJob                     = Y_CURRENTJOB_INVALID;       // Text
         this._startupJob                     = Y_STARTUPJOB_INVALID;       // Text
+        this._jobMaxTask                     = Y_JOBMAXTASK_INVALID;       // UInt31
+        this._jobMaxSize                     = Y_JOBMAXSIZE_INVALID;       // UInt31
         this._command                        = Y_COMMAND_INVALID;          // Text
         this._protocol                       = Y_PROTOCOL_INVALID;         // Protocol
         this._voltageLevel                   = Y_VOLTAGELEVEL_INVALID;     // SerialVoltageLevel
@@ -195,6 +214,12 @@ var YSerialPort; // definition below
             return 1;
         case "startupJob":
             this._startupJob = val;
+            return 1;
+        case "jobMaxTask":
+            this._jobMaxTask = parseInt(val);
+            return 1;
+        case "jobMaxSize":
+            this._jobMaxSize = parseInt(val);
             return 1;
         case "command":
             this._command = val;
@@ -651,6 +676,108 @@ var YSerialPort; // definition below
     {   var rest_val;
         rest_val = newval;
         return this._setAttr('startupJob',rest_val);
+    }
+
+    /**
+     * Returns the maximum number of tasks in a job that the device can handle.
+     *
+     * @return an integer corresponding to the maximum number of tasks in a job that the device can handle
+     *
+     * On failure, throws an exception or returns Y_JOBMAXTASK_INVALID.
+     */
+    function YSerialPort_get_jobMaxTask()
+    {
+        var res;                    // int;
+        if (this._cacheExpiration == 0) {
+            if (this.load(YAPI.defaultCacheValidity) != YAPI_SUCCESS) {
+                return Y_JOBMAXTASK_INVALID;
+            }
+        }
+        res = this._jobMaxTask;
+        return res;
+    }
+
+    /**
+     * Gets the maximum number of tasks in a job that the device can handle.
+     *
+     * @param callback : callback function that is invoked when the result is known.
+     *         The callback function receives three arguments:
+     *         - the user-specific context object
+     *         - the YSerialPort object that invoked the callback
+     *         - the result:an integer corresponding to the maximum number of tasks in a job that the device can handle
+     * @param context : user-specific object that is passed as-is to the callback function
+     *
+     * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
+     *
+     * On failure, throws an exception or returns Y_JOBMAXTASK_INVALID.
+     */
+    function YSerialPort_get_jobMaxTask_async(callback,context)
+    {
+        var res;                    // int;
+        var loadcb;                 // func;
+        loadcb = function(ctx,obj,res) {
+            if (res != YAPI_SUCCESS) {
+                callback(context, obj, Y_JOBMAXTASK_INVALID);
+            } else {
+                callback(context, obj, obj._jobMaxTask);
+            }
+        };
+        if (this._cacheExpiration == 0) {
+            this.load_async(YAPI.defaultCacheValidity,loadcb,null);
+        } else {
+            loadcb(null, this, YAPI_SUCCESS);
+        }
+    }
+
+    /**
+     * Returns maximum size allowed for job files.
+     *
+     * @return an integer corresponding to maximum size allowed for job files
+     *
+     * On failure, throws an exception or returns Y_JOBMAXSIZE_INVALID.
+     */
+    function YSerialPort_get_jobMaxSize()
+    {
+        var res;                    // int;
+        if (this._cacheExpiration == 0) {
+            if (this.load(YAPI.defaultCacheValidity) != YAPI_SUCCESS) {
+                return Y_JOBMAXSIZE_INVALID;
+            }
+        }
+        res = this._jobMaxSize;
+        return res;
+    }
+
+    /**
+     * Gets maximum size allowed for job files.
+     *
+     * @param callback : callback function that is invoked when the result is known.
+     *         The callback function receives three arguments:
+     *         - the user-specific context object
+     *         - the YSerialPort object that invoked the callback
+     *         - the result:an integer corresponding to maximum size allowed for job files
+     * @param context : user-specific object that is passed as-is to the callback function
+     *
+     * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
+     *
+     * On failure, throws an exception or returns Y_JOBMAXSIZE_INVALID.
+     */
+    function YSerialPort_get_jobMaxSize_async(callback,context)
+    {
+        var res;                    // int;
+        var loadcb;                 // func;
+        loadcb = function(ctx,obj,res) {
+            if (res != YAPI_SUCCESS) {
+                callback(context, obj, Y_JOBMAXSIZE_INVALID);
+            } else {
+                callback(context, obj, obj._jobMaxSize);
+            }
+        };
+        if (this._cacheExpiration == 0) {
+            this.load_async(YAPI.defaultCacheValidity,loadcb,null);
+        } else {
+            loadcb(null, this, YAPI_SUCCESS);
+        }
     }
 
     function YSerialPort_get_command()
@@ -2288,6 +2415,8 @@ var YSerialPort; // definition below
         LASTMSG_INVALID             : YAPI_INVALID_STRING,
         CURRENTJOB_INVALID          : YAPI_INVALID_STRING,
         STARTUPJOB_INVALID          : YAPI_INVALID_STRING,
+        JOBMAXTASK_INVALID          : YAPI_INVALID_UINT,
+        JOBMAXSIZE_INVALID          : YAPI_INVALID_UINT,
         COMMAND_INVALID             : YAPI_INVALID_STRING,
         PROTOCOL_INVALID            : YAPI_INVALID_STRING,
         VOLTAGELEVEL_OFF            : 0,
@@ -2342,6 +2471,14 @@ var YSerialPort; // definition below
         startupJob_async            : YSerialPort_get_startupJob_async,
         set_startupJob              : YSerialPort_set_startupJob,
         setStartupJob               : YSerialPort_set_startupJob,
+        get_jobMaxTask              : YSerialPort_get_jobMaxTask,
+        jobMaxTask                  : YSerialPort_get_jobMaxTask,
+        get_jobMaxTask_async        : YSerialPort_get_jobMaxTask_async,
+        jobMaxTask_async            : YSerialPort_get_jobMaxTask_async,
+        get_jobMaxSize              : YSerialPort_get_jobMaxSize,
+        jobMaxSize                  : YSerialPort_get_jobMaxSize,
+        get_jobMaxSize_async        : YSerialPort_get_jobMaxSize_async,
+        jobMaxSize_async            : YSerialPort_get_jobMaxSize_async,
         get_command                 : YSerialPort_get_command,
         command                     : YSerialPort_get_command,
         get_command_async           : YSerialPort_get_command_async,

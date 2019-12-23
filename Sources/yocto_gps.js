@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_gps.js 37827 2019-10-25 13:07:48Z mvuilleu $
+ *  $Id: yocto_gps.js 38899 2019-12-20 17:21:03Z mvuilleu $
  *
  *  Implements the high-level API for Gps functions
  *
@@ -49,15 +49,17 @@ var Y_COORDSYSTEM_GPS_DMS           = 0;
 var Y_COORDSYSTEM_GPS_DM            = 1;
 var Y_COORDSYSTEM_GPS_D             = 2;
 var Y_COORDSYSTEM_INVALID           = -1;
-var Y_CONSTELLATION_GPS             = 0;
-var Y_CONSTELLATION_GLONASS         = 1;
-var Y_CONSTELLATION_GALLILEO        = 2;
-var Y_CONSTELLATION_GNSS            = 3;
+var Y_CONSTELLATION_GNSS            = 0;
+var Y_CONSTELLATION_GPS             = 1;
+var Y_CONSTELLATION_GLONASS         = 2;
+var Y_CONSTELLATION_GALILEO         = 3;
 var Y_CONSTELLATION_GPS_GLONASS     = 4;
-var Y_CONSTELLATION_GPS_GALLILEO    = 5;
-var Y_CONSTELLATION_GLONASS_GALLELIO = 6;
+var Y_CONSTELLATION_GPS_GALILEO     = 5;
+var Y_CONSTELLATION_GLONASS_GALILEO = 6;
 var Y_CONSTELLATION_INVALID         = -1;
 var Y_SATCOUNT_INVALID              = YAPI_INVALID_LONG;
+var Y_SATPERCONST_INVALID           = YAPI_INVALID_LONG;
+var Y_GPSREFRESHRATE_INVALID        = YAPI_INVALID_DOUBLE;
 var Y_LATITUDE_INVALID              = YAPI_INVALID_STRING;
 var Y_LONGITUDE_INVALID             = YAPI_INVALID_STRING;
 var Y_DILUTION_INVALID              = YAPI_INVALID_DOUBLE;
@@ -72,10 +74,10 @@ var Y_COMMAND_INVALID               = YAPI_INVALID_STRING;
 
 //--- (YGps class start)
 /**
- * YGps Class: GPS function interface
+ * YGps Class: Geolocalization control interface (GPS, GNSS, ...), available for instance in the Yocto-GPS
  *
  * The YGps class allows you to retrieve positioning
- * data from a GPS sensor, for instance using a Yocto-GPS. This class can provides
+ * data from a GPS/GNSS sensor. This class can provides
  * complete positioning information. However, if you
  * wish to define callbacks on position changes or record
  * the position in the datalogger, you
@@ -95,6 +97,8 @@ var YGps; // definition below
 
         this._isFixed                        = Y_ISFIXED_INVALID;          // Bool
         this._satCount                       = Y_SATCOUNT_INVALID;         // UInt
+        this._satPerConst                    = Y_SATPERCONST_INVALID;      // UInt
+        this._gpsRefreshRate                 = Y_GPSREFRESHRATE_INVALID;   // MeasureVal
         this._coordSystem                    = Y_COORDSYSTEM_INVALID;      // GPSCoordinateSystem
         this._constellation                  = Y_CONSTELLATION_INVALID;    // GPSConstellation
         this._latitude                       = Y_LATITUDE_INVALID;         // Text
@@ -120,6 +124,12 @@ var YGps; // definition below
             return 1;
         case "satCount":
             this._satCount = parseInt(val);
+            return 1;
+        case "satPerConst":
+            this._satPerConst = parseInt(val);
+            return 1;
+        case "gpsRefreshRate":
+            this._gpsRefreshRate = Math.round(val * 1000.0 / 65536.0) / 1000.0;
             return 1;
         case "coordSystem":
             this._coordSystem = parseInt(val);
@@ -215,9 +225,9 @@ var YGps; // definition below
     }
 
     /**
-     * Returns the count of visible satellites.
+     * Returns the total count of satellites used to compute GPS position.
      *
-     * @return an integer corresponding to the count of visible satellites
+     * @return an integer corresponding to the total count of satellites used to compute GPS position
      *
      * On failure, throws an exception or returns Y_SATCOUNT_INVALID.
      */
@@ -234,13 +244,13 @@ var YGps; // definition below
     }
 
     /**
-     * Gets the count of visible satellites.
+     * Gets the total count of satellites used to compute GPS position.
      *
      * @param callback : callback function that is invoked when the result is known.
      *         The callback function receives three arguments:
      *         - the user-specific context object
      *         - the YGps object that invoked the callback
-     *         - the result:an integer corresponding to the count of visible satellites
+     *         - the result:an integer corresponding to the total count of satellites used to compute GPS position
      * @param context : user-specific object that is passed as-is to the callback function
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
@@ -256,6 +266,116 @@ var YGps; // definition below
                 callback(context, obj, Y_SATCOUNT_INVALID);
             } else {
                 callback(context, obj, obj._satCount);
+            }
+        };
+        if (this._cacheExpiration <= YAPI.GetTickCount()) {
+            this.load_async(YAPI.defaultCacheValidity,loadcb,null);
+        } else {
+            loadcb(null, this, YAPI_SUCCESS);
+        }
+    }
+
+    /**
+     * Returns the count of visible satellites per constellation encoded
+     * on a 32 bit integer: bits 0..5: GPS satellites count,  bits 6..11 : Glonass, bits 12..17 : Galileo.
+     * this value is refreshed every 5 seconds only.
+     *
+     * @return an integer corresponding to the count of visible satellites per constellation encoded
+     *         on a 32 bit integer: bits 0.
+     *
+     * On failure, throws an exception or returns Y_SATPERCONST_INVALID.
+     */
+    function YGps_get_satPerConst()
+    {
+        var res;                    // long;
+        if (this._cacheExpiration <= YAPI.GetTickCount()) {
+            if (this.load(YAPI.defaultCacheValidity) != YAPI_SUCCESS) {
+                return Y_SATPERCONST_INVALID;
+            }
+        }
+        res = this._satPerConst;
+        return res;
+    }
+
+    /**
+     * Gets the count of visible satellites per constellation encoded
+     * on a 32 bit integer: bits 0..5: GPS satellites count,  bits 6..11 : Glonass, bits 12..17 : Galileo.
+     * this value is refreshed every 5 seconds only.
+     *
+     * @param callback : callback function that is invoked when the result is known.
+     *         The callback function receives three arguments:
+     *         - the user-specific context object
+     *         - the YGps object that invoked the callback
+     *         - the result:an integer corresponding to the count of visible satellites per constellation encoded
+     *         on a 32 bit integer: bits 0.
+     * @param context : user-specific object that is passed as-is to the callback function
+     *
+     * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
+     *
+     * On failure, throws an exception or returns Y_SATPERCONST_INVALID.
+     */
+    function YGps_get_satPerConst_async(callback,context)
+    {
+        var res;                    // long;
+        var loadcb;                 // func;
+        loadcb = function(ctx,obj,res) {
+            if (res != YAPI_SUCCESS) {
+                callback(context, obj, Y_SATPERCONST_INVALID);
+            } else {
+                callback(context, obj, obj._satPerConst);
+            }
+        };
+        if (this._cacheExpiration <= YAPI.GetTickCount()) {
+            this.load_async(YAPI.defaultCacheValidity,loadcb,null);
+        } else {
+            loadcb(null, this, YAPI_SUCCESS);
+        }
+    }
+
+    /**
+     * Returns effective GPS data refresh frequency.
+     * this value is refreshed every 5 seconds only.
+     *
+     * @return a floating point number corresponding to effective GPS data refresh frequency
+     *
+     * On failure, throws an exception or returns Y_GPSREFRESHRATE_INVALID.
+     */
+    function YGps_get_gpsRefreshRate()
+    {
+        var res;                    // double;
+        if (this._cacheExpiration <= YAPI.GetTickCount()) {
+            if (this.load(YAPI.defaultCacheValidity) != YAPI_SUCCESS) {
+                return Y_GPSREFRESHRATE_INVALID;
+            }
+        }
+        res = this._gpsRefreshRate;
+        return res;
+    }
+
+    /**
+     * Gets effective GPS data refresh frequency.
+     * this value is refreshed every 5 seconds only.
+     *
+     * @param callback : callback function that is invoked when the result is known.
+     *         The callback function receives three arguments:
+     *         - the user-specific context object
+     *         - the YGps object that invoked the callback
+     *         - the result:a floating point number corresponding to effective GPS data refresh frequency
+     * @param context : user-specific object that is passed as-is to the callback function
+     *
+     * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
+     *
+     * On failure, throws an exception or returns Y_GPSREFRESHRATE_INVALID.
+     */
+    function YGps_get_gpsRefreshRate_async(callback,context)
+    {
+        var res;                    // double;
+        var loadcb;                 // func;
+        loadcb = function(ctx,obj,res) {
+            if (res != YAPI_SUCCESS) {
+                callback(context, obj, Y_GPSREFRESHRATE_INVALID);
+            } else {
+                callback(context, obj, obj._gpsRefreshRate);
             }
         };
         if (this._cacheExpiration <= YAPI.GetTickCount()) {
@@ -340,9 +460,9 @@ var YGps; // definition below
      * Returns the the satellites constellation used to compute
      * positioning data.
      *
-     * @return a value among Y_CONSTELLATION_GPS, Y_CONSTELLATION_GLONASS, Y_CONSTELLATION_GALLILEO,
-     * Y_CONSTELLATION_GNSS, Y_CONSTELLATION_GPS_GLONASS, Y_CONSTELLATION_GPS_GALLILEO and
-     * Y_CONSTELLATION_GLONASS_GALLELIO corresponding to the the satellites constellation used to compute
+     * @return a value among Y_CONSTELLATION_GNSS, Y_CONSTELLATION_GPS, Y_CONSTELLATION_GLONASS,
+     * Y_CONSTELLATION_GALILEO, Y_CONSTELLATION_GPS_GLONASS, Y_CONSTELLATION_GPS_GALILEO and
+     * Y_CONSTELLATION_GLONASS_GALILEO corresponding to the the satellites constellation used to compute
      *         positioning data
      *
      * On failure, throws an exception or returns Y_CONSTELLATION_INVALID.
@@ -367,9 +487,9 @@ var YGps; // definition below
      *         The callback function receives three arguments:
      *         - the user-specific context object
      *         - the YGps object that invoked the callback
-     *         - the result:a value among Y_CONSTELLATION_GPS, Y_CONSTELLATION_GLONASS, Y_CONSTELLATION_GALLILEO,
-     *         Y_CONSTELLATION_GNSS, Y_CONSTELLATION_GPS_GLONASS, Y_CONSTELLATION_GPS_GALLILEO and
-     *         Y_CONSTELLATION_GLONASS_GALLELIO corresponding to the the satellites constellation used to compute
+     *         - the result:a value among Y_CONSTELLATION_GNSS, Y_CONSTELLATION_GPS, Y_CONSTELLATION_GLONASS,
+     *         Y_CONSTELLATION_GALILEO, Y_CONSTELLATION_GPS_GLONASS, Y_CONSTELLATION_GPS_GALILEO and
+     *         Y_CONSTELLATION_GLONASS_GALILEO corresponding to the the satellites constellation used to compute
      *         positioning data
      * @param context : user-specific object that is passed as-is to the callback function
      *
@@ -397,13 +517,12 @@ var YGps; // definition below
 
     /**
      * Changes the satellites constellation used to compute
-     * positioning data. Possible  constellations are GPS, Glonass, Galileo ,
-     * GNSS ( = GPS + Glonass + Galileo) and the 3 possible pairs. This seeting has effect on Yocto-GPS rev A.
+     * positioning data. Possible  constellations are GNSS ( = all supported constellations),
+     * GPS, Glonass, Galileo , and the 3 possible pairs. This setting has  no effect on Yocto-GPS (V1).
      *
-     * @param newval : a value among Y_CONSTELLATION_GPS, Y_CONSTELLATION_GLONASS,
-     * Y_CONSTELLATION_GALLILEO, Y_CONSTELLATION_GNSS, Y_CONSTELLATION_GPS_GLONASS,
-     * Y_CONSTELLATION_GPS_GALLILEO and Y_CONSTELLATION_GLONASS_GALLELIO corresponding to the satellites
-     * constellation used to compute
+     * @param newval : a value among Y_CONSTELLATION_GNSS, Y_CONSTELLATION_GPS, Y_CONSTELLATION_GLONASS,
+     * Y_CONSTELLATION_GALILEO, Y_CONSTELLATION_GPS_GLONASS, Y_CONSTELLATION_GPS_GALILEO and
+     * Y_CONSTELLATION_GLONASS_GALILEO corresponding to the satellites constellation used to compute
      *         positioning data
      *
      * @return YAPI_SUCCESS if the call succeeds.
@@ -956,7 +1075,7 @@ var YGps; // definition below
     }
 
     /**
-     * Retrieves a GPS for a given identifier.
+     * Retrieves a geolocalization module for a given identifier.
      * The identifier can be specified using several formats:
      * <ul>
      * <li>FunctionLogicalName</li>
@@ -966,11 +1085,11 @@ var YGps; // definition below
      * <li>ModuleLogicalName.FunctionLogicalName</li>
      * </ul>
      *
-     * This function does not require that the GPS is online at the time
+     * This function does not require that the geolocalization module is online at the time
      * it is invoked. The returned object is nevertheless valid.
-     * Use the method YGps.isOnline() to test if the GPS is
+     * Use the method YGps.isOnline() to test if the geolocalization module is
      * indeed online at a given time. In case of ambiguity when looking for
-     * a GPS by logical name, no error is notified: the first instance
+     * a geolocalization module by logical name, no error is notified: the first instance
      * found is returned. The search is performed first by hardware name,
      * then by logical name.
      *
@@ -978,10 +1097,10 @@ var YGps; // definition below
      * you are certain that the matching device is plugged, make sure that you did
      * call registerHub() at application initialization time.
      *
-     * @param func : a string that uniquely characterizes the GPS, for instance
+     * @param func : a string that uniquely characterizes the geolocalization module, for instance
      *         YGNSSMK1.gps.
      *
-     * @return a YGps object allowing you to drive the GPS.
+     * @return a YGps object allowing you to drive the geolocalization module.
      */
     function YGps_FindGps(func)                                 // class method
     {
@@ -995,14 +1114,14 @@ var YGps; // definition below
     }
 
     /**
-     * Continues the enumeration of GPS started using yFirstGps().
-     * Caution: You can't make any assumption about the returned GPS order.
-     * If you want to find a specific a GPS, use Gps.findGps()
+     * Continues the enumeration of geolocalization modules started using yFirstGps().
+     * Caution: You can't make any assumption about the returned geolocalization modules order.
+     * If you want to find a specific a geolocalization module, use Gps.findGps()
      * and a hardwareID or a logical name.
      *
      * @return a pointer to a YGps object, corresponding to
-     *         a GPS currently online, or a null pointer
-     *         if there are no more GPS to enumerate.
+     *         a geolocalization module currently online, or a null pointer
+     *         if there are no more geolocalization modules to enumerate.
      */
     function YGps_nextGps()
     {   var resolve = YAPI.resolveFunction(this._className, this._func);
@@ -1013,12 +1132,12 @@ var YGps; // definition below
     }
 
     /**
-     * Starts the enumeration of GPS currently accessible.
+     * Starts the enumeration of geolocalization modules currently accessible.
      * Use the method YGps.nextGps() to iterate on
-     * next GPS.
+     * next geolocalization modules.
      *
      * @return a pointer to a YGps object, corresponding to
-     *         the first GPS currently online, or a null pointer
+     *         the first geolocalization module currently online, or a null pointer
      *         if there are none.
      */
     function YGps_FirstGps()
@@ -1037,17 +1156,19 @@ var YGps; // definition below
         ISFIXED_TRUE                : 1,
         ISFIXED_INVALID             : -1,
         SATCOUNT_INVALID            : YAPI_INVALID_LONG,
+        SATPERCONST_INVALID         : YAPI_INVALID_LONG,
+        GPSREFRESHRATE_INVALID      : YAPI_INVALID_DOUBLE,
         COORDSYSTEM_GPS_DMS         : 0,
         COORDSYSTEM_GPS_DM          : 1,
         COORDSYSTEM_GPS_D           : 2,
         COORDSYSTEM_INVALID         : -1,
-        CONSTELLATION_GPS           : 0,
-        CONSTELLATION_GLONASS       : 1,
-        CONSTELLATION_GALLILEO      : 2,
-        CONSTELLATION_GNSS          : 3,
+        CONSTELLATION_GNSS          : 0,
+        CONSTELLATION_GPS           : 1,
+        CONSTELLATION_GLONASS       : 2,
+        CONSTELLATION_GALILEO       : 3,
         CONSTELLATION_GPS_GLONASS   : 4,
-        CONSTELLATION_GPS_GALLILEO  : 5,
-        CONSTELLATION_GLONASS_GALLELIO : 6,
+        CONSTELLATION_GPS_GALILEO   : 5,
+        CONSTELLATION_GLONASS_GALILEO : 6,
         CONSTELLATION_INVALID       : -1,
         LATITUDE_INVALID            : YAPI_INVALID_STRING,
         LONGITUDE_INVALID           : YAPI_INVALID_STRING,
@@ -1073,6 +1194,14 @@ var YGps; // definition below
         satCount                    : YGps_get_satCount,
         get_satCount_async          : YGps_get_satCount_async,
         satCount_async              : YGps_get_satCount_async,
+        get_satPerConst             : YGps_get_satPerConst,
+        satPerConst                 : YGps_get_satPerConst,
+        get_satPerConst_async       : YGps_get_satPerConst_async,
+        satPerConst_async           : YGps_get_satPerConst_async,
+        get_gpsRefreshRate          : YGps_get_gpsRefreshRate,
+        gpsRefreshRate              : YGps_get_gpsRefreshRate,
+        get_gpsRefreshRate_async    : YGps_get_gpsRefreshRate_async,
+        gpsRefreshRate_async        : YGps_get_gpsRefreshRate_async,
         get_coordSystem             : YGps_get_coordSystem,
         coordSystem                 : YGps_get_coordSystem,
         get_coordSystem_async       : YGps_get_coordSystem_async,
@@ -1138,7 +1267,7 @@ var YGps; // definition below
 //--- (YGps functions)
 
 /**
- * Retrieves a GPS for a given identifier.
+ * Retrieves a geolocalization module for a given identifier.
  * The identifier can be specified using several formats:
  * <ul>
  * <li>FunctionLogicalName</li>
@@ -1148,11 +1277,11 @@ var YGps; // definition below
  * <li>ModuleLogicalName.FunctionLogicalName</li>
  * </ul>
  *
- * This function does not require that the GPS is online at the time
+ * This function does not require that the geolocalization module is online at the time
  * it is invoked. The returned object is nevertheless valid.
- * Use the method YGps.isOnline() to test if the GPS is
+ * Use the method YGps.isOnline() to test if the geolocalization module is
  * indeed online at a given time. In case of ambiguity when looking for
- * a GPS by logical name, no error is notified: the first instance
+ * a geolocalization module by logical name, no error is notified: the first instance
  * found is returned. The search is performed first by hardware name,
  * then by logical name.
  *
@@ -1160,10 +1289,10 @@ var YGps; // definition below
  * you are certain that the matching device is plugged, make sure that you did
  * call registerHub() at application initialization time.
  *
- * @param func : a string that uniquely characterizes the GPS, for instance
+ * @param func : a string that uniquely characterizes the geolocalization module, for instance
  *         YGNSSMK1.gps.
  *
- * @return a YGps object allowing you to drive the GPS.
+ * @return a YGps object allowing you to drive the geolocalization module.
  */
 function yFindGps(func)
 {
@@ -1171,12 +1300,12 @@ function yFindGps(func)
 }
 
 /**
- * Starts the enumeration of GPS currently accessible.
+ * Starts the enumeration of geolocalization modules currently accessible.
  * Use the method YGps.nextGps() to iterate on
- * next GPS.
+ * next geolocalization modules.
  *
  * @return a pointer to a YGps object, corresponding to
- *         the first GPS currently online, or a null pointer
+ *         the first geolocalization module currently online, or a null pointer
  *         if there are none.
  */
 function yFirstGps()

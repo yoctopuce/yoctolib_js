@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_i2cport.js 37827 2019-10-25 13:07:48Z mvuilleu $
+ *  $Id: yocto_i2cport.js 38913 2019-12-20 18:59:49Z mvuilleu $
  *
  *  Implements the high-level API for I2cPort functions
  *
@@ -54,6 +54,8 @@ var Y_TXMSGCOUNT_INVALID            = YAPI_INVALID_UINT;
 var Y_LASTMSG_INVALID               = YAPI_INVALID_STRING;
 var Y_CURRENTJOB_INVALID            = YAPI_INVALID_STRING;
 var Y_STARTUPJOB_INVALID            = YAPI_INVALID_STRING;
+var Y_JOBMAXTASK_INVALID            = YAPI_INVALID_UINT;
+var Y_JOBMAXSIZE_INVALID            = YAPI_INVALID_UINT;
 var Y_COMMAND_INVALID               = YAPI_INVALID_STRING;
 var Y_PROTOCOL_INVALID              = YAPI_INVALID_STRING;
 var Y_I2CMODE_INVALID               = YAPI_INVALID_STRING;
@@ -61,9 +63,9 @@ var Y_I2CMODE_INVALID               = YAPI_INVALID_STRING;
 
 //--- (YI2cPort class start)
 /**
- * YI2cPort Class: I2C Port function interface
+ * YI2cPort Class: I2C port control interface, available for instance in the Yocto-I2C
  *
- * The YI2cPort classe allows you to fully drive a Yoctopuce I2C port, for instance using a Yocto-I2C.
+ * The YI2cPort classe allows you to fully drive a Yoctopuce I2C port.
  * It can be used to send and receive data, and to configure communication
  * parameters (baud rate, etc).
  * Note that Yoctopuce I2C ports are not exposed as virtual COM ports.
@@ -89,6 +91,8 @@ var YI2cPort; // definition below
         this._lastMsg                        = Y_LASTMSG_INVALID;          // Text
         this._currentJob                     = Y_CURRENTJOB_INVALID;       // Text
         this._startupJob                     = Y_STARTUPJOB_INVALID;       // Text
+        this._jobMaxTask                     = Y_JOBMAXTASK_INVALID;       // UInt31
+        this._jobMaxSize                     = Y_JOBMAXSIZE_INVALID;       // UInt31
         this._command                        = Y_COMMAND_INVALID;          // Text
         this._protocol                       = Y_PROTOCOL_INVALID;         // Protocol
         this._i2cVoltageLevel                = Y_I2CVOLTAGELEVEL_INVALID;  // I2cVoltageLevel
@@ -127,6 +131,12 @@ var YI2cPort; // definition below
             return 1;
         case "startupJob":
             this._startupJob = val;
+            return 1;
+        case "jobMaxTask":
+            this._jobMaxTask = parseInt(val);
+            return 1;
+        case "jobMaxSize":
+            this._jobMaxSize = parseInt(val);
             return 1;
         case "command":
             this._command = val;
@@ -583,6 +593,108 @@ var YI2cPort; // definition below
     {   var rest_val;
         rest_val = newval;
         return this._setAttr('startupJob',rest_val);
+    }
+
+    /**
+     * Returns the maximum number of tasks in a job that the device can handle.
+     *
+     * @return an integer corresponding to the maximum number of tasks in a job that the device can handle
+     *
+     * On failure, throws an exception or returns Y_JOBMAXTASK_INVALID.
+     */
+    function YI2cPort_get_jobMaxTask()
+    {
+        var res;                    // int;
+        if (this._cacheExpiration == 0) {
+            if (this.load(YAPI.defaultCacheValidity) != YAPI_SUCCESS) {
+                return Y_JOBMAXTASK_INVALID;
+            }
+        }
+        res = this._jobMaxTask;
+        return res;
+    }
+
+    /**
+     * Gets the maximum number of tasks in a job that the device can handle.
+     *
+     * @param callback : callback function that is invoked when the result is known.
+     *         The callback function receives three arguments:
+     *         - the user-specific context object
+     *         - the YI2cPort object that invoked the callback
+     *         - the result:an integer corresponding to the maximum number of tasks in a job that the device can handle
+     * @param context : user-specific object that is passed as-is to the callback function
+     *
+     * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
+     *
+     * On failure, throws an exception or returns Y_JOBMAXTASK_INVALID.
+     */
+    function YI2cPort_get_jobMaxTask_async(callback,context)
+    {
+        var res;                    // int;
+        var loadcb;                 // func;
+        loadcb = function(ctx,obj,res) {
+            if (res != YAPI_SUCCESS) {
+                callback(context, obj, Y_JOBMAXTASK_INVALID);
+            } else {
+                callback(context, obj, obj._jobMaxTask);
+            }
+        };
+        if (this._cacheExpiration == 0) {
+            this.load_async(YAPI.defaultCacheValidity,loadcb,null);
+        } else {
+            loadcb(null, this, YAPI_SUCCESS);
+        }
+    }
+
+    /**
+     * Returns maximum size allowed for job files.
+     *
+     * @return an integer corresponding to maximum size allowed for job files
+     *
+     * On failure, throws an exception or returns Y_JOBMAXSIZE_INVALID.
+     */
+    function YI2cPort_get_jobMaxSize()
+    {
+        var res;                    // int;
+        if (this._cacheExpiration == 0) {
+            if (this.load(YAPI.defaultCacheValidity) != YAPI_SUCCESS) {
+                return Y_JOBMAXSIZE_INVALID;
+            }
+        }
+        res = this._jobMaxSize;
+        return res;
+    }
+
+    /**
+     * Gets maximum size allowed for job files.
+     *
+     * @param callback : callback function that is invoked when the result is known.
+     *         The callback function receives three arguments:
+     *         - the user-specific context object
+     *         - the YI2cPort object that invoked the callback
+     *         - the result:an integer corresponding to maximum size allowed for job files
+     * @param context : user-specific object that is passed as-is to the callback function
+     *
+     * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
+     *
+     * On failure, throws an exception or returns Y_JOBMAXSIZE_INVALID.
+     */
+    function YI2cPort_get_jobMaxSize_async(callback,context)
+    {
+        var res;                    // int;
+        var loadcb;                 // func;
+        loadcb = function(ctx,obj,res) {
+            if (res != YAPI_SUCCESS) {
+                callback(context, obj, Y_JOBMAXSIZE_INVALID);
+            } else {
+                callback(context, obj, obj._jobMaxSize);
+            }
+        };
+        if (this._cacheExpiration == 0) {
+            this.load_async(YAPI.defaultCacheValidity,loadcb,null);
+        } else {
+            loadcb(null, this, YAPI_SUCCESS);
+        }
     }
 
     function YI2cPort_get_command()
@@ -1549,6 +1661,8 @@ var YI2cPort; // definition below
         LASTMSG_INVALID             : YAPI_INVALID_STRING,
         CURRENTJOB_INVALID          : YAPI_INVALID_STRING,
         STARTUPJOB_INVALID          : YAPI_INVALID_STRING,
+        JOBMAXTASK_INVALID          : YAPI_INVALID_UINT,
+        JOBMAXSIZE_INVALID          : YAPI_INVALID_UINT,
         COMMAND_INVALID             : YAPI_INVALID_STRING,
         PROTOCOL_INVALID            : YAPI_INVALID_STRING,
         I2CVOLTAGELEVEL_OFF         : 0,
@@ -1598,6 +1712,14 @@ var YI2cPort; // definition below
         startupJob_async            : YI2cPort_get_startupJob_async,
         set_startupJob              : YI2cPort_set_startupJob,
         setStartupJob               : YI2cPort_set_startupJob,
+        get_jobMaxTask              : YI2cPort_get_jobMaxTask,
+        jobMaxTask                  : YI2cPort_get_jobMaxTask,
+        get_jobMaxTask_async        : YI2cPort_get_jobMaxTask_async,
+        jobMaxTask_async            : YI2cPort_get_jobMaxTask_async,
+        get_jobMaxSize              : YI2cPort_get_jobMaxSize,
+        jobMaxSize                  : YI2cPort_get_jobMaxSize,
+        get_jobMaxSize_async        : YI2cPort_get_jobMaxSize_async,
+        jobMaxSize_async            : YI2cPort_get_jobMaxSize_async,
         get_command                 : YI2cPort_get_command,
         command                     : YI2cPort_get_command,
         get_command_async           : YI2cPort_get_command_async,

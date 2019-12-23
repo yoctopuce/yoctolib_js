@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_oscontrol.js 37827 2019-10-25 13:07:48Z mvuilleu $
+ *  $Id: yocto_oscontrol.js 38899 2019-12-20 17:21:03Z mvuilleu $
  *
  *  Implements the high-level API for OsControl functions
  *
@@ -47,7 +47,7 @@ var Y_SHUTDOWNCOUNTDOWN_INVALID     = YAPI_INVALID_UINT;
 
 //--- (YOsControl class start)
 /**
- * YOsControl Class: OS control
+ * YOsControl Class: Operating system control interface via the VirtualHub application
  *
  * The YOScontrol class provides some control over the operating system running a VirtualHub.
  * YOsControl is available on VirtualHub software only. This feature must be activated at the VirtualHub

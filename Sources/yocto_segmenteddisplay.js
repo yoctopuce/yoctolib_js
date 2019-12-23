@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_segmenteddisplay.js 37827 2019-10-25 13:07:48Z mvuilleu $
+ *  $Id: yocto_segmenteddisplay.js 38899 2019-12-20 17:21:03Z mvuilleu $
  *
  *  Implements the high-level API for SegmentedDisplay functions
  *
@@ -52,7 +52,7 @@ var Y_DISPLAYEDTEXT_INVALID         = YAPI_INVALID_STRING;
 
 //--- (YSegmentedDisplay class start)
 /**
- * YSegmentedDisplay Class: SegmentedDisplay function interface
+ * YSegmentedDisplay Class: segmented display control interface
  *
  * The SegmentedDisplay class allows you to drive segmented displays.
  */
@@ -212,9 +212,9 @@ var YSegmentedDisplay; // definition below
      * <li>ModuleLogicalName.FunctionLogicalName</li>
      * </ul>
      *
-     * This function does not require that the segmented displays is online at the time
+     * This function does not require that the segmented display is online at the time
      * it is invoked. The returned object is nevertheless valid.
-     * Use the method YSegmentedDisplay.isOnline() to test if the segmented displays is
+     * Use the method YSegmentedDisplay.isOnline() to test if the segmented display is
      * indeed online at a given time. In case of ambiguity when looking for
      * a segmented display by logical name, no error is notified: the first instance
      * found is returned. The search is performed first by hardware name,
@@ -224,10 +224,10 @@ var YSegmentedDisplay; // definition below
      * you are certain that the matching device is plugged, make sure that you did
      * call registerHub() at application initialization time.
      *
-     * @param func : a string that uniquely characterizes the segmented displays, for instance
+     * @param func : a string that uniquely characterizes the segmented display, for instance
      *         MyDevice.segmentedDisplay.
      *
-     * @return a YSegmentedDisplay object allowing you to drive the segmented displays.
+     * @return a YSegmentedDisplay object allowing you to drive the segmented display.
      */
     function YSegmentedDisplay_FindSegmentedDisplay(func)       // class method
     {
@@ -264,7 +264,7 @@ var YSegmentedDisplay; // definition below
      * next segmented displays.
      *
      * @return a pointer to a YSegmentedDisplay object, corresponding to
-     *         the first segmented displays currently online, or a null pointer
+     *         the first segmented display currently online, or a null pointer
      *         if there are none.
      */
     function YSegmentedDisplay_FirstSegmentedDisplay()
@@ -322,9 +322,9 @@ var YSegmentedDisplay; // definition below
  * <li>ModuleLogicalName.FunctionLogicalName</li>
  * </ul>
  *
- * This function does not require that the segmented displays is online at the time
+ * This function does not require that the segmented display is online at the time
  * it is invoked. The returned object is nevertheless valid.
- * Use the method YSegmentedDisplay.isOnline() to test if the segmented displays is
+ * Use the method YSegmentedDisplay.isOnline() to test if the segmented display is
  * indeed online at a given time. In case of ambiguity when looking for
  * a segmented display by logical name, no error is notified: the first instance
  * found is returned. The search is performed first by hardware name,
@@ -334,10 +334,10 @@ var YSegmentedDisplay; // definition below
  * you are certain that the matching device is plugged, make sure that you did
  * call registerHub() at application initialization time.
  *
- * @param func : a string that uniquely characterizes the segmented displays, for instance
+ * @param func : a string that uniquely characterizes the segmented display, for instance
  *         MyDevice.segmentedDisplay.
  *
- * @return a YSegmentedDisplay object allowing you to drive the segmented displays.
+ * @return a YSegmentedDisplay object allowing you to drive the segmented display.
  */
 function yFindSegmentedDisplay(func)
 {
@@ -350,7 +350,7 @@ function yFindSegmentedDisplay(func)
  * next segmented displays.
  *
  * @return a pointer to a YSegmentedDisplay object, corresponding to
- *         the first segmented displays currently online, or a null pointer
+ *         the first segmented display currently online, or a null pointer
  *         if there are none.
  */
 function yFirstSegmentedDisplay()

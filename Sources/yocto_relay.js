@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_relay.js 37827 2019-10-25 13:07:48Z mvuilleu $
+ *  $Id: yocto_relay.js 38899 2019-12-20 17:21:03Z mvuilleu $
  *
  *  Implements the high-level API for Relay functions
  *
@@ -61,12 +61,12 @@ var Y_COUNTDOWN_INVALID             = YAPI_INVALID_LONG;
 
 //--- (YRelay class start)
 /**
- * YRelay Class: Relay function interface
+ * YRelay Class: relay control interface, available for instance in the Yocto-MaxiCoupler-V2, the
+ * Yocto-MaxiPowerRelay, the Yocto-PowerRelay-V3 or the Yocto-Relay
  *
- * The YRelay class allows you to drive a Yoctopuce Relay, for instance using a Yocto-PowerRelay-V3, a
- * Yocto-Relay, a Yocto-MaxiPowerRelay or a Yocto-MaxiCoupler-V2.
- * It can be used to simply switch the relay, but also to automatically generate short pulses of
- * determined duration.
+ * The YRelay class allows you to drive a Yoctopuce relay or optocoupled output.
+ * It can be used to simply switch the output on or off, but also to automatically generate short
+ * pulses of determined duration.
  * On devices with two output for each relay (double throw), the two outputs are named A and B,
  * with output A corresponding to the idle position (normally closed) and the output B corresponding to the
  * active state (normally open).
@@ -198,12 +198,12 @@ var YRelay; // definition below
     }
 
     /**
-     * Returns the state of the relays at device startup (A for the idle position, B for the active
-     * position, UNCHANGED for no change).
+     * Returns the state of the relays at device startup (A for the idle position,
+     * B for the active position, UNCHANGED to leave the relay state as is).
      *
      * @return a value among Y_STATEATPOWERON_UNCHANGED, Y_STATEATPOWERON_A and Y_STATEATPOWERON_B
-     * corresponding to the state of the relays at device startup (A for the idle position, B for the
-     * active position, UNCHANGED for no change)
+     * corresponding to the state of the relays at device startup (A for the idle position,
+     *         B for the active position, UNCHANGED to leave the relay state as is)
      *
      * On failure, throws an exception or returns Y_STATEATPOWERON_INVALID.
      */
@@ -220,16 +220,16 @@ var YRelay; // definition below
     }
 
     /**
-     * Gets the state of the relays at device startup (A for the idle position, B for the active position,
-     * UNCHANGED for no change).
+     * Gets the state of the relays at device startup (A for the idle position,
+     * B for the active position, UNCHANGED to leave the relay state as is).
      *
      * @param callback : callback function that is invoked when the result is known.
      *         The callback function receives three arguments:
      *         - the user-specific context object
      *         - the YRelay object that invoked the callback
      *         - the result:a value among Y_STATEATPOWERON_UNCHANGED, Y_STATEATPOWERON_A and Y_STATEATPOWERON_B
-     *         corresponding to the state of the relays at device startup (A for the idle position, B for the
-     *         active position, UNCHANGED for no change)
+     *         corresponding to the state of the relays at device startup (A for the idle position,
+     *         B for the active position, UNCHANGED to leave the relay state as is)
      * @param context : user-specific object that is passed as-is to the callback function
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
@@ -256,13 +256,13 @@ var YRelay; // definition below
 
     /**
      * Changes the state of the relays at device startup (A for the idle position,
-     * B for the active position, UNCHANGED for no modification).
+     * B for the active position, UNCHANGED to leave the relay state as is).
      * Remember to call the matching module saveToFlash()
      * method, otherwise this call will have no effect.
      *
      * @param newval : a value among Y_STATEATPOWERON_UNCHANGED, Y_STATEATPOWERON_A and Y_STATEATPOWERON_B
      * corresponding to the state of the relays at device startup (A for the idle position,
-     *         B for the active position, UNCHANGED for no modification)
+     *         B for the active position, UNCHANGED to leave the relay state as is)
      *
      * @return YAPI_SUCCESS if the call succeeds.
      *
@@ -275,10 +275,10 @@ var YRelay; // definition below
     }
 
     /**
-     * Returns the maximum time (ms) allowed for $THEFUNCTIONS$ to stay in state
+     * Returns the maximum time (ms) allowed for the relay to stay in state
      * A before automatically switching back in to B state. Zero means no time limit.
      *
-     * @return an integer corresponding to the maximum time (ms) allowed for $THEFUNCTIONS$ to stay in state
+     * @return an integer corresponding to the maximum time (ms) allowed for the relay to stay in state
      *         A before automatically switching back in to B state
      *
      * On failure, throws an exception or returns Y_MAXTIMEONSTATEA_INVALID.
@@ -296,14 +296,14 @@ var YRelay; // definition below
     }
 
     /**
-     * Gets the maximum time (ms) allowed for $THEFUNCTIONS$ to stay in state
+     * Gets the maximum time (ms) allowed for the relay to stay in state
      * A before automatically switching back in to B state. Zero means no time limit.
      *
      * @param callback : callback function that is invoked when the result is known.
      *         The callback function receives three arguments:
      *         - the user-specific context object
      *         - the YRelay object that invoked the callback
-     *         - the result:an integer corresponding to the maximum time (ms) allowed for $THEFUNCTIONS$ to stay in state
+     *         - the result:an integer corresponding to the maximum time (ms) allowed for the relay to stay in state
      *         A before automatically switching back in to B state
      * @param context : user-specific object that is passed as-is to the callback function
      *
@@ -330,12 +330,12 @@ var YRelay; // definition below
     }
 
     /**
-     * Changes the maximum time (ms) allowed for $THEFUNCTIONS$ to stay in state A
+     * Changes the maximum time (ms) allowed for the relay to stay in state A
      * before automatically switching back in to B state. Use zero for no time limit.
      * Remember to call the saveToFlash()
      * method of the module if the modification must be kept.
      *
-     * @param newval : an integer corresponding to the maximum time (ms) allowed for $THEFUNCTIONS$ to stay in state A
+     * @param newval : an integer corresponding to the maximum time (ms) allowed for the relay to stay in state A
      *         before automatically switching back in to B state
      *
      * @return YAPI_SUCCESS if the call succeeds.
@@ -349,7 +349,7 @@ var YRelay; // definition below
     }
 
     /**
-     * Retourne the maximum time (ms) allowed for $THEFUNCTIONS$ to stay in state B
+     * Retourne the maximum time (ms) allowed for the relay to stay in state B
      * before automatically switching back in to A state. Zero means no time limit.
      *
      * @return an integer
@@ -369,7 +369,7 @@ var YRelay; // definition below
     }
 
     /**
-     * Retourne the maximum time (ms) allowed for $THEFUNCTIONS$ to stay in state B
+     * Retourne the maximum time (ms) allowed for the relay to stay in state B
      * before automatically switching back in to A state. Zero means no time limit.
      *
      * @param callback : callback function that is invoked when the result is known.
@@ -402,13 +402,13 @@ var YRelay; // definition below
     }
 
     /**
-     * Changes the maximum time (ms) allowed for $THEFUNCTIONS$ to stay in state B before
+     * Changes the maximum time (ms) allowed for the relay to stay in state B before
      * automatically switching back in to A state. Use zero for no time limit.
      * Remember to call the saveToFlash()
      * method of the module if the modification must be kept.
      *
-     * @param newval : an integer corresponding to the maximum time (ms) allowed for $THEFUNCTIONS$ to
-     * stay in state B before
+     * @param newval : an integer corresponding to the maximum time (ms) allowed for the relay to stay in
+     * state B before
      *         automatically switching back in to A state
      *
      * @return YAPI_SUCCESS if the call succeeds.
@@ -712,7 +712,7 @@ var YRelay; // definition below
      * call registerHub() at application initialization time.
      *
      * @param func : a string that uniquely characterizes the relay, for instance
-     *         RELAYHI3.relay1.
+     *         MXCOUPL2.relay1.
      *
      * @return a YRelay object allowing you to drive the relay.
      */
@@ -903,7 +903,7 @@ var YRelay; // definition below
  * call registerHub() at application initialization time.
  *
  * @param func : a string that uniquely characterizes the relay, for instance
- *         RELAYHI3.relay1.
+ *         MXCOUPL2.relay1.
  *
  * @return a YRelay object allowing you to drive the relay.
  */

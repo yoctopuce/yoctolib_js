@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_power.js 37827 2019-10-25 13:07:48Z mvuilleu $
+ *  $Id: yocto_power.js 38899 2019-12-20 17:21:03Z mvuilleu $
  *
  *  Implements the high-level API for Power functions
  *
@@ -49,12 +49,11 @@ var Y_METERTIMER_INVALID            = YAPI_INVALID_UINT;
 
 //--- (YPower class start)
 /**
- * YPower Class: Power function interface
+ * YPower Class: electrical power sensor control interface, available for instance in the Yocto-Watt
  *
- * The YPower class allows you to read and configure Yoctopuce power
- * sensors, for instance using a Yocto-Watt. It inherits from YSensor class the core functions to read
- * measurements,
- * to register callback functions, to access the autonomous datalogger.
+ * The YPower class allows you to read and configure Yoctopuce electrical power sensors.
+ * It inherits from YSensor class the core functions to read measurements,
+ * to register callback functions, and to access the autonomous datalogger.
  * This class adds the ability to access the energy counter and the power factor.
  */
 //--- (end of YPower class start)

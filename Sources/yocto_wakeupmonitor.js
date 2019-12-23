@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_wakeupmonitor.js 38030 2019-11-04 17:56:01Z mvuilleu $
+ *  $Id: yocto_wakeupmonitor.js 38899 2019-12-20 17:21:03Z mvuilleu $
  *
  *  Implements the high-level API for WakeUpMonitor functions
  *
@@ -60,11 +60,11 @@ var Y_RTCTIME_INVALID               = YAPI_INVALID_LONG;
 
 //--- (YWakeUpMonitor class start)
 /**
- * YWakeUpMonitor Class: WakeUpMonitor function interface
+ * YWakeUpMonitor Class: wake-up monitor control interface, available for instance in the
+ * YoctoHub-GSM-3G-EU, the YoctoHub-GSM-3G-NA, the YoctoHub-Wireless-SR or the YoctoHub-Wireless-g
  *
  * The YWakeUpMonitor class handles globally all wake-up sources, as well
- * as automated sleep mode, for instance using a YoctoHub-Wireless-g, a YoctoHub-GSM-3G-NA, a
- * YoctoHub-GSM-3G-EU or a YoctoHub-Wireless-SR.
+ * as automated sleep mode.
  */
 //--- (end of YWakeUpMonitor class start)
 
@@ -472,7 +472,7 @@ var YWakeUpMonitor; // definition below
     }
 
     /**
-     * Retrieves a monitor for a given identifier.
+     * Retrieves a wake-up monitor for a given identifier.
      * The identifier can be specified using several formats:
      * <ul>
      * <li>FunctionLogicalName</li>
@@ -482,11 +482,11 @@ var YWakeUpMonitor; // definition below
      * <li>ModuleLogicalName.FunctionLogicalName</li>
      * </ul>
      *
-     * This function does not require that the monitor is online at the time
+     * This function does not require that the wake-up monitor is online at the time
      * it is invoked. The returned object is nevertheless valid.
-     * Use the method YWakeUpMonitor.isOnline() to test if the monitor is
+     * Use the method YWakeUpMonitor.isOnline() to test if the wake-up monitor is
      * indeed online at a given time. In case of ambiguity when looking for
-     * a monitor by logical name, no error is notified: the first instance
+     * a wake-up monitor by logical name, no error is notified: the first instance
      * found is returned. The search is performed first by hardware name,
      * then by logical name.
      *
@@ -494,10 +494,10 @@ var YWakeUpMonitor; // definition below
      * you are certain that the matching device is plugged, make sure that you did
      * call registerHub() at application initialization time.
      *
-     * @param func : a string that uniquely characterizes the monitor, for instance
-     *         YHUBWLN3.wakeUpMonitor.
+     * @param func : a string that uniquely characterizes the wake-up monitor, for instance
+     *         YHUBGSM3.wakeUpMonitor.
      *
-     * @return a YWakeUpMonitor object allowing you to drive the monitor.
+     * @return a YWakeUpMonitor object allowing you to drive the wake-up monitor.
      */
     function YWakeUpMonitor_FindWakeUpMonitor(func)             // class method
     {
@@ -602,14 +602,14 @@ var YWakeUpMonitor; // definition below
     }
 
     /**
-     * Continues the enumeration of monitors started using yFirstWakeUpMonitor().
-     * Caution: You can't make any assumption about the returned monitors order.
-     * If you want to find a specific a monitor, use WakeUpMonitor.findWakeUpMonitor()
+     * Continues the enumeration of wake-up monitors started using yFirstWakeUpMonitor().
+     * Caution: You can't make any assumption about the returned wake-up monitors order.
+     * If you want to find a specific a wake-up monitor, use WakeUpMonitor.findWakeUpMonitor()
      * and a hardwareID or a logical name.
      *
      * @return a pointer to a YWakeUpMonitor object, corresponding to
-     *         a monitor currently online, or a null pointer
-     *         if there are no more monitors to enumerate.
+     *         a wake-up monitor currently online, or a null pointer
+     *         if there are no more wake-up monitors to enumerate.
      */
     function YWakeUpMonitor_nextWakeUpMonitor()
     {   var resolve = YAPI.resolveFunction(this._className, this._func);
@@ -620,12 +620,12 @@ var YWakeUpMonitor; // definition below
     }
 
     /**
-     * Starts the enumeration of monitors currently accessible.
+     * Starts the enumeration of wake-up monitors currently accessible.
      * Use the method YWakeUpMonitor.nextWakeUpMonitor() to iterate on
-     * next monitors.
+     * next wake-up monitors.
      *
      * @return a pointer to a YWakeUpMonitor object, corresponding to
-     *         the first monitor currently online, or a null pointer
+     *         the first wake-up monitor currently online, or a null pointer
      *         if there are none.
      */
     function YWakeUpMonitor_FirstWakeUpMonitor()
@@ -706,7 +706,7 @@ var YWakeUpMonitor; // definition below
 //--- (YWakeUpMonitor functions)
 
 /**
- * Retrieves a monitor for a given identifier.
+ * Retrieves a wake-up monitor for a given identifier.
  * The identifier can be specified using several formats:
  * <ul>
  * <li>FunctionLogicalName</li>
@@ -716,11 +716,11 @@ var YWakeUpMonitor; // definition below
  * <li>ModuleLogicalName.FunctionLogicalName</li>
  * </ul>
  *
- * This function does not require that the monitor is online at the time
+ * This function does not require that the wake-up monitor is online at the time
  * it is invoked. The returned object is nevertheless valid.
- * Use the method YWakeUpMonitor.isOnline() to test if the monitor is
+ * Use the method YWakeUpMonitor.isOnline() to test if the wake-up monitor is
  * indeed online at a given time. In case of ambiguity when looking for
- * a monitor by logical name, no error is notified: the first instance
+ * a wake-up monitor by logical name, no error is notified: the first instance
  * found is returned. The search is performed first by hardware name,
  * then by logical name.
  *
@@ -728,10 +728,10 @@ var YWakeUpMonitor; // definition below
  * you are certain that the matching device is plugged, make sure that you did
  * call registerHub() at application initialization time.
  *
- * @param func : a string that uniquely characterizes the monitor, for instance
- *         YHUBWLN3.wakeUpMonitor.
+ * @param func : a string that uniquely characterizes the wake-up monitor, for instance
+ *         YHUBGSM3.wakeUpMonitor.
  *
- * @return a YWakeUpMonitor object allowing you to drive the monitor.
+ * @return a YWakeUpMonitor object allowing you to drive the wake-up monitor.
  */
 function yFindWakeUpMonitor(func)
 {
@@ -739,12 +739,12 @@ function yFindWakeUpMonitor(func)
 }
 
 /**
- * Starts the enumeration of monitors currently accessible.
+ * Starts the enumeration of wake-up monitors currently accessible.
  * Use the method YWakeUpMonitor.nextWakeUpMonitor() to iterate on
- * next monitors.
+ * next wake-up monitors.
  *
  * @return a pointer to a YWakeUpMonitor object, corresponding to
- *         the first monitor currently online, or a null pointer
+ *         the first wake-up monitor currently online, or a null pointer
  *         if there are none.
  */
 function yFirstWakeUpMonitor()

@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_genericsensor.js 37827 2019-10-25 13:07:48Z mvuilleu $
+ *  $Id: yocto_genericsensor.js 38899 2019-12-20 17:21:03Z mvuilleu $
  *
  *  Implements the high-level API for GenericSensor functions
  *
@@ -60,11 +60,11 @@ var Y_SIGNALBIAS_INVALID            = YAPI_INVALID_DOUBLE;
 
 //--- (YGenericSensor class start)
 /**
- * YGenericSensor Class: GenericSensor function interface
+ * YGenericSensor Class: GenericSensor control interface, available for instance in the
+ * Yocto-0-10V-Rx, the Yocto-4-20mA-Rx, the Yocto-RS232 or the Yocto-milliVolt-Rx
  *
  * The YGenericSensor class allows you to read and configure Yoctopuce signal
- * transducers, for instance using a Yocto-4-20mA-Rx, a Yocto-0-10V-Rx, a Yocto-milliVolt-Rx or a
- * Yocto-RS232. It inherits from YSensor class the core functions to read measurements,
+ * transducers. It inherits from YSensor class the core functions to read measurements,
  * to register callback functions, to access the autonomous datalogger.
  * This class adds the ability to configure the automatic conversion between the
  * measured signal and the corresponding engineering unit.
@@ -650,7 +650,7 @@ var YGenericSensor; // definition below
      * call registerHub() at application initialization time.
      *
      * @param func : a string that uniquely characterizes the generic sensor, for instance
-     *         RX420MA1.genericSensor1.
+     *         RX010V01.genericSensor1.
      *
      * @return a YGenericSensor object allowing you to drive the generic sensor.
      */
@@ -815,7 +815,7 @@ var YGenericSensor; // definition below
  * call registerHub() at application initialization time.
  *
  * @param func : a string that uniquely characterizes the generic sensor, for instance
- *         RX420MA1.genericSensor1.
+ *         RX010V01.genericSensor1.
  *
  * @return a YGenericSensor object allowing you to drive the generic sensor.
  */

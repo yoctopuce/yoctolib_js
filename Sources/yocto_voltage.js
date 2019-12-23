@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_voltage.js 37827 2019-10-25 13:07:48Z mvuilleu $
+ *  $Id: yocto_voltage.js 38899 2019-12-20 17:21:03Z mvuilleu $
  *
  *  Implements the high-level API for Voltage functions
  *
@@ -49,12 +49,12 @@ var Y_ENABLED_INVALID               = -1;
 
 //--- (YVoltage class start)
 /**
- * YVoltage Class: Voltage function interface
+ * YVoltage Class: voltage sensor control interface, available for instance in the Yocto-Motor-DC, the
+ * Yocto-Volt or the Yocto-Watt
  *
- * The YVoltage class allows you to read and configure Yoctopuce voltage
- * sensors, for instance using a Yocto-Watt, a Yocto-Volt or a Yocto-Motor-DC. It inherits from
- * YSensor class the core functions to read measurements,
- * to register callback functions, to access the autonomous datalogger.
+ * The YVoltage class allows you to read and configure Yoctopuce voltage sensors.
+ * It inherits from YSensor class the core functions to read measurements,
+ * to register callback functions, and to access the autonomous datalogger.
  */
 //--- (end of YVoltage class start)
 
@@ -180,7 +180,7 @@ var YVoltage; // definition below
      * call registerHub() at application initialization time.
      *
      * @param func : a string that uniquely characterizes the voltage sensor, for instance
-     *         YWATTMK1.voltage1.
+     *         MOTORCTL.voltage.
      *
      * @return a YVoltage object allowing you to drive the voltage sensor.
      */
@@ -281,7 +281,7 @@ var YVoltage; // definition below
  * call registerHub() at application initialization time.
  *
  * @param func : a string that uniquely characterizes the voltage sensor, for instance
- *         YWATTMK1.voltage1.
+ *         MOTORCTL.voltage.
  *
  * @return a YVoltage object allowing you to drive the voltage sensor.
  */
