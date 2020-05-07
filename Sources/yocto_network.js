@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_network.js 38899 2019-12-20 17:21:03Z mvuilleu $
+ *  $Id: yocto_network.js 39573 2020-03-10 17:20:22Z seb $
  *
  *  Implements the high-level API for Network functions
  *
@@ -67,6 +67,7 @@ var Y_CALLBACKENCODING_INFLUXDB     = 8;
 var Y_CALLBACKENCODING_MQTT         = 9;
 var Y_CALLBACKENCODING_YOCTO_API_JZON = 10;
 var Y_CALLBACKENCODING_PRTG         = 11;
+var Y_CALLBACKENCODING_INFLUXDB_V2  = 12;
 var Y_CALLBACKENCODING_INVALID      = -1;
 var Y_MACADDRESS_INVALID            = YAPI_INVALID_STRING;
 var Y_IPADDRESS_INVALID             = YAPI_INVALID_STRING;
@@ -1380,8 +1381,9 @@ var YNetwork; // definition below
      * @return a value among Y_CALLBACKENCODING_FORM, Y_CALLBACKENCODING_JSON,
      * Y_CALLBACKENCODING_JSON_ARRAY, Y_CALLBACKENCODING_CSV, Y_CALLBACKENCODING_YOCTO_API,
      * Y_CALLBACKENCODING_JSON_NUM, Y_CALLBACKENCODING_EMONCMS, Y_CALLBACKENCODING_AZURE,
-     * Y_CALLBACKENCODING_INFLUXDB, Y_CALLBACKENCODING_MQTT, Y_CALLBACKENCODING_YOCTO_API_JZON and
-     * Y_CALLBACKENCODING_PRTG corresponding to the encoding standard to use for representing notification values
+     * Y_CALLBACKENCODING_INFLUXDB, Y_CALLBACKENCODING_MQTT, Y_CALLBACKENCODING_YOCTO_API_JZON,
+     * Y_CALLBACKENCODING_PRTG and Y_CALLBACKENCODING_INFLUXDB_V2 corresponding to the encoding standard
+     * to use for representing notification values
      *
      * On failure, throws an exception or returns Y_CALLBACKENCODING_INVALID.
      */
@@ -1407,8 +1409,9 @@ var YNetwork; // definition below
      *         - the result:a value among Y_CALLBACKENCODING_FORM, Y_CALLBACKENCODING_JSON,
      *         Y_CALLBACKENCODING_JSON_ARRAY, Y_CALLBACKENCODING_CSV, Y_CALLBACKENCODING_YOCTO_API,
      *         Y_CALLBACKENCODING_JSON_NUM, Y_CALLBACKENCODING_EMONCMS, Y_CALLBACKENCODING_AZURE,
-     *         Y_CALLBACKENCODING_INFLUXDB, Y_CALLBACKENCODING_MQTT, Y_CALLBACKENCODING_YOCTO_API_JZON and
-     *         Y_CALLBACKENCODING_PRTG corresponding to the encoding standard to use for representing notification values
+     *         Y_CALLBACKENCODING_INFLUXDB, Y_CALLBACKENCODING_MQTT, Y_CALLBACKENCODING_YOCTO_API_JZON,
+     *         Y_CALLBACKENCODING_PRTG and Y_CALLBACKENCODING_INFLUXDB_V2 corresponding to the encoding standard
+     *         to use for representing notification values
      * @param context : user-specific object that is passed as-is to the callback function
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
@@ -1441,8 +1444,9 @@ var YNetwork; // definition below
      * @param newval : a value among Y_CALLBACKENCODING_FORM, Y_CALLBACKENCODING_JSON,
      * Y_CALLBACKENCODING_JSON_ARRAY, Y_CALLBACKENCODING_CSV, Y_CALLBACKENCODING_YOCTO_API,
      * Y_CALLBACKENCODING_JSON_NUM, Y_CALLBACKENCODING_EMONCMS, Y_CALLBACKENCODING_AZURE,
-     * Y_CALLBACKENCODING_INFLUXDB, Y_CALLBACKENCODING_MQTT, Y_CALLBACKENCODING_YOCTO_API_JZON and
-     * Y_CALLBACKENCODING_PRTG corresponding to the encoding standard to use for representing notification values
+     * Y_CALLBACKENCODING_INFLUXDB, Y_CALLBACKENCODING_MQTT, Y_CALLBACKENCODING_YOCTO_API_JZON,
+     * Y_CALLBACKENCODING_PRTG and Y_CALLBACKENCODING_INFLUXDB_V2 corresponding to the encoding standard
+     * to use for representing notification values
      *
      * @return YAPI_SUCCESS if the call succeeds.
      *
@@ -2099,6 +2103,7 @@ var YNetwork; // definition below
         CALLBACKENCODING_MQTT       : 9,
         CALLBACKENCODING_YOCTO_API_JZON : 10,
         CALLBACKENCODING_PRTG       : 11,
+        CALLBACKENCODING_INFLUXDB_V2 : 12,
         CALLBACKENCODING_INVALID    : -1,
         CALLBACKCREDENTIALS_INVALID : YAPI_INVALID_STRING,
         CALLBACKINITIALDELAY_INVALID : YAPI_INVALID_UINT,

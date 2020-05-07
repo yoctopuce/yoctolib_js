@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_spiport.js 38899 2019-12-20 17:21:03Z mvuilleu $
+ *  $Id: yocto_spiport.js 40298 2020-05-05 08:37:49Z seb $
  *
  *  Implements the high-level API for SpiPort functions
  *
@@ -1354,6 +1354,44 @@ var YSpiPort; // definition below
     }
 
     /**
+     * Sends a binary message to the serial port, and reads the reply, if any.
+     * This function is intended to be used when the serial port is configured for
+     * Frame-based protocol.
+     *
+     * @param hexString : the message to send, coded in hexadecimal
+     * @param maxWait : the maximum number of milliseconds to wait for a reply.
+     *
+     * @return the next frame received after sending the message, as a hex string.
+     *         Additional frames can be obtained by calling readHex or readMessages.
+     *
+     * On failure, throws an exception or returns an empty string.
+     */
+    function YSpiPort_queryHex(hexString,maxWait)
+    {
+        var url;                    // str;
+        var msgbin;                 // bin;
+        var msgarr = [];            // strArr;
+        var msglen;                 // int;
+        var res;                    // str;
+
+        url = "rxmsg.json?len=1&maxw="+String(Math.round(maxWait))+"&cmd=$"+hexString;
+        msgbin = this._download(url);
+        msgarr = this._json_get_array(msgbin);
+        msglen = msgarr.length;
+        if (msglen == 0) {
+            return "";
+        }
+        // last element of array is the new position
+        msglen = msglen - 1;
+        this._rxptr = YAPI._atoi(msgarr[msglen]);
+        if (msglen == 0) {
+            return "";
+        }
+        res = this._json_get_string(msgarr[0]);
+        return res;
+    }
+
+    /**
      * Saves the job definition string (JSON data) into a job file.
      * The job file can be later enabled using selectJob().
      *
@@ -1978,6 +2016,7 @@ var YSpiPort; // definition below
         read_tell                   : YSpiPort_read_tell,
         read_avail                  : YSpiPort_read_avail,
         queryLine                   : YSpiPort_queryLine,
+        queryHex                    : YSpiPort_queryHex,
         uploadJob                   : YSpiPort_uploadJob,
         selectJob                   : YSpiPort_selectJob,
         reset                       : YSpiPort_reset,

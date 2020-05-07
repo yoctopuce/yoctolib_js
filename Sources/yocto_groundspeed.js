@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_groundspeed.js 38899 2019-12-20 17:21:03Z mvuilleu $
+ *  $Id: yocto_groundspeed.js 39658 2020-03-12 15:36:29Z seb $
  *
  *  Implements the high-level API for GroundSpeed functions
  *
@@ -46,7 +46,7 @@ if(typeof YAPI == "undefined") { if(typeof yAPI != "undefined") window["YAPI"]=y
 
 //--- (YGroundSpeed class start)
 /**
- * YGroundSpeed Class: ground speed sensor control interface, available for instance in the Yocto-GPS
+ * YGroundSpeed Class: ground speed sensor control interface, available for instance in the Yocto-GPS-V2
  *
  * The YGroundSpeed class allows you to read and configure Yoctopuce ground speed sensors.
  * It inherits from YSensor class the core functions to read measurements,
@@ -93,7 +93,7 @@ var YGroundSpeed; // definition below
      * call registerHub() at application initialization time.
      *
      * @param func : a string that uniquely characterizes the ground speed sensor, for instance
-     *         YGNSSMK1.groundSpeed.
+     *         YGNSSMK2.groundSpeed.
      *
      * @return a YGroundSpeed object allowing you to drive the ground speed sensor.
      */
@@ -183,7 +183,7 @@ var YGroundSpeed; // definition below
  * call registerHub() at application initialization time.
  *
  * @param func : a string that uniquely characterizes the ground speed sensor, for instance
- *         YGNSSMK1.groundSpeed.
+ *         YGNSSMK2.groundSpeed.
  *
  * @return a YGroundSpeed object allowing you to drive the ground speed sensor.
  */

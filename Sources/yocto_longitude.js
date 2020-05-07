@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_longitude.js 38899 2019-12-20 17:21:03Z mvuilleu $
+ *  $Id: yocto_longitude.js 39658 2020-03-12 15:36:29Z seb $
  *
  *  Implements the high-level API for Longitude functions
  *
@@ -46,7 +46,7 @@ if(typeof YAPI == "undefined") { if(typeof yAPI != "undefined") window["YAPI"]=y
 
 //--- (YLongitude class start)
 /**
- * YLongitude Class: longitude sensor control interface, available for instance in the Yocto-GPS
+ * YLongitude Class: longitude sensor control interface, available for instance in the Yocto-GPS-V2
  *
  * The YLongitude class allows you to read and configure Yoctopuce longitude sensors.
  * It inherits from YSensor class the core functions to read measurements,
@@ -93,7 +93,7 @@ var YLongitude; // definition below
      * call registerHub() at application initialization time.
      *
      * @param func : a string that uniquely characterizes the longitude sensor, for instance
-     *         YGNSSMK1.longitude.
+     *         YGNSSMK2.longitude.
      *
      * @return a YLongitude object allowing you to drive the longitude sensor.
      */
@@ -183,7 +183,7 @@ var YLongitude; // definition below
  * call registerHub() at application initialization time.
  *
  * @param func : a string that uniquely characterizes the longitude sensor, for instance
- *         YGNSSMK1.longitude.
+ *         YGNSSMK2.longitude.
  *
  * @return a YLongitude object allowing you to drive the longitude sensor.
  */

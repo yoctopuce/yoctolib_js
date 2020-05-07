@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_cellular.js 38899 2019-12-20 17:21:03Z mvuilleu $
+ * $Id: yocto_cellular.js 40298 2020-05-05 08:37:49Z seb $
  *
  * Implements the high-level API for Cellular functions
  *
@@ -189,6 +189,9 @@ var Y_CELLTYPE_WCDMA                = 2;
 var Y_CELLTYPE_HSDPA                = 3;
 var Y_CELLTYPE_NONE                 = 4;
 var Y_CELLTYPE_CDMA                 = 5;
+var Y_CELLTYPE_LTE_M                = 6;
+var Y_CELLTYPE_NB_IOT               = 7;
+var Y_CELLTYPE_EC_GSM_IOT           = 8;
 var Y_CELLTYPE_INVALID              = -1;
 var Y_AIRPLANEMODE_OFF              = 0;
 var Y_AIRPLANEMODE_ON               = 1;
@@ -204,6 +207,7 @@ var Y_CELLIDENTIFIER_INVALID        = YAPI_INVALID_STRING;
 var Y_IMSI_INVALID                  = YAPI_INVALID_STRING;
 var Y_MESSAGE_INVALID               = YAPI_INVALID_STRING;
 var Y_PIN_INVALID                   = YAPI_INVALID_STRING;
+var Y_RADIOCONFIG_INVALID           = YAPI_INVALID_STRING;
 var Y_LOCKEDOPERATOR_INVALID        = YAPI_INVALID_STRING;
 var Y_APN_INVALID                   = YAPI_INVALID_STRING;
 var Y_APNSECRET_INVALID             = YAPI_INVALID_STRING;
@@ -241,6 +245,7 @@ var YCellular; // definition below
         this._imsi                           = Y_IMSI_INVALID;             // IMSI
         this._message                        = Y_MESSAGE_INVALID;          // YFSText
         this._pin                            = Y_PIN_INVALID;              // PinPassword
+        this._radioConfig                    = Y_RADIOCONFIG_INVALID;      // RadioConfig
         this._lockedOperator                 = Y_LOCKEDOPERATOR_INVALID;   // Text
         this._airplaneMode                   = Y_AIRPLANEMODE_INVALID;     // OnOff
         this._enableData                     = Y_ENABLEDATA_INVALID;       // ServiceScope
@@ -278,6 +283,9 @@ var YCellular; // definition below
             return 1;
         case "pin":
             this._pin = val;
+            return 1;
+        case "radioConfig":
+            this._radioConfig = val;
             return 1;
         case "lockedOperator":
             this._lockedOperator = val;
@@ -469,7 +477,7 @@ var YCellular; // definition below
      * Active cellular connection type.
      *
      * @return a value among Y_CELLTYPE_GPRS, Y_CELLTYPE_EGPRS, Y_CELLTYPE_WCDMA, Y_CELLTYPE_HSDPA,
-     * Y_CELLTYPE_NONE and Y_CELLTYPE_CDMA
+     * Y_CELLTYPE_NONE, Y_CELLTYPE_CDMA, Y_CELLTYPE_LTE_M, Y_CELLTYPE_NB_IOT and Y_CELLTYPE_EC_GSM_IOT
      *
      * On failure, throws an exception or returns Y_CELLTYPE_INVALID.
      */
@@ -493,7 +501,7 @@ var YCellular; // definition below
      *         - the user-specific context object
      *         - the YCellular object that invoked the callback
      *         - the result:a value among Y_CELLTYPE_GPRS, Y_CELLTYPE_EGPRS, Y_CELLTYPE_WCDMA, Y_CELLTYPE_HSDPA,
-     *         Y_CELLTYPE_NONE and Y_CELLTYPE_CDMA
+     *         Y_CELLTYPE_NONE, Y_CELLTYPE_CDMA, Y_CELLTYPE_LTE_M, Y_CELLTYPE_NB_IOT and Y_CELLTYPE_EC_GSM_IOT
      * @param context : user-specific object that is passed as-is to the callback function
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
@@ -519,13 +527,13 @@ var YCellular; // definition below
     }
 
     /**
-     * Returns an opaque string if a PIN code has been configured in the device to access
-     * the SIM card, or an empty string if none has been configured or if the code provided
-     * was rejected by the SIM card.
+     * Returns the International Mobile Subscriber Identity (MSI) that uniquely identifies
+     * the SIM card. The first 3 digits represent the mobile country code (MCC), which
+     * is followed by the mobile network code (MNC), either 2-digit (European standard)
+     * or 3-digit (North American standard)
      *
-     * @return a string corresponding to an opaque string if a PIN code has been configured in the device to access
-     *         the SIM card, or an empty string if none has been configured or if the code provided
-     *         was rejected by the SIM card
+     * @return a string corresponding to the International Mobile Subscriber Identity (MSI) that uniquely identifies
+     *         the SIM card
      *
      * On failure, throws an exception or returns Y_IMSI_INVALID.
      */
@@ -542,18 +550,18 @@ var YCellular; // definition below
     }
 
     /**
-     * Gets an opaque string if a PIN code has been configured in the device to access
-     * the SIM card, or an empty string if none has been configured or if the code provided
-     * was rejected by the SIM card.
+     * Gets the International Mobile Subscriber Identity (MSI) that uniquely identifies
+     * the SIM card. The first 3 digits represent the mobile country code (MCC), which
+     * is followed by the mobile network code (MNC), either 2-digit (European standard)
+     * or 3-digit (North American standard)
      *
      * @param callback : callback function that is invoked when the result is known.
      *         The callback function receives three arguments:
      *         - the user-specific context object
      *         - the YCellular object that invoked the callback
-     *         - the result:a string corresponding to an opaque string if a PIN code has been configured in the
-     *         device to access
-     *         the SIM card, or an empty string if none has been configured or if the code provided
-     *         was rejected by the SIM card
+     *         - the result:a string corresponding to the International Mobile Subscriber Identity (MSI) that
+     *         uniquely identifies
+     *         the SIM card
      * @param context : user-specific object that is passed as-is to the callback function
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
@@ -712,6 +720,88 @@ var YCellular; // definition below
     {   var rest_val;
         rest_val = newval;
         return this._setAttr('pin',rest_val);
+    }
+
+    /**
+     * Returns the type of protocol used over the serial line, as a string.
+     * Possible values are "Line" for ASCII messages separated by CR and/or LF,
+     * "Frame:[timeout]ms" for binary messages separated by a delay time,
+     * "Char" for a continuous ASCII stream or
+     * "Byte" for a continuous binary stream.
+     *
+     * @return a string corresponding to the type of protocol used over the serial line, as a string
+     *
+     * On failure, throws an exception or returns Y_RADIOCONFIG_INVALID.
+     */
+    function YCellular_get_radioConfig()
+    {
+        var res;                    // string;
+        if (this._cacheExpiration <= YAPI.GetTickCount()) {
+            if (this.load(YAPI.defaultCacheValidity) != YAPI_SUCCESS) {
+                return Y_RADIOCONFIG_INVALID;
+            }
+        }
+        res = this._radioConfig;
+        return res;
+    }
+
+    /**
+     * Gets the type of protocol used over the serial line, as a string.
+     * Possible values are "Line" for ASCII messages separated by CR and/or LF,
+     * "Frame:[timeout]ms" for binary messages separated by a delay time,
+     * "Char" for a continuous ASCII stream or
+     * "Byte" for a continuous binary stream.
+     *
+     * @param callback : callback function that is invoked when the result is known.
+     *         The callback function receives three arguments:
+     *         - the user-specific context object
+     *         - the YCellular object that invoked the callback
+     *         - the result:a string corresponding to the type of protocol used over the serial line, as a string
+     * @param context : user-specific object that is passed as-is to the callback function
+     *
+     * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
+     *
+     * On failure, throws an exception or returns Y_RADIOCONFIG_INVALID.
+     */
+    function YCellular_get_radioConfig_async(callback,context)
+    {
+        var res;                    // string;
+        var loadcb;                 // func;
+        loadcb = function(ctx,obj,res) {
+            if (res != YAPI_SUCCESS) {
+                callback(context, obj, Y_RADIOCONFIG_INVALID);
+            } else {
+                callback(context, obj, obj._radioConfig);
+            }
+        };
+        if (this._cacheExpiration <= YAPI.GetTickCount()) {
+            this.load_async(YAPI.defaultCacheValidity,loadcb,null);
+        } else {
+            loadcb(null, this, YAPI_SUCCESS);
+        }
+    }
+
+    /**
+     * Changes the type of protocol used over the serial line.
+     * Possible values are "Line" for ASCII messages separated by CR and/or LF,
+     * "Frame:[timeout]ms" for binary messages separated by a delay time,
+     * "Char" for a continuous ASCII stream or
+     * "Byte" for a continuous binary stream.
+     * The suffix "/[wait]ms" can be added to reduce the transmit rate so that there
+     * is always at lest the specified number of milliseconds between each bytes sent.
+     * Remember to call the saveToFlash() method of the module if the
+     * modification must be kept.
+     *
+     * @param newval : a string corresponding to the type of protocol used over the serial line
+     *
+     * @return YAPI_SUCCESS if the call succeeds.
+     *
+     * On failure, throws an exception or returns a negative error code.
+     */
+    function YCellular_set_radioConfig(newval)
+    {   var rest_val;
+        rest_val = newval;
+        return this._setAttr('radioConfig',rest_val);
     }
 
     /**
@@ -1853,10 +1943,14 @@ var YCellular; // definition below
         CELLTYPE_HSDPA              : 3,
         CELLTYPE_NONE               : 4,
         CELLTYPE_CDMA               : 5,
+        CELLTYPE_LTE_M              : 6,
+        CELLTYPE_NB_IOT             : 7,
+        CELLTYPE_EC_GSM_IOT         : 8,
         CELLTYPE_INVALID            : -1,
         IMSI_INVALID                : YAPI_INVALID_STRING,
         MESSAGE_INVALID             : YAPI_INVALID_STRING,
         PIN_INVALID                 : YAPI_INVALID_STRING,
+        RADIOCONFIG_INVALID         : YAPI_INVALID_STRING,
         LOCKEDOPERATOR_INVALID      : YAPI_INVALID_STRING,
         AIRPLANEMODE_OFF            : 0,
         AIRPLANEMODE_ON             : 1,
@@ -1908,6 +2002,12 @@ var YCellular; // definition below
         pin_async                   : YCellular_get_pin_async,
         set_pin                     : YCellular_set_pin,
         setPin                      : YCellular_set_pin,
+        get_radioConfig             : YCellular_get_radioConfig,
+        radioConfig                 : YCellular_get_radioConfig,
+        get_radioConfig_async       : YCellular_get_radioConfig_async,
+        radioConfig_async           : YCellular_get_radioConfig_async,
+        set_radioConfig             : YCellular_set_radioConfig,
+        setRadioConfig              : YCellular_set_radioConfig,
         get_lockedOperator          : YCellular_get_lockedOperator,
         lockedOperator              : YCellular_get_lockedOperator,
         get_lockedOperator_async    : YCellular_get_lockedOperator_async,

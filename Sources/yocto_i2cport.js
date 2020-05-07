@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_i2cport.js 38913 2019-12-20 18:59:49Z mvuilleu $
+ *  $Id: yocto_i2cport.js 39333 2020-01-30 10:05:40Z mvuilleu $
  *
  *  Implements the high-level API for I2cPort functions
  *
@@ -895,13 +895,13 @@ var YI2cPort; // definition below
     }
 
     /**
-     * Returns the SPI port communication parameters, as a string such as
+     * Returns the I2C port communication parameters, as a string such as
      * "400kbps,2000ms,NoRestart". The string includes the baud rate, the
      * recovery delay after communications errors, and if needed the option
      * NoRestart to use a Stop/Start sequence instead of the
      * Restart state when performing read on the I2C bus.
      *
-     * @return a string corresponding to the SPI port communication parameters, as a string such as
+     * @return a string corresponding to the I2C port communication parameters, as a string such as
      *         "400kbps,2000ms,NoRestart"
      *
      * On failure, throws an exception or returns Y_I2CMODE_INVALID.
@@ -919,7 +919,7 @@ var YI2cPort; // definition below
     }
 
     /**
-     * Gets the SPI port communication parameters, as a string such as
+     * Gets the I2C port communication parameters, as a string such as
      * "400kbps,2000ms,NoRestart". The string includes the baud rate, the
      * recovery delay after communications errors, and if needed the option
      * NoRestart to use a Stop/Start sequence instead of the
@@ -929,7 +929,7 @@ var YI2cPort; // definition below
      *         The callback function receives three arguments:
      *         - the user-specific context object
      *         - the YI2cPort object that invoked the callback
-     *         - the result:a string corresponding to the SPI port communication parameters, as a string such as
+     *         - the result:a string corresponding to the I2C port communication parameters, as a string such as
      *         "400kbps,2000ms,NoRestart"
      * @param context : user-specific object that is passed as-is to the callback function
      *
@@ -956,7 +956,7 @@ var YI2cPort; // definition below
     }
 
     /**
-     * Changes the SPI port communication parameters, with a string such as
+     * Changes the I2C port communication parameters, with a string such as
      * "400kbps,2000ms". The string includes the baud rate, the
      * recovery delay after communications errors, and if needed the option
      * NoRestart to use a Stop/Start sequence instead of the
@@ -964,7 +964,7 @@ var YI2cPort; // definition below
      * Remember to call the saveToFlash() method of the module if the
      * modification must be kept.
      *
-     * @param newval : a string corresponding to the SPI port communication parameters, with a string such as
+     * @param newval : a string corresponding to the I2C port communication parameters, with a string such as
      *         "400kbps,2000ms"
      *
      * @return YAPI_SUCCESS if the call succeeds.
@@ -1174,6 +1174,44 @@ var YI2cPort; // definition below
         var res;                    // str;
 
         url = "rxmsg.json?len=1&maxw="+String(Math.round(maxWait))+"&cmd=!"+this._escapeAttr(query);
+        msgbin = this._download(url);
+        msgarr = this._json_get_array(msgbin);
+        msglen = msgarr.length;
+        if (msglen == 0) {
+            return "";
+        }
+        // last element of array is the new position
+        msglen = msglen - 1;
+        this._rxptr = YAPI._atoi(msgarr[msglen]);
+        if (msglen == 0) {
+            return "";
+        }
+        res = this._json_get_string(msgarr[0]);
+        return res;
+    }
+
+    /**
+     * Sends a binary message to the serial port, and reads the reply, if any.
+     * This function is intended to be used when the serial port is configured for
+     * Frame-based protocol.
+     *
+     * @param hexString : the message to send, coded in hexadecimal
+     * @param maxWait : the maximum number of milliseconds to wait for a reply.
+     *
+     * @return the next frame received after sending the message, as a hex string.
+     *         Additional frames can be obtained by calling readHex or readMessages.
+     *
+     * On failure, throws an exception or returns an empty string.
+     */
+    function YI2cPort_queryHex(hexString,maxWait)
+    {
+        var url;                    // str;
+        var msgbin;                 // bin;
+        var msgarr = [];            // strArr;
+        var msglen;                 // int;
+        var res;                    // str;
+
+        url = "rxmsg.json?len=1&maxw="+String(Math.round(maxWait))+"&cmd=$"+hexString;
         msgbin = this._download(url);
         msgarr = this._json_get_array(msgbin);
         msglen = msgarr.length;
@@ -1751,6 +1789,7 @@ var YI2cPort; // definition below
         read_tell                   : YI2cPort_read_tell,
         read_avail                  : YI2cPort_read_avail,
         queryLine                   : YI2cPort_queryLine,
+        queryHex                    : YI2cPort_queryHex,
         uploadJob                   : YI2cPort_uploadJob,
         selectJob                   : YI2cPort_selectJob,
         reset                       : YI2cPort_reset,
