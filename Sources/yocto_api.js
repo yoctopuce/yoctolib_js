@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_api.js 38913 2019-12-20 18:59:49Z mvuilleu $
+ * $Id: yocto_api.js 40885 2020-06-09 16:08:09Z seb $
  *
  * High-level programming interface, common to all modules
  *
@@ -2677,7 +2677,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
      */
     function YAPI_GetAPIVersion()
     {
-        return "1.10.40411";
+        return "1.10.40924";
     }
 
     /**
@@ -2707,10 +2707,22 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
     }
 
     /**
-     * Frees dynamically allocated memory blocks used by the Yoctopuce library.
-     * It is generally not required to call this function, unless you
-     * want to free all dynamically allocated memory blocks in order to
-     * track a memory leak for instance.
+     * Waits for all pending communications with Yoctopuce devices to be
+     * completed then frees dynamically allocated resources used by
+     * the Yoctopuce library.
+     *
+     * From an operating system standpoint, it is generally not required to call
+     * this function since the OS will automatically free allocated resources
+     * once your program is completed. However there are two situations when
+     * you may really want to use that function:
+     *
+     * - Free all dynamically allocated memory blocks in order to
+     * track a memory leak.
+     *
+     * - Send commands to devices right before the end
+     * of the program. Since commands are sent in an asynchronous way
+     * the program could exit before all commands are effectively sent.
+     *
      * You should not call any other library function after calling
      * yFreeAPI(), or your program will crash.
      */
@@ -10550,6 +10562,9 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
         var json_api;               // str;
         var json_files;             // str;
         var json_extra;             // str;
+        var fuperror;               // int;
+        var globalres;              // int;
+        fuperror = 0;
         json = settings;
         json_api = this._get_json_path(json, "api");
         if (json_api == "") {
@@ -10579,11 +10594,19 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
                 name = this._decode_json_string(name);
                 data = this._get_json_path( files[ii], "data");
                 data = this._decode_json_string(data);
-                this._upload(name, YAPI._hexStrToBin(data));
+                if (name == "") {
+                    fuperror = fuperror + 1;
+                } else {
+                    this._upload(name, YAPI._hexStrToBin(data));
+                }
             }
         }
         // Apply settings a second time for file-dependent settings and dynamic sensor nodes
-        return this.set_allSettings(json_api);
+        globalres = this.set_allSettings(json_api);
+        if (!(fuperror == 0)) {
+            return this._throw(YAPI_IO_ERROR,"Error during file upload",YAPI_IO_ERROR);
+        }
+        return globalres;
     }
 
     /**
@@ -11545,10 +11568,22 @@ function yInitAPI(mode,errmsg)
 }
 
 /**
- * Frees dynamically allocated memory blocks used by the Yoctopuce library.
- * It is generally not required to call this function, unless you
- * want to free all dynamically allocated memory blocks in order to
- * track a memory leak for instance.
+ * Waits for all pending communications with Yoctopuce devices to be
+ * completed then frees dynamically allocated resources used by
+ * the Yoctopuce library.
+ *
+ * From an operating system standpoint, it is generally not required to call
+ * this function since the OS will automatically free allocated resources
+ * once your program is completed. However there are two situations when
+ * you may really want to use that function:
+ *
+ * - Free all dynamically allocated memory blocks in order to
+ * track a memory leak.
+ *
+ * - Send commands to devices right before the end
+ * of the program. Since commands are sent in an asynchronous way
+ * the program could exit before all commands are effectively sent.
+ *
  * You should not call any other library function after calling
  * yFreeAPI(), or your program will crash.
  */

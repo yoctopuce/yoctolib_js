@@ -3,7 +3,7 @@
 /Documentation/yoctolib-js-FR.pdf (modif:Mon Jul 27 19:10:41 2015 size:4981512)
 /Documentation/yoctolib-js-FR.html (modif:Fri Mar 13 12:11:41 2020 size:1961998)
 /Documentation/yoctolib-js-EN.pdf (modif:Mon Jul 27 19:10:41 2015 size:4878556)
-/Sources/yocto_api.js (modif:Thu May  7 15:17:40 2020 size:489202)
+/Sources/yocto_api.js (modif:Wed Jun 10 12:56:36 2020 size:490570)
 /Sources/yocto_current.js (modif:Fri Dec 20 18:22:37 2019 size:11956)
 /Sources/yocto_display.js (modif:Fri Dec 20 18:22:37 2019 size:76675)
 /Sources/yocto_longitude.js (modif:Thu Mar 12 17:03:27 2020 size:8230)
