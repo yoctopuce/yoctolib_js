@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_serialport.js 40298 2020-05-05 08:37:49Z seb $
+ * $Id: yocto_serialport.js 41171 2020-07-02 17:49:00Z mvuilleu $
  *
  * Implements the high-level API for SerialPort functions
  *
@@ -72,7 +72,7 @@ var Y_SERIALMODE_INVALID            = YAPI_INVALID_STRING;
 
 //--- (generated code: YSnoopingRecord class start)
 /**
- * YSnoopingRecord Class: Intercepted message description, returned by serialPort.snoopMessages method
+ * YSnoopingRecord Class: Intercepted serial message description, returned by serialPort.snoopMessages method
  *
  *
  */
@@ -109,9 +109,9 @@ var YSnoopingRecord; // definition below
     }
 
     /**
-     * Returns the message direction (RX=0 , TX=1) .
+     * Returns the message direction (RX=0, TX=1).
      *
-     * @return the message direction (RX=0 , TX=1) .
+     * @return the message direction (RX=0, TX=1).
      */
     function YSnoopingRecord_get_direction()
     {
@@ -830,6 +830,7 @@ var YSerialPort; // definition below
     /**
      * Returns the type of protocol used over the serial line, as a string.
      * Possible values are "Line" for ASCII messages separated by CR and/or LF,
+     * "StxEtx" for ASCII messages delimited by STX/ETX codes,
      * "Frame:[timeout]ms" for binary messages separated by a delay time,
      * "Modbus-ASCII" for MODBUS messages in ASCII mode,
      * "Modbus-RTU" for MODBUS messages in RTU mode,
@@ -857,6 +858,7 @@ var YSerialPort; // definition below
     /**
      * Gets the type of protocol used over the serial line, as a string.
      * Possible values are "Line" for ASCII messages separated by CR and/or LF,
+     * "StxEtx" for ASCII messages delimited by STX/ETX codes,
      * "Frame:[timeout]ms" for binary messages separated by a delay time,
      * "Modbus-ASCII" for MODBUS messages in ASCII mode,
      * "Modbus-RTU" for MODBUS messages in RTU mode,
@@ -897,6 +899,7 @@ var YSerialPort; // definition below
     /**
      * Changes the type of protocol used over the serial line.
      * Possible values are "Line" for ASCII messages separated by CR and/or LF,
+     * "StxEtx" for ASCII messages delimited by STX/ETX codes,
      * "Frame:[timeout]ms" for binary messages separated by a delay time,
      * "Modbus-ASCII" for MODBUS messages in ASCII mode,
      * "Modbus-RTU" for MODBUS messages in RTU mode,
@@ -1866,6 +1869,24 @@ var YSerialPort; // definition below
     }
 
     /**
+     * Sends an ASCII string to the serial port, preceeded with an STX code and
+     * followed by an ETX code.
+     *
+     * @param text : the text string to send
+     *
+     * @return YAPI_SUCCESS if the call succeeds.
+     *
+     * On failure, throws an exception or returns a negative error code.
+     */
+    function YSerialPort_writeStxEtx(text)
+    {
+        var buff;                   // bin;
+        buff = ""+String.fromCharCode(2)+""+text+""+String.fromCharCode(3);
+        // send string using file upload
+        return this._upload("txdata", buff);
+    }
+
+    /**
      * Sends a MODBUS message (provided as a hexadecimal string) to the serial port.
      * The message must start with the slave address. The MODBUS CRC/LRC is
      * automatically added by the function. This function does not wait for a reply.
@@ -2568,6 +2589,7 @@ var YSerialPort; // definition below
         get_CTS                     : YSerialPort_get_CTS,
         CTS                         : YSerialPort_get_CTS,
         snoopMessages               : YSerialPort_snoopMessages,
+        writeStxEtx                 : YSerialPort_writeStxEtx,
         writeMODBUS                 : YSerialPort_writeMODBUS,
         queryMODBUS                 : YSerialPort_queryMODBUS,
         modbusReadBits              : YSerialPort_modbusReadBits,

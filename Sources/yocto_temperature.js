@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_temperature.js 39648 2020-03-12 13:56:10Z mvuilleu $
+ *  $Id: yocto_temperature.js 42054 2020-10-14 09:46:38Z seb $
  *
  *  Implements the high-level API for Temperature functions
  *
@@ -435,8 +435,8 @@ var YTemperature; // definition below
         var res100;                 // float;
         var tempValues = [];        // floatArr;
         var resValues = [];         // floatArr;
-        t0 = 25.0+275.15;
-        t1 = 100.0+275.15;
+        t0 = 25.0+273.15;
+        t1 = 100.0+273.15;
         res100 = res25 * Math.exp(beta*(1.0/t1 - 1.0/t0));
         tempValues.length = 0;
         resValues.length = 0;

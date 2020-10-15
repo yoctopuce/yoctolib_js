@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_anbutton.js 38899 2019-12-20 17:21:03Z mvuilleu $
+ *  $Id: yocto_anbutton.js 42060 2020-10-14 10:02:12Z seb $
  *
  *  Implements the high-level API for AnButton functions
  *
@@ -48,6 +48,9 @@ var Y_ANALOGCALIBRATION_INVALID     = -1;
 var Y_ISPRESSED_FALSE               = 0;
 var Y_ISPRESSED_TRUE                = 1;
 var Y_ISPRESSED_INVALID             = -1;
+var Y_INPUTTYPE_ANALOG              = 0;
+var Y_INPUTTYPE_DIGITAL4            = 1;
+var Y_INPUTTYPE_INVALID             = -1;
 var Y_CALIBRATEDVALUE_INVALID       = YAPI_INVALID_UINT;
 var Y_RAWVALUE_INVALID              = YAPI_INVALID_UINT;
 var Y_CALIBRATIONMAX_INVALID        = YAPI_INVALID_UINT;
@@ -62,7 +65,7 @@ var Y_PULSETIMER_INVALID            = YAPI_INVALID_LONG;
 //--- (YAnButton class start)
 /**
  * YAnButton Class: analog input control interface, available for instance in the Yocto-Buzzer, the
- * Yocto-Display, the Yocto-Knob or the Yocto-MaxiDisplay
+ * Yocto-Knob, the Yocto-MaxiBuzzer or the Yocto-MaxiDisplay
  *
  * The YAnButton class provide access to basic resistive inputs.
  * Such inputs can be used to measure the state
@@ -95,6 +98,7 @@ var YAnButton; // definition below
         this._lastTimeReleased               = Y_LASTTIMERELEASED_INVALID; // Time
         this._pulseCounter                   = Y_PULSECOUNTER_INVALID;     // UInt
         this._pulseTimer                     = Y_PULSETIMER_INVALID;       // Time
+        this._inputType                      = Y_INPUTTYPE_INVALID;        // InputType
         //--- (end of YAnButton constructor)
     }
 
@@ -135,6 +139,9 @@ var YAnButton; // definition below
             return 1;
         case "pulseTimer":
             this._pulseTimer = parseInt(val);
+            return 1;
+        case "inputType":
+            this._inputType = parseInt(val);
             return 1;
         }
         return _super._parseAttr.call(this, name, val, _super._super);
@@ -807,6 +814,76 @@ var YAnButton; // definition below
     }
 
     /**
+     * Returns the decoding method applied to the input (analog or multiplexed binary switches).
+     *
+     * @return either Y_INPUTTYPE_ANALOG or Y_INPUTTYPE_DIGITAL4, according to the decoding method applied
+     * to the input (analog or multiplexed binary switches)
+     *
+     * On failure, throws an exception or returns Y_INPUTTYPE_INVALID.
+     */
+    function YAnButton_get_inputType()
+    {
+        var res;                    // enumINPUTTYPE;
+        if (this._cacheExpiration <= YAPI.GetTickCount()) {
+            if (this.load(YAPI.defaultCacheValidity) != YAPI_SUCCESS) {
+                return Y_INPUTTYPE_INVALID;
+            }
+        }
+        res = this._inputType;
+        return res;
+    }
+
+    /**
+     * Gets the decoding method applied to the input (analog or multiplexed binary switches).
+     *
+     * @param callback : callback function that is invoked when the result is known.
+     *         The callback function receives three arguments:
+     *         - the user-specific context object
+     *         - the YAnButton object that invoked the callback
+     *         - the result:either Y_INPUTTYPE_ANALOG or Y_INPUTTYPE_DIGITAL4, according to the decoding method
+     *         applied to the input (analog or multiplexed binary switches)
+     * @param context : user-specific object that is passed as-is to the callback function
+     *
+     * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
+     *
+     * On failure, throws an exception or returns Y_INPUTTYPE_INVALID.
+     */
+    function YAnButton_get_inputType_async(callback,context)
+    {
+        var res;                    // enumINPUTTYPE;
+        var loadcb;                 // func;
+        loadcb = function(ctx,obj,res) {
+            if (res != YAPI_SUCCESS) {
+                callback(context, obj, Y_INPUTTYPE_INVALID);
+            } else {
+                callback(context, obj, obj._inputType);
+            }
+        };
+        if (this._cacheExpiration <= YAPI.GetTickCount()) {
+            this.load_async(YAPI.defaultCacheValidity,loadcb,null);
+        } else {
+            loadcb(null, this, YAPI_SUCCESS);
+        }
+    }
+
+    /**
+     * Changes the decoding method applied to the input (analog or multiplexed binary switches).
+     * Remember to call the saveToFlash() method of the module if the modification must be kept.
+     *
+     * @param newval : either Y_INPUTTYPE_ANALOG or Y_INPUTTYPE_DIGITAL4, according to the decoding method
+     * applied to the input (analog or multiplexed binary switches)
+     *
+     * @return YAPI_SUCCESS if the call succeeds.
+     *
+     * On failure, throws an exception or returns a negative error code.
+     */
+    function YAnButton_set_inputType(newval)
+    {   var rest_val;
+        rest_val = String(newval);
+        return this._setAttr('inputType',rest_val);
+    }
+
+    /**
      * Retrieves an analog input for a given identifier.
      * The identifier can be specified using several formats:
      * <ul>
@@ -910,7 +987,10 @@ var YAnButton; // definition below
         LASTTIMEPRESSED_INVALID     : YAPI_INVALID_LONG,
         LASTTIMERELEASED_INVALID    : YAPI_INVALID_LONG,
         PULSECOUNTER_INVALID        : YAPI_INVALID_LONG,
-        PULSETIMER_INVALID          : YAPI_INVALID_LONG
+        PULSETIMER_INVALID          : YAPI_INVALID_LONG,
+        INPUTTYPE_ANALOG            : 0,
+        INPUTTYPE_DIGITAL4          : 1,
+        INPUTTYPE_INVALID           : -1
     }, {
         // Class methods
         FindAnButton                : YAnButton_FindAnButton,
@@ -971,6 +1051,12 @@ var YAnButton; // definition below
         pulseTimer                  : YAnButton_get_pulseTimer,
         get_pulseTimer_async        : YAnButton_get_pulseTimer_async,
         pulseTimer_async            : YAnButton_get_pulseTimer_async,
+        get_inputType               : YAnButton_get_inputType,
+        inputType                   : YAnButton_get_inputType,
+        get_inputType_async         : YAnButton_get_inputType_async,
+        inputType_async             : YAnButton_get_inputType_async,
+        set_inputType               : YAnButton_set_inputType,
+        setInputType                : YAnButton_set_inputType,
         resetCounter                : YAnButton_resetCounter,
         nextAnButton                : YAnButton_nextAnButton,
         _parseAttr                  : YAnButton_parseAttr

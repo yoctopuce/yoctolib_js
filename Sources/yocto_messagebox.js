@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_messagebox.js 38913 2019-12-20 18:59:49Z mvuilleu $
+ * $Id: yocto_messagebox.js 42060 2020-10-14 10:02:12Z seb $
  *
  * Implements the high-level API for MessageBox functions
  *
@@ -1407,7 +1407,7 @@ var Y_COMMAND_INVALID               = YAPI_INVALID_STRING;
 //--- (generated code: YMessageBox class start)
 /**
  * YMessageBox Class: SMS message box interface control interface, available for instance in the
- * YoctoHub-GSM-2G, the YoctoHub-GSM-3G-EU or the YoctoHub-GSM-3G-NA
+ * YoctoHub-GSM-2G, the YoctoHub-GSM-3G-EU, the YoctoHub-GSM-3G-NA or the YoctoHub-GSM-4G
  *
  * The YMessageBox class provides SMS sending and receiving capability for
  * GSM-enabled Yoctopuce devices.
@@ -2462,6 +2462,72 @@ var YMessageBox; // definition below
     }
 
     //--- (end of generated code: YMessageBox implementation)
+
+    //--- (generated code: YMessageBox initialization)
+    YMessageBox = YFunction._Subclass(_YMessageBox, {
+        // Constants
+        SLOTSINUSE_INVALID          : YAPI_INVALID_UINT,
+        SLOTSCOUNT_INVALID          : YAPI_INVALID_UINT,
+        SLOTSBITMAP_INVALID         : YAPI_INVALID_STRING,
+        PDUSENT_INVALID             : YAPI_INVALID_UINT,
+        PDURECEIVED_INVALID         : YAPI_INVALID_UINT,
+        COMMAND_INVALID             : YAPI_INVALID_STRING
+    }, {
+        // Class methods
+        FindMessageBox              : YMessageBox_FindMessageBox,
+        FirstMessageBox             : YMessageBox_FirstMessageBox
+    }, {
+        // Methods
+        get_slotsInUse              : YMessageBox_get_slotsInUse,
+        slotsInUse                  : YMessageBox_get_slotsInUse,
+        get_slotsInUse_async        : YMessageBox_get_slotsInUse_async,
+        slotsInUse_async            : YMessageBox_get_slotsInUse_async,
+        get_slotsCount              : YMessageBox_get_slotsCount,
+        slotsCount                  : YMessageBox_get_slotsCount,
+        get_slotsCount_async        : YMessageBox_get_slotsCount_async,
+        slotsCount_async            : YMessageBox_get_slotsCount_async,
+        get_slotsBitmap             : YMessageBox_get_slotsBitmap,
+        slotsBitmap                 : YMessageBox_get_slotsBitmap,
+        get_slotsBitmap_async       : YMessageBox_get_slotsBitmap_async,
+        slotsBitmap_async           : YMessageBox_get_slotsBitmap_async,
+        get_pduSent                 : YMessageBox_get_pduSent,
+        pduSent                     : YMessageBox_get_pduSent,
+        get_pduSent_async           : YMessageBox_get_pduSent_async,
+        pduSent_async               : YMessageBox_get_pduSent_async,
+        set_pduSent                 : YMessageBox_set_pduSent,
+        setPduSent                  : YMessageBox_set_pduSent,
+        get_pduReceived             : YMessageBox_get_pduReceived,
+        pduReceived                 : YMessageBox_get_pduReceived,
+        get_pduReceived_async       : YMessageBox_get_pduReceived_async,
+        pduReceived_async           : YMessageBox_get_pduReceived_async,
+        set_pduReceived             : YMessageBox_set_pduReceived,
+        setPduReceived              : YMessageBox_set_pduReceived,
+        get_command                 : YMessageBox_get_command,
+        command                     : YMessageBox_get_command,
+        get_command_async           : YMessageBox_get_command_async,
+        command_async               : YMessageBox_get_command_async,
+        set_command                 : YMessageBox_set_command,
+        setCommand                  : YMessageBox_set_command,
+        nextMsgRef                  : YMessageBox_nextMsgRef,
+        clearSIMSlot                : YMessageBox_clearSIMSlot,
+        fetchPdu                    : YMessageBox_fetchPdu,
+        initGsm2Unicode             : YMessageBox_initGsm2Unicode,
+        gsm2unicode                 : YMessageBox_gsm2unicode,
+        gsm2str                     : YMessageBox_gsm2str,
+        str2gsm                     : YMessageBox_str2gsm,
+        checkNewMessages            : YMessageBox_checkNewMessages,
+        get_pdus                    : YMessageBox_get_pdus,
+        pdus                        : YMessageBox_get_pdus,
+        clearPduCounters            : YMessageBox_clearPduCounters,
+        sendTextMessage             : YMessageBox_sendTextMessage,
+        sendFlashMessage            : YMessageBox_sendFlashMessage,
+        newMessage                  : YMessageBox_newMessage,
+        get_messages                : YMessageBox_get_messages,
+        messages                    : YMessageBox_get_messages,
+        nextMessageBox              : YMessageBox_nextMessageBox,
+        _parseAttr                  : YMessageBox_parseAttr
+    });
+    //--- (end of generated code: YMessageBox initialization)
 })();
 
 //--- (generated code: YMessageBox functions)

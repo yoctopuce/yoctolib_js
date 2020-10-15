@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_power.js 38899 2019-12-20 17:21:03Z mvuilleu $
+ *  $Id: yocto_power.js 41290 2020-07-24 10:02:23Z mvuilleu $
  *
  *  Implements the high-level API for Power functions
  *
@@ -44,6 +44,8 @@ if(typeof YAPI == "undefined") { if(typeof yAPI != "undefined") window["YAPI"]=y
 //--- (YPower definitions)
 var Y_COSPHI_INVALID                = YAPI_INVALID_DOUBLE;
 var Y_METER_INVALID                 = YAPI_INVALID_DOUBLE;
+var Y_DELIVEREDENERGYMETER_INVALID  = YAPI_INVALID_DOUBLE;
+var Y_RECEIVEDENERGYMETER_INVALID   = YAPI_INVALID_DOUBLE;
 var Y_METERTIMER_INVALID            = YAPI_INVALID_UINT;
 //--- (end of YPower definitions)
 
@@ -70,6 +72,8 @@ var YPower; // definition below
 
         this._cosPhi                         = Y_COSPHI_INVALID;           // MeasureVal
         this._meter                          = Y_METER_INVALID;            // MeasureVal
+        this._deliveredEnergyMeter           = Y_DELIVEREDENERGYMETER_INVALID; // MeasureVal
+        this._receivedEnergyMeter            = Y_RECEIVEDENERGYMETER_INVALID; // MeasureVal
         this._meterTimer                     = Y_METERTIMER_INVALID;       // UInt31
         //--- (end of YPower constructor)
     }
@@ -84,6 +88,12 @@ var YPower; // definition below
             return 1;
         case "meter":
             this._meter = Math.round(val * 1000.0 / 65536.0) / 1000.0;
+            return 1;
+        case "deliveredEnergyMeter":
+            this._deliveredEnergyMeter = Math.round(val * 1000.0 / 65536.0) / 1000.0;
+            return 1;
+        case "receivedEnergyMeter":
+            this._receivedEnergyMeter = Math.round(val * 1000.0 / 65536.0) / 1000.0;
             return 1;
         case "meterTimer":
             this._meterTimer = parseInt(val);
@@ -155,11 +165,12 @@ var YPower; // definition below
     }
 
     /**
-     * Returns the energy counter, maintained by the wattmeter by integrating the power consumption over time.
-     * Note that this counter is reset at each start of the device.
+     * Returns the energy counter, maintained by the wattmeter by integrating the power consumption over time,
+     * but only when positive. Note that this counter is reset at each start of the device.
      *
      * @return a floating point number corresponding to the energy counter, maintained by the wattmeter by
-     * integrating the power consumption over time
+     * integrating the power consumption over time,
+     *         but only when positive
      *
      * On failure, throws an exception or returns Y_METER_INVALID.
      */
@@ -176,15 +187,16 @@ var YPower; // definition below
     }
 
     /**
-     * Gets the energy counter, maintained by the wattmeter by integrating the power consumption over time.
-     * Note that this counter is reset at each start of the device.
+     * Gets the energy counter, maintained by the wattmeter by integrating the power consumption over time,
+     * but only when positive. Note that this counter is reset at each start of the device.
      *
      * @param callback : callback function that is invoked when the result is known.
      *         The callback function receives three arguments:
      *         - the user-specific context object
      *         - the YPower object that invoked the callback
      *         - the result:a floating point number corresponding to the energy counter, maintained by the
-     *         wattmeter by integrating the power consumption over time
+     *         wattmeter by integrating the power consumption over time,
+     *         but only when positive
      * @param context : user-specific object that is passed as-is to the callback function
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
@@ -200,6 +212,120 @@ var YPower; // definition below
                 callback(context, obj, Y_METER_INVALID);
             } else {
                 callback(context, obj, obj._meter);
+            }
+        };
+        if (this._cacheExpiration <= YAPI.GetTickCount()) {
+            this.load_async(YAPI.defaultCacheValidity,loadcb,null);
+        } else {
+            loadcb(null, this, YAPI_SUCCESS);
+        }
+    }
+
+    /**
+     * Returns the energy counter, maintained by the wattmeter by integrating the power consumption over time,
+     * but only when positive. Note that this counter is reset at each start of the device.
+     *
+     * @return a floating point number corresponding to the energy counter, maintained by the wattmeter by
+     * integrating the power consumption over time,
+     *         but only when positive
+     *
+     * On failure, throws an exception or returns Y_DELIVEREDENERGYMETER_INVALID.
+     */
+    function YPower_get_deliveredEnergyMeter()
+    {
+        var res;                    // double;
+        if (this._cacheExpiration <= YAPI.GetTickCount()) {
+            if (this.load(YAPI.defaultCacheValidity) != YAPI_SUCCESS) {
+                return Y_DELIVEREDENERGYMETER_INVALID;
+            }
+        }
+        res = this._deliveredEnergyMeter;
+        return res;
+    }
+
+    /**
+     * Gets the energy counter, maintained by the wattmeter by integrating the power consumption over time,
+     * but only when positive. Note that this counter is reset at each start of the device.
+     *
+     * @param callback : callback function that is invoked when the result is known.
+     *         The callback function receives three arguments:
+     *         - the user-specific context object
+     *         - the YPower object that invoked the callback
+     *         - the result:a floating point number corresponding to the energy counter, maintained by the
+     *         wattmeter by integrating the power consumption over time,
+     *         but only when positive
+     * @param context : user-specific object that is passed as-is to the callback function
+     *
+     * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
+     *
+     * On failure, throws an exception or returns Y_DELIVEREDENERGYMETER_INVALID.
+     */
+    function YPower_get_deliveredEnergyMeter_async(callback,context)
+    {
+        var res;                    // double;
+        var loadcb;                 // func;
+        loadcb = function(ctx,obj,res) {
+            if (res != YAPI_SUCCESS) {
+                callback(context, obj, Y_DELIVEREDENERGYMETER_INVALID);
+            } else {
+                callback(context, obj, obj._deliveredEnergyMeter);
+            }
+        };
+        if (this._cacheExpiration <= YAPI.GetTickCount()) {
+            this.load_async(YAPI.defaultCacheValidity,loadcb,null);
+        } else {
+            loadcb(null, this, YAPI_SUCCESS);
+        }
+    }
+
+    /**
+     * Returns the energy counter, maintained by the wattmeter by integrating the power consumption over time,
+     * but only when negative. Note that this counter is reset at each start of the device.
+     *
+     * @return a floating point number corresponding to the energy counter, maintained by the wattmeter by
+     * integrating the power consumption over time,
+     *         but only when negative
+     *
+     * On failure, throws an exception or returns Y_RECEIVEDENERGYMETER_INVALID.
+     */
+    function YPower_get_receivedEnergyMeter()
+    {
+        var res;                    // double;
+        if (this._cacheExpiration <= YAPI.GetTickCount()) {
+            if (this.load(YAPI.defaultCacheValidity) != YAPI_SUCCESS) {
+                return Y_RECEIVEDENERGYMETER_INVALID;
+            }
+        }
+        res = this._receivedEnergyMeter;
+        return res;
+    }
+
+    /**
+     * Gets the energy counter, maintained by the wattmeter by integrating the power consumption over time,
+     * but only when negative. Note that this counter is reset at each start of the device.
+     *
+     * @param callback : callback function that is invoked when the result is known.
+     *         The callback function receives three arguments:
+     *         - the user-specific context object
+     *         - the YPower object that invoked the callback
+     *         - the result:a floating point number corresponding to the energy counter, maintained by the
+     *         wattmeter by integrating the power consumption over time,
+     *         but only when negative
+     * @param context : user-specific object that is passed as-is to the callback function
+     *
+     * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
+     *
+     * On failure, throws an exception or returns Y_RECEIVEDENERGYMETER_INVALID.
+     */
+    function YPower_get_receivedEnergyMeter_async(callback,context)
+    {
+        var res;                    // double;
+        var loadcb;                 // func;
+        loadcb = function(ctx,obj,res) {
+            if (res != YAPI_SUCCESS) {
+                callback(context, obj, Y_RECEIVEDENERGYMETER_INVALID);
+            } else {
+                callback(context, obj, obj._receivedEnergyMeter);
             }
         };
         if (this._cacheExpiration <= YAPI.GetTickCount()) {
@@ -300,7 +426,7 @@ var YPower; // definition below
     }
 
     /**
-     * Resets the energy counter.
+     * Resets the energy counters.
      *
      * @return YAPI_SUCCESS if the call succeeds.
      *
@@ -352,6 +478,8 @@ var YPower; // definition below
         // Constants
         COSPHI_INVALID              : YAPI_INVALID_DOUBLE,
         METER_INVALID               : YAPI_INVALID_DOUBLE,
+        DELIVEREDENERGYMETER_INVALID : YAPI_INVALID_DOUBLE,
+        RECEIVEDENERGYMETER_INVALID : YAPI_INVALID_DOUBLE,
         METERTIMER_INVALID          : YAPI_INVALID_UINT
     }, {
         // Class methods
@@ -369,6 +497,14 @@ var YPower; // definition below
         meter                       : YPower_get_meter,
         get_meter_async             : YPower_get_meter_async,
         meter_async                 : YPower_get_meter_async,
+        get_deliveredEnergyMeter    : YPower_get_deliveredEnergyMeter,
+        deliveredEnergyMeter        : YPower_get_deliveredEnergyMeter,
+        get_deliveredEnergyMeter_async : YPower_get_deliveredEnergyMeter_async,
+        deliveredEnergyMeter_async  : YPower_get_deliveredEnergyMeter_async,
+        get_receivedEnergyMeter     : YPower_get_receivedEnergyMeter,
+        receivedEnergyMeter         : YPower_get_receivedEnergyMeter,
+        get_receivedEnergyMeter_async : YPower_get_receivedEnergyMeter_async,
+        receivedEnergyMeter_async   : YPower_get_receivedEnergyMeter_async,
         get_meterTimer              : YPower_get_meterTimer,
         meterTimer                  : YPower_get_meterTimer,
         get_meterTimer_async        : YPower_get_meterTimer_async,

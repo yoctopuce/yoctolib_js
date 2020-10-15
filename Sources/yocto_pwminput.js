@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_pwminput.js 38899 2019-12-20 17:21:03Z mvuilleu $
+ *  $Id: yocto_pwminput.js 41348 2020-08-10 15:12:57Z seb $
  *
  *  Implements the high-level API for PwmInput functions
  *
@@ -52,6 +52,7 @@ var Y_PWMREPORTMODE_PWM_CPM         = 6;
 var Y_PWMREPORTMODE_PWM_STATE       = 7;
 var Y_PWMREPORTMODE_PWM_FREQ_CPS    = 8;
 var Y_PWMREPORTMODE_PWM_FREQ_CPM    = 9;
+var Y_PWMREPORTMODE_PWM_PERIODCOUNT = 10;
 var Y_PWMREPORTMODE_INVALID         = -1;
 var Y_DUTYCYCLE_INVALID             = YAPI_INVALID_DOUBLE;
 var Y_PULSEDURATION_INVALID         = YAPI_INVALID_DOUBLE;
@@ -60,6 +61,8 @@ var Y_PERIOD_INVALID                = YAPI_INVALID_DOUBLE;
 var Y_PULSECOUNTER_INVALID          = YAPI_INVALID_LONG;
 var Y_PULSETIMER_INVALID            = YAPI_INVALID_LONG;
 var Y_DEBOUNCEPERIOD_INVALID        = YAPI_INVALID_UINT;
+var Y_BANDWIDTH_INVALID             = YAPI_INVALID_UINT;
+var Y_EDGESPERPERIOD_INVALID        = YAPI_INVALID_UINT;
 //--- (end of YPwmInput definitions)
 
 //--- (YPwmInput class start)
@@ -92,6 +95,8 @@ var YPwmInput; // definition below
         this._pulseTimer                     = Y_PULSETIMER_INVALID;       // Time
         this._pwmReportMode                  = Y_PWMREPORTMODE_INVALID;    // PwmReportModeType
         this._debouncePeriod                 = Y_DEBOUNCEPERIOD_INVALID;   // UInt31
+        this._bandwidth                      = Y_BANDWIDTH_INVALID;        // UInt31
+        this._edgesPerPeriod                 = Y_EDGESPERPERIOD_INVALID;   // UInt31
         //--- (end of YPwmInput constructor)
     }
 
@@ -123,6 +128,12 @@ var YPwmInput; // definition below
             return 1;
         case "debouncePeriod":
             this._debouncePeriod = parseInt(val);
+            return 1;
+        case "bandwidth":
+            this._bandwidth = parseInt(val);
+            return 1;
+        case "edgesPerPeriod":
+            this._edgesPerPeriod = parseInt(val);
             return 1;
         }
         return _super._parseAttr.call(this, name, val, _super._super);
@@ -472,8 +483,9 @@ var YPwmInput; // definition below
      * @return a value among Y_PWMREPORTMODE_PWM_DUTYCYCLE, Y_PWMREPORTMODE_PWM_FREQUENCY,
      * Y_PWMREPORTMODE_PWM_PULSEDURATION, Y_PWMREPORTMODE_PWM_EDGECOUNT, Y_PWMREPORTMODE_PWM_PULSECOUNT,
      * Y_PWMREPORTMODE_PWM_CPS, Y_PWMREPORTMODE_PWM_CPM, Y_PWMREPORTMODE_PWM_STATE,
-     * Y_PWMREPORTMODE_PWM_FREQ_CPS and Y_PWMREPORTMODE_PWM_FREQ_CPM corresponding to the parameter
-     * (frequency/duty cycle, pulse width, edges count) returned by the get_currentValue function and callbacks
+     * Y_PWMREPORTMODE_PWM_FREQ_CPS, Y_PWMREPORTMODE_PWM_FREQ_CPM and Y_PWMREPORTMODE_PWM_PERIODCOUNT
+     * corresponding to the parameter (frequency/duty cycle, pulse width, edges count) returned by the
+     * get_currentValue function and callbacks
      *
      * On failure, throws an exception or returns Y_PWMREPORTMODE_INVALID.
      */
@@ -500,8 +512,9 @@ var YPwmInput; // definition below
      *         - the result:a value among Y_PWMREPORTMODE_PWM_DUTYCYCLE, Y_PWMREPORTMODE_PWM_FREQUENCY,
      *         Y_PWMREPORTMODE_PWM_PULSEDURATION, Y_PWMREPORTMODE_PWM_EDGECOUNT, Y_PWMREPORTMODE_PWM_PULSECOUNT,
      *         Y_PWMREPORTMODE_PWM_CPS, Y_PWMREPORTMODE_PWM_CPM, Y_PWMREPORTMODE_PWM_STATE,
-     *         Y_PWMREPORTMODE_PWM_FREQ_CPS and Y_PWMREPORTMODE_PWM_FREQ_CPM corresponding to the parameter
-     *         (frequency/duty cycle, pulse width, edges count) returned by the get_currentValue function and callbacks
+     *         Y_PWMREPORTMODE_PWM_FREQ_CPS, Y_PWMREPORTMODE_PWM_FREQ_CPM and Y_PWMREPORTMODE_PWM_PERIODCOUNT
+     *         corresponding to the parameter (frequency/duty cycle, pulse width, edges count) returned by the
+     *         get_currentValue function and callbacks
      * @param context : user-specific object that is passed as-is to the callback function
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
@@ -536,8 +549,9 @@ var YPwmInput; // definition below
      * @param newval : a value among Y_PWMREPORTMODE_PWM_DUTYCYCLE, Y_PWMREPORTMODE_PWM_FREQUENCY,
      * Y_PWMREPORTMODE_PWM_PULSEDURATION, Y_PWMREPORTMODE_PWM_EDGECOUNT, Y_PWMREPORTMODE_PWM_PULSECOUNT,
      * Y_PWMREPORTMODE_PWM_CPS, Y_PWMREPORTMODE_PWM_CPM, Y_PWMREPORTMODE_PWM_STATE,
-     * Y_PWMREPORTMODE_PWM_FREQ_CPS and Y_PWMREPORTMODE_PWM_FREQ_CPM corresponding to the  parameter  type
-     * (frequency/duty cycle, pulse width, or edge count) returned by the get_currentValue function and callbacks
+     * Y_PWMREPORTMODE_PWM_FREQ_CPS, Y_PWMREPORTMODE_PWM_FREQ_CPM and Y_PWMREPORTMODE_PWM_PERIODCOUNT
+     * corresponding to the  parameter  type (frequency/duty cycle, pulse width, or edge count) returned
+     * by the get_currentValue function and callbacks
      *
      * @return YAPI_SUCCESS if the call succeeds.
      *
@@ -614,6 +628,129 @@ var YPwmInput; // definition below
     {   var rest_val;
         rest_val = String(newval);
         return this._setAttr('debouncePeriod',rest_val);
+    }
+
+    /**
+     * Returns the input signal sampling rate, in kHz.
+     *
+     * @return an integer corresponding to the input signal sampling rate, in kHz
+     *
+     * On failure, throws an exception or returns Y_BANDWIDTH_INVALID.
+     */
+    function YPwmInput_get_bandwidth()
+    {
+        var res;                    // int;
+        if (this._cacheExpiration <= YAPI.GetTickCount()) {
+            if (this.load(YAPI.defaultCacheValidity) != YAPI_SUCCESS) {
+                return Y_BANDWIDTH_INVALID;
+            }
+        }
+        res = this._bandwidth;
+        return res;
+    }
+
+    /**
+     * Gets the input signal sampling rate, in kHz.
+     *
+     * @param callback : callback function that is invoked when the result is known.
+     *         The callback function receives three arguments:
+     *         - the user-specific context object
+     *         - the YPwmInput object that invoked the callback
+     *         - the result:an integer corresponding to the input signal sampling rate, in kHz
+     * @param context : user-specific object that is passed as-is to the callback function
+     *
+     * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
+     *
+     * On failure, throws an exception or returns Y_BANDWIDTH_INVALID.
+     */
+    function YPwmInput_get_bandwidth_async(callback,context)
+    {
+        var res;                    // int;
+        var loadcb;                 // func;
+        loadcb = function(ctx,obj,res) {
+            if (res != YAPI_SUCCESS) {
+                callback(context, obj, Y_BANDWIDTH_INVALID);
+            } else {
+                callback(context, obj, obj._bandwidth);
+            }
+        };
+        if (this._cacheExpiration <= YAPI.GetTickCount()) {
+            this.load_async(YAPI.defaultCacheValidity,loadcb,null);
+        } else {
+            loadcb(null, this, YAPI_SUCCESS);
+        }
+    }
+
+    /**
+     * Changes the input signal sampling rate, measured in kHz.
+     * A lower sampling frequency can be used to hide hide-frequency bounce effects,
+     * for instance on electromechanical contacts, but limits the measure resolution.
+     * Remember to call the saveToFlash()
+     * method of the module if the modification must be kept.
+     *
+     * @param newval : an integer corresponding to the input signal sampling rate, measured in kHz
+     *
+     * @return YAPI_SUCCESS if the call succeeds.
+     *
+     * On failure, throws an exception or returns a negative error code.
+     */
+    function YPwmInput_set_bandwidth(newval)
+    {   var rest_val;
+        rest_val = String(newval);
+        return this._setAttr('bandwidth',rest_val);
+    }
+
+    /**
+     * Returns the number of edges detected per preiod. For a clean PWM signal, this should be exactly two,
+     * but in cas the signal is created by a mechanical contact with bounces, it can get higher.
+     *
+     * @return an integer corresponding to the number of edges detected per preiod
+     *
+     * On failure, throws an exception or returns Y_EDGESPERPERIOD_INVALID.
+     */
+    function YPwmInput_get_edgesPerPeriod()
+    {
+        var res;                    // int;
+        if (this._cacheExpiration <= YAPI.GetTickCount()) {
+            if (this.load(YAPI.defaultCacheValidity) != YAPI_SUCCESS) {
+                return Y_EDGESPERPERIOD_INVALID;
+            }
+        }
+        res = this._edgesPerPeriod;
+        return res;
+    }
+
+    /**
+     * Gets the number of edges detected per preiod. For a clean PWM signal, this should be exactly two,
+     * but in cas the signal is created by a mechanical contact with bounces, it can get higher.
+     *
+     * @param callback : callback function that is invoked when the result is known.
+     *         The callback function receives three arguments:
+     *         - the user-specific context object
+     *         - the YPwmInput object that invoked the callback
+     *         - the result:an integer corresponding to the number of edges detected per preiod
+     * @param context : user-specific object that is passed as-is to the callback function
+     *
+     * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
+     *
+     * On failure, throws an exception or returns Y_EDGESPERPERIOD_INVALID.
+     */
+    function YPwmInput_get_edgesPerPeriod_async(callback,context)
+    {
+        var res;                    // int;
+        var loadcb;                 // func;
+        loadcb = function(ctx,obj,res) {
+            if (res != YAPI_SUCCESS) {
+                callback(context, obj, Y_EDGESPERPERIOD_INVALID);
+            } else {
+                callback(context, obj, obj._edgesPerPeriod);
+            }
+        };
+        if (this._cacheExpiration <= YAPI.GetTickCount()) {
+            this.load_async(YAPI.defaultCacheValidity,loadcb,null);
+        } else {
+            loadcb(null, this, YAPI_SUCCESS);
+        }
     }
 
     /**
@@ -722,8 +859,11 @@ var YPwmInput; // definition below
         PWMREPORTMODE_PWM_STATE     : 7,
         PWMREPORTMODE_PWM_FREQ_CPS  : 8,
         PWMREPORTMODE_PWM_FREQ_CPM  : 9,
+        PWMREPORTMODE_PWM_PERIODCOUNT : 10,
         PWMREPORTMODE_INVALID       : -1,
-        DEBOUNCEPERIOD_INVALID      : YAPI_INVALID_UINT
+        DEBOUNCEPERIOD_INVALID      : YAPI_INVALID_UINT,
+        BANDWIDTH_INVALID           : YAPI_INVALID_UINT,
+        EDGESPERPERIOD_INVALID      : YAPI_INVALID_UINT
     }, {
         // Class methods
         FindPwmInput                : YPwmInput_FindPwmInput,
@@ -770,6 +910,16 @@ var YPwmInput; // definition below
         debouncePeriod_async        : YPwmInput_get_debouncePeriod_async,
         set_debouncePeriod          : YPwmInput_set_debouncePeriod,
         setDebouncePeriod           : YPwmInput_set_debouncePeriod,
+        get_bandwidth               : YPwmInput_get_bandwidth,
+        bandwidth                   : YPwmInput_get_bandwidth,
+        get_bandwidth_async         : YPwmInput_get_bandwidth_async,
+        bandwidth_async             : YPwmInput_get_bandwidth_async,
+        set_bandwidth               : YPwmInput_set_bandwidth,
+        setBandwidth                : YPwmInput_set_bandwidth,
+        get_edgesPerPeriod          : YPwmInput_get_edgesPerPeriod,
+        edgesPerPeriod              : YPwmInput_get_edgesPerPeriod,
+        get_edgesPerPeriod_async    : YPwmInput_get_edgesPerPeriod_async,
+        edgesPerPeriod_async        : YPwmInput_get_edgesPerPeriod_async,
         resetCounter                : YPwmInput_resetCounter,
         nextPwmInput                : YPwmInput_nextPwmInput,
         _parseAttr                  : YPwmInput_parseAttr

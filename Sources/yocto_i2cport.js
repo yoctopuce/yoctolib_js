@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_i2cport.js 39333 2020-01-30 10:05:40Z mvuilleu $
+ *  $Id: yocto_i2cport.js 41171 2020-07-02 17:49:00Z mvuilleu $
  *
  *  Implements the high-level API for I2cPort functions
  *
@@ -39,9 +39,9 @@
 
 if(typeof YAPI == "undefined") { if(typeof yAPI != "undefined") window["YAPI"]=yAPI; else throw "YAPI is not defined, please include yocto_api.js first"; }
 
-//--- (YI2cPort return codes)
-//--- (end of YI2cPort return codes)
-//--- (YI2cPort definitions)
+//--- (generated code: YI2cPort return codes)
+//--- (end of generated code: YI2cPort return codes)
+//--- (generated code: YI2cPort definitions)
 var Y_I2CVOLTAGELEVEL_OFF           = 0;
 var Y_I2CVOLTAGELEVEL_3V3           = 1;
 var Y_I2CVOLTAGELEVEL_1V8           = 2;
@@ -59,9 +59,84 @@ var Y_JOBMAXSIZE_INVALID            = YAPI_INVALID_UINT;
 var Y_COMMAND_INVALID               = YAPI_INVALID_STRING;
 var Y_PROTOCOL_INVALID              = YAPI_INVALID_STRING;
 var Y_I2CMODE_INVALID               = YAPI_INVALID_STRING;
-//--- (end of YI2cPort definitions)
+//--- (end of generated code: YI2cPort definitions)
 
-//--- (YI2cPort class start)
+//--- (generated code: YI2cSnoopingRecord definitions)
+//--- (end of generated code: YI2cSnoopingRecord definitions)
+
+//--- (generated code: YI2cSnoopingRecord class start)
+/**
+ * YI2cSnoopingRecord Class: Intercepted I2C message description, returned by i2cPort.snoopMessages method
+ *
+ *
+ */
+//--- (end of generated code: YI2cSnoopingRecord class start)
+
+var YI2cSnoopingRecord; // definition below
+(function()
+{
+    function _YI2cSnoopingRecord(str_json)
+    {
+        //--- (generated code: YI2cSnoopingRecord constructor)
+        this._tim                            = 0;                          // int
+        this._dir                            = 0;                          // int
+        this._msg                            = "";                         // str
+        //--- (end of generated code: YI2cSnoopingRecord constructor)
+
+        var loadval = JSON.parse(str_json);
+        this._tim = loadval.t;
+        this._dir = (loadval.m[0] == '<' ? 1 : 0);
+        this._msg = loadval.m.slice(1);
+
+    }
+
+    //--- (generated code: YI2cSnoopingRecord implementation)
+
+    /**
+     * Returns the elapsed time, in ms, since the beginning of the preceding message.
+     *
+     * @return the elapsed time, in ms, since the beginning of the preceding message.
+     */
+    function YI2cSnoopingRecord_get_time()
+    {
+        return this._tim;
+    }
+
+    /**
+     * Returns the message direction (RX=0, TX=1).
+     *
+     * @return the message direction (RX=0, TX=1).
+     */
+    function YI2cSnoopingRecord_get_direction()
+    {
+        return this._dir;
+    }
+
+    /**
+     * Returns the message content.
+     *
+     * @return the message content.
+     */
+    function YI2cSnoopingRecord_get_message()
+    {
+        return this._msg;
+    }
+
+    //--- (end of generated code: YI2cSnoopingRecord implementation)
+
+    //--- (generated code: YI2cSnoopingRecord initialization)
+    YI2cSnoopingRecord = _YI2cSnoopingRecord;
+    // Methods
+    YI2cSnoopingRecord.prototype.get_time                    = YI2cSnoopingRecord_get_time;
+    YI2cSnoopingRecord.prototype.time                        = YI2cSnoopingRecord_get_time;
+    YI2cSnoopingRecord.prototype.get_direction               = YI2cSnoopingRecord_get_direction;
+    YI2cSnoopingRecord.prototype.direction                   = YI2cSnoopingRecord_get_direction;
+    YI2cSnoopingRecord.prototype.get_message                 = YI2cSnoopingRecord_get_message;
+    YI2cSnoopingRecord.prototype.message                     = YI2cSnoopingRecord_get_message;
+    //--- (end of generated code: YI2cSnoopingRecord initialization)
+})();
+
+//--- (generated code: YI2cPort class start)
 /**
  * YI2cPort Class: I2C port control interface, available for instance in the Yocto-I2C
  *
@@ -71,14 +146,14 @@ var Y_I2CMODE_INVALID               = YAPI_INVALID_STRING;
  * Note that Yoctopuce I2C ports are not exposed as virtual COM ports.
  * They are meant to be used in the same way as all Yoctopuce devices.
  */
-//--- (end of YI2cPort class start)
+//--- (end of generated code: YI2cPort class start)
 
 var YI2cPort; // definition below
 (function()
 {
     function _YI2cPort(str_func)
     {
-        //--- (YI2cPort constructor)
+        //--- (generated code: YI2cPort constructor)
         // inherit from YFunction
         YFunction.call(this, str_func);
         this._className = 'I2cPort';
@@ -100,10 +175,10 @@ var YI2cPort; // definition below
         this._rxptr                          = 0;                          // int
         this._rxbuff                         = "";                         // bin
         this._rxbuffptr                      = 0;                          // int
-        //--- (end of YI2cPort constructor)
+        //--- (end of generated code: YI2cPort constructor)
     }
 
-    //--- (YI2cPort implementation)
+    //--- (generated code: YI2cPort implementation)
 
     function YI2cPort_parseAttr(name, val, _super)
     {
@@ -1653,6 +1728,46 @@ var YI2cPort; // definition below
     }
 
     /**
+     * Retrieves messages (both direction) in the I2C port buffer, starting at current position.
+     *
+     * If no message is found, the search waits for one up to the specified maximum timeout
+     * (in milliseconds).
+     *
+     * @param maxWait : the maximum number of milliseconds to wait for a message if none is found
+     *         in the receive buffer.
+     *
+     * @return an array of YI2cSnoopingRecord objects containing the messages found, if any.
+     *
+     * On failure, throws an exception or returns an empty array.
+     */
+    function YI2cPort_snoopMessages(maxWait)
+    {
+        var url;                    // str;
+        var msgbin;                 // bin;
+        var msgarr = [];            // strArr;
+        var msglen;                 // int;
+        var res = [];               // YI2cSnoopingRecordArr;
+        var idx;                    // int;
+
+        url = "rxmsg.json?pos="+String(Math.round(this._rxptr))+"&maxw="+String(Math.round(maxWait))+"&t=0";
+        msgbin = this._download(url);
+        msgarr = this._json_get_array(msgbin);
+        msglen = msgarr.length;
+        if (msglen == 0) {
+            return res;
+        }
+        // last element of array is the new position
+        msglen = msglen - 1;
+        this._rxptr = YAPI._atoi(msgarr[msglen]);
+        idx = 0;
+        while (idx < msglen) {
+            res.push(new YI2cSnoopingRecord(msgarr[idx]));
+            idx = idx + 1;
+        }
+        return res;
+    }
+
+    /**
      * Continues the enumeration of I2C ports started using yFirstI2cPort().
      * Caution: You can't make any assumption about the returned I2C ports order.
      * If you want to find a specific an I2C port, use I2cPort.findI2cPort()
@@ -1686,9 +1801,9 @@ var YI2cPort; // definition below
         return YI2cPort.FindI2cPort(next_hwid);
     }
 
-    //--- (end of YI2cPort implementation)
+    //--- (end of generated code: YI2cPort implementation)
 
-    //--- (YI2cPort initialization)
+    //--- (generated code: YI2cPort initialization)
     YI2cPort = YFunction._Subclass(_YI2cPort, {
         // Constants
         RXCOUNT_INVALID             : YAPI_INVALID_UINT,
@@ -1803,13 +1918,14 @@ var YI2cPort; // definition below
         writeHex                    : YI2cPort_writeHex,
         writeBin                    : YI2cPort_writeBin,
         writeArray                  : YI2cPort_writeArray,
+        snoopMessages               : YI2cPort_snoopMessages,
         nextI2cPort                 : YI2cPort_nextI2cPort,
         _parseAttr                  : YI2cPort_parseAttr
     });
-    //--- (end of YI2cPort initialization)
+    //--- (end of generated code: YI2cPort initialization)
 })();
 
-//--- (YI2cPort functions)
+//--- (generated code: YI2cPort functions)
 
 /**
  * Retrieves an I2C port for a given identifier.
@@ -1858,4 +1974,4 @@ function yFirstI2cPort()
     return YI2cPort.FirstI2cPort();
 }
 
-//--- (end of YI2cPort functions)
+//--- (end of generated code: YI2cPort functions)

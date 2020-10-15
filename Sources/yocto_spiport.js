@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_spiport.js 40298 2020-05-05 08:37:49Z seb $
+ *  $Id: yocto_spiport.js 41171 2020-07-02 17:49:00Z mvuilleu $
  *
  *  Implements the high-level API for SpiPort functions
  *
@@ -39,9 +39,9 @@
 
 if(typeof YAPI == "undefined") { if(typeof yAPI != "undefined") window["YAPI"]=yAPI; else throw "YAPI is not defined, please include yocto_api.js first"; }
 
-//--- (YSpiPort return codes)
-//--- (end of YSpiPort return codes)
-//--- (YSpiPort definitions)
+//--- (generated code: YSpiPort return codes)
+//--- (end of generated code: YSpiPort return codes)
+//--- (generated code: YSpiPort definitions)
 var Y_VOLTAGELEVEL_OFF              = 0;
 var Y_VOLTAGELEVEL_TTL3V            = 1;
 var Y_VOLTAGELEVEL_TTL3VR           = 2;
@@ -70,9 +70,84 @@ var Y_JOBMAXSIZE_INVALID            = YAPI_INVALID_UINT;
 var Y_COMMAND_INVALID               = YAPI_INVALID_STRING;
 var Y_PROTOCOL_INVALID              = YAPI_INVALID_STRING;
 var Y_SPIMODE_INVALID               = YAPI_INVALID_STRING;
-//--- (end of YSpiPort definitions)
+//--- (end of generated code: YSpiPort definitions)
 
-//--- (YSpiPort class start)
+//--- (generated code: YSpiSnoopingRecord definitions)
+//--- (end of generated code: YSpiSnoopingRecord definitions)
+
+//--- (generated code: YSpiSnoopingRecord class start)
+/**
+ * YSpiSnoopingRecord Class: Intercepted SPI message description, returned by spiPort.snoopMessages method
+ *
+ *
+ */
+//--- (end of generated code: YSpiSnoopingRecord class start)
+
+var YSpiSnoopingRecord; // definition below
+(function()
+{
+    function _YSpiSnoopingRecord(str_json)
+    {
+        //--- (generated code: YSpiSnoopingRecord constructor)
+        this._tim                            = 0;                          // int
+        this._dir                            = 0;                          // int
+        this._msg                            = "";                         // str
+        //--- (end of generated code: YSpiSnoopingRecord constructor)
+
+        var loadval = JSON.parse(str_json);
+        this._tim = loadval.t;
+        this._dir = (loadval.m[0] == '<' ? 1 : 0);
+        this._msg = loadval.m.slice(1);
+
+    }
+
+    //--- (generated code: YSpiSnoopingRecord implementation)
+
+    /**
+     * Returns the elapsed time, in ms, since the beginning of the preceding message.
+     *
+     * @return the elapsed time, in ms, since the beginning of the preceding message.
+     */
+    function YSpiSnoopingRecord_get_time()
+    {
+        return this._tim;
+    }
+
+    /**
+     * Returns the message direction (RX=0, TX=1).
+     *
+     * @return the message direction (RX=0, TX=1).
+     */
+    function YSpiSnoopingRecord_get_direction()
+    {
+        return this._dir;
+    }
+
+    /**
+     * Returns the message content.
+     *
+     * @return the message content.
+     */
+    function YSpiSnoopingRecord_get_message()
+    {
+        return this._msg;
+    }
+
+    //--- (end of generated code: YSpiSnoopingRecord implementation)
+
+    //--- (generated code: YSpiSnoopingRecord initialization)
+    YSpiSnoopingRecord = _YSpiSnoopingRecord;
+    // Methods
+    YSpiSnoopingRecord.prototype.get_time                    = YSpiSnoopingRecord_get_time;
+    YSpiSnoopingRecord.prototype.time                        = YSpiSnoopingRecord_get_time;
+    YSpiSnoopingRecord.prototype.get_direction               = YSpiSnoopingRecord_get_direction;
+    YSpiSnoopingRecord.prototype.direction                   = YSpiSnoopingRecord_get_direction;
+    YSpiSnoopingRecord.prototype.get_message                 = YSpiSnoopingRecord_get_message;
+    YSpiSnoopingRecord.prototype.message                     = YSpiSnoopingRecord_get_message;
+    //--- (end of generated code: YSpiSnoopingRecord initialization)
+})();
+
+//--- (generated code: YSpiPort class start)
 /**
  * YSpiPort Class: SPI port control interface, available for instance in the Yocto-SPI
  *
@@ -82,14 +157,14 @@ var Y_SPIMODE_INVALID               = YAPI_INVALID_STRING;
  * Note that Yoctopuce SPI ports are not exposed as virtual COM ports.
  * They are meant to be used in the same way as all Yoctopuce devices.
  */
-//--- (end of YSpiPort class start)
+//--- (end of generated code: YSpiPort class start)
 
 var YSpiPort; // definition below
 (function()
 {
     function _YSpiPort(str_func)
     {
-        //--- (YSpiPort constructor)
+        //--- (generated code: YSpiPort constructor)
         // inherit from YFunction
         YFunction.call(this, str_func);
         this._className = 'SpiPort';
@@ -113,10 +188,10 @@ var YSpiPort; // definition below
         this._rxptr                          = 0;                          // int
         this._rxbuff                         = "";                         // bin
         this._rxbuffptr                      = 0;                          // int
-        //--- (end of YSpiPort constructor)
+        //--- (end of generated code: YSpiPort constructor)
     }
 
-    //--- (YSpiPort implementation)
+    //--- (generated code: YSpiPort implementation)
 
     function YSpiPort_parseAttr(name, val, _super)
     {
@@ -1857,6 +1932,46 @@ var YSpiPort; // definition below
     }
 
     /**
+     * Retrieves messages (both direction) in the SPI port buffer, starting at current position.
+     *
+     * If no message is found, the search waits for one up to the specified maximum timeout
+     * (in milliseconds).
+     *
+     * @param maxWait : the maximum number of milliseconds to wait for a message if none is found
+     *         in the receive buffer.
+     *
+     * @return an array of YSpiSnoopingRecord objects containing the messages found, if any.
+     *
+     * On failure, throws an exception or returns an empty array.
+     */
+    function YSpiPort_snoopMessages(maxWait)
+    {
+        var url;                    // str;
+        var msgbin;                 // bin;
+        var msgarr = [];            // strArr;
+        var msglen;                 // int;
+        var res = [];               // YSpiSnoopingRecordArr;
+        var idx;                    // int;
+
+        url = "rxmsg.json?pos="+String(Math.round(this._rxptr))+"&maxw="+String(Math.round(maxWait))+"&t=0";
+        msgbin = this._download(url);
+        msgarr = this._json_get_array(msgbin);
+        msglen = msgarr.length;
+        if (msglen == 0) {
+            return res;
+        }
+        // last element of array is the new position
+        msglen = msglen - 1;
+        this._rxptr = YAPI._atoi(msgarr[msglen]);
+        idx = 0;
+        while (idx < msglen) {
+            res.push(new YSpiSnoopingRecord(msgarr[idx]));
+            idx = idx + 1;
+        }
+        return res;
+    }
+
+    /**
      * Continues the enumeration of SPI ports started using yFirstSpiPort().
      * Caution: You can't make any assumption about the returned SPI ports order.
      * If you want to find a specific a SPI port, use SpiPort.findSpiPort()
@@ -1890,9 +2005,9 @@ var YSpiPort; // definition below
         return YSpiPort.FindSpiPort(next_hwid);
     }
 
-    //--- (end of YSpiPort implementation)
+    //--- (end of generated code: YSpiPort implementation)
 
-    //--- (YSpiPort initialization)
+    //--- (generated code: YSpiPort initialization)
     YSpiPort = YFunction._Subclass(_YSpiPort, {
         // Constants
         RXCOUNT_INVALID             : YAPI_INVALID_UINT,
@@ -2033,13 +2148,14 @@ var YSpiPort; // definition below
         readHex                     : YSpiPort_readHex,
         set_SS                      : YSpiPort_set_SS,
         setSS                       : YSpiPort_set_SS,
+        snoopMessages               : YSpiPort_snoopMessages,
         nextSpiPort                 : YSpiPort_nextSpiPort,
         _parseAttr                  : YSpiPort_parseAttr
     });
-    //--- (end of YSpiPort initialization)
+    //--- (end of generated code: YSpiPort initialization)
 })();
 
-//--- (YSpiPort functions)
+//--- (generated code: YSpiPort functions)
 
 /**
  * Retrieves a SPI port for a given identifier.
@@ -2088,4 +2204,4 @@ function yFirstSpiPort()
     return YSpiPort.FirstSpiPort();
 }
 
-//--- (end of YSpiPort functions)
+//--- (end of generated code: YSpiPort functions)
