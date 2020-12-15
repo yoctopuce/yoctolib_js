@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_display.js 38899 2019-12-20 17:21:03Z mvuilleu $
+ * $Id: yocto_display.js 42089 2020-10-16 17:52:05Z mvuilleu $
  *
  * Implements yFindDisplay(), the high-level API for Display functions
  *
@@ -762,9 +762,9 @@ var YDisplay; // definition below
         this._layerHeight                    = Y_LAYERHEIGHT_INVALID;      // UInt31
         this._layerCount                     = Y_LAYERCOUNT_INVALID;       // UInt31
         this._command                        = Y_COMMAND_INVALID;          // Text
+        this._allDisplayLayers               = [];                         // YDisplayLayerArr
         //--- (end of generated code: YDisplay constructor)
 
-        this._allDisplayLayers;
         this._sequence         = '';
         this._recording        = false;
     }
@@ -1658,6 +1658,35 @@ var YDisplay; // definition below
     }
 
     /**
+     * Returns a YDisplayLayer object that can be used to draw on the specified
+     * layer. The content is displayed only when the layer is active on the
+     * screen (and not masked by other overlapping layers).
+     *
+     * @param layerId : the identifier of the layer (a number in range 0..layerCount-1)
+     *
+     * @return an YDisplayLayer object
+     *
+     * On failure, throws an exception or returns null.
+     */
+    function YDisplay_get_displayLayer(layerId)
+    {
+        var layercount;             // int;
+        var idx;                    // int;
+        layercount = this.get_layerCount();
+        if (!((layerId >= 0) && (layerId < layercount))) {
+            return this._throw(YAPI_INVALID_ARGUMENT,"invalid DisplayLayer index",null);
+        }
+        if (this._allDisplayLayers.length == 0) {
+            idx = 0;
+            while (idx < layercount) {
+                this._allDisplayLayers.push(new YDisplayLayer(this, idx));
+                idx = idx + 1;
+            }
+        }
+        return this._allDisplayLayers[layerId];
+    }
+
+    /**
      * Continues the enumeration of displays started using yFirstDisplay().
      * Caution: You can't make any assumption about the returned displays order.
      * If you want to find a specific a display, use Display.findDisplay()
@@ -1692,32 +1721,6 @@ var YDisplay; // definition below
     }
 
     //--- (end of generated code: YDisplay implementation)
-
-    /**
-     * Returns a YDisplayLayer object that can be used to draw on the specified
-     * layer. The content is displayed only when the layer is active on the
-     * screen (and not masked by other overlapping layers).
-     *
-     * @param layerId : the identifier of the layer (a number in range 0..layerCount-1)
-     *
-     * @return an YDisplayLayer object
-     *
-     * On failure, throws an exception or returns null.
-     */
-    function YDisplay_get_displayLayer(layerId)
-    {
-        if (!this._allDisplayLayers) {
-            var nb_display_layer = this.get_layerCount();
-            this._allDisplayLayers = [];
-            for(var i=0; i < nb_display_layer; i++) {
-                this._allDisplayLayers[i] = new YDisplayLayer(this, ''+i);
-            }
-        }
-        if(layerId < 0 || layerId >= this._allDisplayLayers.length) {
-            throw new YAPI_Exception(YAPI.INVALID_ARGUMENT, "Invalid layerId");
-        }
-        return this._allDisplayLayers[layerId];
-    }
 
     function YDisplay_flushLayers()
     {
@@ -1841,11 +1844,12 @@ var YDisplay; // definition below
         upload                      : YDisplay_upload,
         copyLayerContent            : YDisplay_copyLayerContent,
         swapLayerContent            : YDisplay_swapLayerContent,
+        get_displayLayer            : YDisplay_get_displayLayer,
+        displayLayer                : YDisplay_get_displayLayer,
         nextDisplay                 : YDisplay_nextDisplay,
         _parseAttr                  : YDisplay_parseAttr
     });
     //--- (end of generated code: YDisplay initialization)
-    YDisplay.prototype.get_displayLayer        = YDisplay_get_displayLayer;
     YDisplay.prototype.flushLayers             = YDisplay_flushLayers;
     YDisplay.prototype.resetHiddenLayerFlags   = YDisplay_resetHiddenLayerFlags;
     YDisplay.prototype.sendCommand             = YDisplay_sendCommand;

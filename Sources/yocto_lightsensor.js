@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_lightsensor.js 38899 2019-12-20 17:21:03Z mvuilleu $
+ *  $Id: yocto_lightsensor.js 42951 2020-12-14 09:43:29Z seb $
  *
  *  Implements the high-level API for LightSensor functions
  *
@@ -47,6 +47,7 @@ var Y_MEASURETYPE_WIDE_SPECTRUM     = 1;
 var Y_MEASURETYPE_INFRARED          = 2;
 var Y_MEASURETYPE_HIGH_RATE         = 3;
 var Y_MEASURETYPE_HIGH_ENERGY       = 4;
+var Y_MEASURETYPE_HIGH_RESOLUTION   = 5;
 var Y_MEASURETYPE_INVALID           = -1;
 //--- (end of YLightSensor definitions)
 
@@ -120,7 +121,8 @@ var YLightSensor; // definition below
      * Returns the type of light measure.
      *
      * @return a value among Y_MEASURETYPE_HUMAN_EYE, Y_MEASURETYPE_WIDE_SPECTRUM, Y_MEASURETYPE_INFRARED,
-     * Y_MEASURETYPE_HIGH_RATE and Y_MEASURETYPE_HIGH_ENERGY corresponding to the type of light measure
+     * Y_MEASURETYPE_HIGH_RATE, Y_MEASURETYPE_HIGH_ENERGY and Y_MEASURETYPE_HIGH_RESOLUTION corresponding
+     * to the type of light measure
      *
      * On failure, throws an exception or returns Y_MEASURETYPE_INVALID.
      */
@@ -144,8 +146,8 @@ var YLightSensor; // definition below
      *         - the user-specific context object
      *         - the YLightSensor object that invoked the callback
      *         - the result:a value among Y_MEASURETYPE_HUMAN_EYE, Y_MEASURETYPE_WIDE_SPECTRUM,
-     *         Y_MEASURETYPE_INFRARED, Y_MEASURETYPE_HIGH_RATE and Y_MEASURETYPE_HIGH_ENERGY corresponding to the
-     *         type of light measure
+     *         Y_MEASURETYPE_INFRARED, Y_MEASURETYPE_HIGH_RATE, Y_MEASURETYPE_HIGH_ENERGY and
+     *         Y_MEASURETYPE_HIGH_RESOLUTION corresponding to the type of light measure
      * @param context : user-specific object that is passed as-is to the callback function
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
@@ -178,8 +180,8 @@ var YLightSensor; // definition below
      * modification must be kept.
      *
      * @param newval : a value among Y_MEASURETYPE_HUMAN_EYE, Y_MEASURETYPE_WIDE_SPECTRUM,
-     * Y_MEASURETYPE_INFRARED, Y_MEASURETYPE_HIGH_RATE and Y_MEASURETYPE_HIGH_ENERGY corresponding to the
-     * light sensor type used in the device
+     * Y_MEASURETYPE_INFRARED, Y_MEASURETYPE_HIGH_RATE, Y_MEASURETYPE_HIGH_ENERGY and
+     * Y_MEASURETYPE_HIGH_RESOLUTION corresponding to the light sensor type used in the device
      *
      * @return YAPI_SUCCESS if the call succeeds.
      *
@@ -274,6 +276,7 @@ var YLightSensor; // definition below
         MEASURETYPE_INFRARED        : 2,
         MEASURETYPE_HIGH_RATE       : 3,
         MEASURETYPE_HIGH_ENERGY     : 4,
+        MEASURETYPE_HIGH_RESOLUTION : 5,
         MEASURETYPE_INVALID         : -1
     }, {
         // Class methods

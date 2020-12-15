@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_tilt.js 38899 2019-12-20 17:21:03Z mvuilleu $
+ *  $Id: yocto_tilt.js 42951 2020-12-14 09:43:29Z seb $
  *
  *  Implements the high-level API for Tilt functions
  *
@@ -96,9 +96,9 @@ var YTilt; // definition below
     }
 
     /**
-     * Returns the measure update frequency, measured in Hz (Yocto-3D-V2 only).
+     * Returns the measure update frequency, measured in Hz.
      *
-     * @return an integer corresponding to the measure update frequency, measured in Hz (Yocto-3D-V2 only)
+     * @return an integer corresponding to the measure update frequency, measured in Hz
      *
      * On failure, throws an exception or returns Y_BANDWIDTH_INVALID.
      */
@@ -115,13 +115,13 @@ var YTilt; // definition below
     }
 
     /**
-     * Gets the measure update frequency, measured in Hz (Yocto-3D-V2 only).
+     * Gets the measure update frequency, measured in Hz.
      *
      * @param callback : callback function that is invoked when the result is known.
      *         The callback function receives three arguments:
      *         - the user-specific context object
      *         - the YTilt object that invoked the callback
-     *         - the result:an integer corresponding to the measure update frequency, measured in Hz (Yocto-3D-V2 only)
+     *         - the result:an integer corresponding to the measure update frequency, measured in Hz
      * @param context : user-specific object that is passed as-is to the callback function
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
@@ -147,12 +147,12 @@ var YTilt; // definition below
     }
 
     /**
-     * Changes the measure update frequency, measured in Hz (Yocto-3D-V2 only). When the
+     * Changes the measure update frequency, measured in Hz. When the
      * frequency is lower, the device performs averaging.
      * Remember to call the saveToFlash()
      * method of the module if the modification must be kept.
      *
-     * @param newval : an integer corresponding to the measure update frequency, measured in Hz (Yocto-3D-V2 only)
+     * @param newval : an integer corresponding to the measure update frequency, measured in Hz
      *
      * @return YAPI_SUCCESS if the call succeeds.
      *
@@ -245,6 +245,42 @@ var YTilt; // definition below
     }
 
     /**
+     * Performs a zero calibration for the tilt measurement (Yocto-Inclinometer only).
+     * When this method is invoked, a simple shift (translation)
+     * is applied so that the current position is reported as a zero angle.
+     * Be aware that this shift will also affect the measurement boundaries.
+     *
+     * @return YAPI_SUCCESS if the call succeeds.
+     *
+     * On failure, throws an exception or returns a negative error code.
+     */
+    function YTilt_calibrateToZero()
+    {
+        var currentRawVal;          // float;
+        var rawVals = [];           // floatArr;
+        var refVals = [];           // floatArr;
+        currentRawVal = this.get_currentRawValue();
+        rawVals.length = 0;
+        refVals.length = 0;
+        rawVals.push(currentRawVal);
+        refVals.push(0.0);
+        return this.calibrateFromPoints(rawVals, refVals);
+    }
+
+    /**
+     * Cancels any previous zero calibration for the tilt measurement (Yocto-Inclinometer only).
+     * This function restores the factory zero calibration.
+     *
+     * @return YAPI_SUCCESS if the call succeeds.
+     *
+     * On failure, throws an exception or returns a negative error code.
+     */
+    function YTilt_restoreZeroCalibration()
+    {
+        return this._setAttr("calibrationParam", "0");
+    }
+
+    /**
      * Continues the enumeration of tilt sensors started using yFirstTilt().
      * Caution: You can't make any assumption about the returned tilt sensors order.
      * If you want to find a specific a tilt sensor, use Tilt.findTilt()
@@ -304,6 +340,8 @@ var YTilt; // definition below
         axis                        : YTilt_get_axis,
         get_axis_async              : YTilt_get_axis_async,
         axis_async                  : YTilt_get_axis_async,
+        calibrateToZero             : YTilt_calibrateToZero,
+        restoreZeroCalibration      : YTilt_restoreZeroCalibration,
         nextTilt                    : YTilt_nextTilt,
         _parseAttr                  : YTilt_parseAttr
     });
