@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_current.js 38899 2019-12-20 17:21:03Z mvuilleu $
+ *  $Id: yocto_current.js 43580 2021-01-26 17:46:01Z mvuilleu $
  *
  *  Implements the high-level API for Current functions
  *
@@ -87,9 +87,9 @@ var YCurrent; // definition below
     /**
      * Returns the activation state of this input.
      *
-     * @return either Y_ENABLED_FALSE or Y_ENABLED_TRUE, according to the activation state of this input
+     * @return either YCurrent.ENABLED_FALSE or YCurrent.ENABLED_TRUE, according to the activation state of this input
      *
-     * On failure, throws an exception or returns Y_ENABLED_INVALID.
+     * On failure, throws an exception or returns YCurrent.ENABLED_INVALID.
      */
     function YCurrent_get_enabled()
     {
@@ -110,12 +110,13 @@ var YCurrent; // definition below
      *         The callback function receives three arguments:
      *         - the user-specific context object
      *         - the YCurrent object that invoked the callback
-     *         - the result:either Y_ENABLED_FALSE or Y_ENABLED_TRUE, according to the activation state of this input
+     *         - the result:either YCurrent.ENABLED_FALSE or YCurrent.ENABLED_TRUE, according to the activation
+     *         state of this input
      * @param context : user-specific object that is passed as-is to the callback function
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      *
-     * On failure, throws an exception or returns Y_ENABLED_INVALID.
+     * On failure, throws an exception or returns YCurrent.ENABLED_INVALID.
      */
     function YCurrent_get_enabled_async(callback,context)
     {
@@ -143,10 +144,10 @@ var YCurrent; // definition below
      * Remember to call the saveToFlash()
      * method of the module if the modification must be kept.
      *
-     * @param newval : either Y_ENABLED_FALSE or Y_ENABLED_TRUE, according to the activation state of this
-     * voltage input
+     * @param newval : either YCurrent.ENABLED_FALSE or YCurrent.ENABLED_TRUE, according to the activation
+     * state of this voltage input
      *
-     * @return YAPI_SUCCESS if the call succeeds.
+     * @return YAPI.SUCCESS if the call succeeds.
      *
      * On failure, throws an exception or returns a negative error code.
      */

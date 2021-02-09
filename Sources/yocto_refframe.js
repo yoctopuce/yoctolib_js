@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_refframe.js 42951 2020-12-14 09:43:29Z seb $
+ *  $Id: yocto_refframe.js 43619 2021-01-29 09:14:45Z mvuilleu $
  *
  *  Implements the high-level API for RefFrame functions
  *
@@ -70,7 +70,8 @@ var Y_CALIBRATIONPARAM_INVALID      = YAPI_INVALID_STRING;
 
 //--- (YRefFrame class start)
 /**
- * YRefFrame Class: 3D reference frame configuration interface, available for instance in the Yocto-3D-V2
+ * YRefFrame Class: 3D reference frame configuration interface, available for instance in the
+ * Yocto-3D-V2 or the Yocto-Inclinometer
  *
  * The YRefFrame class is used to setup the base orientation of the Yoctopuce inertial
  * sensors. Thanks to this, orientation functions relative to the earth surface plane
@@ -204,7 +205,7 @@ var YRefFrame; // definition below
      *
      * @param newval : a floating point number corresponding to the reference bearing used by the compass
      *
-     * @return YAPI_SUCCESS if the call succeeds.
+     * @return YAPI.SUCCESS if the call succeeds.
      *
      * On failure, throws an exception or returns a negative error code.
      */
@@ -221,7 +222,7 @@ var YRefFrame; // definition below
      *
      * @return a floating point number corresponding to the reference bearing used by the compass
      *
-     * On failure, throws an exception or returns Y_BEARING_INVALID.
+     * On failure, throws an exception or returns YRefFrame.BEARING_INVALID.
      */
     function YRefFrame_get_bearing()
     {
@@ -249,7 +250,7 @@ var YRefFrame; // definition below
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      *
-     * On failure, throws an exception or returns Y_BEARING_INVALID.
+     * On failure, throws an exception or returns YRefFrame.BEARING_INVALID.
      */
     function YRefFrame_get_bearing_async(callback,context)
     {
@@ -319,11 +320,12 @@ var YRefFrame; // definition below
     /**
      * Returns the sensor fusion mode. Note that available sensor fusion modes depend on the sensor type.
      *
-     * @return a value among Y_FUSIONMODE_NDOF, Y_FUSIONMODE_NDOF_FMC_OFF, Y_FUSIONMODE_M4G,
-     * Y_FUSIONMODE_COMPASS, Y_FUSIONMODE_IMU, Y_FUSIONMODE_INCLIN_90DEG_1G8,
-     * Y_FUSIONMODE_INCLIN_90DEG_3G6 and Y_FUSIONMODE_INCLIN_10DEG corresponding to the sensor fusion mode
+     * @return a value among YRefFrame.FUSIONMODE_NDOF, YRefFrame.FUSIONMODE_NDOF_FMC_OFF,
+     * YRefFrame.FUSIONMODE_M4G, YRefFrame.FUSIONMODE_COMPASS, YRefFrame.FUSIONMODE_IMU,
+     * YRefFrame.FUSIONMODE_INCLIN_90DEG_1G8, YRefFrame.FUSIONMODE_INCLIN_90DEG_3G6 and
+     * YRefFrame.FUSIONMODE_INCLIN_10DEG corresponding to the sensor fusion mode
      *
-     * On failure, throws an exception or returns Y_FUSIONMODE_INVALID.
+     * On failure, throws an exception or returns YRefFrame.FUSIONMODE_INVALID.
      */
     function YRefFrame_get_fusionMode()
     {
@@ -344,14 +346,15 @@ var YRefFrame; // definition below
      *         The callback function receives three arguments:
      *         - the user-specific context object
      *         - the YRefFrame object that invoked the callback
-     *         - the result:a value among Y_FUSIONMODE_NDOF, Y_FUSIONMODE_NDOF_FMC_OFF, Y_FUSIONMODE_M4G,
-     *         Y_FUSIONMODE_COMPASS, Y_FUSIONMODE_IMU, Y_FUSIONMODE_INCLIN_90DEG_1G8,
-     *         Y_FUSIONMODE_INCLIN_90DEG_3G6 and Y_FUSIONMODE_INCLIN_10DEG corresponding to the sensor fusion mode
+     *         - the result:a value among YRefFrame.FUSIONMODE_NDOF, YRefFrame.FUSIONMODE_NDOF_FMC_OFF,
+     *         YRefFrame.FUSIONMODE_M4G, YRefFrame.FUSIONMODE_COMPASS, YRefFrame.FUSIONMODE_IMU,
+     *         YRefFrame.FUSIONMODE_INCLIN_90DEG_1G8, YRefFrame.FUSIONMODE_INCLIN_90DEG_3G6 and
+     *         YRefFrame.FUSIONMODE_INCLIN_10DEG corresponding to the sensor fusion mode
      * @param context : user-specific object that is passed as-is to the callback function
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      *
-     * On failure, throws an exception or returns Y_FUSIONMODE_INVALID.
+     * On failure, throws an exception or returns YRefFrame.FUSIONMODE_INVALID.
      */
     function YRefFrame_get_fusionMode_async(callback,context)
     {
@@ -375,11 +378,12 @@ var YRefFrame; // definition below
      * Change the sensor fusion mode. Note that available sensor fusion modes depend on the sensor type.
      * Remember to call the matching module saveToFlash() method to save the setting permanently.
      *
-     * @param newval : a value among Y_FUSIONMODE_NDOF, Y_FUSIONMODE_NDOF_FMC_OFF, Y_FUSIONMODE_M4G,
-     * Y_FUSIONMODE_COMPASS, Y_FUSIONMODE_IMU, Y_FUSIONMODE_INCLIN_90DEG_1G8,
-     * Y_FUSIONMODE_INCLIN_90DEG_3G6 and Y_FUSIONMODE_INCLIN_10DEG
+     * @param newval : a value among YRefFrame.FUSIONMODE_NDOF, YRefFrame.FUSIONMODE_NDOF_FMC_OFF,
+     * YRefFrame.FUSIONMODE_M4G, YRefFrame.FUSIONMODE_COMPASS, YRefFrame.FUSIONMODE_IMU,
+     * YRefFrame.FUSIONMODE_INCLIN_90DEG_1G8, YRefFrame.FUSIONMODE_INCLIN_90DEG_3G6 and
+     * YRefFrame.FUSIONMODE_INCLIN_10DEG
      *
-     * @return YAPI_SUCCESS if the call succeeds.
+     * @return YAPI.SUCCESS if the call succeeds.
      *
      * On failure, throws an exception or returns a negative error code.
      */
@@ -433,10 +437,10 @@ var YRefFrame; // definition below
      * in order to define the reference frame for the compass and the
      * pitch/roll tilt sensors.
      *
-     * @return a value among the Y_MOUNTPOSITION enumeration
-     *         (Y_MOUNTPOSITION_BOTTOM,   Y_MOUNTPOSITION_TOP,
-     *         Y_MOUNTPOSITION_FRONT,    Y_MOUNTPOSITION_RIGHT,
-     *         Y_MOUNTPOSITION_REAR,     Y_MOUNTPOSITION_LEFT),
+     * @return a value among the YRefFrame.MOUNTPOSITION enumeration
+     *         (YRefFrame.MOUNTPOSITION_BOTTOM,  YRefFrame.MOUNTPOSITION_TOP,
+     *         YRefFrame.MOUNTPOSITION_FRONT,    YRefFrame.MOUNTPOSITION_RIGHT,
+     *         YRefFrame.MOUNTPOSITION_REAR,     YRefFrame.MOUNTPOSITION_LEFT),
      *         corresponding to the installation in a box, on one of the six faces.
      *
      * On failure, throws an exception or returns Y_MOUNTPOSITION_INVALID.
@@ -456,9 +460,9 @@ var YRefFrame; // definition below
      * in order to define the reference frame for the compass and the
      * pitch/roll tilt sensors.
      *
-     * @return a value among the enumeration Y_MOUNTORIENTATION
-     *         (Y_MOUNTORIENTATION_TWELVE, Y_MOUNTORIENTATION_THREE,
-     *         Y_MOUNTORIENTATION_SIX,     Y_MOUNTORIENTATION_NINE)
+     * @return a value among the enumeration YRefFrame.MOUNTORIENTATION
+     *         (YRefFrame.MOUNTORIENTATION_TWELVE, YRefFrame.MOUNTORIENTATION_THREE,
+     *         YRefFrame.MOUNTORIENTATION_SIX,     YRefFrame.MOUNTORIENTATION_NINE)
      *         corresponding to the orientation of the "X" arrow on the device,
      *         as on a clock dial seen from an observer in the center of the box.
      *         On the bottom face, the 12H orientation points to the front, while
@@ -483,14 +487,14 @@ var YRefFrame; // definition below
      * and horizontally, you must select its reference orientation (parallel to
      * the earth surface) so that the measures are made relative to this position.
      *
-     * @param position : a value among the Y_MOUNTPOSITION enumeration
-     *         (Y_MOUNTPOSITION_BOTTOM,   Y_MOUNTPOSITION_TOP,
-     *         Y_MOUNTPOSITION_FRONT,    Y_MOUNTPOSITION_RIGHT,
-     *         Y_MOUNTPOSITION_REAR,     Y_MOUNTPOSITION_LEFT),
+     * @param position : a value among the YRefFrame.MOUNTPOSITION enumeration
+     *         (YRefFrame.MOUNTPOSITION_BOTTOM,  YRefFrame.MOUNTPOSITION_TOP,
+     *         YRefFrame.MOUNTPOSITION_FRONT,    YRefFrame.MOUNTPOSITION_RIGHT,
+     *         YRefFrame.MOUNTPOSITION_REAR,     YRefFrame.MOUNTPOSITION_LEFT),
      *         corresponding to the installation in a box, on one of the six faces.
-     * @param orientation : a value among the enumeration Y_MOUNTORIENTATION
-     *         (Y_MOUNTORIENTATION_TWELVE, Y_MOUNTORIENTATION_THREE,
-     *         Y_MOUNTORIENTATION_SIX,     Y_MOUNTORIENTATION_NINE)
+     * @param orientation : a value among the enumeration YRefFrame.MOUNTORIENTATION
+     *         (YRefFrame.MOUNTORIENTATION_TWELVE, YRefFrame.MOUNTORIENTATION_THREE,
+     *         YRefFrame.MOUNTORIENTATION_SIX,     YRefFrame.MOUNTORIENTATION_NINE)
      *         corresponding to the orientation of the "X" arrow on the device,
      *         as on a clock dial seen from an observer in the center of the box.
      *         On the bottom face, the 12H orientation points to the front, while

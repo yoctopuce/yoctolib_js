@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_magnetometer.js 42951 2020-12-14 09:43:29Z seb $
+ *  $Id: yocto_magnetometer.js 43580 2021-01-26 17:46:01Z mvuilleu $
  *
  *  Implements the high-level API for Magnetometer functions
  *
@@ -107,7 +107,7 @@ var YMagnetometer; // definition below
      *
      * @return an integer corresponding to the measure update frequency, measured in Hz
      *
-     * On failure, throws an exception or returns Y_BANDWIDTH_INVALID.
+     * On failure, throws an exception or returns YMagnetometer.BANDWIDTH_INVALID.
      */
     function YMagnetometer_get_bandwidth()
     {
@@ -133,7 +133,7 @@ var YMagnetometer; // definition below
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      *
-     * On failure, throws an exception or returns Y_BANDWIDTH_INVALID.
+     * On failure, throws an exception or returns YMagnetometer.BANDWIDTH_INVALID.
      */
     function YMagnetometer_get_bandwidth_async(callback,context)
     {
@@ -161,7 +161,7 @@ var YMagnetometer; // definition below
      *
      * @param newval : an integer corresponding to the measure update frequency, measured in Hz
      *
-     * @return YAPI_SUCCESS if the call succeeds.
+     * @return YAPI.SUCCESS if the call succeeds.
      *
      * On failure, throws an exception or returns a negative error code.
      */
@@ -177,7 +177,7 @@ var YMagnetometer; // definition below
      * @return a floating point number corresponding to the X component of the magnetic field, as a
      * floating point number
      *
-     * On failure, throws an exception or returns Y_XVALUE_INVALID.
+     * On failure, throws an exception or returns YMagnetometer.XVALUE_INVALID.
      */
     function YMagnetometer_get_xValue()
     {
@@ -204,7 +204,7 @@ var YMagnetometer; // definition below
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      *
-     * On failure, throws an exception or returns Y_XVALUE_INVALID.
+     * On failure, throws an exception or returns YMagnetometer.XVALUE_INVALID.
      */
     function YMagnetometer_get_xValue_async(callback,context)
     {
@@ -230,7 +230,7 @@ var YMagnetometer; // definition below
      * @return a floating point number corresponding to the Y component of the magnetic field, as a
      * floating point number
      *
-     * On failure, throws an exception or returns Y_YVALUE_INVALID.
+     * On failure, throws an exception or returns YMagnetometer.YVALUE_INVALID.
      */
     function YMagnetometer_get_yValue()
     {
@@ -257,7 +257,7 @@ var YMagnetometer; // definition below
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      *
-     * On failure, throws an exception or returns Y_YVALUE_INVALID.
+     * On failure, throws an exception or returns YMagnetometer.YVALUE_INVALID.
      */
     function YMagnetometer_get_yValue_async(callback,context)
     {
@@ -283,7 +283,7 @@ var YMagnetometer; // definition below
      * @return a floating point number corresponding to the Z component of the magnetic field, as a
      * floating point number
      *
-     * On failure, throws an exception or returns Y_ZVALUE_INVALID.
+     * On failure, throws an exception or returns YMagnetometer.ZVALUE_INVALID.
      */
     function YMagnetometer_get_zValue()
     {
@@ -310,7 +310,7 @@ var YMagnetometer; // definition below
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      *
-     * On failure, throws an exception or returns Y_ZVALUE_INVALID.
+     * On failure, throws an exception or returns YMagnetometer.ZVALUE_INVALID.
      */
     function YMagnetometer_get_zValue_async(callback,context)
     {

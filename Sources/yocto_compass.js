@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_compass.js 42951 2020-12-14 09:43:29Z seb $
+ *  $Id: yocto_compass.js 43580 2021-01-26 17:46:01Z mvuilleu $
  *
  *  Implements the high-level API for Compass functions
  *
@@ -99,7 +99,7 @@ var YCompass; // definition below
      *
      * @return an integer corresponding to the measure update frequency, measured in Hz
      *
-     * On failure, throws an exception or returns Y_BANDWIDTH_INVALID.
+     * On failure, throws an exception or returns YCompass.BANDWIDTH_INVALID.
      */
     function YCompass_get_bandwidth()
     {
@@ -125,7 +125,7 @@ var YCompass; // definition below
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      *
-     * On failure, throws an exception or returns Y_BANDWIDTH_INVALID.
+     * On failure, throws an exception or returns YCompass.BANDWIDTH_INVALID.
      */
     function YCompass_get_bandwidth_async(callback,context)
     {
@@ -153,7 +153,7 @@ var YCompass; // definition below
      *
      * @param newval : an integer corresponding to the measure update frequency, measured in Hz
      *
-     * @return YAPI_SUCCESS if the call succeeds.
+     * @return YAPI.SUCCESS if the call succeeds.
      *
      * On failure, throws an exception or returns a negative error code.
      */
@@ -209,7 +209,7 @@ var YCompass; // definition below
      *
      * @return a floating point number corresponding to the magnetic heading, regardless of the configured bearing
      *
-     * On failure, throws an exception or returns Y_MAGNETICHEADING_INVALID.
+     * On failure, throws an exception or returns YCompass.MAGNETICHEADING_INVALID.
      */
     function YCompass_get_magneticHeading()
     {
@@ -235,7 +235,7 @@ var YCompass; // definition below
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      *
-     * On failure, throws an exception or returns Y_MAGNETICHEADING_INVALID.
+     * On failure, throws an exception or returns YCompass.MAGNETICHEADING_INVALID.
      */
     function YCompass_get_magneticHeading_async(callback,context)
     {

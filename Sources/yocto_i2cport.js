@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_i2cport.js 41171 2020-07-02 17:49:00Z mvuilleu $
+ *  $Id: yocto_i2cport.js 43619 2021-01-29 09:14:45Z mvuilleu $
  *
  *  Implements the high-level API for I2cPort functions
  *
@@ -234,7 +234,7 @@ var YI2cPort; // definition below
      *
      * @return an integer corresponding to the total number of bytes received since last reset
      *
-     * On failure, throws an exception or returns Y_RXCOUNT_INVALID.
+     * On failure, throws an exception or returns YI2cPort.RXCOUNT_INVALID.
      */
     function YI2cPort_get_rxCount()
     {
@@ -260,7 +260,7 @@ var YI2cPort; // definition below
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      *
-     * On failure, throws an exception or returns Y_RXCOUNT_INVALID.
+     * On failure, throws an exception or returns YI2cPort.RXCOUNT_INVALID.
      */
     function YI2cPort_get_rxCount_async(callback,context)
     {
@@ -285,7 +285,7 @@ var YI2cPort; // definition below
      *
      * @return an integer corresponding to the total number of bytes transmitted since last reset
      *
-     * On failure, throws an exception or returns Y_TXCOUNT_INVALID.
+     * On failure, throws an exception or returns YI2cPort.TXCOUNT_INVALID.
      */
     function YI2cPort_get_txCount()
     {
@@ -311,7 +311,7 @@ var YI2cPort; // definition below
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      *
-     * On failure, throws an exception or returns Y_TXCOUNT_INVALID.
+     * On failure, throws an exception or returns YI2cPort.TXCOUNT_INVALID.
      */
     function YI2cPort_get_txCount_async(callback,context)
     {
@@ -336,7 +336,7 @@ var YI2cPort; // definition below
      *
      * @return an integer corresponding to the total number of communication errors detected since last reset
      *
-     * On failure, throws an exception or returns Y_ERRCOUNT_INVALID.
+     * On failure, throws an exception or returns YI2cPort.ERRCOUNT_INVALID.
      */
     function YI2cPort_get_errCount()
     {
@@ -362,7 +362,7 @@ var YI2cPort; // definition below
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      *
-     * On failure, throws an exception or returns Y_ERRCOUNT_INVALID.
+     * On failure, throws an exception or returns YI2cPort.ERRCOUNT_INVALID.
      */
     function YI2cPort_get_errCount_async(callback,context)
     {
@@ -387,7 +387,7 @@ var YI2cPort; // definition below
      *
      * @return an integer corresponding to the total number of messages received since last reset
      *
-     * On failure, throws an exception or returns Y_RXMSGCOUNT_INVALID.
+     * On failure, throws an exception or returns YI2cPort.RXMSGCOUNT_INVALID.
      */
     function YI2cPort_get_rxMsgCount()
     {
@@ -413,7 +413,7 @@ var YI2cPort; // definition below
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      *
-     * On failure, throws an exception or returns Y_RXMSGCOUNT_INVALID.
+     * On failure, throws an exception or returns YI2cPort.RXMSGCOUNT_INVALID.
      */
     function YI2cPort_get_rxMsgCount_async(callback,context)
     {
@@ -438,7 +438,7 @@ var YI2cPort; // definition below
      *
      * @return an integer corresponding to the total number of messages send since last reset
      *
-     * On failure, throws an exception or returns Y_TXMSGCOUNT_INVALID.
+     * On failure, throws an exception or returns YI2cPort.TXMSGCOUNT_INVALID.
      */
     function YI2cPort_get_txMsgCount()
     {
@@ -464,7 +464,7 @@ var YI2cPort; // definition below
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      *
-     * On failure, throws an exception or returns Y_TXMSGCOUNT_INVALID.
+     * On failure, throws an exception or returns YI2cPort.TXMSGCOUNT_INVALID.
      */
     function YI2cPort_get_txMsgCount_async(callback,context)
     {
@@ -489,7 +489,7 @@ var YI2cPort; // definition below
      *
      * @return a string corresponding to the latest message fully received (for Line and Frame protocols)
      *
-     * On failure, throws an exception or returns Y_LASTMSG_INVALID.
+     * On failure, throws an exception or returns YI2cPort.LASTMSG_INVALID.
      */
     function YI2cPort_get_lastMsg()
     {
@@ -515,7 +515,7 @@ var YI2cPort; // definition below
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      *
-     * On failure, throws an exception or returns Y_LASTMSG_INVALID.
+     * On failure, throws an exception or returns YI2cPort.LASTMSG_INVALID.
      */
     function YI2cPort_get_lastMsg_async(callback,context)
     {
@@ -540,7 +540,7 @@ var YI2cPort; // definition below
      *
      * @return a string corresponding to the name of the job file currently in use
      *
-     * On failure, throws an exception or returns Y_CURRENTJOB_INVALID.
+     * On failure, throws an exception or returns YI2cPort.CURRENTJOB_INVALID.
      */
     function YI2cPort_get_currentJob()
     {
@@ -566,7 +566,7 @@ var YI2cPort; // definition below
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      *
-     * On failure, throws an exception or returns Y_CURRENTJOB_INVALID.
+     * On failure, throws an exception or returns YI2cPort.CURRENTJOB_INVALID.
      */
     function YI2cPort_get_currentJob_async(callback,context)
     {
@@ -592,7 +592,7 @@ var YI2cPort; // definition below
      *
      * @param newval : a string
      *
-     * @return YAPI_SUCCESS if the call succeeds.
+     * @return YAPI.SUCCESS if the call succeeds.
      *
      * On failure, throws an exception or returns a negative error code.
      */
@@ -607,7 +607,7 @@ var YI2cPort; // definition below
      *
      * @return a string corresponding to the job file to use when the device is powered on
      *
-     * On failure, throws an exception or returns Y_STARTUPJOB_INVALID.
+     * On failure, throws an exception or returns YI2cPort.STARTUPJOB_INVALID.
      */
     function YI2cPort_get_startupJob()
     {
@@ -633,7 +633,7 @@ var YI2cPort; // definition below
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      *
-     * On failure, throws an exception or returns Y_STARTUPJOB_INVALID.
+     * On failure, throws an exception or returns YI2cPort.STARTUPJOB_INVALID.
      */
     function YI2cPort_get_startupJob_async(callback,context)
     {
@@ -660,7 +660,7 @@ var YI2cPort; // definition below
      *
      * @param newval : a string corresponding to the job to use when the device is powered on
      *
-     * @return YAPI_SUCCESS if the call succeeds.
+     * @return YAPI.SUCCESS if the call succeeds.
      *
      * On failure, throws an exception or returns a negative error code.
      */
@@ -675,7 +675,7 @@ var YI2cPort; // definition below
      *
      * @return an integer corresponding to the maximum number of tasks in a job that the device can handle
      *
-     * On failure, throws an exception or returns Y_JOBMAXTASK_INVALID.
+     * On failure, throws an exception or returns YI2cPort.JOBMAXTASK_INVALID.
      */
     function YI2cPort_get_jobMaxTask()
     {
@@ -701,7 +701,7 @@ var YI2cPort; // definition below
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      *
-     * On failure, throws an exception or returns Y_JOBMAXTASK_INVALID.
+     * On failure, throws an exception or returns YI2cPort.JOBMAXTASK_INVALID.
      */
     function YI2cPort_get_jobMaxTask_async(callback,context)
     {
@@ -726,7 +726,7 @@ var YI2cPort; // definition below
      *
      * @return an integer corresponding to maximum size allowed for job files
      *
-     * On failure, throws an exception or returns Y_JOBMAXSIZE_INVALID.
+     * On failure, throws an exception or returns YI2cPort.JOBMAXSIZE_INVALID.
      */
     function YI2cPort_get_jobMaxSize()
     {
@@ -752,7 +752,7 @@ var YI2cPort; // definition below
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      *
-     * On failure, throws an exception or returns Y_JOBMAXSIZE_INVALID.
+     * On failure, throws an exception or returns YI2cPort.JOBMAXSIZE_INVALID.
      */
     function YI2cPort_get_jobMaxSize_async(callback,context)
     {
@@ -827,7 +827,7 @@ var YI2cPort; // definition below
      *
      * @return a string corresponding to the type of protocol used to send I2C messages, as a string
      *
-     * On failure, throws an exception or returns Y_PROTOCOL_INVALID.
+     * On failure, throws an exception or returns YI2cPort.PROTOCOL_INVALID.
      */
     function YI2cPort_get_protocol()
     {
@@ -856,7 +856,7 @@ var YI2cPort; // definition below
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      *
-     * On failure, throws an exception or returns Y_PROTOCOL_INVALID.
+     * On failure, throws an exception or returns YI2cPort.PROTOCOL_INVALID.
      */
     function YI2cPort_get_protocol_async(callback,context)
     {
@@ -888,7 +888,7 @@ var YI2cPort; // definition below
      *
      * @param newval : a string corresponding to the type of protocol used to send I2C messages
      *
-     * @return YAPI_SUCCESS if the call succeeds.
+     * @return YAPI.SUCCESS if the call succeeds.
      *
      * On failure, throws an exception or returns a negative error code.
      */
@@ -901,10 +901,10 @@ var YI2cPort; // definition below
     /**
      * Returns the voltage level used on the I2C bus.
      *
-     * @return a value among Y_I2CVOLTAGELEVEL_OFF, Y_I2CVOLTAGELEVEL_3V3 and Y_I2CVOLTAGELEVEL_1V8
-     * corresponding to the voltage level used on the I2C bus
+     * @return a value among YI2cPort.I2CVOLTAGELEVEL_OFF, YI2cPort.I2CVOLTAGELEVEL_3V3 and
+     * YI2cPort.I2CVOLTAGELEVEL_1V8 corresponding to the voltage level used on the I2C bus
      *
-     * On failure, throws an exception or returns Y_I2CVOLTAGELEVEL_INVALID.
+     * On failure, throws an exception or returns YI2cPort.I2CVOLTAGELEVEL_INVALID.
      */
     function YI2cPort_get_i2cVoltageLevel()
     {
@@ -925,13 +925,13 @@ var YI2cPort; // definition below
      *         The callback function receives three arguments:
      *         - the user-specific context object
      *         - the YI2cPort object that invoked the callback
-     *         - the result:a value among Y_I2CVOLTAGELEVEL_OFF, Y_I2CVOLTAGELEVEL_3V3 and Y_I2CVOLTAGELEVEL_1V8
-     *         corresponding to the voltage level used on the I2C bus
+     *         - the result:a value among YI2cPort.I2CVOLTAGELEVEL_OFF, YI2cPort.I2CVOLTAGELEVEL_3V3 and
+     *         YI2cPort.I2CVOLTAGELEVEL_1V8 corresponding to the voltage level used on the I2C bus
      * @param context : user-specific object that is passed as-is to the callback function
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      *
-     * On failure, throws an exception or returns Y_I2CVOLTAGELEVEL_INVALID.
+     * On failure, throws an exception or returns YI2cPort.I2CVOLTAGELEVEL_INVALID.
      */
     function YI2cPort_get_i2cVoltageLevel_async(callback,context)
     {
@@ -956,10 +956,10 @@ var YI2cPort; // definition below
      * Remember to call the saveToFlash() method of the module if the
      * modification must be kept.
      *
-     * @param newval : a value among Y_I2CVOLTAGELEVEL_OFF, Y_I2CVOLTAGELEVEL_3V3 and
-     * Y_I2CVOLTAGELEVEL_1V8 corresponding to the voltage level used on the I2C bus
+     * @param newval : a value among YI2cPort.I2CVOLTAGELEVEL_OFF, YI2cPort.I2CVOLTAGELEVEL_3V3 and
+     * YI2cPort.I2CVOLTAGELEVEL_1V8 corresponding to the voltage level used on the I2C bus
      *
-     * @return YAPI_SUCCESS if the call succeeds.
+     * @return YAPI.SUCCESS if the call succeeds.
      *
      * On failure, throws an exception or returns a negative error code.
      */
@@ -979,7 +979,7 @@ var YI2cPort; // definition below
      * @return a string corresponding to the I2C port communication parameters, as a string such as
      *         "400kbps,2000ms,NoRestart"
      *
-     * On failure, throws an exception or returns Y_I2CMODE_INVALID.
+     * On failure, throws an exception or returns YI2cPort.I2CMODE_INVALID.
      */
     function YI2cPort_get_i2cMode()
     {
@@ -1010,7 +1010,7 @@ var YI2cPort; // definition below
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      *
-     * On failure, throws an exception or returns Y_I2CMODE_INVALID.
+     * On failure, throws an exception or returns YI2cPort.I2CMODE_INVALID.
      */
     function YI2cPort_get_i2cMode_async(callback,context)
     {
@@ -1042,7 +1042,7 @@ var YI2cPort; // definition below
      * @param newval : a string corresponding to the I2C port communication parameters, with a string such as
      *         "400kbps,2000ms"
      *
-     * @return YAPI_SUCCESS if the call succeeds.
+     * @return YAPI.SUCCESS if the call succeeds.
      *
      * On failure, throws an exception or returns a negative error code.
      */
@@ -1310,7 +1310,7 @@ var YI2cPort; // definition below
      * @param jobfile : name of the job file to save on the device filesystem
      * @param jsonDef : a string containing a JSON definition of the job
      *
-     * @return YAPI_SUCCESS if the call succeeds.
+     * @return YAPI.SUCCESS if the call succeeds.
      *
      * On failure, throws an exception or returns a negative error code.
      */
@@ -1327,7 +1327,7 @@ var YI2cPort; // definition below
      *
      * @param jobfile : name of the job file (on the device filesystem)
      *
-     * @return YAPI_SUCCESS if the call succeeds.
+     * @return YAPI.SUCCESS if the call succeeds.
      *
      * On failure, throws an exception or returns a negative error code.
      */
@@ -1339,7 +1339,7 @@ var YI2cPort; // definition below
     /**
      * Clears the serial port buffer and resets counters to zero.
      *
-     * @return YAPI_SUCCESS if the call succeeds.
+     * @return YAPI.SUCCESS if the call succeeds.
      *
      * On failure, throws an exception or returns a negative error code.
      */
@@ -1359,7 +1359,7 @@ var YI2cPort; // definition below
      * @param slaveAddr : the 7-bit address of the slave device (without the direction bit)
      * @param buff : the binary buffer to be sent
      *
-     * @return YAPI_SUCCESS if the call succeeds.
+     * @return YAPI.SUCCESS if the call succeeds.
      *
      * On failure, throws an exception or returns a negative error code.
      */
@@ -1401,7 +1401,7 @@ var YI2cPort; // definition below
      * @param slaveAddr : the 7-bit address of the slave device (without the direction bit)
      * @param values : a list of data bytes to be sent
      *
-     * @return YAPI_SUCCESS if the call succeeds.
+     * @return YAPI.SUCCESS if the call succeeds.
      *
      * On failure, throws an exception or returns a negative error code.
      */
@@ -1565,7 +1565,7 @@ var YI2cPort; // definition below
      *
      * @param codes : the code stream to send
      *
-     * @return YAPI_SUCCESS if the call succeeds.
+     * @return YAPI.SUCCESS if the call succeeds.
      *
      * On failure, throws an exception or returns a negative error code.
      */
@@ -1613,7 +1613,7 @@ var YI2cPort; // definition below
      *
      * @param codes : the code stream to send
      *
-     * @return YAPI_SUCCESS if the call succeeds.
+     * @return YAPI.SUCCESS if the call succeeds.
      *
      * On failure, throws an exception or returns a negative error code.
      */
@@ -1636,7 +1636,7 @@ var YI2cPort; // definition below
      *
      * @param code : the byte to send
      *
-     * @return YAPI_SUCCESS if the call succeeds.
+     * @return YAPI.SUCCESS if the call succeeds.
      *
      * On failure, throws an exception or returns a negative error code.
      */
@@ -1652,7 +1652,7 @@ var YI2cPort; // definition below
      *
      * @param hexString : a string of hexadecimal byte codes
      *
-     * @return YAPI_SUCCESS if the call succeeds.
+     * @return YAPI.SUCCESS if the call succeeds.
      *
      * On failure, throws an exception or returns a negative error code.
      */
@@ -1676,7 +1676,7 @@ var YI2cPort; // definition below
      *
      * @param buff : the binary buffer to send
      *
-     * @return YAPI_SUCCESS if the call succeeds.
+     * @return YAPI.SUCCESS if the call succeeds.
      *
      * On failure, throws an exception or returns a negative error code.
      */
@@ -1705,7 +1705,7 @@ var YI2cPort; // definition below
      *
      * @param byteList : a list of byte codes
      *
-     * @return YAPI_SUCCESS if the call succeeds.
+     * @return YAPI.SUCCESS if the call succeeds.
      *
      * On failure, throws an exception or returns a negative error code.
      */

@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_proximity.js 38899 2019-12-20 17:21:03Z mvuilleu $
+ *  $Id: yocto_proximity.js 43619 2021-01-29 09:14:45Z mvuilleu $
  *
  *  Implements the high-level API for Proximity functions
  *
@@ -143,7 +143,7 @@ var YProximity; // definition below
      *
      * @return a floating point number corresponding to the current value of signal measured by the proximity sensor
      *
-     * On failure, throws an exception or returns Y_SIGNALVALUE_INVALID.
+     * On failure, throws an exception or returns YProximity.SIGNALVALUE_INVALID.
      */
     function YProximity_get_signalValue()
     {
@@ -170,7 +170,7 @@ var YProximity; // definition below
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      *
-     * On failure, throws an exception or returns Y_SIGNALVALUE_INVALID.
+     * On failure, throws an exception or returns YProximity.SIGNALVALUE_INVALID.
      */
     function YProximity_get_signalValue_async(callback,context)
     {
@@ -198,7 +198,7 @@ var YProximity; // definition below
      * proximity sensor, when considered
      *         as a binary input (on/off)
      *
-     * On failure, throws an exception or returns Y_DETECTIONTHRESHOLD_INVALID.
+     * On failure, throws an exception or returns YProximity.DETECTIONTHRESHOLD_INVALID.
      */
     function YProximity_get_detectionThreshold()
     {
@@ -227,7 +227,7 @@ var YProximity; // definition below
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      *
-     * On failure, throws an exception or returns Y_DETECTIONTHRESHOLD_INVALID.
+     * On failure, throws an exception or returns YProximity.DETECTIONTHRESHOLD_INVALID.
      */
     function YProximity_get_detectionThreshold_async(callback,context)
     {
@@ -256,7 +256,7 @@ var YProximity; // definition below
      * the proximity sensor, when considered
      *         as a binary input (on/off)
      *
-     * @return YAPI_SUCCESS if the call succeeds.
+     * @return YAPI.SUCCESS if the call succeeds.
      *
      * On failure, throws an exception or returns a negative error code.
      */
@@ -274,7 +274,7 @@ var YProximity; // definition below
      * proximity sensor, when considered
      *         as a binary input (on/off)
      *
-     * On failure, throws an exception or returns Y_DETECTIONHYSTERESIS_INVALID.
+     * On failure, throws an exception or returns YProximity.DETECTIONHYSTERESIS_INVALID.
      */
     function YProximity_get_detectionHysteresis()
     {
@@ -303,7 +303,7 @@ var YProximity; // definition below
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      *
-     * On failure, throws an exception or returns Y_DETECTIONHYSTERESIS_INVALID.
+     * On failure, throws an exception or returns YProximity.DETECTIONHYSTERESIS_INVALID.
      */
     function YProximity_get_detectionHysteresis_async(callback,context)
     {
@@ -332,7 +332,7 @@ var YProximity; // definition below
      * the proximity sensor, when considered
      *         as a binary input (on/off)
      *
-     * @return YAPI_SUCCESS if the call succeeds.
+     * @return YAPI.SUCCESS if the call succeeds.
      *
      * On failure, throws an exception or returns a negative error code.
      */
@@ -348,7 +348,7 @@ var YProximity; // definition below
      *
      * @return an integer corresponding to the minimal detection duration before signalling a presence event
      *
-     * On failure, throws an exception or returns Y_PRESENCEMINTIME_INVALID.
+     * On failure, throws an exception or returns YProximity.PRESENCEMINTIME_INVALID.
      */
     function YProximity_get_presenceMinTime()
     {
@@ -375,7 +375,7 @@ var YProximity; // definition below
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      *
-     * On failure, throws an exception or returns Y_PRESENCEMINTIME_INVALID.
+     * On failure, throws an exception or returns YProximity.PRESENCEMINTIME_INVALID.
      */
     function YProximity_get_presenceMinTime_async(callback,context)
     {
@@ -402,7 +402,7 @@ var YProximity; // definition below
      *
      * @param newval : an integer corresponding to the minimal detection duration before signalling a presence event
      *
-     * @return YAPI_SUCCESS if the call succeeds.
+     * @return YAPI.SUCCESS if the call succeeds.
      *
      * On failure, throws an exception or returns a negative error code.
      */
@@ -418,7 +418,7 @@ var YProximity; // definition below
      *
      * @return an integer corresponding to the minimal detection duration before signalling a removal event
      *
-     * On failure, throws an exception or returns Y_REMOVALMINTIME_INVALID.
+     * On failure, throws an exception or returns YProximity.REMOVALMINTIME_INVALID.
      */
     function YProximity_get_removalMinTime()
     {
@@ -445,7 +445,7 @@ var YProximity; // definition below
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      *
-     * On failure, throws an exception or returns Y_REMOVALMINTIME_INVALID.
+     * On failure, throws an exception or returns YProximity.REMOVALMINTIME_INVALID.
      */
     function YProximity_get_removalMinTime_async(callback,context)
     {
@@ -472,7 +472,7 @@ var YProximity; // definition below
      *
      * @param newval : an integer corresponding to the minimal detection duration before signalling a removal event
      *
-     * @return YAPI_SUCCESS if the call succeeds.
+     * @return YAPI.SUCCESS if the call succeeds.
      *
      * On failure, throws an exception or returns a negative error code.
      */
@@ -486,10 +486,11 @@ var YProximity; // definition below
      * Returns true if the input (considered as binary) is active (detection value is smaller than the
      * specified threshold), and false otherwise.
      *
-     * @return either Y_ISPRESENT_FALSE or Y_ISPRESENT_TRUE, according to true if the input (considered as
-     * binary) is active (detection value is smaller than the specified threshold), and false otherwise
+     * @return either YProximity.ISPRESENT_FALSE or YProximity.ISPRESENT_TRUE, according to true if the
+     * input (considered as binary) is active (detection value is smaller than the specified threshold),
+     * and false otherwise
      *
-     * On failure, throws an exception or returns Y_ISPRESENT_INVALID.
+     * On failure, throws an exception or returns YProximity.ISPRESENT_INVALID.
      */
     function YProximity_get_isPresent()
     {
@@ -511,13 +512,14 @@ var YProximity; // definition below
      *         The callback function receives three arguments:
      *         - the user-specific context object
      *         - the YProximity object that invoked the callback
-     *         - the result:either Y_ISPRESENT_FALSE or Y_ISPRESENT_TRUE, according to true if the input
-     *         (considered as binary) is active (detection value is smaller than the specified threshold), and false otherwise
+     *         - the result:either YProximity.ISPRESENT_FALSE or YProximity.ISPRESENT_TRUE, according to true if
+     *         the input (considered as binary) is active (detection value is smaller than the specified
+     *         threshold), and false otherwise
      * @param context : user-specific object that is passed as-is to the callback function
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      *
-     * On failure, throws an exception or returns Y_ISPRESENT_INVALID.
+     * On failure, throws an exception or returns YProximity.ISPRESENT_INVALID.
      */
     function YProximity_get_isPresent_async(callback,context)
     {
@@ -545,7 +547,7 @@ var YProximity; // definition below
      * and the last observed
      *         detection (the input contact transitioned from absent to present)
      *
-     * On failure, throws an exception or returns Y_LASTTIMEAPPROACHED_INVALID.
+     * On failure, throws an exception or returns YProximity.LASTTIMEAPPROACHED_INVALID.
      */
     function YProximity_get_lastTimeApproached()
     {
@@ -574,7 +576,7 @@ var YProximity; // definition below
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      *
-     * On failure, throws an exception or returns Y_LASTTIMEAPPROACHED_INVALID.
+     * On failure, throws an exception or returns YProximity.LASTTIMEAPPROACHED_INVALID.
      */
     function YProximity_get_lastTimeApproached_async(callback,context)
     {
@@ -602,7 +604,7 @@ var YProximity; // definition below
      * and the last observed
      *         detection (the input contact transitioned from present to absent)
      *
-     * On failure, throws an exception or returns Y_LASTTIMEREMOVED_INVALID.
+     * On failure, throws an exception or returns YProximity.LASTTIMEREMOVED_INVALID.
      */
     function YProximity_get_lastTimeRemoved()
     {
@@ -631,7 +633,7 @@ var YProximity; // definition below
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      *
-     * On failure, throws an exception or returns Y_LASTTIMEREMOVED_INVALID.
+     * On failure, throws an exception or returns YProximity.LASTTIMEREMOVED_INVALID.
      */
     function YProximity_get_lastTimeRemoved_async(callback,context)
     {
@@ -658,7 +660,7 @@ var YProximity; // definition below
      *
      * @return an integer corresponding to the pulse counter value
      *
-     * On failure, throws an exception or returns Y_PULSECOUNTER_INVALID.
+     * On failure, throws an exception or returns YProximity.PULSECOUNTER_INVALID.
      */
     function YProximity_get_pulseCounter()
     {
@@ -686,7 +688,7 @@ var YProximity; // definition below
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      *
-     * On failure, throws an exception or returns Y_PULSECOUNTER_INVALID.
+     * On failure, throws an exception or returns YProximity.PULSECOUNTER_INVALID.
      */
     function YProximity_get_pulseCounter_async(callback,context)
     {
@@ -717,7 +719,7 @@ var YProximity; // definition below
      *
      * @return an integer corresponding to the timer of the pulse counter (ms)
      *
-     * On failure, throws an exception or returns Y_PULSETIMER_INVALID.
+     * On failure, throws an exception or returns YProximity.PULSETIMER_INVALID.
      */
     function YProximity_get_pulseTimer()
     {
@@ -743,7 +745,7 @@ var YProximity; // definition below
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      *
-     * On failure, throws an exception or returns Y_PULSETIMER_INVALID.
+     * On failure, throws an exception or returns YProximity.PULSETIMER_INVALID.
      */
     function YProximity_get_pulseTimer_async(callback,context)
     {
@@ -767,11 +769,11 @@ var YProximity; // definition below
      * Returns the parameter (sensor value, presence or pulse count) returned by the get_currentValue
      * function and callbacks.
      *
-     * @return a value among Y_PROXIMITYREPORTMODE_NUMERIC, Y_PROXIMITYREPORTMODE_PRESENCE and
-     * Y_PROXIMITYREPORTMODE_PULSECOUNT corresponding to the parameter (sensor value, presence or pulse
-     * count) returned by the get_currentValue function and callbacks
+     * @return a value among YProximity.PROXIMITYREPORTMODE_NUMERIC,
+     * YProximity.PROXIMITYREPORTMODE_PRESENCE and YProximity.PROXIMITYREPORTMODE_PULSECOUNT corresponding
+     * to the parameter (sensor value, presence or pulse count) returned by the get_currentValue function and callbacks
      *
-     * On failure, throws an exception or returns Y_PROXIMITYREPORTMODE_INVALID.
+     * On failure, throws an exception or returns YProximity.PROXIMITYREPORTMODE_INVALID.
      */
     function YProximity_get_proximityReportMode()
     {
@@ -793,14 +795,14 @@ var YProximity; // definition below
      *         The callback function receives three arguments:
      *         - the user-specific context object
      *         - the YProximity object that invoked the callback
-     *         - the result:a value among Y_PROXIMITYREPORTMODE_NUMERIC, Y_PROXIMITYREPORTMODE_PRESENCE and
-     *         Y_PROXIMITYREPORTMODE_PULSECOUNT corresponding to the parameter (sensor value, presence or pulse
-     *         count) returned by the get_currentValue function and callbacks
+     *         - the result:a value among YProximity.PROXIMITYREPORTMODE_NUMERIC,
+     *         YProximity.PROXIMITYREPORTMODE_PRESENCE and YProximity.PROXIMITYREPORTMODE_PULSECOUNT corresponding
+     *         to the parameter (sensor value, presence or pulse count) returned by the get_currentValue function and callbacks
      * @param context : user-specific object that is passed as-is to the callback function
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      *
-     * On failure, throws an exception or returns Y_PROXIMITYREPORTMODE_INVALID.
+     * On failure, throws an exception or returns YProximity.PROXIMITYREPORTMODE_INVALID.
      */
     function YProximity_get_proximityReportMode_async(callback,context)
     {
@@ -827,11 +829,12 @@ var YProximity; // definition below
      * get_pulseCounter().
      * Remember to call the saveToFlash() method of the module if the modification must be kept.
      *
-     * @param newval : a value among Y_PROXIMITYREPORTMODE_NUMERIC, Y_PROXIMITYREPORTMODE_PRESENCE and
-     * Y_PROXIMITYREPORTMODE_PULSECOUNT corresponding to the  parameter  type (sensor value, presence or
-     * pulse count) returned by the get_currentValue function and callbacks
+     * @param newval : a value among YProximity.PROXIMITYREPORTMODE_NUMERIC,
+     * YProximity.PROXIMITYREPORTMODE_PRESENCE and YProximity.PROXIMITYREPORTMODE_PULSECOUNT corresponding
+     * to the  parameter  type (sensor value, presence or pulse count) returned by the get_currentValue
+     * function and callbacks
      *
-     * @return YAPI_SUCCESS if the call succeeds.
+     * @return YAPI.SUCCESS if the call succeeds.
      *
      * On failure, throws an exception or returns a negative error code.
      */
@@ -883,7 +886,7 @@ var YProximity; // definition below
     /**
      * Resets the pulse counter value as well as its timer.
      *
-     * @return YAPI_SUCCESS if the call succeeds.
+     * @return YAPI.SUCCESS if the call succeeds.
      *
      * On failure, throws an exception or returns a negative error code.
      */

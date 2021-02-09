@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_pwmoutput.js 38913 2019-12-20 18:59:49Z mvuilleu $
+ *  $Id: yocto_pwmoutput.js 43619 2021-01-29 09:14:45Z mvuilleu $
  *
  *  Implements the high-level API for PwmOutput functions
  *
@@ -123,9 +123,9 @@ var YPwmOutput; // definition below
     /**
      * Returns the state of the PWM generators.
      *
-     * @return either Y_ENABLED_FALSE or Y_ENABLED_TRUE, according to the state of the PWM generators
+     * @return either YPwmOutput.ENABLED_FALSE or YPwmOutput.ENABLED_TRUE, according to the state of the PWM generators
      *
-     * On failure, throws an exception or returns Y_ENABLED_INVALID.
+     * On failure, throws an exception or returns YPwmOutput.ENABLED_INVALID.
      */
     function YPwmOutput_get_enabled()
     {
@@ -146,12 +146,13 @@ var YPwmOutput; // definition below
      *         The callback function receives three arguments:
      *         - the user-specific context object
      *         - the YPwmOutput object that invoked the callback
-     *         - the result:either Y_ENABLED_FALSE or Y_ENABLED_TRUE, according to the state of the PWM generators
+     *         - the result:either YPwmOutput.ENABLED_FALSE or YPwmOutput.ENABLED_TRUE, according to the state of
+     *         the PWM generators
      * @param context : user-specific object that is passed as-is to the callback function
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      *
-     * On failure, throws an exception or returns Y_ENABLED_INVALID.
+     * On failure, throws an exception or returns YPwmOutput.ENABLED_INVALID.
      */
     function YPwmOutput_get_enabled_async(callback,context)
     {
@@ -174,9 +175,9 @@ var YPwmOutput; // definition below
     /**
      * Stops or starts the PWM.
      *
-     * @param newval : either Y_ENABLED_FALSE or Y_ENABLED_TRUE
+     * @param newval : either YPwmOutput.ENABLED_FALSE or YPwmOutput.ENABLED_TRUE
      *
-     * @return YAPI_SUCCESS if the call succeeds.
+     * @return YAPI.SUCCESS if the call succeeds.
      *
      * On failure, throws an exception or returns a negative error code.
      */
@@ -197,7 +198,7 @@ var YPwmOutput; // definition below
      *
      * @param newval : a floating point number corresponding to the PWM frequency
      *
-     * @return YAPI_SUCCESS if the call succeeds.
+     * @return YAPI.SUCCESS if the call succeeds.
      *
      * On failure, throws an exception or returns a negative error code.
      */
@@ -212,7 +213,7 @@ var YPwmOutput; // definition below
      *
      * @return a floating point number corresponding to the PWM frequency in Hz
      *
-     * On failure, throws an exception or returns Y_FREQUENCY_INVALID.
+     * On failure, throws an exception or returns YPwmOutput.FREQUENCY_INVALID.
      */
     function YPwmOutput_get_frequency()
     {
@@ -238,7 +239,7 @@ var YPwmOutput; // definition below
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      *
-     * On failure, throws an exception or returns Y_FREQUENCY_INVALID.
+     * On failure, throws an exception or returns YPwmOutput.FREQUENCY_INVALID.
      */
     function YPwmOutput_get_frequency_async(callback,context)
     {
@@ -267,7 +268,7 @@ var YPwmOutput; // definition below
      *
      * @param newval : a floating point number corresponding to the PWM period in milliseconds
      *
-     * @return YAPI_SUCCESS if the call succeeds.
+     * @return YAPI.SUCCESS if the call succeeds.
      *
      * On failure, throws an exception or returns a negative error code.
      */
@@ -282,7 +283,7 @@ var YPwmOutput; // definition below
      *
      * @return a floating point number corresponding to the PWM period in milliseconds
      *
-     * On failure, throws an exception or returns Y_PERIOD_INVALID.
+     * On failure, throws an exception or returns YPwmOutput.PERIOD_INVALID.
      */
     function YPwmOutput_get_period()
     {
@@ -308,7 +309,7 @@ var YPwmOutput; // definition below
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      *
-     * On failure, throws an exception or returns Y_PERIOD_INVALID.
+     * On failure, throws an exception or returns YPwmOutput.PERIOD_INVALID.
      */
     function YPwmOutput_get_period_async(callback,context)
     {
@@ -333,7 +334,7 @@ var YPwmOutput; // definition below
      *
      * @param newval : a floating point number corresponding to the PWM duty cycle, in per cents
      *
-     * @return YAPI_SUCCESS if the call succeeds.
+     * @return YAPI.SUCCESS if the call succeeds.
      *
      * On failure, throws an exception or returns a negative error code.
      */
@@ -348,7 +349,7 @@ var YPwmOutput; // definition below
      *
      * @return a floating point number corresponding to the PWM duty cycle, in per cents
      *
-     * On failure, throws an exception or returns Y_DUTYCYCLE_INVALID.
+     * On failure, throws an exception or returns YPwmOutput.DUTYCYCLE_INVALID.
      */
     function YPwmOutput_get_dutyCycle()
     {
@@ -374,7 +375,7 @@ var YPwmOutput; // definition below
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      *
-     * On failure, throws an exception or returns Y_DUTYCYCLE_INVALID.
+     * On failure, throws an exception or returns YPwmOutput.DUTYCYCLE_INVALID.
      */
     function YPwmOutput_get_dutyCycle_async(callback,context)
     {
@@ -400,7 +401,7 @@ var YPwmOutput; // definition below
      *
      * @param newval : a floating point number corresponding to the PWM pulse length, in milliseconds
      *
-     * @return YAPI_SUCCESS if the call succeeds.
+     * @return YAPI.SUCCESS if the call succeeds.
      *
      * On failure, throws an exception or returns a negative error code.
      */
@@ -416,7 +417,7 @@ var YPwmOutput; // definition below
      * @return a floating point number corresponding to the PWM pulse length in milliseconds, as a
      * floating point number
      *
-     * On failure, throws an exception or returns Y_PULSEDURATION_INVALID.
+     * On failure, throws an exception or returns YPwmOutput.PULSEDURATION_INVALID.
      */
     function YPwmOutput_get_pulseDuration()
     {
@@ -443,7 +444,7 @@ var YPwmOutput; // definition below
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      *
-     * On failure, throws an exception or returns Y_PULSEDURATION_INVALID.
+     * On failure, throws an exception or returns YPwmOutput.PULSEDURATION_INVALID.
      */
     function YPwmOutput_get_pulseDuration_async(callback,context)
     {
@@ -513,10 +514,10 @@ var YPwmOutput; // definition below
     /**
      * Returns the state of the PWM at device power on.
      *
-     * @return either Y_ENABLEDATPOWERON_FALSE or Y_ENABLEDATPOWERON_TRUE, according to the state of the
-     * PWM at device power on
+     * @return either YPwmOutput.ENABLEDATPOWERON_FALSE or YPwmOutput.ENABLEDATPOWERON_TRUE, according to
+     * the state of the PWM at device power on
      *
-     * On failure, throws an exception or returns Y_ENABLEDATPOWERON_INVALID.
+     * On failure, throws an exception or returns YPwmOutput.ENABLEDATPOWERON_INVALID.
      */
     function YPwmOutput_get_enabledAtPowerOn()
     {
@@ -537,13 +538,13 @@ var YPwmOutput; // definition below
      *         The callback function receives three arguments:
      *         - the user-specific context object
      *         - the YPwmOutput object that invoked the callback
-     *         - the result:either Y_ENABLEDATPOWERON_FALSE or Y_ENABLEDATPOWERON_TRUE, according to the state of
-     *         the PWM at device power on
+     *         - the result:either YPwmOutput.ENABLEDATPOWERON_FALSE or YPwmOutput.ENABLEDATPOWERON_TRUE,
+     *         according to the state of the PWM at device power on
      * @param context : user-specific object that is passed as-is to the callback function
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      *
-     * On failure, throws an exception or returns Y_ENABLEDATPOWERON_INVALID.
+     * On failure, throws an exception or returns YPwmOutput.ENABLEDATPOWERON_INVALID.
      */
     function YPwmOutput_get_enabledAtPowerOn_async(callback,context)
     {
@@ -567,10 +568,10 @@ var YPwmOutput; // definition below
      * Changes the state of the PWM at device power on. Remember to call the matching module saveToFlash()
      * method, otherwise this call will have no effect.
      *
-     * @param newval : either Y_ENABLEDATPOWERON_FALSE or Y_ENABLEDATPOWERON_TRUE, according to the state
-     * of the PWM at device power on
+     * @param newval : either YPwmOutput.ENABLEDATPOWERON_FALSE or YPwmOutput.ENABLEDATPOWERON_TRUE,
+     * according to the state of the PWM at device power on
      *
-     * @return YAPI_SUCCESS if the call succeeds.
+     * @return YAPI.SUCCESS if the call succeeds.
      *
      * On failure, throws an exception or returns a negative error code.
      */
@@ -586,7 +587,7 @@ var YPwmOutput; // definition below
      *
      * @param newval : a floating point number corresponding to the PWM duty cycle at device power on
      *
-     * @return YAPI_SUCCESS if the call succeeds.
+     * @return YAPI.SUCCESS if the call succeeds.
      *
      * On failure, throws an exception or returns a negative error code.
      */
@@ -602,7 +603,7 @@ var YPwmOutput; // definition below
      * @return a floating point number corresponding to the PWM generators duty cycle at device power on
      * as a floating point number between 0 and 100
      *
-     * On failure, throws an exception or returns Y_DUTYCYCLEATPOWERON_INVALID.
+     * On failure, throws an exception or returns YPwmOutput.DUTYCYCLEATPOWERON_INVALID.
      */
     function YPwmOutput_get_dutyCycleAtPowerOn()
     {
@@ -629,7 +630,7 @@ var YPwmOutput; // definition below
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      *
-     * On failure, throws an exception or returns Y_DUTYCYCLEATPOWERON_INVALID.
+     * On failure, throws an exception or returns YPwmOutput.DUTYCYCLEATPOWERON_INVALID.
      */
     function YPwmOutput_get_dutyCycleAtPowerOn_async(callback,context)
     {
@@ -696,7 +697,7 @@ var YPwmOutput; // definition below
      *         (floating-point number, representing the pulse duration in milliseconds)
      * @param ms_duration : total duration of the transition, in milliseconds
      *
-     * @return YAPI_SUCCESS when the call succeeds.
+     * @return YAPI.SUCCESS when the call succeeds.
      *
      * On failure, throws an exception or returns a negative error code.
      */
@@ -718,7 +719,7 @@ var YPwmOutput; // definition below
      *         (percentage, floating-point number between 0 and 100)
      * @param ms_duration : total duration of the transition, in milliseconds
      *
-     * @return YAPI_SUCCESS when the call succeeds.
+     * @return YAPI.SUCCESS when the call succeeds.
      *
      * On failure, throws an exception or returns a negative error code.
      */
@@ -742,7 +743,7 @@ var YPwmOutput; // definition below
      * @param target      : new frequency at the end of the transition (floating-point number)
      * @param ms_duration : total duration of the transition, in milliseconds
      *
-     * @return YAPI_SUCCESS when the call succeeds.
+     * @return YAPI.SUCCESS when the call succeeds.
      *
      * On failure, throws an exception or returns a negative error code.
      */
@@ -766,7 +767,7 @@ var YPwmOutput; // definition below
      * @param target      : phase shift at the end of the transition, in milliseconds (floating-point number)
      * @param ms_duration : total duration of the transition, in milliseconds
      *
-     * @return YAPI_SUCCESS when the call succeeds.
+     * @return YAPI.SUCCESS when the call succeeds.
      *
      * On failure, throws an exception or returns a negative error code.
      */
@@ -785,7 +786,7 @@ var YPwmOutput; // definition below
      *         (floating-point number, representing the pulse duration in milliseconds)
      * @param n_pulses  : desired pulse count
      *
-     * @return YAPI_SUCCESS when the call succeeds.
+     * @return YAPI.SUCCESS when the call succeeds.
      *
      * On failure, throws an exception or returns a negative error code.
      */
@@ -807,7 +808,7 @@ var YPwmOutput; // definition below
      *         (percentage, floating-point number between 0 and 100)
      * @param n_pulses : desired pulse count
      *
-     * @return YAPI_SUCCESS when the call succeeds.
+     * @return YAPI.SUCCESS when the call succeeds.
      *
      * On failure, throws an exception or returns a negative error code.
      */
@@ -831,7 +832,7 @@ var YPwmOutput; // definition below
      * @param target   : desired frequency for the generated pulses (floating-point number)
      * @param n_pulses : desired pulse count
      *
-     * @return YAPI_SUCCESS when the call succeeds.
+     * @return YAPI.SUCCESS when the call succeeds.
      *
      * On failure, throws an exception or returns a negative error code.
      */

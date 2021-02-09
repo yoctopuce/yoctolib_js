@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_dualpower.js 38913 2019-12-20 18:59:49Z mvuilleu $
+ *  $Id: yocto_dualpower.js 43580 2021-01-26 17:46:01Z mvuilleu $
  *
  *  Implements the high-level API for DualPower functions
  *
@@ -103,10 +103,11 @@ var YDualPower; // definition below
     /**
      * Returns the current power source for module functions that require lots of current.
      *
-     * @return a value among Y_POWERSTATE_OFF, Y_POWERSTATE_FROM_USB and Y_POWERSTATE_FROM_EXT
-     * corresponding to the current power source for module functions that require lots of current
+     * @return a value among YDualPower.POWERSTATE_OFF, YDualPower.POWERSTATE_FROM_USB and
+     * YDualPower.POWERSTATE_FROM_EXT corresponding to the current power source for module functions that
+     * require lots of current
      *
-     * On failure, throws an exception or returns Y_POWERSTATE_INVALID.
+     * On failure, throws an exception or returns YDualPower.POWERSTATE_INVALID.
      */
     function YDualPower_get_powerState()
     {
@@ -127,13 +128,14 @@ var YDualPower; // definition below
      *         The callback function receives three arguments:
      *         - the user-specific context object
      *         - the YDualPower object that invoked the callback
-     *         - the result:a value among Y_POWERSTATE_OFF, Y_POWERSTATE_FROM_USB and Y_POWERSTATE_FROM_EXT
-     *         corresponding to the current power source for module functions that require lots of current
+     *         - the result:a value among YDualPower.POWERSTATE_OFF, YDualPower.POWERSTATE_FROM_USB and
+     *         YDualPower.POWERSTATE_FROM_EXT corresponding to the current power source for module functions that
+     *         require lots of current
      * @param context : user-specific object that is passed as-is to the callback function
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      *
-     * On failure, throws an exception or returns Y_POWERSTATE_INVALID.
+     * On failure, throws an exception or returns YDualPower.POWERSTATE_INVALID.
      */
     function YDualPower_get_powerState_async(callback,context)
     {
@@ -156,10 +158,11 @@ var YDualPower; // definition below
     /**
      * Returns the selected power source for module functions that require lots of current.
      *
-     * @return a value among Y_POWERCONTROL_AUTO, Y_POWERCONTROL_FROM_USB, Y_POWERCONTROL_FROM_EXT and
-     * Y_POWERCONTROL_OFF corresponding to the selected power source for module functions that require lots of current
+     * @return a value among YDualPower.POWERCONTROL_AUTO, YDualPower.POWERCONTROL_FROM_USB,
+     * YDualPower.POWERCONTROL_FROM_EXT and YDualPower.POWERCONTROL_OFF corresponding to the selected
+     * power source for module functions that require lots of current
      *
-     * On failure, throws an exception or returns Y_POWERCONTROL_INVALID.
+     * On failure, throws an exception or returns YDualPower.POWERCONTROL_INVALID.
      */
     function YDualPower_get_powerControl()
     {
@@ -180,14 +183,14 @@ var YDualPower; // definition below
      *         The callback function receives three arguments:
      *         - the user-specific context object
      *         - the YDualPower object that invoked the callback
-     *         - the result:a value among Y_POWERCONTROL_AUTO, Y_POWERCONTROL_FROM_USB, Y_POWERCONTROL_FROM_EXT
-     *         and Y_POWERCONTROL_OFF corresponding to the selected power source for module functions that require
-     *         lots of current
+     *         - the result:a value among YDualPower.POWERCONTROL_AUTO, YDualPower.POWERCONTROL_FROM_USB,
+     *         YDualPower.POWERCONTROL_FROM_EXT and YDualPower.POWERCONTROL_OFF corresponding to the selected
+     *         power source for module functions that require lots of current
      * @param context : user-specific object that is passed as-is to the callback function
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      *
-     * On failure, throws an exception or returns Y_POWERCONTROL_INVALID.
+     * On failure, throws an exception or returns YDualPower.POWERCONTROL_INVALID.
      */
     function YDualPower_get_powerControl_async(callback,context)
     {
@@ -211,11 +214,11 @@ var YDualPower; // definition below
      * Changes the selected power source for module functions that require lots of current.
      * Remember to call the saveToFlash() method of the module if the modification must be kept.
      *
-     * @param newval : a value among Y_POWERCONTROL_AUTO, Y_POWERCONTROL_FROM_USB, Y_POWERCONTROL_FROM_EXT
-     * and Y_POWERCONTROL_OFF corresponding to the selected power source for module functions that require
-     * lots of current
+     * @param newval : a value among YDualPower.POWERCONTROL_AUTO, YDualPower.POWERCONTROL_FROM_USB,
+     * YDualPower.POWERCONTROL_FROM_EXT and YDualPower.POWERCONTROL_OFF corresponding to the selected
+     * power source for module functions that require lots of current
      *
-     * @return YAPI_SUCCESS if the call succeeds.
+     * @return YAPI.SUCCESS if the call succeeds.
      *
      * On failure, throws an exception or returns a negative error code.
      */
@@ -230,7 +233,7 @@ var YDualPower; // definition below
      *
      * @return an integer corresponding to the measured voltage on the external power source, in millivolts
      *
-     * On failure, throws an exception or returns Y_EXTVOLTAGE_INVALID.
+     * On failure, throws an exception or returns YDualPower.EXTVOLTAGE_INVALID.
      */
     function YDualPower_get_extVoltage()
     {
@@ -256,7 +259,7 @@ var YDualPower; // definition below
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      *
-     * On failure, throws an exception or returns Y_EXTVOLTAGE_INVALID.
+     * On failure, throws an exception or returns YDualPower.EXTVOLTAGE_INVALID.
      */
     function YDualPower_get_extVoltage_async(callback,context)
     {

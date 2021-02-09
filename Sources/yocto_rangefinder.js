@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_rangefinder.js 38899 2019-12-20 17:21:03Z mvuilleu $
+ *  $Id: yocto_rangefinder.js 43619 2021-01-29 09:14:45Z mvuilleu $
  *
  *  Implements the high-level API for RangeFinder functions
  *
@@ -121,7 +121,7 @@ var YRangeFinder; // definition below
      *
      * @param newval : a string corresponding to the measuring unit for the measured range
      *
-     * @return YAPI_SUCCESS if the call succeeds.
+     * @return YAPI.SUCCESS if the call succeeds.
      *
      * On failure, throws an exception or returns a negative error code.
      */
@@ -135,10 +135,11 @@ var YRangeFinder; // definition below
      * Returns the range finder running mode. The rangefinder running mode
      * allows you to put priority on precision, speed or maximum range.
      *
-     * @return a value among Y_RANGEFINDERMODE_DEFAULT, Y_RANGEFINDERMODE_LONG_RANGE,
-     * Y_RANGEFINDERMODE_HIGH_ACCURACY and Y_RANGEFINDERMODE_HIGH_SPEED corresponding to the range finder running mode
+     * @return a value among YRangeFinder.RANGEFINDERMODE_DEFAULT,
+     * YRangeFinder.RANGEFINDERMODE_LONG_RANGE, YRangeFinder.RANGEFINDERMODE_HIGH_ACCURACY and
+     * YRangeFinder.RANGEFINDERMODE_HIGH_SPEED corresponding to the range finder running mode
      *
-     * On failure, throws an exception or returns Y_RANGEFINDERMODE_INVALID.
+     * On failure, throws an exception or returns YRangeFinder.RANGEFINDERMODE_INVALID.
      */
     function YRangeFinder_get_rangeFinderMode()
     {
@@ -160,13 +161,14 @@ var YRangeFinder; // definition below
      *         The callback function receives three arguments:
      *         - the user-specific context object
      *         - the YRangeFinder object that invoked the callback
-     *         - the result:a value among Y_RANGEFINDERMODE_DEFAULT, Y_RANGEFINDERMODE_LONG_RANGE,
-     *         Y_RANGEFINDERMODE_HIGH_ACCURACY and Y_RANGEFINDERMODE_HIGH_SPEED corresponding to the range finder running mode
+     *         - the result:a value among YRangeFinder.RANGEFINDERMODE_DEFAULT,
+     *         YRangeFinder.RANGEFINDERMODE_LONG_RANGE, YRangeFinder.RANGEFINDERMODE_HIGH_ACCURACY and
+     *         YRangeFinder.RANGEFINDERMODE_HIGH_SPEED corresponding to the range finder running mode
      * @param context : user-specific object that is passed as-is to the callback function
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      *
-     * On failure, throws an exception or returns Y_RANGEFINDERMODE_INVALID.
+     * On failure, throws an exception or returns YRangeFinder.RANGEFINDERMODE_INVALID.
      */
     function YRangeFinder_get_rangeFinderMode_async(callback,context)
     {
@@ -191,12 +193,13 @@ var YRangeFinder; // definition below
      * precision, speed or maximum range.
      * Remember to call the saveToFlash() method of the module if the modification must be kept.
      *
-     * @param newval : a value among Y_RANGEFINDERMODE_DEFAULT, Y_RANGEFINDERMODE_LONG_RANGE,
-     * Y_RANGEFINDERMODE_HIGH_ACCURACY and Y_RANGEFINDERMODE_HIGH_SPEED corresponding to the rangefinder
-     * running mode, allowing you to put priority on
+     * @param newval : a value among YRangeFinder.RANGEFINDERMODE_DEFAULT,
+     * YRangeFinder.RANGEFINDERMODE_LONG_RANGE, YRangeFinder.RANGEFINDERMODE_HIGH_ACCURACY and
+     * YRangeFinder.RANGEFINDERMODE_HIGH_SPEED corresponding to the rangefinder running mode, allowing you
+     * to put priority on
      *         precision, speed or maximum range
      *
-     * @return YAPI_SUCCESS if the call succeeds.
+     * @return YAPI.SUCCESS if the call succeeds.
      *
      * On failure, throws an exception or returns a negative error code.
      */
@@ -213,7 +216,7 @@ var YRangeFinder; // definition below
      * @return an integer corresponding to the time frame used to measure the distance and estimate the measure
      *         reliability
      *
-     * On failure, throws an exception or returns Y_TIMEFRAME_INVALID.
+     * On failure, throws an exception or returns YRangeFinder.TIMEFRAME_INVALID.
      */
     function YRangeFinder_get_timeFrame()
     {
@@ -241,7 +244,7 @@ var YRangeFinder; // definition below
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      *
-     * On failure, throws an exception or returns Y_TIMEFRAME_INVALID.
+     * On failure, throws an exception or returns YRangeFinder.TIMEFRAME_INVALID.
      */
     function YRangeFinder_get_timeFrame_async(callback,context)
     {
@@ -271,7 +274,7 @@ var YRangeFinder; // definition below
      * @param newval : an integer corresponding to the time frame used to measure the distance and estimate the measure
      *         reliability
      *
-     * @return YAPI_SUCCESS if the call succeeds.
+     * @return YAPI.SUCCESS if the call succeeds.
      *
      * On failure, throws an exception or returns a negative error code.
      */
@@ -286,7 +289,7 @@ var YRangeFinder; // definition below
      *
      * @return an integer corresponding to a measure quality estimate, based on measured dispersion
      *
-     * On failure, throws an exception or returns Y_QUALITY_INVALID.
+     * On failure, throws an exception or returns YRangeFinder.QUALITY_INVALID.
      */
     function YRangeFinder_get_quality()
     {
@@ -312,7 +315,7 @@ var YRangeFinder; // definition below
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      *
-     * On failure, throws an exception or returns Y_QUALITY_INVALID.
+     * On failure, throws an exception or returns YRangeFinder.QUALITY_INVALID.
      */
     function YRangeFinder_get_quality_async(callback,context)
     {
@@ -384,7 +387,7 @@ var YRangeFinder; // definition below
      *
      * @return a floating point number corresponding to the current sensor temperature, as a floating point number
      *
-     * On failure, throws an exception or returns Y_CURRENTTEMPERATURE_INVALID.
+     * On failure, throws an exception or returns YRangeFinder.CURRENTTEMPERATURE_INVALID.
      */
     function YRangeFinder_get_currentTemperature()
     {
@@ -410,7 +413,7 @@ var YRangeFinder; // definition below
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      *
-     * On failure, throws an exception or returns Y_CURRENTTEMPERATURE_INVALID.
+     * On failure, throws an exception or returns YRangeFinder.CURRENTTEMPERATURE_INVALID.
      */
     function YRangeFinder_get_currentTemperature_async(callback,context)
     {
@@ -540,7 +543,7 @@ var YRangeFinder; // definition below
      * automatically at device startup, but it is recommended to start it again when the
      * temperature delta since the latest calibration exceeds 8°C.
      *
-     * @return YAPI_SUCCESS if the call succeeds.
+     * @return YAPI.SUCCESS if the call succeeds.
      *         On failure, throws an exception or returns a negative error code.
      */
     function YRangeFinder_triggerTemperatureCalibration()
@@ -554,7 +557,7 @@ var YRangeFinder; // definition below
      * of a cover glass. Make sure to read the chapter about hardware calibration for details
      * on the calibration procedure for proper results.
      *
-     * @return YAPI_SUCCESS if the call succeeds.
+     * @return YAPI.SUCCESS if the call succeeds.
      *         On failure, throws an exception or returns a negative error code.
      */
     function YRangeFinder_triggerSpadCalibration()
@@ -571,7 +574,7 @@ var YRangeFinder; // definition below
      * @param targetDist : true distance of the calibration target, in mm or inches, depending
      *         on the unit selected in the device
      *
-     * @return YAPI_SUCCESS if the call succeeds.
+     * @return YAPI.SUCCESS if the call succeeds.
      *         On failure, throws an exception or returns a negative error code.
      */
     function YRangeFinder_triggerOffsetCalibration(targetDist)
@@ -594,7 +597,7 @@ var YRangeFinder; // definition below
      * @param targetDist : true distance of the calibration target, in mm or inches, depending
      *         on the unit selected in the device
      *
-     * @return YAPI_SUCCESS if the call succeeds.
+     * @return YAPI.SUCCESS if the call succeeds.
      *         On failure, throws an exception or returns a negative error code.
      */
     function YRangeFinder_triggerXTalkCalibration(targetDist)
@@ -613,7 +616,7 @@ var YRangeFinder; // definition below
      * for cover glass, and restores factory settings.
      * Remember to call the saveToFlash() method of the module if the modification must be kept.
      *
-     * @return YAPI_SUCCESS if the call succeeds.
+     * @return YAPI.SUCCESS if the call succeeds.
      *         On failure, throws an exception or returns a negative error code.
      */
     function YRangeFinder_cancelCoverGlassCalibrations()

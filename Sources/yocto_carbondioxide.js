@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_carbondioxide.js 38899 2019-12-20 17:21:03Z mvuilleu $
+ *  $Id: yocto_carbondioxide.js 43619 2021-01-29 09:14:45Z mvuilleu $
  *
  *  Implements the high-level API for CarbonDioxide functions
  *
@@ -93,7 +93,7 @@ var YCarbonDioxide; // definition below
      *
      * @return an integer corresponding to the Automatic Baseline Calibration period, in hours
      *
-     * On failure, throws an exception or returns Y_ABCPERIOD_INVALID.
+     * On failure, throws an exception or returns YCarbonDioxide.ABCPERIOD_INVALID.
      */
     function YCarbonDioxide_get_abcPeriod()
     {
@@ -120,7 +120,7 @@ var YCarbonDioxide; // definition below
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      *
-     * On failure, throws an exception or returns Y_ABCPERIOD_INVALID.
+     * On failure, throws an exception or returns YCarbonDioxide.ABCPERIOD_INVALID.
      */
     function YCarbonDioxide_get_abcPeriod_async(callback,context)
     {
@@ -149,7 +149,7 @@ var YCarbonDioxide; // definition below
      *
      * @param newval : an integer corresponding to Automatic Baseline Calibration period, in hours
      *
-     * @return YAPI_SUCCESS if the call succeeds.
+     * @return YAPI.SUCCESS if the call succeeds.
      *
      * On failure, throws an exception or returns a negative error code.
      */
@@ -255,7 +255,7 @@ var YCarbonDioxide; // definition below
      * time. Before starting a baseline calibration, make sure to put the sensor
      * in a standard environment (e.g. outside in fresh air) at around 400 ppm.
      *
-     * @return YAPI_SUCCESS if the call succeeds.
+     * @return YAPI.SUCCESS if the call succeeds.
      *
      * On failure, throws an exception or returns a negative error code.
      */
@@ -281,7 +281,7 @@ var YCarbonDioxide; // definition below
      * connected to the sensor. Please contact support@yoctopuce.com for more details
      * on the zero calibration procedure.
      *
-     * @return YAPI_SUCCESS if the call succeeds.
+     * @return YAPI.SUCCESS if the call succeeds.
      *
      * On failure, throws an exception or returns a negative error code.
      */

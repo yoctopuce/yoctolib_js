@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_currentloopoutput.js 38913 2019-12-20 18:59:49Z mvuilleu $
+ *  $Id: yocto_currentloopoutput.js 43619 2021-01-29 09:14:45Z mvuilleu $
  *
  *  Implements the high-level API for CurrentLoopOutput functions
  *
@@ -106,7 +106,7 @@ var YCurrentLoopOutput; // definition below
      *
      * @param newval : a floating point number corresponding to the current loop, the valid range is from 3 to 21mA
      *
-     * @return YAPI_SUCCESS if the call succeeds.
+     * @return YAPI.SUCCESS if the call succeeds.
      *
      * On failure, throws an exception or returns a negative error code.
      */
@@ -121,7 +121,7 @@ var YCurrentLoopOutput; // definition below
      *
      * @return a floating point number corresponding to the loop current set point in mA
      *
-     * On failure, throws an exception or returns Y_CURRENT_INVALID.
+     * On failure, throws an exception or returns YCurrentLoopOutput.CURRENT_INVALID.
      */
     function YCurrentLoopOutput_get_current()
     {
@@ -147,7 +147,7 @@ var YCurrentLoopOutput; // definition below
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      *
-     * On failure, throws an exception or returns Y_CURRENT_INVALID.
+     * On failure, throws an exception or returns YCurrentLoopOutput.CURRENT_INVALID.
      */
     function YCurrentLoopOutput_get_current_async(callback,context)
     {
@@ -220,7 +220,7 @@ var YCurrentLoopOutput; // definition below
      *
      * @param newval : a floating point number corresponding to the loop current at device start up
      *
-     * @return YAPI_SUCCESS if the call succeeds.
+     * @return YAPI.SUCCESS if the call succeeds.
      *
      * On failure, throws an exception or returns a negative error code.
      */
@@ -235,7 +235,7 @@ var YCurrentLoopOutput; // definition below
      *
      * @return a floating point number corresponding to the current in the loop at device startup, in mA
      *
-     * On failure, throws an exception or returns Y_CURRENTATSTARTUP_INVALID.
+     * On failure, throws an exception or returns YCurrentLoopOutput.CURRENTATSTARTUP_INVALID.
      */
     function YCurrentLoopOutput_get_currentAtStartUp()
     {
@@ -261,7 +261,7 @@ var YCurrentLoopOutput; // definition below
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      *
-     * On failure, throws an exception or returns Y_CURRENTATSTARTUP_INVALID.
+     * On failure, throws an exception or returns YCurrentLoopOutput.CURRENTATSTARTUP_INVALID.
      */
     function YCurrentLoopOutput_get_currentAtStartUp_async(callback,context)
     {
@@ -286,10 +286,10 @@ var YCurrentLoopOutput; // definition below
      * is powered. NOPWR: the loop in not powered. LOWPWR: the loop is not
      * powered enough to maintain the current required (insufficient voltage).
      *
-     * @return a value among Y_LOOPPOWER_NOPWR, Y_LOOPPOWER_LOWPWR and Y_LOOPPOWER_POWEROK corresponding
-     * to the loop powerstate
+     * @return a value among YCurrentLoopOutput.LOOPPOWER_NOPWR, YCurrentLoopOutput.LOOPPOWER_LOWPWR and
+     * YCurrentLoopOutput.LOOPPOWER_POWEROK corresponding to the loop powerstate
      *
-     * On failure, throws an exception or returns Y_LOOPPOWER_INVALID.
+     * On failure, throws an exception or returns YCurrentLoopOutput.LOOPPOWER_INVALID.
      */
     function YCurrentLoopOutput_get_loopPower()
     {
@@ -312,13 +312,13 @@ var YCurrentLoopOutput; // definition below
      *         The callback function receives three arguments:
      *         - the user-specific context object
      *         - the YCurrentLoopOutput object that invoked the callback
-     *         - the result:a value among Y_LOOPPOWER_NOPWR, Y_LOOPPOWER_LOWPWR and Y_LOOPPOWER_POWEROK
-     *         corresponding to the loop powerstate
+     *         - the result:a value among YCurrentLoopOutput.LOOPPOWER_NOPWR, YCurrentLoopOutput.LOOPPOWER_LOWPWR
+     *         and YCurrentLoopOutput.LOOPPOWER_POWEROK corresponding to the loop powerstate
      * @param context : user-specific object that is passed as-is to the callback function
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      *
-     * On failure, throws an exception or returns Y_LOOPPOWER_INVALID.
+     * On failure, throws an exception or returns YCurrentLoopOutput.LOOPPOWER_INVALID.
      */
     function YCurrentLoopOutput_get_loopPower_async(callback,context)
     {
@@ -385,7 +385,7 @@ var YCurrentLoopOutput; // definition below
      *         (floating-point number, representing the end current in mA)
      * @param ms_duration : total duration of the transition, in milliseconds
      *
-     * @return YAPI_SUCCESS when the call succeeds.
+     * @return YAPI.SUCCESS when the call succeeds.
      */
     function YCurrentLoopOutput_currentMove(mA_target,ms_duration)
     {

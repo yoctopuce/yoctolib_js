@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_multisenscontroller.js 38899 2019-12-20 17:21:03Z mvuilleu $
+ *  $Id: yocto_multisenscontroller.js 43619 2021-01-29 09:14:45Z mvuilleu $
  *
  *  Implements the high-level API for MultiSensController functions
  *
@@ -103,7 +103,7 @@ var YMultiSensController; // definition below
      *
      * @return an integer corresponding to the number of sensors to poll
      *
-     * On failure, throws an exception or returns Y_NSENSORS_INVALID.
+     * On failure, throws an exception or returns YMultiSensController.NSENSORS_INVALID.
      */
     function YMultiSensController_get_nSensors()
     {
@@ -129,7 +129,7 @@ var YMultiSensController; // definition below
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      *
-     * On failure, throws an exception or returns Y_NSENSORS_INVALID.
+     * On failure, throws an exception or returns YMultiSensController.NSENSORS_INVALID.
      */
     function YMultiSensController_get_nSensors_async(callback,context)
     {
@@ -158,7 +158,7 @@ var YMultiSensController; // definition below
      *
      * @param newval : an integer corresponding to the number of sensors to poll
      *
-     * @return YAPI_SUCCESS if the call succeeds.
+     * @return YAPI.SUCCESS if the call succeeds.
      *
      * On failure, throws an exception or returns a negative error code.
      */
@@ -173,7 +173,7 @@ var YMultiSensController; // definition below
      *
      * @return an integer corresponding to the maximum configurable sensor count allowed on this device
      *
-     * On failure, throws an exception or returns Y_MAXSENSORS_INVALID.
+     * On failure, throws an exception or returns YMultiSensController.MAXSENSORS_INVALID.
      */
     function YMultiSensController_get_maxSensors()
     {
@@ -199,7 +199,7 @@ var YMultiSensController; // definition below
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      *
-     * On failure, throws an exception or returns Y_MAXSENSORS_INVALID.
+     * On failure, throws an exception or returns YMultiSensController.MAXSENSORS_INVALID.
      */
     function YMultiSensController_get_maxSensors_async(callback,context)
     {
@@ -222,10 +222,10 @@ var YMultiSensController; // definition below
     /**
      * Returns true when the device is in maintenance mode.
      *
-     * @return either Y_MAINTENANCEMODE_FALSE or Y_MAINTENANCEMODE_TRUE, according to true when the device
-     * is in maintenance mode
+     * @return either YMultiSensController.MAINTENANCEMODE_FALSE or
+     * YMultiSensController.MAINTENANCEMODE_TRUE, according to true when the device is in maintenance mode
      *
-     * On failure, throws an exception or returns Y_MAINTENANCEMODE_INVALID.
+     * On failure, throws an exception or returns YMultiSensController.MAINTENANCEMODE_INVALID.
      */
     function YMultiSensController_get_maintenanceMode()
     {
@@ -246,13 +246,13 @@ var YMultiSensController; // definition below
      *         The callback function receives three arguments:
      *         - the user-specific context object
      *         - the YMultiSensController object that invoked the callback
-     *         - the result:either Y_MAINTENANCEMODE_FALSE or Y_MAINTENANCEMODE_TRUE, according to true when the
-     *         device is in maintenance mode
+     *         - the result:either YMultiSensController.MAINTENANCEMODE_FALSE or
+     *         YMultiSensController.MAINTENANCEMODE_TRUE, according to true when the device is in maintenance mode
      * @param context : user-specific object that is passed as-is to the callback function
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      *
-     * On failure, throws an exception or returns Y_MAINTENANCEMODE_INVALID.
+     * On failure, throws an exception or returns YMultiSensController.MAINTENANCEMODE_INVALID.
      */
     function YMultiSensController_get_maintenanceMode_async(callback,context)
     {
@@ -277,10 +277,11 @@ var YMultiSensController; // definition below
      * This way, the device does not automatically restart when it cannot
      * communicate with one of the sensors.
      *
-     * @param newval : either Y_MAINTENANCEMODE_FALSE or Y_MAINTENANCEMODE_TRUE, according to the device
-     * mode to enable maintenance and to stop sensor polling
+     * @param newval : either YMultiSensController.MAINTENANCEMODE_FALSE or
+     * YMultiSensController.MAINTENANCEMODE_TRUE, according to the device mode to enable maintenance and
+     * to stop sensor polling
      *
-     * @return YAPI_SUCCESS if the call succeeds.
+     * @return YAPI.SUCCESS if the call succeeds.
      *
      * On failure, throws an exception or returns a negative error code.
      */
@@ -387,7 +388,7 @@ var YMultiSensController; // definition below
      *
      * @param addr : new address of the connected sensor
      *
-     * @return YAPI_SUCCESS if the call succeeds.
+     * @return YAPI.SUCCESS if the call succeeds.
      *         On failure, throws an exception or returns a negative error code.
      */
     function YMultiSensController_setupAddress(addr)

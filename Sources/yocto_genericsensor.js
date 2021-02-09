@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_genericsensor.js 41109 2020-06-29 12:40:42Z seb $
+ *  $Id: yocto_genericsensor.js 43619 2021-01-29 09:14:45Z mvuilleu $
  *
  *  Implements the high-level API for GenericSensor functions
  *
@@ -61,7 +61,7 @@ var Y_SIGNALBIAS_INVALID            = YAPI_INVALID_DOUBLE;
 //--- (YGenericSensor class start)
 /**
  * YGenericSensor Class: GenericSensor control interface, available for instance in the
- * Yocto-0-10V-Rx, the Yocto-4-20mA-Rx, the Yocto-RS485-V2 or the Yocto-milliVolt-Rx
+ * Yocto-0-10V-Rx, the Yocto-4-20mA-Rx, the Yocto-Serial or the Yocto-milliVolt-Rx
  *
  * The YGenericSensor class allows you to read and configure Yoctopuce signal
  * transducers. It inherits from YSensor class the core functions to read measurements,
@@ -128,7 +128,7 @@ var YGenericSensor; // definition below
      *
      * @param newval : a string corresponding to the measuring unit for the measured value
      *
-     * @return YAPI_SUCCESS if the call succeeds.
+     * @return YAPI.SUCCESS if the call succeeds.
      *
      * On failure, throws an exception or returns a negative error code.
      */
@@ -144,7 +144,7 @@ var YGenericSensor; // definition below
      * @return a floating point number corresponding to the current value of the electrical signal
      * measured by the sensor
      *
-     * On failure, throws an exception or returns Y_SIGNALVALUE_INVALID.
+     * On failure, throws an exception or returns YGenericSensor.SIGNALVALUE_INVALID.
      */
     function YGenericSensor_get_signalValue()
     {
@@ -171,7 +171,7 @@ var YGenericSensor; // definition below
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      *
-     * On failure, throws an exception or returns Y_SIGNALVALUE_INVALID.
+     * On failure, throws an exception or returns YGenericSensor.SIGNALVALUE_INVALID.
      */
     function YGenericSensor_get_signalValue_async(callback,context)
     {
@@ -196,7 +196,7 @@ var YGenericSensor; // definition below
      *
      * @return a string corresponding to the measuring unit of the electrical signal used by the sensor
      *
-     * On failure, throws an exception or returns Y_SIGNALUNIT_INVALID.
+     * On failure, throws an exception or returns YGenericSensor.SIGNALUNIT_INVALID.
      */
     function YGenericSensor_get_signalUnit()
     {
@@ -222,7 +222,7 @@ var YGenericSensor; // definition below
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      *
-     * On failure, throws an exception or returns Y_SIGNALUNIT_INVALID.
+     * On failure, throws an exception or returns YGenericSensor.SIGNALUNIT_INVALID.
      */
     function YGenericSensor_get_signalUnit_async(callback,context)
     {
@@ -247,7 +247,7 @@ var YGenericSensor; // definition below
      *
      * @return a string corresponding to the input signal range used by the sensor
      *
-     * On failure, throws an exception or returns Y_SIGNALRANGE_INVALID.
+     * On failure, throws an exception or returns YGenericSensor.SIGNALRANGE_INVALID.
      */
     function YGenericSensor_get_signalRange()
     {
@@ -273,7 +273,7 @@ var YGenericSensor; // definition below
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      *
-     * On failure, throws an exception or returns Y_SIGNALRANGE_INVALID.
+     * On failure, throws an exception or returns YGenericSensor.SIGNALRANGE_INVALID.
      */
     function YGenericSensor_get_signalRange_async(callback,context)
     {
@@ -309,7 +309,7 @@ var YGenericSensor; // definition below
      *
      * @param newval : a string corresponding to the input signal range used by the sensor
      *
-     * @return YAPI_SUCCESS if the call succeeds.
+     * @return YAPI.SUCCESS if the call succeeds.
      *
      * On failure, throws an exception or returns a negative error code.
      */
@@ -324,7 +324,7 @@ var YGenericSensor; // definition below
      *
      * @return a string corresponding to the physical value range measured by the sensor
      *
-     * On failure, throws an exception or returns Y_VALUERANGE_INVALID.
+     * On failure, throws an exception or returns YGenericSensor.VALUERANGE_INVALID.
      */
     function YGenericSensor_get_valueRange()
     {
@@ -350,7 +350,7 @@ var YGenericSensor; // definition below
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      *
-     * On failure, throws an exception or returns Y_VALUERANGE_INVALID.
+     * On failure, throws an exception or returns YGenericSensor.VALUERANGE_INVALID.
      */
     function YGenericSensor_get_valueRange_async(callback,context)
     {
@@ -383,7 +383,7 @@ var YGenericSensor; // definition below
      * @param newval : a string corresponding to the output value range, corresponding to the physical value measured
      *         by the sensor
      *
-     * @return YAPI_SUCCESS if the call succeeds.
+     * @return YAPI.SUCCESS if the call succeeds.
      *
      * On failure, throws an exception or returns a negative error code.
      */
@@ -402,7 +402,7 @@ var YGenericSensor; // definition below
      *
      * @param newval : a floating point number corresponding to the electric signal bias for zero shift adjustment
      *
-     * @return YAPI_SUCCESS if the call succeeds.
+     * @return YAPI.SUCCESS if the call succeeds.
      *
      * On failure, throws an exception or returns a negative error code.
      */
@@ -419,7 +419,7 @@ var YGenericSensor; // definition below
      *
      * @return a floating point number corresponding to the electric signal bias for zero shift adjustment
      *
-     * On failure, throws an exception or returns Y_SIGNALBIAS_INVALID.
+     * On failure, throws an exception or returns YGenericSensor.SIGNALBIAS_INVALID.
      */
     function YGenericSensor_get_signalBias()
     {
@@ -447,7 +447,7 @@ var YGenericSensor; // definition below
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      *
-     * On failure, throws an exception or returns Y_SIGNALBIAS_INVALID.
+     * On failure, throws an exception or returns YGenericSensor.SIGNALBIAS_INVALID.
      */
     function YGenericSensor_get_signalBias_async(callback,context)
     {
@@ -475,11 +475,12 @@ var YGenericSensor; // definition below
      * The LOW_NOISE_FILTERED method combines a reduced frequency with the median filter
      * to get measures as stable as possible when working on a noisy signal.
      *
-     * @return a value among Y_SIGNALSAMPLING_HIGH_RATE, Y_SIGNALSAMPLING_HIGH_RATE_FILTERED,
-     * Y_SIGNALSAMPLING_LOW_NOISE, Y_SIGNALSAMPLING_LOW_NOISE_FILTERED and Y_SIGNALSAMPLING_HIGHEST_RATE
+     * @return a value among YGenericSensor.SIGNALSAMPLING_HIGH_RATE,
+     * YGenericSensor.SIGNALSAMPLING_HIGH_RATE_FILTERED, YGenericSensor.SIGNALSAMPLING_LOW_NOISE,
+     * YGenericSensor.SIGNALSAMPLING_LOW_NOISE_FILTERED and YGenericSensor.SIGNALSAMPLING_HIGHEST_RATE
      * corresponding to the electric signal sampling method to use
      *
-     * On failure, throws an exception or returns Y_SIGNALSAMPLING_INVALID.
+     * On failure, throws an exception or returns YGenericSensor.SIGNALSAMPLING_INVALID.
      */
     function YGenericSensor_get_signalSampling()
     {
@@ -505,14 +506,15 @@ var YGenericSensor; // definition below
      *         The callback function receives three arguments:
      *         - the user-specific context object
      *         - the YGenericSensor object that invoked the callback
-     *         - the result:a value among Y_SIGNALSAMPLING_HIGH_RATE, Y_SIGNALSAMPLING_HIGH_RATE_FILTERED,
-     *         Y_SIGNALSAMPLING_LOW_NOISE, Y_SIGNALSAMPLING_LOW_NOISE_FILTERED and Y_SIGNALSAMPLING_HIGHEST_RATE
+     *         - the result:a value among YGenericSensor.SIGNALSAMPLING_HIGH_RATE,
+     *         YGenericSensor.SIGNALSAMPLING_HIGH_RATE_FILTERED, YGenericSensor.SIGNALSAMPLING_LOW_NOISE,
+     *         YGenericSensor.SIGNALSAMPLING_LOW_NOISE_FILTERED and YGenericSensor.SIGNALSAMPLING_HIGHEST_RATE
      *         corresponding to the electric signal sampling method to use
      * @param context : user-specific object that is passed as-is to the callback function
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      *
-     * On failure, throws an exception or returns Y_SIGNALSAMPLING_INVALID.
+     * On failure, throws an exception or returns YGenericSensor.SIGNALSAMPLING_INVALID.
      */
     function YGenericSensor_get_signalSampling_async(callback,context)
     {
@@ -542,11 +544,12 @@ var YGenericSensor; // definition below
      * Remember to call the saveToFlash()
      * method of the module if the modification must be kept.
      *
-     * @param newval : a value among Y_SIGNALSAMPLING_HIGH_RATE, Y_SIGNALSAMPLING_HIGH_RATE_FILTERED,
-     * Y_SIGNALSAMPLING_LOW_NOISE, Y_SIGNALSAMPLING_LOW_NOISE_FILTERED and Y_SIGNALSAMPLING_HIGHEST_RATE
+     * @param newval : a value among YGenericSensor.SIGNALSAMPLING_HIGH_RATE,
+     * YGenericSensor.SIGNALSAMPLING_HIGH_RATE_FILTERED, YGenericSensor.SIGNALSAMPLING_LOW_NOISE,
+     * YGenericSensor.SIGNALSAMPLING_LOW_NOISE_FILTERED and YGenericSensor.SIGNALSAMPLING_HIGHEST_RATE
      * corresponding to the electric signal sampling method to use
      *
-     * @return YAPI_SUCCESS if the call succeeds.
+     * @return YAPI.SUCCESS if the call succeeds.
      *
      * On failure, throws an exception or returns a negative error code.
      */
@@ -559,9 +562,10 @@ var YGenericSensor; // definition below
     /**
      * Returns the activation state of this input.
      *
-     * @return either Y_ENABLED_FALSE or Y_ENABLED_TRUE, according to the activation state of this input
+     * @return either YGenericSensor.ENABLED_FALSE or YGenericSensor.ENABLED_TRUE, according to the
+     * activation state of this input
      *
-     * On failure, throws an exception or returns Y_ENABLED_INVALID.
+     * On failure, throws an exception or returns YGenericSensor.ENABLED_INVALID.
      */
     function YGenericSensor_get_enabled()
     {
@@ -582,12 +586,13 @@ var YGenericSensor; // definition below
      *         The callback function receives three arguments:
      *         - the user-specific context object
      *         - the YGenericSensor object that invoked the callback
-     *         - the result:either Y_ENABLED_FALSE or Y_ENABLED_TRUE, according to the activation state of this input
+     *         - the result:either YGenericSensor.ENABLED_FALSE or YGenericSensor.ENABLED_TRUE, according to the
+     *         activation state of this input
      * @param context : user-specific object that is passed as-is to the callback function
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      *
-     * On failure, throws an exception or returns Y_ENABLED_INVALID.
+     * On failure, throws an exception or returns YGenericSensor.ENABLED_INVALID.
      */
     function YGenericSensor_get_enabled_async(callback,context)
     {
@@ -614,9 +619,10 @@ var YGenericSensor; // definition below
      * Remember to call the saveToFlash()
      * method of the module if the modification must be kept.
      *
-     * @param newval : either Y_ENABLED_FALSE or Y_ENABLED_TRUE, according to the activation state of this input
+     * @param newval : either YGenericSensor.ENABLED_FALSE or YGenericSensor.ENABLED_TRUE, according to
+     * the activation state of this input
      *
-     * @return YAPI_SUCCESS if the call succeeds.
+     * @return YAPI.SUCCESS if the call succeeds.
      *
      * On failure, throws an exception or returns a negative error code.
      */
@@ -670,7 +676,7 @@ var YGenericSensor; // definition below
      * precisely as zero. Remember to call the saveToFlash()
      * method of the module if the modification must be kept.
      *
-     * @return YAPI_SUCCESS if the call succeeds.
+     * @return YAPI.SUCCESS if the call succeeds.
      *
      * On failure, throws an exception or returns a negative error code.
      */

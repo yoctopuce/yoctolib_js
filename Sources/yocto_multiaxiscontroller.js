@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_multiaxiscontroller.js 37827 2019-10-25 13:07:48Z mvuilleu $
+ *  $Id: yocto_multiaxiscontroller.js 43619 2021-01-29 09:14:45Z mvuilleu $
  *
  *  Implements the high-level API for MultiAxisController functions
  *
@@ -101,7 +101,7 @@ var YMultiAxisController; // definition below
      *
      * @return an integer corresponding to the number of synchronized controllers
      *
-     * On failure, throws an exception or returns Y_NAXIS_INVALID.
+     * On failure, throws an exception or returns YMultiAxisController.NAXIS_INVALID.
      */
     function YMultiAxisController_get_nAxis()
     {
@@ -127,7 +127,7 @@ var YMultiAxisController; // definition below
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      *
-     * On failure, throws an exception or returns Y_NAXIS_INVALID.
+     * On failure, throws an exception or returns YMultiAxisController.NAXIS_INVALID.
      */
     function YMultiAxisController_get_nAxis_async(callback,context)
     {
@@ -152,7 +152,7 @@ var YMultiAxisController; // definition below
      *
      * @param newval : an integer corresponding to the number of synchronized controllers
      *
-     * @return YAPI_SUCCESS if the call succeeds.
+     * @return YAPI.SUCCESS if the call succeeds.
      *
      * On failure, throws an exception or returns a negative error code.
      */
@@ -165,11 +165,12 @@ var YMultiAxisController; // definition below
     /**
      * Returns the stepper motor set overall state.
      *
-     * @return a value among Y_GLOBALSTATE_ABSENT, Y_GLOBALSTATE_ALERT, Y_GLOBALSTATE_HI_Z,
-     * Y_GLOBALSTATE_STOP, Y_GLOBALSTATE_RUN and Y_GLOBALSTATE_BATCH corresponding to the stepper motor
-     * set overall state
+     * @return a value among YMultiAxisController.GLOBALSTATE_ABSENT,
+     * YMultiAxisController.GLOBALSTATE_ALERT, YMultiAxisController.GLOBALSTATE_HI_Z,
+     * YMultiAxisController.GLOBALSTATE_STOP, YMultiAxisController.GLOBALSTATE_RUN and
+     * YMultiAxisController.GLOBALSTATE_BATCH corresponding to the stepper motor set overall state
      *
-     * On failure, throws an exception or returns Y_GLOBALSTATE_INVALID.
+     * On failure, throws an exception or returns YMultiAxisController.GLOBALSTATE_INVALID.
      */
     function YMultiAxisController_get_globalState()
     {
@@ -190,14 +191,15 @@ var YMultiAxisController; // definition below
      *         The callback function receives three arguments:
      *         - the user-specific context object
      *         - the YMultiAxisController object that invoked the callback
-     *         - the result:a value among Y_GLOBALSTATE_ABSENT, Y_GLOBALSTATE_ALERT, Y_GLOBALSTATE_HI_Z,
-     *         Y_GLOBALSTATE_STOP, Y_GLOBALSTATE_RUN and Y_GLOBALSTATE_BATCH corresponding to the stepper motor
-     *         set overall state
+     *         - the result:a value among YMultiAxisController.GLOBALSTATE_ABSENT,
+     *         YMultiAxisController.GLOBALSTATE_ALERT, YMultiAxisController.GLOBALSTATE_HI_Z,
+     *         YMultiAxisController.GLOBALSTATE_STOP, YMultiAxisController.GLOBALSTATE_RUN and
+     *         YMultiAxisController.GLOBALSTATE_BATCH corresponding to the stepper motor set overall state
      * @param context : user-specific object that is passed as-is to the callback function
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      *
-     * On failure, throws an exception or returns Y_GLOBALSTATE_INVALID.
+     * On failure, throws an exception or returns YMultiAxisController.GLOBALSTATE_INVALID.
      */
     function YMultiAxisController_get_globalState_async(callback,context)
     {
@@ -312,7 +314,7 @@ var YMultiAxisController; // definition below
         //may throw an exception
         retBin = this._download(url);
         res = (retBin).charCodeAt(0);
-        if (res == 49) {
+        if (res < 58) {
             if (!(res == 48)) {
                 return this._throw(YAPI_DEVICE_BUSY,"Motor command pipeline is full, try again later",YAPI_DEVICE_BUSY);
             }
@@ -327,7 +329,7 @@ var YMultiAxisController; // definition below
     /**
      * Reinitialize all controllers and clear all alert flags.
      *
-     * @return YAPI_SUCCESS if the call succeeds.
+     * @return YAPI.SUCCESS if the call succeeds.
      *         On failure, throws an exception or returns a negative error code.
      */
     function YMultiAxisController_reset()
@@ -340,7 +342,7 @@ var YMultiAxisController; // definition below
      *
      * @param speed : desired speed for all axis, in steps per second.
      *
-     * @return YAPI_SUCCESS if the call succeeds.
+     * @return YAPI.SUCCESS if the call succeeds.
      *         On failure, throws an exception or returns a negative error code.
      */
     function YMultiAxisController_findHomePosition(speed)
@@ -366,7 +368,7 @@ var YMultiAxisController; // definition below
      *
      * @param absPos : absolute position, measured in steps from each origin.
      *
-     * @return YAPI_SUCCESS if the call succeeds.
+     * @return YAPI.SUCCESS if the call succeeds.
      *         On failure, throws an exception or returns a negative error code.
      */
     function YMultiAxisController_moveTo(absPos)
@@ -392,7 +394,7 @@ var YMultiAxisController; // definition below
      *
      * @param relPos : relative position, measured in steps from the current position.
      *
-     * @return YAPI_SUCCESS if the call succeeds.
+     * @return YAPI.SUCCESS if the call succeeds.
      *         On failure, throws an exception or returns a negative error code.
      */
     function YMultiAxisController_moveRel(relPos)
@@ -415,7 +417,7 @@ var YMultiAxisController; // definition below
      *
      * @param waitMs : wait time, specified in milliseconds.
      *
-     * @return YAPI_SUCCESS if the call succeeds.
+     * @return YAPI.SUCCESS if the call succeeds.
      *         On failure, throws an exception or returns a negative error code.
      */
     function YMultiAxisController_pause(waitMs)
@@ -426,7 +428,7 @@ var YMultiAxisController; // definition below
     /**
      * Stops the motor with an emergency alert, without taking any additional precaution.
      *
-     * @return YAPI_SUCCESS if the call succeeds.
+     * @return YAPI.SUCCESS if the call succeeds.
      *         On failure, throws an exception or returns a negative error code.
      */
     function YMultiAxisController_emergencyStop()
@@ -437,7 +439,7 @@ var YMultiAxisController; // definition below
     /**
      * Stops the motor smoothly as soon as possible, without waiting for ongoing move completion.
      *
-     * @return YAPI_SUCCESS if the call succeeds.
+     * @return YAPI.SUCCESS if the call succeeds.
      *         On failure, throws an exception or returns a negative error code.
      */
     function YMultiAxisController_abortAndBrake()
@@ -448,7 +450,7 @@ var YMultiAxisController; // definition below
     /**
      * Turn the controller into Hi-Z mode immediately, without waiting for ongoing move completion.
      *
-     * @return YAPI_SUCCESS if the call succeeds.
+     * @return YAPI.SUCCESS if the call succeeds.
      *         On failure, throws an exception or returns a negative error code.
      */
     function YMultiAxisController_abortAndHiZ()

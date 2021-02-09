@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_accelerometer.js 42951 2020-12-14 09:43:29Z seb $
+ *  $Id: yocto_accelerometer.js 43580 2021-01-26 17:46:01Z mvuilleu $
  *
  *  Implements the high-level API for Accelerometer functions
  *
@@ -53,7 +53,8 @@ var Y_ZVALUE_INVALID                = YAPI_INVALID_DOUBLE;
 
 //--- (YAccelerometer class start)
 /**
- * YAccelerometer Class: accelerometer control interface, available for instance in the Yocto-3D-V2
+ * YAccelerometer Class: accelerometer control interface, available for instance in the Yocto-3D-V2 or
+ * the Yocto-Inclinometer
  *
  * The YAccelerometer class allows you to read and configure Yoctopuce accelerometers.
  * It inherits from YSensor class the core functions to read measurements,
@@ -110,7 +111,7 @@ var YAccelerometer; // definition below
      *
      * @return an integer corresponding to the measure update frequency, measured in Hz
      *
-     * On failure, throws an exception or returns Y_BANDWIDTH_INVALID.
+     * On failure, throws an exception or returns YAccelerometer.BANDWIDTH_INVALID.
      */
     function YAccelerometer_get_bandwidth()
     {
@@ -136,7 +137,7 @@ var YAccelerometer; // definition below
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      *
-     * On failure, throws an exception or returns Y_BANDWIDTH_INVALID.
+     * On failure, throws an exception or returns YAccelerometer.BANDWIDTH_INVALID.
      */
     function YAccelerometer_get_bandwidth_async(callback,context)
     {
@@ -164,7 +165,7 @@ var YAccelerometer; // definition below
      *
      * @param newval : an integer corresponding to the measure update frequency, measured in Hz
      *
-     * @return YAPI_SUCCESS if the call succeeds.
+     * @return YAPI.SUCCESS if the call succeeds.
      *
      * On failure, throws an exception or returns a negative error code.
      */
@@ -179,7 +180,7 @@ var YAccelerometer; // definition below
      *
      * @return a floating point number corresponding to the X component of the acceleration, as a floating point number
      *
-     * On failure, throws an exception or returns Y_XVALUE_INVALID.
+     * On failure, throws an exception or returns YAccelerometer.XVALUE_INVALID.
      */
     function YAccelerometer_get_xValue()
     {
@@ -206,7 +207,7 @@ var YAccelerometer; // definition below
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      *
-     * On failure, throws an exception or returns Y_XVALUE_INVALID.
+     * On failure, throws an exception or returns YAccelerometer.XVALUE_INVALID.
      */
     function YAccelerometer_get_xValue_async(callback,context)
     {
@@ -231,7 +232,7 @@ var YAccelerometer; // definition below
      *
      * @return a floating point number corresponding to the Y component of the acceleration, as a floating point number
      *
-     * On failure, throws an exception or returns Y_YVALUE_INVALID.
+     * On failure, throws an exception or returns YAccelerometer.YVALUE_INVALID.
      */
     function YAccelerometer_get_yValue()
     {
@@ -258,7 +259,7 @@ var YAccelerometer; // definition below
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      *
-     * On failure, throws an exception or returns Y_YVALUE_INVALID.
+     * On failure, throws an exception or returns YAccelerometer.YVALUE_INVALID.
      */
     function YAccelerometer_get_yValue_async(callback,context)
     {
@@ -283,7 +284,7 @@ var YAccelerometer; // definition below
      *
      * @return a floating point number corresponding to the Z component of the acceleration, as a floating point number
      *
-     * On failure, throws an exception or returns Y_ZVALUE_INVALID.
+     * On failure, throws an exception or returns YAccelerometer.ZVALUE_INVALID.
      */
     function YAccelerometer_get_zValue()
     {
@@ -310,7 +311,7 @@ var YAccelerometer; // definition below
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      *
-     * On failure, throws an exception or returns Y_ZVALUE_INVALID.
+     * On failure, throws an exception or returns YAccelerometer.ZVALUE_INVALID.
      */
     function YAccelerometer_get_zValue_async(callback,context)
     {

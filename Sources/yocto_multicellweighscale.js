@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_multicellweighscale.js 41108 2020-06-29 12:29:07Z seb $
+ *  $Id: yocto_multicellweighscale.js 43619 2021-01-29 09:14:45Z mvuilleu $
  *
  *  Implements the high-level API for MultiCellWeighScale functions
  *
@@ -42,6 +42,9 @@ if(typeof YAPI == "undefined") { if(typeof yAPI != "undefined") window["YAPI"]=y
 //--- (YMultiCellWeighScale return codes)
 //--- (end of YMultiCellWeighScale return codes)
 //--- (YMultiCellWeighScale definitions)
+var Y_EXTERNALSENSE_FALSE           = 0;
+var Y_EXTERNALSENSE_TRUE            = 1;
+var Y_EXTERNALSENSE_INVALID         = -1;
 var Y_EXCITATION_OFF                = 0;
 var Y_EXCITATION_DC                 = 1;
 var Y_EXCITATION_AC                 = 2;
@@ -80,6 +83,7 @@ var YMultiCellWeighScale; // definition below
         this._className = 'MultiCellWeighScale';
 
         this._cellCount                      = Y_CELLCOUNT_INVALID;        // UInt31
+        this._externalSense                  = Y_EXTERNALSENSE_INVALID;    // Bool
         this._excitation                     = Y_EXCITATION_INVALID;       // ExcitationMode
         this._tempAvgAdaptRatio              = Y_TEMPAVGADAPTRATIO_INVALID; // MeasureVal
         this._tempChgAdaptRatio              = Y_TEMPCHGADAPTRATIO_INVALID; // MeasureVal
@@ -98,6 +102,9 @@ var YMultiCellWeighScale; // definition below
         switch(name) {
         case "cellCount":
             this._cellCount = parseInt(val);
+            return 1;
+        case "externalSense":
+            this._externalSense = parseInt(val);
             return 1;
         case "excitation":
             this._excitation = parseInt(val);
@@ -134,7 +141,7 @@ var YMultiCellWeighScale; // definition below
      *
      * @param newval : a string corresponding to the measuring unit for the weight
      *
-     * @return YAPI_SUCCESS if the call succeeds.
+     * @return YAPI.SUCCESS if the call succeeds.
      *
      * On failure, throws an exception or returns a negative error code.
      */
@@ -149,7 +156,7 @@ var YMultiCellWeighScale; // definition below
      *
      * @return an integer corresponding to the number of load cells in use
      *
-     * On failure, throws an exception or returns Y_CELLCOUNT_INVALID.
+     * On failure, throws an exception or returns YMultiCellWeighScale.CELLCOUNT_INVALID.
      */
     function YMultiCellWeighScale_get_cellCount()
     {
@@ -175,7 +182,7 @@ var YMultiCellWeighScale; // definition below
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      *
-     * On failure, throws an exception or returns Y_CELLCOUNT_INVALID.
+     * On failure, throws an exception or returns YMultiCellWeighScale.CELLCOUNT_INVALID.
      */
     function YMultiCellWeighScale_get_cellCount_async(callback,context)
     {
@@ -201,7 +208,7 @@ var YMultiCellWeighScale; // definition below
      *
      * @param newval : an integer corresponding to the number of load cells in use
      *
-     * @return YAPI_SUCCESS if the call succeeds.
+     * @return YAPI.SUCCESS if the call succeeds.
      *
      * On failure, throws an exception or returns a negative error code.
      */
@@ -212,12 +219,86 @@ var YMultiCellWeighScale; // definition below
     }
 
     /**
+     * Returns true if entry 4 is used as external sense for 6-wires load cells.
+     *
+     * @return either YMultiCellWeighScale.EXTERNALSENSE_FALSE or YMultiCellWeighScale.EXTERNALSENSE_TRUE,
+     * according to true if entry 4 is used as external sense for 6-wires load cells
+     *
+     * On failure, throws an exception or returns YMultiCellWeighScale.EXTERNALSENSE_INVALID.
+     */
+    function YMultiCellWeighScale_get_externalSense()
+    {
+        var res;                    // enumBOOL;
+        if (this._cacheExpiration <= YAPI.GetTickCount()) {
+            if (this.load(YAPI.defaultCacheValidity) != YAPI_SUCCESS) {
+                return Y_EXTERNALSENSE_INVALID;
+            }
+        }
+        res = this._externalSense;
+        return res;
+    }
+
+    /**
+     * Gets true if entry 4 is used as external sense for 6-wires load cells.
+     *
+     * @param callback : callback function that is invoked when the result is known.
+     *         The callback function receives three arguments:
+     *         - the user-specific context object
+     *         - the YMultiCellWeighScale object that invoked the callback
+     *         - the result:either YMultiCellWeighScale.EXTERNALSENSE_FALSE or
+     *         YMultiCellWeighScale.EXTERNALSENSE_TRUE, according to true if entry 4 is used as external sense for
+     *         6-wires load cells
+     * @param context : user-specific object that is passed as-is to the callback function
+     *
+     * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
+     *
+     * On failure, throws an exception or returns YMultiCellWeighScale.EXTERNALSENSE_INVALID.
+     */
+    function YMultiCellWeighScale_get_externalSense_async(callback,context)
+    {
+        var res;                    // enumBOOL;
+        var loadcb;                 // func;
+        loadcb = function(ctx,obj,res) {
+            if (res != YAPI_SUCCESS) {
+                callback(context, obj, Y_EXTERNALSENSE_INVALID);
+            } else {
+                callback(context, obj, obj._externalSense);
+            }
+        };
+        if (this._cacheExpiration <= YAPI.GetTickCount()) {
+            this.load_async(YAPI.defaultCacheValidity,loadcb,null);
+        } else {
+            loadcb(null, this, YAPI_SUCCESS);
+        }
+    }
+
+    /**
+     * Changes the configuration to tell if entry 4 is used as external sense for
+     * 6-wires load cells. Remember to call the saveToFlash() method of the
+     * module if the modification must be kept.
+     *
+     * @param newval : either YMultiCellWeighScale.EXTERNALSENSE_FALSE or
+     * YMultiCellWeighScale.EXTERNALSENSE_TRUE, according to the configuration to tell if entry 4 is used
+     * as external sense for
+     *         6-wires load cells
+     *
+     * @return YAPI.SUCCESS if the call succeeds.
+     *
+     * On failure, throws an exception or returns a negative error code.
+     */
+    function YMultiCellWeighScale_set_externalSense(newval)
+    {   var rest_val;
+        rest_val = String(newval);
+        return this._setAttr('externalSense',rest_val);
+    }
+
+    /**
      * Returns the current load cell bridge excitation method.
      *
-     * @return a value among Y_EXCITATION_OFF, Y_EXCITATION_DC and Y_EXCITATION_AC corresponding to the
-     * current load cell bridge excitation method
+     * @return a value among YMultiCellWeighScale.EXCITATION_OFF, YMultiCellWeighScale.EXCITATION_DC and
+     * YMultiCellWeighScale.EXCITATION_AC corresponding to the current load cell bridge excitation method
      *
-     * On failure, throws an exception or returns Y_EXCITATION_INVALID.
+     * On failure, throws an exception or returns YMultiCellWeighScale.EXCITATION_INVALID.
      */
     function YMultiCellWeighScale_get_excitation()
     {
@@ -238,13 +319,13 @@ var YMultiCellWeighScale; // definition below
      *         The callback function receives three arguments:
      *         - the user-specific context object
      *         - the YMultiCellWeighScale object that invoked the callback
-     *         - the result:a value among Y_EXCITATION_OFF, Y_EXCITATION_DC and Y_EXCITATION_AC corresponding to
-     *         the current load cell bridge excitation method
+     *         - the result:a value among YMultiCellWeighScale.EXCITATION_OFF, YMultiCellWeighScale.EXCITATION_DC
+     *         and YMultiCellWeighScale.EXCITATION_AC corresponding to the current load cell bridge excitation method
      * @param context : user-specific object that is passed as-is to the callback function
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      *
-     * On failure, throws an exception or returns Y_EXCITATION_INVALID.
+     * On failure, throws an exception or returns YMultiCellWeighScale.EXCITATION_INVALID.
      */
     function YMultiCellWeighScale_get_excitation_async(callback,context)
     {
@@ -269,10 +350,11 @@ var YMultiCellWeighScale; // definition below
      * Remember to call the saveToFlash() method of the module if the
      * modification must be kept.
      *
-     * @param newval : a value among Y_EXCITATION_OFF, Y_EXCITATION_DC and Y_EXCITATION_AC corresponding
-     * to the current load cell bridge excitation method
+     * @param newval : a value among YMultiCellWeighScale.EXCITATION_OFF,
+     * YMultiCellWeighScale.EXCITATION_DC and YMultiCellWeighScale.EXCITATION_AC corresponding to the
+     * current load cell bridge excitation method
      *
-     * @return YAPI_SUCCESS if the call succeeds.
+     * @return YAPI.SUCCESS if the call succeeds.
      *
      * On failure, throws an exception or returns a negative error code.
      */
@@ -293,7 +375,7 @@ var YMultiCellWeighScale; // definition below
      *
      * @param newval : a floating point number corresponding to the averaged temperature update rate, in per mille
      *
-     * @return YAPI_SUCCESS if the call succeeds.
+     * @return YAPI.SUCCESS if the call succeeds.
      *
      * On failure, throws an exception or returns a negative error code.
      */
@@ -312,7 +394,7 @@ var YMultiCellWeighScale; // definition below
      *
      * @return a floating point number corresponding to the averaged temperature update rate, in per mille
      *
-     * On failure, throws an exception or returns Y_TEMPAVGADAPTRATIO_INVALID.
+     * On failure, throws an exception or returns YMultiCellWeighScale.TEMPAVGADAPTRATIO_INVALID.
      */
     function YMultiCellWeighScale_get_tempAvgAdaptRatio()
     {
@@ -342,7 +424,7 @@ var YMultiCellWeighScale; // definition below
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      *
-     * On failure, throws an exception or returns Y_TEMPAVGADAPTRATIO_INVALID.
+     * On failure, throws an exception or returns YMultiCellWeighScale.TEMPAVGADAPTRATIO_INVALID.
      */
     function YMultiCellWeighScale_get_tempAvgAdaptRatio_async(callback,context)
     {
@@ -372,7 +454,7 @@ var YMultiCellWeighScale; // definition below
      *
      * @param newval : a floating point number corresponding to the temperature change update rate, in per mille
      *
-     * @return YAPI_SUCCESS if the call succeeds.
+     * @return YAPI.SUCCESS if the call succeeds.
      *
      * On failure, throws an exception or returns a negative error code.
      */
@@ -390,7 +472,7 @@ var YMultiCellWeighScale; // definition below
      *
      * @return a floating point number corresponding to the temperature change update rate, in per mille
      *
-     * On failure, throws an exception or returns Y_TEMPCHGADAPTRATIO_INVALID.
+     * On failure, throws an exception or returns YMultiCellWeighScale.TEMPCHGADAPTRATIO_INVALID.
      */
     function YMultiCellWeighScale_get_tempChgAdaptRatio()
     {
@@ -419,7 +501,7 @@ var YMultiCellWeighScale; // definition below
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      *
-     * On failure, throws an exception or returns Y_TEMPCHGADAPTRATIO_INVALID.
+     * On failure, throws an exception or returns YMultiCellWeighScale.TEMPCHGADAPTRATIO_INVALID.
      */
     function YMultiCellWeighScale_get_tempChgAdaptRatio_async(callback,context)
     {
@@ -444,7 +526,7 @@ var YMultiCellWeighScale; // definition below
      *
      * @return a floating point number corresponding to the current averaged temperature, used for thermal compensation
      *
-     * On failure, throws an exception or returns Y_COMPTEMPAVG_INVALID.
+     * On failure, throws an exception or returns YMultiCellWeighScale.COMPTEMPAVG_INVALID.
      */
     function YMultiCellWeighScale_get_compTempAvg()
     {
@@ -471,7 +553,7 @@ var YMultiCellWeighScale; // definition below
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      *
-     * On failure, throws an exception or returns Y_COMPTEMPAVG_INVALID.
+     * On failure, throws an exception or returns YMultiCellWeighScale.COMPTEMPAVG_INVALID.
      */
     function YMultiCellWeighScale_get_compTempAvg_async(callback,context)
     {
@@ -497,7 +579,7 @@ var YMultiCellWeighScale; // definition below
      * @return a floating point number corresponding to the current temperature variation, used for
      * thermal compensation
      *
-     * On failure, throws an exception or returns Y_COMPTEMPCHG_INVALID.
+     * On failure, throws an exception or returns YMultiCellWeighScale.COMPTEMPCHG_INVALID.
      */
     function YMultiCellWeighScale_get_compTempChg()
     {
@@ -524,7 +606,7 @@ var YMultiCellWeighScale; // definition below
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      *
-     * On failure, throws an exception or returns Y_COMPTEMPCHG_INVALID.
+     * On failure, throws an exception or returns YMultiCellWeighScale.COMPTEMPCHG_INVALID.
      */
     function YMultiCellWeighScale_get_compTempChg_async(callback,context)
     {
@@ -549,7 +631,7 @@ var YMultiCellWeighScale; // definition below
      *
      * @return a floating point number corresponding to the current current thermal compensation value
      *
-     * On failure, throws an exception or returns Y_COMPENSATION_INVALID.
+     * On failure, throws an exception or returns YMultiCellWeighScale.COMPENSATION_INVALID.
      */
     function YMultiCellWeighScale_get_compensation()
     {
@@ -575,7 +657,7 @@ var YMultiCellWeighScale; // definition below
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      *
-     * On failure, throws an exception or returns Y_COMPENSATION_INVALID.
+     * On failure, throws an exception or returns YMultiCellWeighScale.COMPENSATION_INVALID.
      */
     function YMultiCellWeighScale_get_compensation_async(callback,context)
     {
@@ -604,7 +686,7 @@ var YMultiCellWeighScale; // definition below
      *
      * @param newval : a floating point number corresponding to the zero tracking threshold value
      *
-     * @return YAPI_SUCCESS if the call succeeds.
+     * @return YAPI.SUCCESS if the call succeeds.
      *
      * On failure, throws an exception or returns a negative error code.
      */
@@ -621,7 +703,7 @@ var YMultiCellWeighScale; // definition below
      *
      * @return a floating point number corresponding to the zero tracking threshold value
      *
-     * On failure, throws an exception or returns Y_ZEROTRACKING_INVALID.
+     * On failure, throws an exception or returns YMultiCellWeighScale.ZEROTRACKING_INVALID.
      */
     function YMultiCellWeighScale_get_zeroTracking()
     {
@@ -649,7 +731,7 @@ var YMultiCellWeighScale; // definition below
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      *
-     * On failure, throws an exception or returns Y_ZEROTRACKING_INVALID.
+     * On failure, throws an exception or returns YMultiCellWeighScale.ZEROTRACKING_INVALID.
      */
     function YMultiCellWeighScale_get_zeroTracking_async(callback,context)
     {
@@ -760,7 +842,7 @@ var YMultiCellWeighScale; // definition below
      * so that the current signal corresponds to a zero weight. Remember to call the
      * saveToFlash() method of the module if the modification must be kept.
      *
-     * @return YAPI_SUCCESS if the call succeeds.
+     * @return YAPI.SUCCESS if the call succeeds.
      *
      * On failure, throws an exception or returns a negative error code.
      */
@@ -776,7 +858,7 @@ var YMultiCellWeighScale; // definition below
      * @param currWeight : reference weight presently on the load cell.
      * @param maxWeight : maximum weight to be expected on the load cell.
      *
-     * @return YAPI_SUCCESS if the call succeeds.
+     * @return YAPI.SUCCESS if the call succeeds.
      *
      * On failure, throws an exception or returns a negative error code.
      */
@@ -826,6 +908,9 @@ var YMultiCellWeighScale; // definition below
     YMultiCellWeighScale = YSensor._Subclass(_YMultiCellWeighScale, {
         // Constants
         CELLCOUNT_INVALID           : YAPI_INVALID_UINT,
+        EXTERNALSENSE_FALSE         : 0,
+        EXTERNALSENSE_TRUE          : 1,
+        EXTERNALSENSE_INVALID       : -1,
         EXCITATION_OFF              : 0,
         EXCITATION_DC               : 1,
         EXCITATION_AC               : 2,
@@ -851,6 +936,12 @@ var YMultiCellWeighScale; // definition below
         cellCount_async             : YMultiCellWeighScale_get_cellCount_async,
         set_cellCount               : YMultiCellWeighScale_set_cellCount,
         setCellCount                : YMultiCellWeighScale_set_cellCount,
+        get_externalSense           : YMultiCellWeighScale_get_externalSense,
+        externalSense               : YMultiCellWeighScale_get_externalSense,
+        get_externalSense_async     : YMultiCellWeighScale_get_externalSense_async,
+        externalSense_async         : YMultiCellWeighScale_get_externalSense_async,
+        set_externalSense           : YMultiCellWeighScale_set_externalSense,
+        setExternalSense            : YMultiCellWeighScale_set_externalSense,
         get_excitation              : YMultiCellWeighScale_get_excitation,
         excitation                  : YMultiCellWeighScale_get_excitation,
         get_excitation_async        : YMultiCellWeighScale_get_excitation_async,

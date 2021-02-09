@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_daisychain.js 38899 2019-12-20 17:21:03Z mvuilleu $
+ *  $Id: yocto_daisychain.js 43580 2021-01-26 17:46:01Z mvuilleu $
  *
  *  Implements the high-level API for DaisyChain functions
  *
@@ -99,11 +99,11 @@ var YDaisyChain; // definition below
     /**
      * Returns the state of the daisy-link between modules.
      *
-     * @return a value among Y_DAISYSTATE_READY, Y_DAISYSTATE_IS_CHILD, Y_DAISYSTATE_FIRMWARE_MISMATCH,
-     * Y_DAISYSTATE_CHILD_MISSING and Y_DAISYSTATE_CHILD_LOST corresponding to the state of the daisy-link
-     * between modules
+     * @return a value among YDaisyChain.DAISYSTATE_READY, YDaisyChain.DAISYSTATE_IS_CHILD,
+     * YDaisyChain.DAISYSTATE_FIRMWARE_MISMATCH, YDaisyChain.DAISYSTATE_CHILD_MISSING and
+     * YDaisyChain.DAISYSTATE_CHILD_LOST corresponding to the state of the daisy-link between modules
      *
-     * On failure, throws an exception or returns Y_DAISYSTATE_INVALID.
+     * On failure, throws an exception or returns YDaisyChain.DAISYSTATE_INVALID.
      */
     function YDaisyChain_get_daisyState()
     {
@@ -124,14 +124,14 @@ var YDaisyChain; // definition below
      *         The callback function receives three arguments:
      *         - the user-specific context object
      *         - the YDaisyChain object that invoked the callback
-     *         - the result:a value among Y_DAISYSTATE_READY, Y_DAISYSTATE_IS_CHILD,
-     *         Y_DAISYSTATE_FIRMWARE_MISMATCH, Y_DAISYSTATE_CHILD_MISSING and Y_DAISYSTATE_CHILD_LOST
-     *         corresponding to the state of the daisy-link between modules
+     *         - the result:a value among YDaisyChain.DAISYSTATE_READY, YDaisyChain.DAISYSTATE_IS_CHILD,
+     *         YDaisyChain.DAISYSTATE_FIRMWARE_MISMATCH, YDaisyChain.DAISYSTATE_CHILD_MISSING and
+     *         YDaisyChain.DAISYSTATE_CHILD_LOST corresponding to the state of the daisy-link between modules
      * @param context : user-specific object that is passed as-is to the callback function
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      *
-     * On failure, throws an exception or returns Y_DAISYSTATE_INVALID.
+     * On failure, throws an exception or returns YDaisyChain.DAISYSTATE_INVALID.
      */
     function YDaisyChain_get_daisyState_async(callback,context)
     {
@@ -156,7 +156,7 @@ var YDaisyChain; // definition below
      *
      * @return an integer corresponding to the number of child nodes currently detected
      *
-     * On failure, throws an exception or returns Y_CHILDCOUNT_INVALID.
+     * On failure, throws an exception or returns YDaisyChain.CHILDCOUNT_INVALID.
      */
     function YDaisyChain_get_childCount()
     {
@@ -182,7 +182,7 @@ var YDaisyChain; // definition below
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      *
-     * On failure, throws an exception or returns Y_CHILDCOUNT_INVALID.
+     * On failure, throws an exception or returns YDaisyChain.CHILDCOUNT_INVALID.
      */
     function YDaisyChain_get_childCount_async(callback,context)
     {
@@ -207,7 +207,7 @@ var YDaisyChain; // definition below
      *
      * @return an integer corresponding to the number of child nodes expected in normal conditions
      *
-     * On failure, throws an exception or returns Y_REQUIREDCHILDCOUNT_INVALID.
+     * On failure, throws an exception or returns YDaisyChain.REQUIREDCHILDCOUNT_INVALID.
      */
     function YDaisyChain_get_requiredChildCount()
     {
@@ -233,7 +233,7 @@ var YDaisyChain; // definition below
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      *
-     * On failure, throws an exception or returns Y_REQUIREDCHILDCOUNT_INVALID.
+     * On failure, throws an exception or returns YDaisyChain.REQUIREDCHILDCOUNT_INVALID.
      */
     function YDaisyChain_get_requiredChildCount_async(callback,context)
     {
@@ -262,7 +262,7 @@ var YDaisyChain; // definition below
      *
      * @param newval : an integer corresponding to the number of child nodes expected in normal conditions
      *
-     * @return YAPI_SUCCESS if the call succeeds.
+     * @return YAPI.SUCCESS if the call succeeds.
      *
      * On failure, throws an exception or returns a negative error code.
      */

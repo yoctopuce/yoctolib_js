@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_gyro.js 42951 2020-12-14 09:43:29Z seb $
+ * $Id: yocto_gyro.js 43580 2021-01-26 17:46:01Z mvuilleu $
  *
  * Implements the high-level API for Gyro functions
  *
@@ -299,7 +299,7 @@ var YGyro; // definition below
      *
      * @return an integer corresponding to the measure update frequency, measured in Hz
      *
-     * On failure, throws an exception or returns Y_BANDWIDTH_INVALID.
+     * On failure, throws an exception or returns YGyro.BANDWIDTH_INVALID.
      */
     function YGyro_get_bandwidth()
     {
@@ -325,7 +325,7 @@ var YGyro; // definition below
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      *
-     * On failure, throws an exception or returns Y_BANDWIDTH_INVALID.
+     * On failure, throws an exception or returns YGyro.BANDWIDTH_INVALID.
      */
     function YGyro_get_bandwidth_async(callback,context)
     {
@@ -353,7 +353,7 @@ var YGyro; // definition below
      *
      * @param newval : an integer corresponding to the measure update frequency, measured in Hz
      *
-     * @return YAPI_SUCCESS if the call succeeds.
+     * @return YAPI.SUCCESS if the call succeeds.
      *
      * On failure, throws an exception or returns a negative error code.
      */
@@ -369,7 +369,7 @@ var YGyro; // definition below
      * @return a floating point number corresponding to the angular velocity around the X axis of the
      * device, as a floating point number
      *
-     * On failure, throws an exception or returns Y_XVALUE_INVALID.
+     * On failure, throws an exception or returns YGyro.XVALUE_INVALID.
      */
     function YGyro_get_xValue()
     {
@@ -396,7 +396,7 @@ var YGyro; // definition below
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      *
-     * On failure, throws an exception or returns Y_XVALUE_INVALID.
+     * On failure, throws an exception or returns YGyro.XVALUE_INVALID.
      */
     function YGyro_get_xValue_async(callback,context)
     {
@@ -422,7 +422,7 @@ var YGyro; // definition below
      * @return a floating point number corresponding to the angular velocity around the Y axis of the
      * device, as a floating point number
      *
-     * On failure, throws an exception or returns Y_YVALUE_INVALID.
+     * On failure, throws an exception or returns YGyro.YVALUE_INVALID.
      */
     function YGyro_get_yValue()
     {
@@ -449,7 +449,7 @@ var YGyro; // definition below
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      *
-     * On failure, throws an exception or returns Y_YVALUE_INVALID.
+     * On failure, throws an exception or returns YGyro.YVALUE_INVALID.
      */
     function YGyro_get_yValue_async(callback,context)
     {
@@ -475,7 +475,7 @@ var YGyro; // definition below
      * @return a floating point number corresponding to the angular velocity around the Z axis of the
      * device, as a floating point number
      *
-     * On failure, throws an exception or returns Y_ZVALUE_INVALID.
+     * On failure, throws an exception or returns YGyro.ZVALUE_INVALID.
      */
     function YGyro_get_zValue()
     {
@@ -502,7 +502,7 @@ var YGyro; // definition below
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      *
-     * On failure, throws an exception or returns Y_ZVALUE_INVALID.
+     * On failure, throws an exception or returns YGyro.ZVALUE_INVALID.
      */
     function YGyro_get_zValue_async(callback,context)
     {

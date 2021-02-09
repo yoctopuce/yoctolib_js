@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_colorledcluster.js 41109 2020-06-29 12:40:42Z seb $
+ *  $Id: yocto_colorledcluster.js 43619 2021-01-29 09:14:45Z mvuilleu $
  *
  *  Implements the high-level API for ColorLedCluster functions
  *
@@ -119,7 +119,7 @@ var YColorLedCluster; // definition below
      *
      * @return an integer corresponding to the number of LEDs currently handled by the device
      *
-     * On failure, throws an exception or returns Y_ACTIVELEDCOUNT_INVALID.
+     * On failure, throws an exception or returns YColorLedCluster.ACTIVELEDCOUNT_INVALID.
      */
     function YColorLedCluster_get_activeLedCount()
     {
@@ -145,7 +145,7 @@ var YColorLedCluster; // definition below
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      *
-     * On failure, throws an exception or returns Y_ACTIVELEDCOUNT_INVALID.
+     * On failure, throws an exception or returns YColorLedCluster.ACTIVELEDCOUNT_INVALID.
      */
     function YColorLedCluster_get_activeLedCount_async(callback,context)
     {
@@ -172,7 +172,7 @@ var YColorLedCluster; // definition below
      *
      * @param newval : an integer corresponding to the number of LEDs currently handled by the device
      *
-     * @return YAPI_SUCCESS if the call succeeds.
+     * @return YAPI.SUCCESS if the call succeeds.
      *
      * On failure, throws an exception or returns a negative error code.
      */
@@ -185,9 +185,10 @@ var YColorLedCluster; // definition below
     /**
      * Returns the RGB LED type currently handled by the device.
      *
-     * @return either Y_LEDTYPE_RGB or Y_LEDTYPE_RGBW, according to the RGB LED type currently handled by the device
+     * @return either YColorLedCluster.LEDTYPE_RGB or YColorLedCluster.LEDTYPE_RGBW, according to the RGB
+     * LED type currently handled by the device
      *
-     * On failure, throws an exception or returns Y_LEDTYPE_INVALID.
+     * On failure, throws an exception or returns YColorLedCluster.LEDTYPE_INVALID.
      */
     function YColorLedCluster_get_ledType()
     {
@@ -208,13 +209,13 @@ var YColorLedCluster; // definition below
      *         The callback function receives three arguments:
      *         - the user-specific context object
      *         - the YColorLedCluster object that invoked the callback
-     *         - the result:either Y_LEDTYPE_RGB or Y_LEDTYPE_RGBW, according to the RGB LED type currently
-     *         handled by the device
+     *         - the result:either YColorLedCluster.LEDTYPE_RGB or YColorLedCluster.LEDTYPE_RGBW, according to the
+     *         RGB LED type currently handled by the device
      * @param context : user-specific object that is passed as-is to the callback function
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      *
-     * On failure, throws an exception or returns Y_LEDTYPE_INVALID.
+     * On failure, throws an exception or returns YColorLedCluster.LEDTYPE_INVALID.
      */
     function YColorLedCluster_get_ledType_async(callback,context)
     {
@@ -239,10 +240,10 @@ var YColorLedCluster; // definition below
      * Remember to call the matching module
      * saveToFlash() method to save the setting permanently.
      *
-     * @param newval : either Y_LEDTYPE_RGB or Y_LEDTYPE_RGBW, according to the RGB LED type currently
-     * handled by the device
+     * @param newval : either YColorLedCluster.LEDTYPE_RGB or YColorLedCluster.LEDTYPE_RGBW, according to
+     * the RGB LED type currently handled by the device
      *
-     * @return YAPI_SUCCESS if the call succeeds.
+     * @return YAPI.SUCCESS if the call succeeds.
      *
      * On failure, throws an exception or returns a negative error code.
      */
@@ -257,7 +258,7 @@ var YColorLedCluster; // definition below
      *
      * @return an integer corresponding to the maximum number of LEDs that the device can handle
      *
-     * On failure, throws an exception or returns Y_MAXLEDCOUNT_INVALID.
+     * On failure, throws an exception or returns YColorLedCluster.MAXLEDCOUNT_INVALID.
      */
     function YColorLedCluster_get_maxLedCount()
     {
@@ -283,7 +284,7 @@ var YColorLedCluster; // definition below
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      *
-     * On failure, throws an exception or returns Y_MAXLEDCOUNT_INVALID.
+     * On failure, throws an exception or returns YColorLedCluster.MAXLEDCOUNT_INVALID.
      */
     function YColorLedCluster_get_maxLedCount_async(callback,context)
     {
@@ -308,7 +309,7 @@ var YColorLedCluster; // definition below
      *
      * @return an integer corresponding to the maximum number of sequences that the device can handle
      *
-     * On failure, throws an exception or returns Y_BLINKSEQMAXCOUNT_INVALID.
+     * On failure, throws an exception or returns YColorLedCluster.BLINKSEQMAXCOUNT_INVALID.
      */
     function YColorLedCluster_get_blinkSeqMaxCount()
     {
@@ -334,7 +335,7 @@ var YColorLedCluster; // definition below
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      *
-     * On failure, throws an exception or returns Y_BLINKSEQMAXCOUNT_INVALID.
+     * On failure, throws an exception or returns YColorLedCluster.BLINKSEQMAXCOUNT_INVALID.
      */
     function YColorLedCluster_get_blinkSeqMaxCount_async(callback,context)
     {
@@ -359,7 +360,7 @@ var YColorLedCluster; // definition below
      *
      * @return an integer corresponding to the maximum length of sequences
      *
-     * On failure, throws an exception or returns Y_BLINKSEQMAXSIZE_INVALID.
+     * On failure, throws an exception or returns YColorLedCluster.BLINKSEQMAXSIZE_INVALID.
      */
     function YColorLedCluster_get_blinkSeqMaxSize()
     {
@@ -385,7 +386,7 @@ var YColorLedCluster; // definition below
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      *
-     * On failure, throws an exception or returns Y_BLINKSEQMAXSIZE_INVALID.
+     * On failure, throws an exception or returns YColorLedCluster.BLINKSEQMAXSIZE_INVALID.
      */
     function YColorLedCluster_get_blinkSeqMaxSize_async(callback,context)
     {
@@ -504,7 +505,7 @@ var YColorLedCluster; // definition below
      * @param count    :  affected LED count.
      * @param rgbValue :  new color.
      *
-     * @return YAPI_SUCCESS when the call succeeds.
+     * @return YAPI.SUCCESS when the call succeeds.
      *
      * On failure, throws an exception or returns a negative error code.
      */
@@ -522,7 +523,7 @@ var YColorLedCluster; // definition below
      * @param count    :  affected LED count.
      * @param rgbValue :  new color.
      *
-     * @return YAPI_SUCCESS when the call succeeds.
+     * @return YAPI.SUCCESS when the call succeeds.
      *
      * On failure, throws an exception or returns a negative error code.
      */
@@ -540,7 +541,7 @@ var YColorLedCluster; // definition below
      * @param count    :  affected LED count.
      * @param hslValue :  new color.
      *
-     * @return YAPI_SUCCESS when the call succeeds.
+     * @return YAPI.SUCCESS when the call succeeds.
      *
      * On failure, throws an exception or returns a negative error code.
      */
@@ -559,7 +560,7 @@ var YColorLedCluster; // definition below
      * @param count    :  affected LED count.
      * @param hslValue :  new color.
      *
-     * @return YAPI_SUCCESS when the call succeeds.
+     * @return YAPI.SUCCESS when the call succeeds.
      *
      * On failure, throws an exception or returns a negative error code.
      */
@@ -577,7 +578,7 @@ var YColorLedCluster; // definition below
      * @param rgbValue :  new color (0xRRGGBB).
      * @param delay    :  transition duration in ms
      *
-     * @return YAPI_SUCCESS when the call succeeds.
+     * @return YAPI.SUCCESS when the call succeeds.
      *
      * On failure, throws an exception or returns a negative error code.
      */
@@ -599,7 +600,7 @@ var YColorLedCluster; // definition below
      * @param hslValue :  new color (0xHHSSLL).
      * @param delay    :  transition duration in ms
      *
-     * @return YAPI_SUCCESS when the call succeeds.
+     * @return YAPI.SUCCESS when the call succeeds.
      *
      * On failure, throws an exception or returns a negative error code.
      */
@@ -617,7 +618,7 @@ var YColorLedCluster; // definition below
      * @param rgbValue :  target color (0xRRGGBB)
      * @param delay    :  transition duration in ms
      *
-     * @return YAPI_SUCCESS when the call succeeds.
+     * @return YAPI.SUCCESS when the call succeeds.
      *
      * On failure, throws an exception or returns a negative error code.
      */
@@ -635,7 +636,7 @@ var YColorLedCluster; // definition below
      * @param hslValue : target color (0xHHSSLL)
      * @param delay    : transition duration in ms
      *
-     * @return YAPI_SUCCESS when the call succeeds.
+     * @return YAPI.SUCCESS when the call succeeds.
      *
      * On failure, throws an exception or returns a negative error code.
      */
@@ -653,7 +654,7 @@ var YColorLedCluster; // definition below
      *
      * @param seqIndex : sequence index.
      *
-     * @return YAPI_SUCCESS when the call succeeds.
+     * @return YAPI.SUCCESS when the call succeeds.
      *
      * On failure, throws an exception or returns a negative error code.
      */
@@ -670,7 +671,7 @@ var YColorLedCluster; // definition below
      * @param seqIndex : sequence index.
      * @param linkSeqIndex : index of the sequence to chain.
      *
-     * @return YAPI_SUCCESS when the call succeeds.
+     * @return YAPI.SUCCESS when the call succeeds.
      *
      * On failure, throws an exception or returns a negative error code.
      */
@@ -686,7 +687,7 @@ var YColorLedCluster; // definition below
      *
      * @param seqIndex : sequence index.
      *
-     * @return YAPI_SUCCESS when the call succeeds.
+     * @return YAPI.SUCCESS when the call succeeds.
      *
      * On failure, throws an exception or returns a negative error code.
      */
@@ -706,7 +707,7 @@ var YColorLedCluster; // definition below
      * @param seqIndex :  sequence index.
      * @param offset   :  execution offset in ms.
      *
-     * @return YAPI_SUCCESS when the call succeeds.
+     * @return YAPI.SUCCESS when the call succeeds.
      *
      * On failure, throws an exception or returns a negative error code.
      */
@@ -726,7 +727,7 @@ var YColorLedCluster; // definition below
      * @param seqIndex :  sequence index.
      * @param offset   :  execution offset in ms.
      *
-     * @return YAPI_SUCCESS when the call succeeds.
+     * @return YAPI.SUCCESS when the call succeeds.
      *
      * On failure, throws an exception or returns a negative error code.
      */
@@ -746,7 +747,7 @@ var YColorLedCluster; // definition below
      * @param seqIndex :  sequence index.
      * @param periods  :  number of periods to show on LEDs.
      *
-     * @return YAPI_SUCCESS when the call succeeds.
+     * @return YAPI.SUCCESS when the call succeeds.
      *
      * On failure, throws an exception or returns a negative error code.
      */
@@ -761,7 +762,7 @@ var YColorLedCluster; // definition below
      * @param ledIndex  :  index of the first affected LED.
      * @param count     :  affected LED count.
      *
-     * @return YAPI_SUCCESS when the call succeeds.
+     * @return YAPI.SUCCESS when the call succeeds.
      *
      * On failure, throws an exception or returns a negative error code.
      */
@@ -776,7 +777,7 @@ var YColorLedCluster; // definition below
      *
      * @param seqIndex :  index of the sequence to start.
      *
-     * @return YAPI_SUCCESS when the call succeeds.
+     * @return YAPI.SUCCESS when the call succeeds.
      *
      * On failure, throws an exception or returns a negative error code.
      */
@@ -791,7 +792,7 @@ var YColorLedCluster; // definition below
      *
      * @param seqIndex :  index of the sequence to stop.
      *
-     * @return YAPI_SUCCESS when the call succeeds.
+     * @return YAPI.SUCCESS when the call succeeds.
      *
      * On failure, throws an exception or returns a negative error code.
      */
@@ -806,7 +807,7 @@ var YColorLedCluster; // definition below
      *
      * @param seqIndex :  index of the sequence to reset
      *
-     * @return YAPI_SUCCESS when the call succeeds.
+     * @return YAPI.SUCCESS when the call succeeds.
      *
      * On failure, throws an exception or returns a negative error code.
      */
@@ -824,7 +825,7 @@ var YColorLedCluster; // definition below
      * @param seqIndex :  index of the sequence to reset.
      * @param autostart : 0 to keep the sequence turned off and 1 to start it automatically.
      *
-     * @return YAPI_SUCCESS when the call succeeds.
+     * @return YAPI.SUCCESS when the call succeeds.
      *
      * On failure, throws an exception or returns a negative error code.
      */
@@ -841,7 +842,7 @@ var YColorLedCluster; // definition below
      * @param seqIndex :  index of the sequence to start.
      * @param speed :     sequence running speed (-1000...1000).
      *
-     * @return YAPI_SUCCESS when the call succeeds.
+     * @return YAPI.SUCCESS when the call succeeds.
      *
      * On failure, throws an exception or returns a negative error code.
      */
@@ -855,7 +856,7 @@ var YColorLedCluster; // definition below
      * sequence binding for all LEDs. Warning: if some LEDs are linked to a sequence, the
      * method saveBlinkSeq() must also be called to save the sequence definition.
      *
-     * @return YAPI_SUCCESS when the call succeeds.
+     * @return YAPI.SUCCESS when the call succeeds.
      *
      * On failure, throws an exception or returns a negative error code.
      */
@@ -876,7 +877,7 @@ var YColorLedCluster; // definition below
      *
      * @param seqIndex :  index of the sequence to start.
      *
-     * @return YAPI_SUCCESS when the call succeeds.
+     * @return YAPI.SUCCESS when the call succeeds.
      *
      * On failure, throws an exception or returns a negative error code.
      */
@@ -893,7 +894,7 @@ var YColorLedCluster; // definition below
      * @param ledIndex : index of the first LED which should be updated
      * @param buff : the binary buffer to send
      *
-     * @return YAPI_SUCCESS if the call succeeds.
+     * @return YAPI.SUCCESS if the call succeeds.
      *
      * On failure, throws an exception or returns a negative error code.
      */
@@ -910,7 +911,7 @@ var YColorLedCluster; // definition below
      * @param ledIndex : index of the first LED which should be updated
      * @param rgbList : a list of 24bit RGB codes, in the form 0xRRGGBB
      *
-     * @return YAPI_SUCCESS if the call succeeds.
+     * @return YAPI.SUCCESS if the call succeeds.
      *
      * On failure, throws an exception or returns a negative error code.
      */
@@ -945,7 +946,7 @@ var YColorLedCluster; // definition below
      * @param rgbList : a list of target 24bit RGB codes, in the form 0xRRGGBB
      * @param delay   : transition duration in ms
      *
-     * @return YAPI_SUCCESS if the call succeeds.
+     * @return YAPI.SUCCESS if the call succeeds.
      *
      * On failure, throws an exception or returns a negative error code.
      */
@@ -979,7 +980,7 @@ var YColorLedCluster; // definition below
      * @param rgbList : a list of target 24bit RGB codes, in the form 0xRRGGBB
      * @param delay   : transition duration in ms
      *
-     * @return YAPI_SUCCESS if the call succeeds.
+     * @return YAPI.SUCCESS if the call succeeds.
      *
      * On failure, throws an exception or returns a negative error code.
      */
@@ -999,7 +1000,7 @@ var YColorLedCluster; // definition below
      * @param ledIndex : index of the first LED which should be updated
      * @param buff : the binary buffer to send
      *
-     * @return YAPI_SUCCESS if the call succeeds.
+     * @return YAPI.SUCCESS if the call succeeds.
      *
      * On failure, throws an exception or returns a negative error code.
      */
@@ -1016,7 +1017,7 @@ var YColorLedCluster; // definition below
      * @param ledIndex : index of the first LED which should be updated
      * @param hslList : a list of 24bit HSL codes, in the form 0xHHSSLL
      *
-     * @return YAPI_SUCCESS if the call succeeds.
+     * @return YAPI.SUCCESS if the call succeeds.
      *
      * On failure, throws an exception or returns a negative error code.
      */
@@ -1050,7 +1051,7 @@ var YColorLedCluster; // definition below
      * @param hslList : a list of target 24bit HSL codes, in the form 0xHHSSLL
      * @param delay   : transition duration in ms
      *
-     * @return YAPI_SUCCESS if the call succeeds.
+     * @return YAPI.SUCCESS if the call succeeds.
      *
      * On failure, throws an exception or returns a negative error code.
      */
@@ -1071,7 +1072,7 @@ var YColorLedCluster; // definition below
      * @param hslList : a list of target 24bit HSL codes, in the form 0xHHSSLL
      * @param delay   : transition duration in ms
      *
-     * @return YAPI_SUCCESS if the call succeeds.
+     * @return YAPI.SUCCESS if the call succeeds.
      *
      * On failure, throws an exception or returns a negative error code.
      */

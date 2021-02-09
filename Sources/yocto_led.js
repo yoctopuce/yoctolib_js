@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_led.js 42060 2020-10-14 10:02:12Z seb $
+ *  $Id: yocto_led.js 43580 2021-01-26 17:46:01Z mvuilleu $
  *
  *  Implements the high-level API for Led functions
  *
@@ -103,9 +103,9 @@ var YLed; // definition below
     /**
      * Returns the current LED state.
      *
-     * @return either Y_POWER_OFF or Y_POWER_ON, according to the current LED state
+     * @return either YLed.POWER_OFF or YLed.POWER_ON, according to the current LED state
      *
-     * On failure, throws an exception or returns Y_POWER_INVALID.
+     * On failure, throws an exception or returns YLed.POWER_INVALID.
      */
     function YLed_get_power()
     {
@@ -126,12 +126,12 @@ var YLed; // definition below
      *         The callback function receives three arguments:
      *         - the user-specific context object
      *         - the YLed object that invoked the callback
-     *         - the result:either Y_POWER_OFF or Y_POWER_ON, according to the current LED state
+     *         - the result:either YLed.POWER_OFF or YLed.POWER_ON, according to the current LED state
      * @param context : user-specific object that is passed as-is to the callback function
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      *
-     * On failure, throws an exception or returns Y_POWER_INVALID.
+     * On failure, throws an exception or returns YLed.POWER_INVALID.
      */
     function YLed_get_power_async(callback,context)
     {
@@ -154,9 +154,9 @@ var YLed; // definition below
     /**
      * Changes the state of the LED.
      *
-     * @param newval : either Y_POWER_OFF or Y_POWER_ON, according to the state of the LED
+     * @param newval : either YLed.POWER_OFF or YLed.POWER_ON, according to the state of the LED
      *
-     * @return YAPI_SUCCESS if the call succeeds.
+     * @return YAPI.SUCCESS if the call succeeds.
      *
      * On failure, throws an exception or returns a negative error code.
      */
@@ -171,7 +171,7 @@ var YLed; // definition below
      *
      * @return an integer corresponding to the current LED intensity (in per cent)
      *
-     * On failure, throws an exception or returns Y_LUMINOSITY_INVALID.
+     * On failure, throws an exception or returns YLed.LUMINOSITY_INVALID.
      */
     function YLed_get_luminosity()
     {
@@ -197,7 +197,7 @@ var YLed; // definition below
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      *
-     * On failure, throws an exception or returns Y_LUMINOSITY_INVALID.
+     * On failure, throws an exception or returns YLed.LUMINOSITY_INVALID.
      */
     function YLed_get_luminosity_async(callback,context)
     {
@@ -223,7 +223,7 @@ var YLed; // definition below
      *
      * @param newval : an integer corresponding to the current LED intensity (in per cent)
      *
-     * @return YAPI_SUCCESS if the call succeeds.
+     * @return YAPI.SUCCESS if the call succeeds.
      *
      * On failure, throws an exception or returns a negative error code.
      */
@@ -236,10 +236,10 @@ var YLed; // definition below
     /**
      * Returns the current LED signaling mode.
      *
-     * @return a value among Y_BLINKING_STILL, Y_BLINKING_RELAX, Y_BLINKING_AWARE, Y_BLINKING_RUN,
-     * Y_BLINKING_CALL and Y_BLINKING_PANIC corresponding to the current LED signaling mode
+     * @return a value among YLed.BLINKING_STILL, YLed.BLINKING_RELAX, YLed.BLINKING_AWARE,
+     * YLed.BLINKING_RUN, YLed.BLINKING_CALL and YLed.BLINKING_PANIC corresponding to the current LED signaling mode
      *
-     * On failure, throws an exception or returns Y_BLINKING_INVALID.
+     * On failure, throws an exception or returns YLed.BLINKING_INVALID.
      */
     function YLed_get_blinking()
     {
@@ -260,13 +260,13 @@ var YLed; // definition below
      *         The callback function receives three arguments:
      *         - the user-specific context object
      *         - the YLed object that invoked the callback
-     *         - the result:a value among Y_BLINKING_STILL, Y_BLINKING_RELAX, Y_BLINKING_AWARE, Y_BLINKING_RUN,
-     *         Y_BLINKING_CALL and Y_BLINKING_PANIC corresponding to the current LED signaling mode
+     *         - the result:a value among YLed.BLINKING_STILL, YLed.BLINKING_RELAX, YLed.BLINKING_AWARE,
+     *         YLed.BLINKING_RUN, YLed.BLINKING_CALL and YLed.BLINKING_PANIC corresponding to the current LED signaling mode
      * @param context : user-specific object that is passed as-is to the callback function
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      *
-     * On failure, throws an exception or returns Y_BLINKING_INVALID.
+     * On failure, throws an exception or returns YLed.BLINKING_INVALID.
      */
     function YLed_get_blinking_async(callback,context)
     {
@@ -289,10 +289,10 @@ var YLed; // definition below
     /**
      * Changes the current LED signaling mode.
      *
-     * @param newval : a value among Y_BLINKING_STILL, Y_BLINKING_RELAX, Y_BLINKING_AWARE, Y_BLINKING_RUN,
-     * Y_BLINKING_CALL and Y_BLINKING_PANIC corresponding to the current LED signaling mode
+     * @param newval : a value among YLed.BLINKING_STILL, YLed.BLINKING_RELAX, YLed.BLINKING_AWARE,
+     * YLed.BLINKING_RUN, YLed.BLINKING_CALL and YLed.BLINKING_PANIC corresponding to the current LED signaling mode
      *
-     * @return YAPI_SUCCESS if the call succeeds.
+     * @return YAPI.SUCCESS if the call succeeds.
      *
      * On failure, throws an exception or returns a negative error code.
      */

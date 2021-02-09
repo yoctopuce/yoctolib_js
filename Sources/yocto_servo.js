@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_servo.js 38899 2019-12-20 17:21:03Z mvuilleu $
+ *  $Id: yocto_servo.js 43580 2021-01-26 17:46:01Z mvuilleu $
  *
  *  Implements the high-level API for Servo functions
  *
@@ -122,7 +122,7 @@ var YServo; // definition below
      *
      * @return an integer corresponding to the current servo position
      *
-     * On failure, throws an exception or returns Y_POSITION_INVALID.
+     * On failure, throws an exception or returns YServo.POSITION_INVALID.
      */
     function YServo_get_position()
     {
@@ -148,7 +148,7 @@ var YServo; // definition below
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      *
-     * On failure, throws an exception or returns Y_POSITION_INVALID.
+     * On failure, throws an exception or returns YServo.POSITION_INVALID.
      */
     function YServo_get_position_async(callback,context)
     {
@@ -173,7 +173,7 @@ var YServo; // definition below
      *
      * @param newval : an integer corresponding to immediately the servo driving position
      *
-     * @return YAPI_SUCCESS if the call succeeds.
+     * @return YAPI.SUCCESS if the call succeeds.
      *
      * On failure, throws an exception or returns a negative error code.
      */
@@ -186,9 +186,9 @@ var YServo; // definition below
     /**
      * Returns the state of the RC servo motors.
      *
-     * @return either Y_ENABLED_FALSE or Y_ENABLED_TRUE, according to the state of the RC servo motors
+     * @return either YServo.ENABLED_FALSE or YServo.ENABLED_TRUE, according to the state of the RC servo motors
      *
-     * On failure, throws an exception or returns Y_ENABLED_INVALID.
+     * On failure, throws an exception or returns YServo.ENABLED_INVALID.
      */
     function YServo_get_enabled()
     {
@@ -209,12 +209,12 @@ var YServo; // definition below
      *         The callback function receives three arguments:
      *         - the user-specific context object
      *         - the YServo object that invoked the callback
-     *         - the result:either Y_ENABLED_FALSE or Y_ENABLED_TRUE, according to the state of the RC servo motors
+     *         - the result:either YServo.ENABLED_FALSE or YServo.ENABLED_TRUE, according to the state of the RC servo motors
      * @param context : user-specific object that is passed as-is to the callback function
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      *
-     * On failure, throws an exception or returns Y_ENABLED_INVALID.
+     * On failure, throws an exception or returns YServo.ENABLED_INVALID.
      */
     function YServo_get_enabled_async(callback,context)
     {
@@ -237,9 +237,9 @@ var YServo; // definition below
     /**
      * Stops or starts the RC servo motor.
      *
-     * @param newval : either Y_ENABLED_FALSE or Y_ENABLED_TRUE
+     * @param newval : either YServo.ENABLED_FALSE or YServo.ENABLED_TRUE
      *
-     * @return YAPI_SUCCESS if the call succeeds.
+     * @return YAPI.SUCCESS if the call succeeds.
      *
      * On failure, throws an exception or returns a negative error code.
      */
@@ -254,7 +254,7 @@ var YServo; // definition below
      *
      * @return an integer corresponding to the current range of use of the servo
      *
-     * On failure, throws an exception or returns Y_RANGE_INVALID.
+     * On failure, throws an exception or returns YServo.RANGE_INVALID.
      */
     function YServo_get_range()
     {
@@ -280,7 +280,7 @@ var YServo; // definition below
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      *
-     * On failure, throws an exception or returns Y_RANGE_INVALID.
+     * On failure, throws an exception or returns YServo.RANGE_INVALID.
      */
     function YServo_get_range_async(callback,context)
     {
@@ -311,7 +311,7 @@ var YServo; // definition below
      *
      * @param newval : an integer corresponding to the range of use of the servo, specified in per cents
      *
-     * @return YAPI_SUCCESS if the call succeeds.
+     * @return YAPI.SUCCESS if the call succeeds.
      *
      * On failure, throws an exception or returns a negative error code.
      */
@@ -326,7 +326,7 @@ var YServo; // definition below
      *
      * @return an integer corresponding to the duration in microseconds of a neutral pulse for the servo
      *
-     * On failure, throws an exception or returns Y_NEUTRAL_INVALID.
+     * On failure, throws an exception or returns YServo.NEUTRAL_INVALID.
      */
     function YServo_get_neutral()
     {
@@ -352,7 +352,7 @@ var YServo; // definition below
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      *
-     * On failure, throws an exception or returns Y_NEUTRAL_INVALID.
+     * On failure, throws an exception or returns YServo.NEUTRAL_INVALID.
      */
     function YServo_get_neutral_async(callback,context)
     {
@@ -383,7 +383,7 @@ var YServo; // definition below
      * @param newval : an integer corresponding to the duration of the pulse corresponding to the neutral
      * position of the servo
      *
-     * @return YAPI_SUCCESS if the call succeeds.
+     * @return YAPI.SUCCESS if the call succeeds.
      *
      * On failure, throws an exception or returns a negative error code.
      */
@@ -446,7 +446,7 @@ var YServo; // definition below
      * @param target      : new position at the end of the move
      * @param ms_duration : total duration of the move, in milliseconds
      *
-     * @return YAPI_SUCCESS if the call succeeds.
+     * @return YAPI.SUCCESS if the call succeeds.
      *
      * On failure, throws an exception or returns a negative error code.
      */
@@ -461,7 +461,7 @@ var YServo; // definition below
      *
      * @return an integer corresponding to the servo position at device power up
      *
-     * On failure, throws an exception or returns Y_POSITIONATPOWERON_INVALID.
+     * On failure, throws an exception or returns YServo.POSITIONATPOWERON_INVALID.
      */
     function YServo_get_positionAtPowerOn()
     {
@@ -487,7 +487,7 @@ var YServo; // definition below
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      *
-     * On failure, throws an exception or returns Y_POSITIONATPOWERON_INVALID.
+     * On failure, throws an exception or returns YServo.POSITIONATPOWERON_INVALID.
      */
     function YServo_get_positionAtPowerOn_async(callback,context)
     {
@@ -513,7 +513,7 @@ var YServo; // definition below
      *
      * @param newval : an integer
      *
-     * @return YAPI_SUCCESS if the call succeeds.
+     * @return YAPI.SUCCESS if the call succeeds.
      *
      * On failure, throws an exception or returns a negative error code.
      */
@@ -526,10 +526,10 @@ var YServo; // definition below
     /**
      * Returns the servo signal generator state at power up.
      *
-     * @return either Y_ENABLEDATPOWERON_FALSE or Y_ENABLEDATPOWERON_TRUE, according to the servo signal
-     * generator state at power up
+     * @return either YServo.ENABLEDATPOWERON_FALSE or YServo.ENABLEDATPOWERON_TRUE, according to the
+     * servo signal generator state at power up
      *
-     * On failure, throws an exception or returns Y_ENABLEDATPOWERON_INVALID.
+     * On failure, throws an exception or returns YServo.ENABLEDATPOWERON_INVALID.
      */
     function YServo_get_enabledAtPowerOn()
     {
@@ -550,13 +550,13 @@ var YServo; // definition below
      *         The callback function receives three arguments:
      *         - the user-specific context object
      *         - the YServo object that invoked the callback
-     *         - the result:either Y_ENABLEDATPOWERON_FALSE or Y_ENABLEDATPOWERON_TRUE, according to the servo
-     *         signal generator state at power up
+     *         - the result:either YServo.ENABLEDATPOWERON_FALSE or YServo.ENABLEDATPOWERON_TRUE, according to the
+     *         servo signal generator state at power up
      * @param context : user-specific object that is passed as-is to the callback function
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      *
-     * On failure, throws an exception or returns Y_ENABLEDATPOWERON_INVALID.
+     * On failure, throws an exception or returns YServo.ENABLEDATPOWERON_INVALID.
      */
     function YServo_get_enabledAtPowerOn_async(callback,context)
     {
@@ -580,9 +580,9 @@ var YServo; // definition below
      * Configure the servo signal generator state at power up. Remember to call the matching module saveToFlash()
      * method, otherwise this call will have no effect.
      *
-     * @param newval : either Y_ENABLEDATPOWERON_FALSE or Y_ENABLEDATPOWERON_TRUE
+     * @param newval : either YServo.ENABLEDATPOWERON_FALSE or YServo.ENABLEDATPOWERON_TRUE
      *
-     * @return YAPI_SUCCESS if the call succeeds.
+     * @return YAPI.SUCCESS if the call succeeds.
      *
      * On failure, throws an exception or returns a negative error code.
      */

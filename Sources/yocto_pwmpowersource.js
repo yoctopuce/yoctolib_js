@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_pwmpowersource.js 38899 2019-12-20 17:21:03Z mvuilleu $
+ *  $Id: yocto_pwmpowersource.js 43580 2021-01-26 17:46:01Z mvuilleu $
  *
  *  Implements the high-level API for PwmPowerSource functions
  *
@@ -87,10 +87,11 @@ var YPwmPowerSource; // definition below
     /**
      * Returns the selected power source for the PWM on the same device.
      *
-     * @return a value among Y_POWERMODE_USB_5V, Y_POWERMODE_USB_3V, Y_POWERMODE_EXT_V and
-     * Y_POWERMODE_OPNDRN corresponding to the selected power source for the PWM on the same device
+     * @return a value among YPwmPowerSource.POWERMODE_USB_5V, YPwmPowerSource.POWERMODE_USB_3V,
+     * YPwmPowerSource.POWERMODE_EXT_V and YPwmPowerSource.POWERMODE_OPNDRN corresponding to the selected
+     * power source for the PWM on the same device
      *
-     * On failure, throws an exception or returns Y_POWERMODE_INVALID.
+     * On failure, throws an exception or returns YPwmPowerSource.POWERMODE_INVALID.
      */
     function YPwmPowerSource_get_powerMode()
     {
@@ -111,13 +112,14 @@ var YPwmPowerSource; // definition below
      *         The callback function receives three arguments:
      *         - the user-specific context object
      *         - the YPwmPowerSource object that invoked the callback
-     *         - the result:a value among Y_POWERMODE_USB_5V, Y_POWERMODE_USB_3V, Y_POWERMODE_EXT_V and
-     *         Y_POWERMODE_OPNDRN corresponding to the selected power source for the PWM on the same device
+     *         - the result:a value among YPwmPowerSource.POWERMODE_USB_5V, YPwmPowerSource.POWERMODE_USB_3V,
+     *         YPwmPowerSource.POWERMODE_EXT_V and YPwmPowerSource.POWERMODE_OPNDRN corresponding to the selected
+     *         power source for the PWM on the same device
      * @param context : user-specific object that is passed as-is to the callback function
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      *
-     * On failure, throws an exception or returns Y_POWERMODE_INVALID.
+     * On failure, throws an exception or returns YPwmPowerSource.POWERMODE_INVALID.
      */
     function YPwmPowerSource_get_powerMode_async(callback,context)
     {
@@ -146,10 +148,10 @@ var YPwmPowerSource; // definition below
      * If you want the change to be kept after a device reboot, make sure  to call the matching
      * module saveToFlash().
      *
-     * @param newval : a value among Y_POWERMODE_USB_5V, Y_POWERMODE_USB_3V, Y_POWERMODE_EXT_V and
-     * Y_POWERMODE_OPNDRN corresponding to  the PWM power source
+     * @param newval : a value among YPwmPowerSource.POWERMODE_USB_5V, YPwmPowerSource.POWERMODE_USB_3V,
+     * YPwmPowerSource.POWERMODE_EXT_V and YPwmPowerSource.POWERMODE_OPNDRN corresponding to  the PWM power source
      *
-     * @return YAPI_SUCCESS if the call succeeds.
+     * @return YAPI.SUCCESS if the call succeeds.
      *
      * On failure, throws an exception or returns a negative error code.
      */

@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_digitalio.js 38899 2019-12-20 17:21:03Z mvuilleu $
+ *  $Id: yocto_digitalio.js 43619 2021-01-29 09:14:45Z mvuilleu $
  *
  *  Implements the high-level API for DigitalIO functions
  *
@@ -139,7 +139,7 @@ var YDigitalIO; // definition below
      * @return an integer corresponding to the digital IO port state as an integer with each bit
      *         representing a channel
      *
-     * On failure, throws an exception or returns Y_PORTSTATE_INVALID.
+     * On failure, throws an exception or returns YDigitalIO.PORTSTATE_INVALID.
      */
     function YDigitalIO_get_portState()
     {
@@ -173,7 +173,7 @@ var YDigitalIO; // definition below
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      *
-     * On failure, throws an exception or returns Y_PORTSTATE_INVALID.
+     * On failure, throws an exception or returns YDigitalIO.PORTSTATE_INVALID.
      */
     function YDigitalIO_get_portState_async(callback,context)
     {
@@ -208,7 +208,7 @@ var YDigitalIO; // definition below
      * @param newval : an integer corresponding to the state of all digital IO port's channels at once: the parameter
      *         is an integer where each bit represents a channel, with bit 0 matching channel #0
      *
-     * @return YAPI_SUCCESS if the call succeeds.
+     * @return YAPI.SUCCESS if the call succeeds.
      *
      * On failure, throws an exception or returns a negative error code.
      */
@@ -224,7 +224,7 @@ var YDigitalIO; // definition below
      * @return an integer corresponding to the I/O direction of all channels of the port (bitmap): 0 makes
      * a bit an input, 1 makes it an output
      *
-     * On failure, throws an exception or returns Y_PORTDIRECTION_INVALID.
+     * On failure, throws an exception or returns YDigitalIO.PORTDIRECTION_INVALID.
      */
     function YDigitalIO_get_portDirection()
     {
@@ -251,7 +251,7 @@ var YDigitalIO; // definition below
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      *
-     * On failure, throws an exception or returns Y_PORTDIRECTION_INVALID.
+     * On failure, throws an exception or returns YDigitalIO.PORTDIRECTION_INVALID.
      */
     function YDigitalIO_get_portDirection_async(callback,context)
     {
@@ -278,7 +278,7 @@ var YDigitalIO; // definition below
      * @param newval : an integer corresponding to the I/O direction of all channels of the port (bitmap):
      * 0 makes a bit an input, 1 makes it an output
      *
-     * @return YAPI_SUCCESS if the call succeeds.
+     * @return YAPI.SUCCESS if the call succeeds.
      *
      * On failure, throws an exception or returns a negative error code.
      */
@@ -295,7 +295,7 @@ var YDigitalIO; // definition below
      *
      * @return an integer corresponding to the electrical interface for each bit of the port
      *
-     * On failure, throws an exception or returns Y_PORTOPENDRAIN_INVALID.
+     * On failure, throws an exception or returns YDigitalIO.PORTOPENDRAIN_INVALID.
      */
     function YDigitalIO_get_portOpenDrain()
     {
@@ -323,7 +323,7 @@ var YDigitalIO; // definition below
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      *
-     * On failure, throws an exception or returns Y_PORTOPENDRAIN_INVALID.
+     * On failure, throws an exception or returns YDigitalIO.PORTOPENDRAIN_INVALID.
      */
     function YDigitalIO_get_portOpenDrain_async(callback,context)
     {
@@ -350,7 +350,7 @@ var YDigitalIO; // definition below
      *
      * @param newval : an integer corresponding to the electrical interface for each bit of the port
      *
-     * @return YAPI_SUCCESS if the call succeeds.
+     * @return YAPI.SUCCESS if the call succeeds.
      *
      * On failure, throws an exception or returns a negative error code.
      */
@@ -366,7 +366,7 @@ var YDigitalIO; // definition below
      *
      * @return an integer corresponding to the polarity of all the bits of the port
      *
-     * On failure, throws an exception or returns Y_PORTPOLARITY_INVALID.
+     * On failure, throws an exception or returns YDigitalIO.PORTPOLARITY_INVALID.
      */
     function YDigitalIO_get_portPolarity()
     {
@@ -393,7 +393,7 @@ var YDigitalIO; // definition below
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      *
-     * On failure, throws an exception or returns Y_PORTPOLARITY_INVALID.
+     * On failure, throws an exception or returns YDigitalIO.PORTPOLARITY_INVALID.
      */
     function YDigitalIO_get_portPolarity_async(callback,context)
     {
@@ -422,7 +422,7 @@ var YDigitalIO; // definition below
      * set to 0, the matching I/O works the regular,
      *         intuitive way; for each bit set to 1, the I/O works in reverse mode
      *
-     * @return YAPI_SUCCESS if the call succeeds.
+     * @return YAPI.SUCCESS if the call succeeds.
      *
      * On failure, throws an exception or returns a negative error code.
      */
@@ -439,7 +439,7 @@ var YDigitalIO; // definition below
      *
      * @return an integer corresponding to the port state diagnostics (Yocto-IO and Yocto-MaxiIO-V2 only)
      *
-     * On failure, throws an exception or returns Y_PORTDIAGS_INVALID.
+     * On failure, throws an exception or returns YDigitalIO.PORTDIAGS_INVALID.
      */
     function YDigitalIO_get_portDiags()
     {
@@ -467,7 +467,7 @@ var YDigitalIO; // definition below
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      *
-     * On failure, throws an exception or returns Y_PORTDIAGS_INVALID.
+     * On failure, throws an exception or returns YDigitalIO.PORTDIAGS_INVALID.
      */
     function YDigitalIO_get_portDiags_async(callback,context)
     {
@@ -492,7 +492,7 @@ var YDigitalIO; // definition below
      *
      * @return an integer corresponding to the number of bits (i.e
      *
-     * On failure, throws an exception or returns Y_PORTSIZE_INVALID.
+     * On failure, throws an exception or returns YDigitalIO.PORTSIZE_INVALID.
      */
     function YDigitalIO_get_portSize()
     {
@@ -518,7 +518,7 @@ var YDigitalIO; // definition below
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      *
-     * On failure, throws an exception or returns Y_PORTSIZE_INVALID.
+     * On failure, throws an exception or returns YDigitalIO.PORTSIZE_INVALID.
      */
     function YDigitalIO_get_portSize_async(callback,context)
     {
@@ -541,10 +541,10 @@ var YDigitalIO; // definition below
     /**
      * Returns the voltage source used to drive output bits.
      *
-     * @return a value among Y_OUTPUTVOLTAGE_USB_5V, Y_OUTPUTVOLTAGE_USB_3V and Y_OUTPUTVOLTAGE_EXT_V
-     * corresponding to the voltage source used to drive output bits
+     * @return a value among YDigitalIO.OUTPUTVOLTAGE_USB_5V, YDigitalIO.OUTPUTVOLTAGE_USB_3V and
+     * YDigitalIO.OUTPUTVOLTAGE_EXT_V corresponding to the voltage source used to drive output bits
      *
-     * On failure, throws an exception or returns Y_OUTPUTVOLTAGE_INVALID.
+     * On failure, throws an exception or returns YDigitalIO.OUTPUTVOLTAGE_INVALID.
      */
     function YDigitalIO_get_outputVoltage()
     {
@@ -565,13 +565,13 @@ var YDigitalIO; // definition below
      *         The callback function receives three arguments:
      *         - the user-specific context object
      *         - the YDigitalIO object that invoked the callback
-     *         - the result:a value among Y_OUTPUTVOLTAGE_USB_5V, Y_OUTPUTVOLTAGE_USB_3V and Y_OUTPUTVOLTAGE_EXT_V
-     *         corresponding to the voltage source used to drive output bits
+     *         - the result:a value among YDigitalIO.OUTPUTVOLTAGE_USB_5V, YDigitalIO.OUTPUTVOLTAGE_USB_3V and
+     *         YDigitalIO.OUTPUTVOLTAGE_EXT_V corresponding to the voltage source used to drive output bits
      * @param context : user-specific object that is passed as-is to the callback function
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      *
-     * On failure, throws an exception or returns Y_OUTPUTVOLTAGE_INVALID.
+     * On failure, throws an exception or returns YDigitalIO.OUTPUTVOLTAGE_INVALID.
      */
     function YDigitalIO_get_outputVoltage_async(callback,context)
     {
@@ -595,10 +595,10 @@ var YDigitalIO; // definition below
      * Changes the voltage source used to drive output bits.
      * Remember to call the saveToFlash() method  to make sure the setting is kept after a reboot.
      *
-     * @param newval : a value among Y_OUTPUTVOLTAGE_USB_5V, Y_OUTPUTVOLTAGE_USB_3V and
-     * Y_OUTPUTVOLTAGE_EXT_V corresponding to the voltage source used to drive output bits
+     * @param newval : a value among YDigitalIO.OUTPUTVOLTAGE_USB_5V, YDigitalIO.OUTPUTVOLTAGE_USB_3V and
+     * YDigitalIO.OUTPUTVOLTAGE_EXT_V corresponding to the voltage source used to drive output bits
      *
-     * @return YAPI_SUCCESS if the call succeeds.
+     * @return YAPI.SUCCESS if the call succeeds.
      *
      * On failure, throws an exception or returns a negative error code.
      */
@@ -700,7 +700,7 @@ var YDigitalIO; // definition below
      * @param bitno : the bit number; lowest bit has index 0
      * @param bitstate : the state of the bit (1 or 0)
      *
-     * @return YAPI_SUCCESS if the call succeeds.
+     * @return YAPI.SUCCESS if the call succeeds.
      *
      * On failure, throws an exception or returns a negative error code.
      */
@@ -736,7 +736,7 @@ var YDigitalIO; // definition below
      *
      * @param bitno : the bit number; lowest bit has index 0
      *
-     * @return YAPI_SUCCESS if the call succeeds.
+     * @return YAPI.SUCCESS if the call succeeds.
      *
      * On failure, throws an exception or returns a negative error code.
      */
@@ -752,7 +752,7 @@ var YDigitalIO; // definition below
      * @param bitdirection : direction to set, 0 makes the bit an input, 1 makes it an output.
      *         Remember to call the   saveToFlash() method to make sure the setting is kept after a reboot.
      *
-     * @return YAPI_SUCCESS if the call succeeds.
+     * @return YAPI.SUCCESS if the call succeeds.
      *
      * On failure, throws an exception or returns a negative error code.
      */
@@ -773,7 +773,7 @@ var YDigitalIO; // definition below
      *
      * @param bitno : the bit number; lowest bit has index 0
      *
-     * @return YAPI_SUCCESS if the call succeeds.
+     * @return YAPI.SUCCESS if the call succeeds.
      *
      * On failure, throws an exception or returns a negative error code.
      */
@@ -792,7 +792,7 @@ var YDigitalIO; // definition below
      * in reverse mode.
      *         Remember to call the   saveToFlash() method to make sure the setting is kept after a reboot.
      *
-     * @return YAPI_SUCCESS if the call succeeds.
+     * @return YAPI.SUCCESS if the call succeeds.
      *
      * On failure, throws an exception or returns a negative error code.
      */
@@ -813,7 +813,7 @@ var YDigitalIO; // definition below
      *
      * @param bitno : the bit number; lowest bit has index 0
      *
-     * @return YAPI_SUCCESS if the call succeeds.
+     * @return YAPI.SUCCESS if the call succeeds.
      *
      * On failure, throws an exception or returns a negative error code.
      */
@@ -832,7 +832,7 @@ var YDigitalIO; // definition below
      *         it an open-drain (open-collector) input/output. Remember to call the
      *         saveToFlash() method to make sure the setting is kept after a reboot.
      *
-     * @return YAPI_SUCCESS if the call succeeds.
+     * @return YAPI.SUCCESS if the call succeeds.
      *
      * On failure, throws an exception or returns a negative error code.
      */
@@ -873,7 +873,7 @@ var YDigitalIO; // definition below
      * @param ms_duration : desired pulse duration in milliseconds. Be aware that the device time
      *         resolution is not guaranteed up to the millisecond.
      *
-     * @return YAPI_SUCCESS if the call succeeds.
+     * @return YAPI.SUCCESS if the call succeeds.
      *
      * On failure, throws an exception or returns a negative error code.
      */
@@ -891,7 +891,7 @@ var YDigitalIO; // definition below
      * @param ms_duration : desired pulse duration in milliseconds. Be aware that the device time
      *         resolution is not guaranteed up to the millisecond.
      *
-     * @return YAPI_SUCCESS if the call succeeds.
+     * @return YAPI.SUCCESS if the call succeeds.
      *
      * On failure, throws an exception or returns a negative error code.
      */

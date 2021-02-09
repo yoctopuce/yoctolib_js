@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_spiport.js 41171 2020-07-02 17:49:00Z mvuilleu $
+ *  $Id: yocto_spiport.js 43619 2021-01-29 09:14:45Z mvuilleu $
  *
  *  Implements the high-level API for SpiPort functions
  *
@@ -253,7 +253,7 @@ var YSpiPort; // definition below
      *
      * @return an integer corresponding to the total number of bytes received since last reset
      *
-     * On failure, throws an exception or returns Y_RXCOUNT_INVALID.
+     * On failure, throws an exception or returns YSpiPort.RXCOUNT_INVALID.
      */
     function YSpiPort_get_rxCount()
     {
@@ -279,7 +279,7 @@ var YSpiPort; // definition below
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      *
-     * On failure, throws an exception or returns Y_RXCOUNT_INVALID.
+     * On failure, throws an exception or returns YSpiPort.RXCOUNT_INVALID.
      */
     function YSpiPort_get_rxCount_async(callback,context)
     {
@@ -304,7 +304,7 @@ var YSpiPort; // definition below
      *
      * @return an integer corresponding to the total number of bytes transmitted since last reset
      *
-     * On failure, throws an exception or returns Y_TXCOUNT_INVALID.
+     * On failure, throws an exception or returns YSpiPort.TXCOUNT_INVALID.
      */
     function YSpiPort_get_txCount()
     {
@@ -330,7 +330,7 @@ var YSpiPort; // definition below
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      *
-     * On failure, throws an exception or returns Y_TXCOUNT_INVALID.
+     * On failure, throws an exception or returns YSpiPort.TXCOUNT_INVALID.
      */
     function YSpiPort_get_txCount_async(callback,context)
     {
@@ -355,7 +355,7 @@ var YSpiPort; // definition below
      *
      * @return an integer corresponding to the total number of communication errors detected since last reset
      *
-     * On failure, throws an exception or returns Y_ERRCOUNT_INVALID.
+     * On failure, throws an exception or returns YSpiPort.ERRCOUNT_INVALID.
      */
     function YSpiPort_get_errCount()
     {
@@ -381,7 +381,7 @@ var YSpiPort; // definition below
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      *
-     * On failure, throws an exception or returns Y_ERRCOUNT_INVALID.
+     * On failure, throws an exception or returns YSpiPort.ERRCOUNT_INVALID.
      */
     function YSpiPort_get_errCount_async(callback,context)
     {
@@ -406,7 +406,7 @@ var YSpiPort; // definition below
      *
      * @return an integer corresponding to the total number of messages received since last reset
      *
-     * On failure, throws an exception or returns Y_RXMSGCOUNT_INVALID.
+     * On failure, throws an exception or returns YSpiPort.RXMSGCOUNT_INVALID.
      */
     function YSpiPort_get_rxMsgCount()
     {
@@ -432,7 +432,7 @@ var YSpiPort; // definition below
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      *
-     * On failure, throws an exception or returns Y_RXMSGCOUNT_INVALID.
+     * On failure, throws an exception or returns YSpiPort.RXMSGCOUNT_INVALID.
      */
     function YSpiPort_get_rxMsgCount_async(callback,context)
     {
@@ -457,7 +457,7 @@ var YSpiPort; // definition below
      *
      * @return an integer corresponding to the total number of messages send since last reset
      *
-     * On failure, throws an exception or returns Y_TXMSGCOUNT_INVALID.
+     * On failure, throws an exception or returns YSpiPort.TXMSGCOUNT_INVALID.
      */
     function YSpiPort_get_txMsgCount()
     {
@@ -483,7 +483,7 @@ var YSpiPort; // definition below
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      *
-     * On failure, throws an exception or returns Y_TXMSGCOUNT_INVALID.
+     * On failure, throws an exception or returns YSpiPort.TXMSGCOUNT_INVALID.
      */
     function YSpiPort_get_txMsgCount_async(callback,context)
     {
@@ -508,7 +508,7 @@ var YSpiPort; // definition below
      *
      * @return a string corresponding to the latest message fully received (for Line and Frame protocols)
      *
-     * On failure, throws an exception or returns Y_LASTMSG_INVALID.
+     * On failure, throws an exception or returns YSpiPort.LASTMSG_INVALID.
      */
     function YSpiPort_get_lastMsg()
     {
@@ -534,7 +534,7 @@ var YSpiPort; // definition below
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      *
-     * On failure, throws an exception or returns Y_LASTMSG_INVALID.
+     * On failure, throws an exception or returns YSpiPort.LASTMSG_INVALID.
      */
     function YSpiPort_get_lastMsg_async(callback,context)
     {
@@ -559,7 +559,7 @@ var YSpiPort; // definition below
      *
      * @return a string corresponding to the name of the job file currently in use
      *
-     * On failure, throws an exception or returns Y_CURRENTJOB_INVALID.
+     * On failure, throws an exception or returns YSpiPort.CURRENTJOB_INVALID.
      */
     function YSpiPort_get_currentJob()
     {
@@ -585,7 +585,7 @@ var YSpiPort; // definition below
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      *
-     * On failure, throws an exception or returns Y_CURRENTJOB_INVALID.
+     * On failure, throws an exception or returns YSpiPort.CURRENTJOB_INVALID.
      */
     function YSpiPort_get_currentJob_async(callback,context)
     {
@@ -611,7 +611,7 @@ var YSpiPort; // definition below
      *
      * @param newval : a string
      *
-     * @return YAPI_SUCCESS if the call succeeds.
+     * @return YAPI.SUCCESS if the call succeeds.
      *
      * On failure, throws an exception or returns a negative error code.
      */
@@ -626,7 +626,7 @@ var YSpiPort; // definition below
      *
      * @return a string corresponding to the job file to use when the device is powered on
      *
-     * On failure, throws an exception or returns Y_STARTUPJOB_INVALID.
+     * On failure, throws an exception or returns YSpiPort.STARTUPJOB_INVALID.
      */
     function YSpiPort_get_startupJob()
     {
@@ -652,7 +652,7 @@ var YSpiPort; // definition below
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      *
-     * On failure, throws an exception or returns Y_STARTUPJOB_INVALID.
+     * On failure, throws an exception or returns YSpiPort.STARTUPJOB_INVALID.
      */
     function YSpiPort_get_startupJob_async(callback,context)
     {
@@ -679,7 +679,7 @@ var YSpiPort; // definition below
      *
      * @param newval : a string corresponding to the job to use when the device is powered on
      *
-     * @return YAPI_SUCCESS if the call succeeds.
+     * @return YAPI.SUCCESS if the call succeeds.
      *
      * On failure, throws an exception or returns a negative error code.
      */
@@ -694,7 +694,7 @@ var YSpiPort; // definition below
      *
      * @return an integer corresponding to the maximum number of tasks in a job that the device can handle
      *
-     * On failure, throws an exception or returns Y_JOBMAXTASK_INVALID.
+     * On failure, throws an exception or returns YSpiPort.JOBMAXTASK_INVALID.
      */
     function YSpiPort_get_jobMaxTask()
     {
@@ -720,7 +720,7 @@ var YSpiPort; // definition below
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      *
-     * On failure, throws an exception or returns Y_JOBMAXTASK_INVALID.
+     * On failure, throws an exception or returns YSpiPort.JOBMAXTASK_INVALID.
      */
     function YSpiPort_get_jobMaxTask_async(callback,context)
     {
@@ -745,7 +745,7 @@ var YSpiPort; // definition below
      *
      * @return an integer corresponding to maximum size allowed for job files
      *
-     * On failure, throws an exception or returns Y_JOBMAXSIZE_INVALID.
+     * On failure, throws an exception or returns YSpiPort.JOBMAXSIZE_INVALID.
      */
     function YSpiPort_get_jobMaxSize()
     {
@@ -771,7 +771,7 @@ var YSpiPort; // definition below
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      *
-     * On failure, throws an exception or returns Y_JOBMAXSIZE_INVALID.
+     * On failure, throws an exception or returns YSpiPort.JOBMAXSIZE_INVALID.
      */
     function YSpiPort_get_jobMaxSize_async(callback,context)
     {
@@ -847,7 +847,7 @@ var YSpiPort; // definition below
      *
      * @return a string corresponding to the type of protocol used over the serial line, as a string
      *
-     * On failure, throws an exception or returns Y_PROTOCOL_INVALID.
+     * On failure, throws an exception or returns YSpiPort.PROTOCOL_INVALID.
      */
     function YSpiPort_get_protocol()
     {
@@ -877,7 +877,7 @@ var YSpiPort; // definition below
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      *
-     * On failure, throws an exception or returns Y_PROTOCOL_INVALID.
+     * On failure, throws an exception or returns YSpiPort.PROTOCOL_INVALID.
      */
     function YSpiPort_get_protocol_async(callback,context)
     {
@@ -910,7 +910,7 @@ var YSpiPort; // definition below
      *
      * @param newval : a string corresponding to the type of protocol used over the serial line
      *
-     * @return YAPI_SUCCESS if the call succeeds.
+     * @return YAPI.SUCCESS if the call succeeds.
      *
      * On failure, throws an exception or returns a negative error code.
      */
@@ -923,11 +923,12 @@ var YSpiPort; // definition below
     /**
      * Returns the voltage level used on the serial line.
      *
-     * @return a value among Y_VOLTAGELEVEL_OFF, Y_VOLTAGELEVEL_TTL3V, Y_VOLTAGELEVEL_TTL3VR,
-     * Y_VOLTAGELEVEL_TTL5V, Y_VOLTAGELEVEL_TTL5VR, Y_VOLTAGELEVEL_RS232, Y_VOLTAGELEVEL_RS485 and
-     * Y_VOLTAGELEVEL_TTL1V8 corresponding to the voltage level used on the serial line
+     * @return a value among YSpiPort.VOLTAGELEVEL_OFF, YSpiPort.VOLTAGELEVEL_TTL3V,
+     * YSpiPort.VOLTAGELEVEL_TTL3VR, YSpiPort.VOLTAGELEVEL_TTL5V, YSpiPort.VOLTAGELEVEL_TTL5VR,
+     * YSpiPort.VOLTAGELEVEL_RS232, YSpiPort.VOLTAGELEVEL_RS485 and YSpiPort.VOLTAGELEVEL_TTL1V8
+     * corresponding to the voltage level used on the serial line
      *
-     * On failure, throws an exception or returns Y_VOLTAGELEVEL_INVALID.
+     * On failure, throws an exception or returns YSpiPort.VOLTAGELEVEL_INVALID.
      */
     function YSpiPort_get_voltageLevel()
     {
@@ -948,14 +949,15 @@ var YSpiPort; // definition below
      *         The callback function receives three arguments:
      *         - the user-specific context object
      *         - the YSpiPort object that invoked the callback
-     *         - the result:a value among Y_VOLTAGELEVEL_OFF, Y_VOLTAGELEVEL_TTL3V, Y_VOLTAGELEVEL_TTL3VR,
-     *         Y_VOLTAGELEVEL_TTL5V, Y_VOLTAGELEVEL_TTL5VR, Y_VOLTAGELEVEL_RS232, Y_VOLTAGELEVEL_RS485 and
-     *         Y_VOLTAGELEVEL_TTL1V8 corresponding to the voltage level used on the serial line
+     *         - the result:a value among YSpiPort.VOLTAGELEVEL_OFF, YSpiPort.VOLTAGELEVEL_TTL3V,
+     *         YSpiPort.VOLTAGELEVEL_TTL3VR, YSpiPort.VOLTAGELEVEL_TTL5V, YSpiPort.VOLTAGELEVEL_TTL5VR,
+     *         YSpiPort.VOLTAGELEVEL_RS232, YSpiPort.VOLTAGELEVEL_RS485 and YSpiPort.VOLTAGELEVEL_TTL1V8
+     *         corresponding to the voltage level used on the serial line
      * @param context : user-specific object that is passed as-is to the callback function
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      *
-     * On failure, throws an exception or returns Y_VOLTAGELEVEL_INVALID.
+     * On failure, throws an exception or returns YSpiPort.VOLTAGELEVEL_INVALID.
      */
     function YSpiPort_get_voltageLevel_async(callback,context)
     {
@@ -984,11 +986,12 @@ var YSpiPort; // definition below
      * Remember to call the saveToFlash() method of the module if the
      * modification must be kept.
      *
-     * @param newval : a value among Y_VOLTAGELEVEL_OFF, Y_VOLTAGELEVEL_TTL3V, Y_VOLTAGELEVEL_TTL3VR,
-     * Y_VOLTAGELEVEL_TTL5V, Y_VOLTAGELEVEL_TTL5VR, Y_VOLTAGELEVEL_RS232, Y_VOLTAGELEVEL_RS485 and
-     * Y_VOLTAGELEVEL_TTL1V8 corresponding to the voltage type used on the serial line
+     * @param newval : a value among YSpiPort.VOLTAGELEVEL_OFF, YSpiPort.VOLTAGELEVEL_TTL3V,
+     * YSpiPort.VOLTAGELEVEL_TTL3VR, YSpiPort.VOLTAGELEVEL_TTL5V, YSpiPort.VOLTAGELEVEL_TTL5VR,
+     * YSpiPort.VOLTAGELEVEL_RS232, YSpiPort.VOLTAGELEVEL_RS485 and YSpiPort.VOLTAGELEVEL_TTL1V8
+     * corresponding to the voltage type used on the serial line
      *
-     * @return YAPI_SUCCESS if the call succeeds.
+     * @return YAPI.SUCCESS if the call succeeds.
      *
      * On failure, throws an exception or returns a negative error code.
      */
@@ -1006,7 +1009,7 @@ var YSpiPort; // definition below
      * @return a string corresponding to the SPI port communication parameters, as a string such as
      *         "125000,0,msb"
      *
-     * On failure, throws an exception or returns Y_SPIMODE_INVALID.
+     * On failure, throws an exception or returns YSpiPort.SPIMODE_INVALID.
      */
     function YSpiPort_get_spiMode()
     {
@@ -1035,7 +1038,7 @@ var YSpiPort; // definition below
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      *
-     * On failure, throws an exception or returns Y_SPIMODE_INVALID.
+     * On failure, throws an exception or returns YSpiPort.SPIMODE_INVALID.
      */
     function YSpiPort_get_spiMode_async(callback,context)
     {
@@ -1065,7 +1068,7 @@ var YSpiPort; // definition below
      * @param newval : a string corresponding to the SPI port communication parameters, with a string such as
      *         "125000,0,msb"
      *
-     * @return YAPI_SUCCESS if the call succeeds.
+     * @return YAPI.SUCCESS if the call succeeds.
      *
      * On failure, throws an exception or returns a negative error code.
      */
@@ -1078,9 +1081,10 @@ var YSpiPort; // definition below
     /**
      * Returns the SS line polarity.
      *
-     * @return either Y_SSPOLARITY_ACTIVE_LOW or Y_SSPOLARITY_ACTIVE_HIGH, according to the SS line polarity
+     * @return either YSpiPort.SSPOLARITY_ACTIVE_LOW or YSpiPort.SSPOLARITY_ACTIVE_HIGH, according to the
+     * SS line polarity
      *
-     * On failure, throws an exception or returns Y_SSPOLARITY_INVALID.
+     * On failure, throws an exception or returns YSpiPort.SSPOLARITY_INVALID.
      */
     function YSpiPort_get_ssPolarity()
     {
@@ -1101,12 +1105,13 @@ var YSpiPort; // definition below
      *         The callback function receives three arguments:
      *         - the user-specific context object
      *         - the YSpiPort object that invoked the callback
-     *         - the result:either Y_SSPOLARITY_ACTIVE_LOW or Y_SSPOLARITY_ACTIVE_HIGH, according to the SS line polarity
+     *         - the result:either YSpiPort.SSPOLARITY_ACTIVE_LOW or YSpiPort.SSPOLARITY_ACTIVE_HIGH, according to
+     *         the SS line polarity
      * @param context : user-specific object that is passed as-is to the callback function
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      *
-     * On failure, throws an exception or returns Y_SSPOLARITY_INVALID.
+     * On failure, throws an exception or returns YSpiPort.SSPOLARITY_INVALID.
      */
     function YSpiPort_get_ssPolarity_async(callback,context)
     {
@@ -1131,9 +1136,10 @@ var YSpiPort; // definition below
      * Remember to call the saveToFlash() method of the module if the
      * modification must be kept.
      *
-     * @param newval : either Y_SSPOLARITY_ACTIVE_LOW or Y_SSPOLARITY_ACTIVE_HIGH, according to the SS line polarity
+     * @param newval : either YSpiPort.SSPOLARITY_ACTIVE_LOW or YSpiPort.SSPOLARITY_ACTIVE_HIGH, according
+     * to the SS line polarity
      *
-     * @return YAPI_SUCCESS if the call succeeds.
+     * @return YAPI.SUCCESS if the call succeeds.
      *
      * On failure, throws an exception or returns a negative error code.
      */
@@ -1146,10 +1152,10 @@ var YSpiPort; // definition below
     /**
      * Returns true when the SDI line phase is shifted with regards to the SDO line.
      *
-     * @return either Y_SHIFTSAMPLING_OFF or Y_SHIFTSAMPLING_ON, according to true when the SDI line phase
-     * is shifted with regards to the SDO line
+     * @return either YSpiPort.SHIFTSAMPLING_OFF or YSpiPort.SHIFTSAMPLING_ON, according to true when the
+     * SDI line phase is shifted with regards to the SDO line
      *
-     * On failure, throws an exception or returns Y_SHIFTSAMPLING_INVALID.
+     * On failure, throws an exception or returns YSpiPort.SHIFTSAMPLING_INVALID.
      */
     function YSpiPort_get_shiftSampling()
     {
@@ -1170,13 +1176,13 @@ var YSpiPort; // definition below
      *         The callback function receives three arguments:
      *         - the user-specific context object
      *         - the YSpiPort object that invoked the callback
-     *         - the result:either Y_SHIFTSAMPLING_OFF or Y_SHIFTSAMPLING_ON, according to true when the SDI line
-     *         phase is shifted with regards to the SDO line
+     *         - the result:either YSpiPort.SHIFTSAMPLING_OFF or YSpiPort.SHIFTSAMPLING_ON, according to true when
+     *         the SDI line phase is shifted with regards to the SDO line
      * @param context : user-specific object that is passed as-is to the callback function
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      *
-     * On failure, throws an exception or returns Y_SHIFTSAMPLING_INVALID.
+     * On failure, throws an exception or returns YSpiPort.SHIFTSAMPLING_INVALID.
      */
     function YSpiPort_get_shiftSampling_async(callback,context)
     {
@@ -1203,9 +1209,10 @@ var YSpiPort; // definition below
      * Remember to call the saveToFlash() method of the module if the
      * modification must be kept.
      *
-     * @param newval : either Y_SHIFTSAMPLING_OFF or Y_SHIFTSAMPLING_ON, according to the SDI line sampling shift
+     * @param newval : either YSpiPort.SHIFTSAMPLING_OFF or YSpiPort.SHIFTSAMPLING_ON, according to the
+     * SDI line sampling shift
      *
-     * @return YAPI_SUCCESS if the call succeeds.
+     * @return YAPI.SUCCESS if the call succeeds.
      *
      * On failure, throws an exception or returns a negative error code.
      */
@@ -1473,7 +1480,7 @@ var YSpiPort; // definition below
      * @param jobfile : name of the job file to save on the device filesystem
      * @param jsonDef : a string containing a JSON definition of the job
      *
-     * @return YAPI_SUCCESS if the call succeeds.
+     * @return YAPI.SUCCESS if the call succeeds.
      *
      * On failure, throws an exception or returns a negative error code.
      */
@@ -1490,7 +1497,7 @@ var YSpiPort; // definition below
      *
      * @param jobfile : name of the job file (on the device filesystem)
      *
-     * @return YAPI_SUCCESS if the call succeeds.
+     * @return YAPI.SUCCESS if the call succeeds.
      *
      * On failure, throws an exception or returns a negative error code.
      */
@@ -1502,7 +1509,7 @@ var YSpiPort; // definition below
     /**
      * Clears the serial port buffer and resets counters to zero.
      *
-     * @return YAPI_SUCCESS if the call succeeds.
+     * @return YAPI.SUCCESS if the call succeeds.
      *
      * On failure, throws an exception or returns a negative error code.
      */
@@ -1520,7 +1527,7 @@ var YSpiPort; // definition below
      *
      * @param code : the byte to send
      *
-     * @return YAPI_SUCCESS if the call succeeds.
+     * @return YAPI.SUCCESS if the call succeeds.
      *
      * On failure, throws an exception or returns a negative error code.
      */
@@ -1534,7 +1541,7 @@ var YSpiPort; // definition below
      *
      * @param text : the text string to send
      *
-     * @return YAPI_SUCCESS if the call succeeds.
+     * @return YAPI.SUCCESS if the call succeeds.
      *
      * On failure, throws an exception or returns a negative error code.
      */
@@ -1571,7 +1578,7 @@ var YSpiPort; // definition below
      *
      * @param buff : the binary buffer to send
      *
-     * @return YAPI_SUCCESS if the call succeeds.
+     * @return YAPI.SUCCESS if the call succeeds.
      *
      * On failure, throws an exception or returns a negative error code.
      */
@@ -1585,7 +1592,7 @@ var YSpiPort; // definition below
      *
      * @param byteList : a list of byte codes
      *
-     * @return YAPI_SUCCESS if the call succeeds.
+     * @return YAPI.SUCCESS if the call succeeds.
      *
      * On failure, throws an exception or returns a negative error code.
      */
@@ -1614,7 +1621,7 @@ var YSpiPort; // definition below
      *
      * @param hexString : a string of hexadecimal byte codes
      *
-     * @return YAPI_SUCCESS if the call succeeds.
+     * @return YAPI.SUCCESS if the call succeeds.
      *
      * On failure, throws an exception or returns a negative error code.
      */
@@ -1647,7 +1654,7 @@ var YSpiPort; // definition below
      *
      * @param text : the text string to send
      *
-     * @return YAPI_SUCCESS if the call succeeds.
+     * @return YAPI.SUCCESS if the call succeeds.
      *
      * On failure, throws an exception or returns a negative error code.
      */
@@ -1922,7 +1929,7 @@ var YSpiPort; // definition below
      *
      * @param val : 1 to turn SS active, 0 to release SS.
      *
-     * @return YAPI_SUCCESS if the call succeeds.
+     * @return YAPI.SUCCESS if the call succeeds.
      *
      * On failure, throws an exception or returns a negative error code.
      */

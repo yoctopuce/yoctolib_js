@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_files.js 42060 2020-10-14 10:02:12Z seb $
+ * $Id: yocto_files.js 43619 2021-01-29 09:14:45Z mvuilleu $
  *
  * Implements yFindFiles(), the high-level API for Files functions
  *
@@ -121,8 +121,8 @@ var YFileRecord; // definition below
 
 //--- (generated code: YFiles class start)
 /**
- * YFiles Class: filesystem control interface, available for instance in the Yocto-Buzzer, the
- * Yocto-Color-V2, the YoctoHub-Ethernet or the YoctoHub-Wireless-n
+ * YFiles Class: filesystem control interface, available for instance in the Yocto-Color-V2, the
+ * Yocto-Serial, the YoctoHub-Ethernet or the YoctoHub-Wireless-n
  *
  * The YFiles class is used to access the filesystem embedded on
  * some Yoctopuce devices. This filesystem makes it
@@ -166,7 +166,7 @@ var YFiles; // definition below
      *
      * @return an integer corresponding to the number of files currently loaded in the filesystem
      *
-     * On failure, throws an exception or returns Y_FILESCOUNT_INVALID.
+     * On failure, throws an exception or returns YFiles.FILESCOUNT_INVALID.
      */
     function YFiles_get_filesCount()
     {
@@ -192,7 +192,7 @@ var YFiles; // definition below
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      *
-     * On failure, throws an exception or returns Y_FILESCOUNT_INVALID.
+     * On failure, throws an exception or returns YFiles.FILESCOUNT_INVALID.
      */
     function YFiles_get_filesCount_async(callback,context)
     {
@@ -217,7 +217,7 @@ var YFiles; // definition below
      *
      * @return an integer corresponding to the free space for uploading new files to the filesystem, in bytes
      *
-     * On failure, throws an exception or returns Y_FREESPACE_INVALID.
+     * On failure, throws an exception or returns YFiles.FREESPACE_INVALID.
      */
     function YFiles_get_freeSpace()
     {
@@ -243,7 +243,7 @@ var YFiles; // definition below
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      *
-     * On failure, throws an exception or returns Y_FREESPACE_INVALID.
+     * On failure, throws an exception or returns YFiles.FREESPACE_INVALID.
      */
     function YFiles_get_freeSpace_async(callback,context)
     {
@@ -287,7 +287,7 @@ var YFiles; // definition below
      * call registerHub() at application initialization time.
      *
      * @param func : a string that uniquely characterizes the filesystem, for instance
-     *         YBUZZER2.files.
+     *         YRGBLED2.files.
      *
      * @return a YFiles object allowing you to drive the filesystem.
      */
@@ -314,7 +314,7 @@ var YFiles; // definition below
      * Reinitialize the filesystem to its clean, unfragmented, empty state.
      * All files previously uploaded are permanently lost.
      *
-     * @return YAPI_SUCCESS if the call succeeds.
+     * @return YAPI.SUCCESS if the call succeeds.
      *
      * On failure, throws an exception or returns a negative error code.
      */
@@ -404,7 +404,7 @@ var YFiles; // definition below
      * @param pathname : path and name of the new file to create
      * @param content : binary buffer with the content to set
      *
-     * @return YAPI_SUCCESS if the call succeeds.
+     * @return YAPI.SUCCESS if the call succeeds.
      *
      * On failure, throws an exception or returns a negative error code.
      */
@@ -423,7 +423,7 @@ var YFiles; // definition below
      *
      * @param pathname : path and name of the file to remove.
      *
-     * @return YAPI_SUCCESS if the call succeeds.
+     * @return YAPI.SUCCESS if the call succeeds.
      *
      * On failure, throws an exception or returns a negative error code.
      */
@@ -555,7 +555,7 @@ var YFiles; // definition below
  * call registerHub() at application initialization time.
  *
  * @param func : a string that uniquely characterizes the filesystem, for instance
- *         YBUZZER2.files.
+ *         YRGBLED2.files.
  *
  * @return a YFiles object allowing you to drive the filesystem.
  */

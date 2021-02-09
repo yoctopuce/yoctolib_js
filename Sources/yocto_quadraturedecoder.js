@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_quadraturedecoder.js 38899 2019-12-20 17:21:03Z mvuilleu $
+ *  $Id: yocto_quadraturedecoder.js 43580 2021-01-26 17:46:01Z mvuilleu $
  *
  *  Implements the high-level API for QuadratureDecoder functions
  *
@@ -94,7 +94,7 @@ var YQuadratureDecoder; // definition below
      *
      * @param newval : a floating point number corresponding to the current expected position of the quadrature decoder
      *
-     * @return YAPI_SUCCESS if the call succeeds.
+     * @return YAPI.SUCCESS if the call succeeds.
      *
      * On failure, throws an exception or returns a negative error code.
      */
@@ -109,7 +109,7 @@ var YQuadratureDecoder; // definition below
      *
      * @return a floating point number corresponding to the increments frequency, in Hz
      *
-     * On failure, throws an exception or returns Y_SPEED_INVALID.
+     * On failure, throws an exception or returns YQuadratureDecoder.SPEED_INVALID.
      */
     function YQuadratureDecoder_get_speed()
     {
@@ -135,7 +135,7 @@ var YQuadratureDecoder; // definition below
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      *
-     * On failure, throws an exception or returns Y_SPEED_INVALID.
+     * On failure, throws an exception or returns YQuadratureDecoder.SPEED_INVALID.
      */
     function YQuadratureDecoder_get_speed_async(callback,context)
     {
@@ -158,10 +158,10 @@ var YQuadratureDecoder; // definition below
     /**
      * Returns the current activation state of the quadrature decoder.
      *
-     * @return either Y_DECODING_OFF or Y_DECODING_ON, according to the current activation state of the
-     * quadrature decoder
+     * @return either YQuadratureDecoder.DECODING_OFF or YQuadratureDecoder.DECODING_ON, according to the
+     * current activation state of the quadrature decoder
      *
-     * On failure, throws an exception or returns Y_DECODING_INVALID.
+     * On failure, throws an exception or returns YQuadratureDecoder.DECODING_INVALID.
      */
     function YQuadratureDecoder_get_decoding()
     {
@@ -182,13 +182,13 @@ var YQuadratureDecoder; // definition below
      *         The callback function receives three arguments:
      *         - the user-specific context object
      *         - the YQuadratureDecoder object that invoked the callback
-     *         - the result:either Y_DECODING_OFF or Y_DECODING_ON, according to the current activation state of
-     *         the quadrature decoder
+     *         - the result:either YQuadratureDecoder.DECODING_OFF or YQuadratureDecoder.DECODING_ON, according to
+     *         the current activation state of the quadrature decoder
      * @param context : user-specific object that is passed as-is to the callback function
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      *
-     * On failure, throws an exception or returns Y_DECODING_INVALID.
+     * On failure, throws an exception or returns YQuadratureDecoder.DECODING_INVALID.
      */
     function YQuadratureDecoder_get_decoding_async(callback,context)
     {
@@ -213,10 +213,10 @@ var YQuadratureDecoder; // definition below
      * Remember to call the saveToFlash()
      * method of the module if the modification must be kept.
      *
-     * @param newval : either Y_DECODING_OFF or Y_DECODING_ON, according to the activation state of the
-     * quadrature decoder
+     * @param newval : either YQuadratureDecoder.DECODING_OFF or YQuadratureDecoder.DECODING_ON, according
+     * to the activation state of the quadrature decoder
      *
-     * @return YAPI_SUCCESS if the call succeeds.
+     * @return YAPI.SUCCESS if the call succeeds.
      *
      * On failure, throws an exception or returns a negative error code.
      */

@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_buzzer.js 41109 2020-06-29 12:40:42Z seb $
+ *  $Id: yocto_buzzer.js 43619 2021-01-29 09:14:45Z mvuilleu $
  *
  *  Implements the high-level API for Buzzer functions
  *
@@ -111,7 +111,7 @@ var YBuzzer; // definition below
      *
      * @param newval : a floating point number corresponding to the frequency of the signal sent to the buzzer
      *
-     * @return YAPI_SUCCESS if the call succeeds.
+     * @return YAPI.SUCCESS if the call succeeds.
      *
      * On failure, throws an exception or returns a negative error code.
      */
@@ -126,7 +126,7 @@ var YBuzzer; // definition below
      *
      * @return a floating point number corresponding to the  frequency of the signal sent to the buzzer/speaker
      *
-     * On failure, throws an exception or returns Y_FREQUENCY_INVALID.
+     * On failure, throws an exception or returns YBuzzer.FREQUENCY_INVALID.
      */
     function YBuzzer_get_frequency()
     {
@@ -152,7 +152,7 @@ var YBuzzer; // definition below
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      *
-     * On failure, throws an exception or returns Y_FREQUENCY_INVALID.
+     * On failure, throws an exception or returns YBuzzer.FREQUENCY_INVALID.
      */
     function YBuzzer_get_frequency_async(callback,context)
     {
@@ -177,7 +177,7 @@ var YBuzzer; // definition below
      *
      * @return an integer corresponding to the volume of the signal sent to the buzzer/speaker
      *
-     * On failure, throws an exception or returns Y_VOLUME_INVALID.
+     * On failure, throws an exception or returns YBuzzer.VOLUME_INVALID.
      */
     function YBuzzer_get_volume()
     {
@@ -203,7 +203,7 @@ var YBuzzer; // definition below
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      *
-     * On failure, throws an exception or returns Y_VOLUME_INVALID.
+     * On failure, throws an exception or returns YBuzzer.VOLUME_INVALID.
      */
     function YBuzzer_get_volume_async(callback,context)
     {
@@ -229,7 +229,7 @@ var YBuzzer; // definition below
      *
      * @param newval : an integer corresponding to the volume of the signal sent to the buzzer/speaker
      *
-     * @return YAPI_SUCCESS if the call succeeds.
+     * @return YAPI.SUCCESS if the call succeeds.
      *
      * On failure, throws an exception or returns a negative error code.
      */
@@ -244,7 +244,7 @@ var YBuzzer; // definition below
      *
      * @return an integer corresponding to the current length of the playing sequence
      *
-     * On failure, throws an exception or returns Y_PLAYSEQSIZE_INVALID.
+     * On failure, throws an exception or returns YBuzzer.PLAYSEQSIZE_INVALID.
      */
     function YBuzzer_get_playSeqSize()
     {
@@ -270,7 +270,7 @@ var YBuzzer; // definition below
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      *
-     * On failure, throws an exception or returns Y_PLAYSEQSIZE_INVALID.
+     * On failure, throws an exception or returns YBuzzer.PLAYSEQSIZE_INVALID.
      */
     function YBuzzer_get_playSeqSize_async(callback,context)
     {
@@ -295,7 +295,7 @@ var YBuzzer; // definition below
      *
      * @return an integer corresponding to the maximum length of the playing sequence
      *
-     * On failure, throws an exception or returns Y_PLAYSEQMAXSIZE_INVALID.
+     * On failure, throws an exception or returns YBuzzer.PLAYSEQMAXSIZE_INVALID.
      */
     function YBuzzer_get_playSeqMaxSize()
     {
@@ -321,7 +321,7 @@ var YBuzzer; // definition below
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      *
-     * On failure, throws an exception or returns Y_PLAYSEQMAXSIZE_INVALID.
+     * On failure, throws an exception or returns YBuzzer.PLAYSEQMAXSIZE_INVALID.
      */
     function YBuzzer_get_playSeqMaxSize_async(callback,context)
     {
@@ -349,7 +349,7 @@ var YBuzzer; // definition below
      *
      * @return an integer corresponding to the playing sequence signature
      *
-     * On failure, throws an exception or returns Y_PLAYSEQSIGNATURE_INVALID.
+     * On failure, throws an exception or returns YBuzzer.PLAYSEQSIGNATURE_INVALID.
      */
     function YBuzzer_get_playSeqSignature()
     {
@@ -378,7 +378,7 @@ var YBuzzer; // definition below
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      *
-     * On failure, throws an exception or returns Y_PLAYSEQSIGNATURE_INVALID.
+     * On failure, throws an exception or returns YBuzzer.PLAYSEQSIGNATURE_INVALID.
      */
     function YBuzzer_get_playSeqSignature_async(callback,context)
     {
@@ -495,7 +495,7 @@ var YBuzzer; // definition below
      * @param freq    : desired frequency when the transition is completed, in Hz
      * @param msDelay : duration of the frequency transition, in milliseconds.
      *
-     * @return YAPI_SUCCESS if the call succeeds.
+     * @return YAPI.SUCCESS if the call succeeds.
      *         On failure, throws an exception or returns a negative error code.
      */
     function YBuzzer_addFreqMoveToPlaySeq(freq,msDelay)
@@ -509,7 +509,7 @@ var YBuzzer; // definition below
      * @param freq : pulse frequency, in Hz
      * @param msDuration : pulse duration, in milliseconds.
      *
-     * @return YAPI_SUCCESS if the call succeeds.
+     * @return YAPI.SUCCESS if the call succeeds.
      *         On failure, throws an exception or returns a negative error code.
      */
     function YBuzzer_addPulseToPlaySeq(freq,msDuration)
@@ -524,7 +524,7 @@ var YBuzzer; // definition below
      * @param volume    : desired volume when the transition is completed, as a percentage.
      * @param msDuration : duration of the volume transition, in milliseconds.
      *
-     * @return YAPI_SUCCESS if the call succeeds.
+     * @return YAPI.SUCCESS if the call succeeds.
      *         On failure, throws an exception or returns a negative error code.
      */
     function YBuzzer_addVolMoveToPlaySeq(volume,msDuration)
@@ -542,7 +542,7 @@ var YBuzzer; // definition below
      *
      * @param notes : notes to be played, as a text string.
      *
-     * @return YAPI_SUCCESS if the call succeeds.
+     * @return YAPI.SUCCESS if the call succeeds.
      *         On failure, throws an exception or returns a negative error code.
      */
     function YBuzzer_addNotesToPlaySeq(notes)
@@ -710,7 +710,7 @@ var YBuzzer; // definition below
      * runs in loop until it is stopped by stopPlaySeq or an explicit
      * change. To play the sequence only once, use oncePlaySeq().
      *
-     * @return YAPI_SUCCESS if the call succeeds.
+     * @return YAPI.SUCCESS if the call succeeds.
      *         On failure, throws an exception or returns a negative error code.
      */
     function YBuzzer_startPlaySeq()
@@ -721,7 +721,7 @@ var YBuzzer; // definition below
     /**
      * Stops the preprogrammed playing sequence and sets the frequency to zero.
      *
-     * @return YAPI_SUCCESS if the call succeeds.
+     * @return YAPI.SUCCESS if the call succeeds.
      *         On failure, throws an exception or returns a negative error code.
      */
     function YBuzzer_stopPlaySeq()
@@ -732,7 +732,7 @@ var YBuzzer; // definition below
     /**
      * Resets the preprogrammed playing sequence and sets the frequency to zero.
      *
-     * @return YAPI_SUCCESS if the call succeeds.
+     * @return YAPI.SUCCESS if the call succeeds.
      *         On failure, throws an exception or returns a negative error code.
      */
     function YBuzzer_resetPlaySeq()
@@ -743,7 +743,7 @@ var YBuzzer; // definition below
     /**
      * Starts the preprogrammed playing sequence and run it once only.
      *
-     * @return YAPI_SUCCESS if the call succeeds.
+     * @return YAPI.SUCCESS if the call succeeds.
      *         On failure, throws an exception or returns a negative error code.
      */
     function YBuzzer_oncePlaySeq()
@@ -754,7 +754,7 @@ var YBuzzer; // definition below
     /**
      * Saves the preprogrammed playing sequence to flash memory.
      *
-     * @return YAPI_SUCCESS if the call succeeds.
+     * @return YAPI.SUCCESS if the call succeeds.
      *         On failure, throws an exception or returns a negative error code.
      */
     function YBuzzer_savePlaySeq()
@@ -765,7 +765,7 @@ var YBuzzer; // definition below
     /**
      * Reloads the preprogrammed playing sequence from the flash memory.
      *
-     * @return YAPI_SUCCESS if the call succeeds.
+     * @return YAPI.SUCCESS if the call succeeds.
      *         On failure, throws an exception or returns a negative error code.
      */
     function YBuzzer_reloadPlaySeq()
@@ -779,7 +779,7 @@ var YBuzzer; // definition below
      * @param frequency : pulse frequency, in hertz
      * @param duration : pulse duration in milliseconds
      *
-     * @return YAPI_SUCCESS if the call succeeds.
+     * @return YAPI.SUCCESS if the call succeeds.
      *
      * On failure, throws an exception or returns a negative error code.
      */
@@ -794,7 +794,7 @@ var YBuzzer; // definition below
      * @param frequency : frequency to reach, in hertz. A frequency under 25Hz stops the buzzer.
      * @param duration :  pulse duration in milliseconds
      *
-     * @return YAPI_SUCCESS if the call succeeds.
+     * @return YAPI.SUCCESS if the call succeeds.
      *
      * On failure, throws an exception or returns a negative error code.
      */
@@ -809,7 +809,7 @@ var YBuzzer; // definition below
      * @param volume : volume to reach in %
      * @param duration : change duration in milliseconds
      *
-     * @return YAPI_SUCCESS if the call succeeds.
+     * @return YAPI.SUCCESS if the call succeeds.
      *
      * On failure, throws an exception or returns a negative error code.
      */
@@ -828,7 +828,7 @@ var YBuzzer; // definition below
      *
      * @param notes : notes to be played, as a text string.
      *
-     * @return YAPI_SUCCESS if the call succeeds.
+     * @return YAPI.SUCCESS if the call succeeds.
      *         On failure, throws an exception or returns a negative error code.
      */
     function YBuzzer_playNotes(notes)

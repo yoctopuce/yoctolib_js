@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_segmenteddisplay.js 38899 2019-12-20 17:21:03Z mvuilleu $
+ *  $Id: yocto_segmenteddisplay.js 43580 2021-01-26 17:46:01Z mvuilleu $
  *
  *  Implements the high-level API for SegmentedDisplay functions
  *
@@ -93,7 +93,7 @@ var YSegmentedDisplay; // definition below
      *
      * @return a string corresponding to the text currently displayed on the screen
      *
-     * On failure, throws an exception or returns Y_DISPLAYEDTEXT_INVALID.
+     * On failure, throws an exception or returns YSegmentedDisplay.DISPLAYEDTEXT_INVALID.
      */
     function YSegmentedDisplay_get_displayedText()
     {
@@ -119,7 +119,7 @@ var YSegmentedDisplay; // definition below
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      *
-     * On failure, throws an exception or returns Y_DISPLAYEDTEXT_INVALID.
+     * On failure, throws an exception or returns YSegmentedDisplay.DISPLAYEDTEXT_INVALID.
      */
     function YSegmentedDisplay_get_displayedText_async(callback,context)
     {
@@ -144,7 +144,7 @@ var YSegmentedDisplay; // definition below
      *
      * @param newval : a string corresponding to the text currently displayed on the screen
      *
-     * @return YAPI_SUCCESS if the call succeeds.
+     * @return YAPI.SUCCESS if the call succeeds.
      *
      * On failure, throws an exception or returns a negative error code.
      */

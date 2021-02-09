@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_realtimeclock.js 39434 2020-02-25 08:53:55Z seb $
+ *  $Id: yocto_realtimeclock.js 43580 2021-01-26 17:46:01Z mvuilleu $
  *
  *  Implements the high-level API for RealTimeClock functions
  *
@@ -53,7 +53,7 @@ var Y_UTCOFFSET_INVALID             = YAPI_INVALID_INT;
 //--- (YRealTimeClock class start)
 /**
  * YRealTimeClock Class: real-time clock control interface, available for instance in the
- * YoctoHub-GSM-3G-EU, the YoctoHub-GSM-3G-NA, the YoctoHub-Wireless-g or the YoctoHub-Wireless-n
+ * YoctoHub-GSM-3G-EU, the YoctoHub-GSM-3G-NA, the YoctoHub-GSM-4G or the YoctoHub-Wireless-n
  *
  * The YRealTimeClock class provide access to the embedded real-time clock available on some Yoctopuce
  * devices. It can provide current date and time, even after a power outage
@@ -107,7 +107,7 @@ var YRealTimeClock; // definition below
      * @return an integer corresponding to the current time in Unix format (number of elapsed seconds
      * since Jan 1st, 1970)
      *
-     * On failure, throws an exception or returns Y_UNIXTIME_INVALID.
+     * On failure, throws an exception or returns YRealTimeClock.UNIXTIME_INVALID.
      */
     function YRealTimeClock_get_unixTime()
     {
@@ -134,7 +134,7 @@ var YRealTimeClock; // definition below
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      *
-     * On failure, throws an exception or returns Y_UNIXTIME_INVALID.
+     * On failure, throws an exception or returns YRealTimeClock.UNIXTIME_INVALID.
      */
     function YRealTimeClock_get_unixTime_async(callback,context)
     {
@@ -159,7 +159,7 @@ var YRealTimeClock; // definition below
      *
      * @param newval : an integer corresponding to the current time
      *
-     * @return YAPI_SUCCESS if the call succeeds.
+     * @return YAPI.SUCCESS if the call succeeds.
      *
      * On failure, throws an exception or returns a negative error code.
      */
@@ -174,7 +174,7 @@ var YRealTimeClock; // definition below
      *
      * @return a string corresponding to the current time in the form "YYYY/MM/DD hh:mm:ss"
      *
-     * On failure, throws an exception or returns Y_DATETIME_INVALID.
+     * On failure, throws an exception or returns YRealTimeClock.DATETIME_INVALID.
      */
     function YRealTimeClock_get_dateTime()
     {
@@ -200,7 +200,7 @@ var YRealTimeClock; // definition below
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      *
-     * On failure, throws an exception or returns Y_DATETIME_INVALID.
+     * On failure, throws an exception or returns YRealTimeClock.DATETIME_INVALID.
      */
     function YRealTimeClock_get_dateTime_async(callback,context)
     {
@@ -225,7 +225,7 @@ var YRealTimeClock; // definition below
      *
      * @return an integer corresponding to the number of seconds between current time and UTC time (time zone)
      *
-     * On failure, throws an exception or returns Y_UTCOFFSET_INVALID.
+     * On failure, throws an exception or returns YRealTimeClock.UTCOFFSET_INVALID.
      */
     function YRealTimeClock_get_utcOffset()
     {
@@ -251,7 +251,7 @@ var YRealTimeClock; // definition below
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      *
-     * On failure, throws an exception or returns Y_UTCOFFSET_INVALID.
+     * On failure, throws an exception or returns YRealTimeClock.UTCOFFSET_INVALID.
      */
     function YRealTimeClock_get_utcOffset_async(callback,context)
     {
@@ -279,7 +279,7 @@ var YRealTimeClock; // definition below
      *
      * @param newval : an integer corresponding to the number of seconds between current time and UTC time (time zone)
      *
-     * @return YAPI_SUCCESS if the call succeeds.
+     * @return YAPI.SUCCESS if the call succeeds.
      *
      * On failure, throws an exception or returns a negative error code.
      */
@@ -292,10 +292,10 @@ var YRealTimeClock; // definition below
     /**
      * Returns true if the clock has been set, and false otherwise.
      *
-     * @return either Y_TIMESET_FALSE or Y_TIMESET_TRUE, according to true if the clock has been set, and
-     * false otherwise
+     * @return either YRealTimeClock.TIMESET_FALSE or YRealTimeClock.TIMESET_TRUE, according to true if
+     * the clock has been set, and false otherwise
      *
-     * On failure, throws an exception or returns Y_TIMESET_INVALID.
+     * On failure, throws an exception or returns YRealTimeClock.TIMESET_INVALID.
      */
     function YRealTimeClock_get_timeSet()
     {
@@ -316,13 +316,13 @@ var YRealTimeClock; // definition below
      *         The callback function receives three arguments:
      *         - the user-specific context object
      *         - the YRealTimeClock object that invoked the callback
-     *         - the result:either Y_TIMESET_FALSE or Y_TIMESET_TRUE, according to true if the clock has been set,
-     *         and false otherwise
+     *         - the result:either YRealTimeClock.TIMESET_FALSE or YRealTimeClock.TIMESET_TRUE, according to true
+     *         if the clock has been set, and false otherwise
      * @param context : user-specific object that is passed as-is to the callback function
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      *
-     * On failure, throws an exception or returns Y_TIMESET_INVALID.
+     * On failure, throws an exception or returns YRealTimeClock.TIMESET_INVALID.
      */
     function YRealTimeClock_get_timeSet_async(callback,context)
     {

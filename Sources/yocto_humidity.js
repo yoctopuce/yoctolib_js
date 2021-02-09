@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_humidity.js 38899 2019-12-20 17:21:03Z mvuilleu $
+ *  $Id: yocto_humidity.js 43580 2021-01-26 17:46:01Z mvuilleu $
  *
  *  Implements the high-level API for Humidity functions
  *
@@ -98,7 +98,7 @@ var YHumidity; // definition below
      *
      * @param newval : a string corresponding to the primary unit for measuring humidity
      *
-     * @return YAPI_SUCCESS if the call succeeds.
+     * @return YAPI.SUCCESS if the call succeeds.
      *
      * On failure, throws an exception or returns a negative error code.
      */
@@ -113,7 +113,7 @@ var YHumidity; // definition below
      *
      * @return a floating point number corresponding to the current relative humidity, in per cents
      *
-     * On failure, throws an exception or returns Y_RELHUM_INVALID.
+     * On failure, throws an exception or returns YHumidity.RELHUM_INVALID.
      */
     function YHumidity_get_relHum()
     {
@@ -139,7 +139,7 @@ var YHumidity; // definition below
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      *
-     * On failure, throws an exception or returns Y_RELHUM_INVALID.
+     * On failure, throws an exception or returns YHumidity.RELHUM_INVALID.
      */
     function YHumidity_get_relHum_async(callback,context)
     {
@@ -164,7 +164,7 @@ var YHumidity; // definition below
      *
      * @return a floating point number corresponding to the current absolute humidity, in grams per cubic meter of air
      *
-     * On failure, throws an exception or returns Y_ABSHUM_INVALID.
+     * On failure, throws an exception or returns YHumidity.ABSHUM_INVALID.
      */
     function YHumidity_get_absHum()
     {
@@ -191,7 +191,7 @@ var YHumidity; // definition below
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      *
-     * On failure, throws an exception or returns Y_ABSHUM_INVALID.
+     * On failure, throws an exception or returns YHumidity.ABSHUM_INVALID.
      */
     function YHumidity_get_absHum_async(callback,context)
     {

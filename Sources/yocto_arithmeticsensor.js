@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_arithmeticsensor.js 38899 2019-12-20 17:21:03Z mvuilleu $
+ *  $Id: yocto_arithmeticsensor.js 43619 2021-01-29 09:14:45Z mvuilleu $
  *
  *  Implements the high-level API for ArithmeticSensor functions
  *
@@ -95,7 +95,7 @@ var YArithmeticSensor; // definition below
      *
      * @param newval : a string corresponding to the measuring unit for the arithmetic sensor
      *
-     * @return YAPI_SUCCESS if the call succeeds.
+     * @return YAPI.SUCCESS if the call succeeds.
      *
      * On failure, throws an exception or returns a negative error code.
      */
@@ -110,7 +110,7 @@ var YArithmeticSensor; // definition below
      *
      * @return a string corresponding to a short informative description of the formula
      *
-     * On failure, throws an exception or returns Y_DESCRIPTION_INVALID.
+     * On failure, throws an exception or returns YArithmeticSensor.DESCRIPTION_INVALID.
      */
     function YArithmeticSensor_get_description()
     {
@@ -136,7 +136,7 @@ var YArithmeticSensor; // definition below
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      *
-     * On failure, throws an exception or returns Y_DESCRIPTION_INVALID.
+     * On failure, throws an exception or returns YArithmeticSensor.DESCRIPTION_INVALID.
      */
     function YArithmeticSensor_get_description_async(callback,context)
     {
@@ -315,7 +315,7 @@ var YArithmeticSensor; // definition below
      * @param outputValues : array of floating point numbers, corresponding to the output value
      *         desired for each of the input value, index by index.
      *
-     * @return YAPI_SUCCESS if the call succeeds.
+     * @return YAPI.SUCCESS if the call succeeds.
      *
      * On failure, throws an exception or returns a negative error code.
      */
@@ -357,7 +357,7 @@ var YArithmeticSensor; // definition below
      * @param outputValues : array of floating point numbers, that is filled by the function
      *         output value for each of the input value, index by index.
      *
-     * @return YAPI_SUCCESS if the call succeeds.
+     * @return YAPI.SUCCESS if the call succeeds.
      *
      * On failure, throws an exception or returns a negative error code.
      */

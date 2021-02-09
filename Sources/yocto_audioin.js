@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_audioin.js 38899 2019-12-20 17:21:03Z mvuilleu $
+ *  $Id: yocto_audioin.js 43580 2021-01-26 17:46:01Z mvuilleu $
  *
  *  Implements the high-level API for AudioIn functions
  *
@@ -106,7 +106,7 @@ var YAudioIn; // definition below
      *
      * @return an integer corresponding to audio input gain, in per cents
      *
-     * On failure, throws an exception or returns Y_VOLUME_INVALID.
+     * On failure, throws an exception or returns YAudioIn.VOLUME_INVALID.
      */
     function YAudioIn_get_volume()
     {
@@ -132,7 +132,7 @@ var YAudioIn; // definition below
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      *
-     * On failure, throws an exception or returns Y_VOLUME_INVALID.
+     * On failure, throws an exception or returns YAudioIn.VOLUME_INVALID.
      */
     function YAudioIn_get_volume_async(callback,context)
     {
@@ -159,7 +159,7 @@ var YAudioIn; // definition below
      *
      * @param newval : an integer corresponding to audio input gain, in per cents
      *
-     * @return YAPI_SUCCESS if the call succeeds.
+     * @return YAPI.SUCCESS if the call succeeds.
      *
      * On failure, throws an exception or returns a negative error code.
      */
@@ -172,9 +172,9 @@ var YAudioIn; // definition below
     /**
      * Returns the state of the mute function.
      *
-     * @return either Y_MUTE_FALSE or Y_MUTE_TRUE, according to the state of the mute function
+     * @return either YAudioIn.MUTE_FALSE or YAudioIn.MUTE_TRUE, according to the state of the mute function
      *
-     * On failure, throws an exception or returns Y_MUTE_INVALID.
+     * On failure, throws an exception or returns YAudioIn.MUTE_INVALID.
      */
     function YAudioIn_get_mute()
     {
@@ -195,12 +195,12 @@ var YAudioIn; // definition below
      *         The callback function receives three arguments:
      *         - the user-specific context object
      *         - the YAudioIn object that invoked the callback
-     *         - the result:either Y_MUTE_FALSE or Y_MUTE_TRUE, according to the state of the mute function
+     *         - the result:either YAudioIn.MUTE_FALSE or YAudioIn.MUTE_TRUE, according to the state of the mute function
      * @param context : user-specific object that is passed as-is to the callback function
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      *
-     * On failure, throws an exception or returns Y_MUTE_INVALID.
+     * On failure, throws an exception or returns YAudioIn.MUTE_INVALID.
      */
     function YAudioIn_get_mute_async(callback,context)
     {
@@ -224,9 +224,9 @@ var YAudioIn; // definition below
      * Changes the state of the mute function. Remember to call the matching module
      * saveToFlash() method to save the setting permanently.
      *
-     * @param newval : either Y_MUTE_FALSE or Y_MUTE_TRUE, according to the state of the mute function
+     * @param newval : either YAudioIn.MUTE_FALSE or YAudioIn.MUTE_TRUE, according to the state of the mute function
      *
-     * @return YAPI_SUCCESS if the call succeeds.
+     * @return YAPI.SUCCESS if the call succeeds.
      *
      * On failure, throws an exception or returns a negative error code.
      */
@@ -244,7 +244,7 @@ var YAudioIn; // definition below
      *
      * @return a string corresponding to the supported volume range
      *
-     * On failure, throws an exception or returns Y_VOLUMERANGE_INVALID.
+     * On failure, throws an exception or returns YAudioIn.VOLUMERANGE_INVALID.
      */
     function YAudioIn_get_volumeRange()
     {
@@ -273,7 +273,7 @@ var YAudioIn; // definition below
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      *
-     * On failure, throws an exception or returns Y_VOLUMERANGE_INVALID.
+     * On failure, throws an exception or returns YAudioIn.VOLUMERANGE_INVALID.
      */
     function YAudioIn_get_volumeRange_async(callback,context)
     {
@@ -298,7 +298,7 @@ var YAudioIn; // definition below
      *
      * @return an integer corresponding to the detected input signal level
      *
-     * On failure, throws an exception or returns Y_SIGNAL_INVALID.
+     * On failure, throws an exception or returns YAudioIn.SIGNAL_INVALID.
      */
     function YAudioIn_get_signal()
     {
@@ -324,7 +324,7 @@ var YAudioIn; // definition below
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      *
-     * On failure, throws an exception or returns Y_SIGNAL_INVALID.
+     * On failure, throws an exception or returns YAudioIn.SIGNAL_INVALID.
      */
     function YAudioIn_get_signal_async(callback,context)
     {
@@ -349,7 +349,7 @@ var YAudioIn; // definition below
      *
      * @return an integer corresponding to the number of seconds elapsed without detecting a signal
      *
-     * On failure, throws an exception or returns Y_NOSIGNALFOR_INVALID.
+     * On failure, throws an exception or returns YAudioIn.NOSIGNALFOR_INVALID.
      */
     function YAudioIn_get_noSignalFor()
     {
@@ -375,7 +375,7 @@ var YAudioIn; // definition below
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      *
-     * On failure, throws an exception or returns Y_NOSIGNALFOR_INVALID.
+     * On failure, throws an exception or returns YAudioIn.NOSIGNALFOR_INVALID.
      */
     function YAudioIn_get_noSignalFor_async(callback,context)
     {

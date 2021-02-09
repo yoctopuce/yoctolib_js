@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_voltageoutput.js 38899 2019-12-20 17:21:03Z mvuilleu $
+ *  $Id: yocto_voltageoutput.js 43619 2021-01-29 09:14:45Z mvuilleu $
  *
  *  Implements the high-level API for VoltageOutput functions
  *
@@ -94,7 +94,7 @@ var YVoltageOutput; // definition below
      *
      * @param newval : a floating point number corresponding to the output voltage, in V
      *
-     * @return YAPI_SUCCESS if the call succeeds.
+     * @return YAPI.SUCCESS if the call succeeds.
      *
      * On failure, throws an exception or returns a negative error code.
      */
@@ -109,7 +109,7 @@ var YVoltageOutput; // definition below
      *
      * @return a floating point number corresponding to the output voltage set point, in V
      *
-     * On failure, throws an exception or returns Y_CURRENTVOLTAGE_INVALID.
+     * On failure, throws an exception or returns YVoltageOutput.CURRENTVOLTAGE_INVALID.
      */
     function YVoltageOutput_get_currentVoltage()
     {
@@ -135,7 +135,7 @@ var YVoltageOutput; // definition below
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      *
-     * On failure, throws an exception or returns Y_CURRENTVOLTAGE_INVALID.
+     * On failure, throws an exception or returns YVoltageOutput.CURRENTVOLTAGE_INVALID.
      */
     function YVoltageOutput_get_currentVoltage_async(callback,context)
     {
@@ -208,7 +208,7 @@ var YVoltageOutput; // definition below
      *
      * @param newval : a floating point number corresponding to the output voltage at device start up
      *
-     * @return YAPI_SUCCESS if the call succeeds.
+     * @return YAPI.SUCCESS if the call succeeds.
      *
      * On failure, throws an exception or returns a negative error code.
      */
@@ -223,7 +223,7 @@ var YVoltageOutput; // definition below
      *
      * @return a floating point number corresponding to the selected voltage output at device startup, in V
      *
-     * On failure, throws an exception or returns Y_VOLTAGEATSTARTUP_INVALID.
+     * On failure, throws an exception or returns YVoltageOutput.VOLTAGEATSTARTUP_INVALID.
      */
     function YVoltageOutput_get_voltageAtStartUp()
     {
@@ -249,7 +249,7 @@ var YVoltageOutput; // definition below
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      *
-     * On failure, throws an exception or returns Y_VOLTAGEATSTARTUP_INVALID.
+     * On failure, throws an exception or returns YVoltageOutput.VOLTAGEATSTARTUP_INVALID.
      */
     function YVoltageOutput_get_voltageAtStartUp_async(callback,context)
     {
@@ -316,7 +316,7 @@ var YVoltageOutput; // definition below
      *         (floating-point number, representing the end voltage in V)
      * @param ms_duration : total duration of the transition, in milliseconds
      *
-     * @return YAPI_SUCCESS when the call succeeds.
+     * @return YAPI.SUCCESS when the call succeeds.
      */
     function YVoltageOutput_voltageMove(V_target,ms_duration)
     {

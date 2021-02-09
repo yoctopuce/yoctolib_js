@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_power.js 41290 2020-07-24 10:02:23Z mvuilleu $
+ *  $Id: yocto_power.js 43619 2021-01-29 09:14:45Z mvuilleu $
  *
  *  Implements the high-level API for Power functions
  *
@@ -109,7 +109,7 @@ var YPower; // definition below
      * @return a floating point number corresponding to the power factor (the ratio between the real power consumed,
      *         measured in W, and the apparent power provided, measured in VA)
      *
-     * On failure, throws an exception or returns Y_COSPHI_INVALID.
+     * On failure, throws an exception or returns YPower.COSPHI_INVALID.
      */
     function YPower_get_cosPhi()
     {
@@ -138,7 +138,7 @@ var YPower; // definition below
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      *
-     * On failure, throws an exception or returns Y_COSPHI_INVALID.
+     * On failure, throws an exception or returns YPower.COSPHI_INVALID.
      */
     function YPower_get_cosPhi_async(callback,context)
     {
@@ -172,7 +172,7 @@ var YPower; // definition below
      * integrating the power consumption over time,
      *         but only when positive
      *
-     * On failure, throws an exception or returns Y_METER_INVALID.
+     * On failure, throws an exception or returns YPower.METER_INVALID.
      */
     function YPower_get_meter()
     {
@@ -201,7 +201,7 @@ var YPower; // definition below
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      *
-     * On failure, throws an exception or returns Y_METER_INVALID.
+     * On failure, throws an exception or returns YPower.METER_INVALID.
      */
     function YPower_get_meter_async(callback,context)
     {
@@ -229,7 +229,7 @@ var YPower; // definition below
      * integrating the power consumption over time,
      *         but only when positive
      *
-     * On failure, throws an exception or returns Y_DELIVEREDENERGYMETER_INVALID.
+     * On failure, throws an exception or returns YPower.DELIVEREDENERGYMETER_INVALID.
      */
     function YPower_get_deliveredEnergyMeter()
     {
@@ -258,7 +258,7 @@ var YPower; // definition below
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      *
-     * On failure, throws an exception or returns Y_DELIVEREDENERGYMETER_INVALID.
+     * On failure, throws an exception or returns YPower.DELIVEREDENERGYMETER_INVALID.
      */
     function YPower_get_deliveredEnergyMeter_async(callback,context)
     {
@@ -286,7 +286,7 @@ var YPower; // definition below
      * integrating the power consumption over time,
      *         but only when negative
      *
-     * On failure, throws an exception or returns Y_RECEIVEDENERGYMETER_INVALID.
+     * On failure, throws an exception or returns YPower.RECEIVEDENERGYMETER_INVALID.
      */
     function YPower_get_receivedEnergyMeter()
     {
@@ -315,7 +315,7 @@ var YPower; // definition below
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      *
-     * On failure, throws an exception or returns Y_RECEIVEDENERGYMETER_INVALID.
+     * On failure, throws an exception or returns YPower.RECEIVEDENERGYMETER_INVALID.
      */
     function YPower_get_receivedEnergyMeter_async(callback,context)
     {
@@ -340,7 +340,7 @@ var YPower; // definition below
      *
      * @return an integer corresponding to the elapsed time since last energy counter reset, in seconds
      *
-     * On failure, throws an exception or returns Y_METERTIMER_INVALID.
+     * On failure, throws an exception or returns YPower.METERTIMER_INVALID.
      */
     function YPower_get_meterTimer()
     {
@@ -366,7 +366,7 @@ var YPower; // definition below
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      *
-     * On failure, throws an exception or returns Y_METERTIMER_INVALID.
+     * On failure, throws an exception or returns YPower.METERTIMER_INVALID.
      */
     function YPower_get_meterTimer_async(callback,context)
     {
@@ -428,7 +428,7 @@ var YPower; // definition below
     /**
      * Resets the energy counters.
      *
-     * @return YAPI_SUCCESS if the call succeeds.
+     * @return YAPI.SUCCESS if the call succeeds.
      *
      * On failure, throws an exception or returns a negative error code.
      */

@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_colorled.js 41109 2020-06-29 12:40:42Z seb $
+ *  $Id: yocto_colorled.js 43619 2021-01-29 09:14:45Z mvuilleu $
  *
  *  Implements the high-level API for ColorLed functions
  *
@@ -130,7 +130,7 @@ var YColorLed; // definition below
      *
      * @return an integer corresponding to the current RGB color of the LED
      *
-     * On failure, throws an exception or returns Y_RGBCOLOR_INVALID.
+     * On failure, throws an exception or returns YColorLed.RGBCOLOR_INVALID.
      */
     function YColorLed_get_rgbColor()
     {
@@ -156,7 +156,7 @@ var YColorLed; // definition below
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      *
-     * On failure, throws an exception or returns Y_RGBCOLOR_INVALID.
+     * On failure, throws an exception or returns YColorLed.RGBCOLOR_INVALID.
      */
     function YColorLed_get_rgbColor_async(callback,context)
     {
@@ -181,7 +181,7 @@ var YColorLed; // definition below
      *
      * @param newval : an integer corresponding to the current color of the LED, using an RGB color
      *
-     * @return YAPI_SUCCESS if the call succeeds.
+     * @return YAPI.SUCCESS if the call succeeds.
      *
      * On failure, throws an exception or returns a negative error code.
      */
@@ -196,7 +196,7 @@ var YColorLed; // definition below
      *
      * @return an integer corresponding to the current HSL color of the LED
      *
-     * On failure, throws an exception or returns Y_HSLCOLOR_INVALID.
+     * On failure, throws an exception or returns YColorLed.HSLCOLOR_INVALID.
      */
     function YColorLed_get_hslColor()
     {
@@ -222,7 +222,7 @@ var YColorLed; // definition below
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      *
-     * On failure, throws an exception or returns Y_HSLCOLOR_INVALID.
+     * On failure, throws an exception or returns YColorLed.HSLCOLOR_INVALID.
      */
     function YColorLed_get_hslColor_async(callback,context)
     {
@@ -247,7 +247,7 @@ var YColorLed; // definition below
      *
      * @param newval : an integer corresponding to the current color of the LED, using a color HSL
      *
-     * @return YAPI_SUCCESS if the call succeeds.
+     * @return YAPI.SUCCESS if the call succeeds.
      *
      * On failure, throws an exception or returns a negative error code.
      */
@@ -310,7 +310,7 @@ var YColorLed; // definition below
      * @param rgb_target  : desired RGB color at the end of the transition
      * @param ms_duration : duration of the transition, in millisecond
      *
-     * @return YAPI_SUCCESS if the call succeeds.
+     * @return YAPI.SUCCESS if the call succeeds.
      *
      * On failure, throws an exception or returns a negative error code.
      */
@@ -373,7 +373,7 @@ var YColorLed; // definition below
      * @param hsl_target  : desired HSL color at the end of the transition
      * @param ms_duration : duration of the transition, in millisecond
      *
-     * @return YAPI_SUCCESS if the call succeeds.
+     * @return YAPI.SUCCESS if the call succeeds.
      *
      * On failure, throws an exception or returns a negative error code.
      */
@@ -388,7 +388,7 @@ var YColorLed; // definition below
      *
      * @return an integer corresponding to the configured color to be displayed when the module is turned on
      *
-     * On failure, throws an exception or returns Y_RGBCOLORATPOWERON_INVALID.
+     * On failure, throws an exception or returns YColorLed.RGBCOLORATPOWERON_INVALID.
      */
     function YColorLed_get_rgbColorAtPowerOn()
     {
@@ -414,7 +414,7 @@ var YColorLed; // definition below
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      *
-     * On failure, throws an exception or returns Y_RGBCOLORATPOWERON_INVALID.
+     * On failure, throws an exception or returns YColorLed.RGBCOLORATPOWERON_INVALID.
      */
     function YColorLed_get_rgbColorAtPowerOn_async(callback,context)
     {
@@ -442,7 +442,7 @@ var YColorLed; // definition below
      * @param newval : an integer corresponding to the color that the LED displays by default when the
      * module is turned on
      *
-     * @return YAPI_SUCCESS if the call succeeds.
+     * @return YAPI.SUCCESS if the call succeeds.
      *
      * On failure, throws an exception or returns a negative error code.
      */
@@ -457,7 +457,7 @@ var YColorLed; // definition below
      *
      * @return an integer corresponding to the current length of the blinking sequence
      *
-     * On failure, throws an exception or returns Y_BLINKSEQSIZE_INVALID.
+     * On failure, throws an exception or returns YColorLed.BLINKSEQSIZE_INVALID.
      */
     function YColorLed_get_blinkSeqSize()
     {
@@ -483,7 +483,7 @@ var YColorLed; // definition below
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      *
-     * On failure, throws an exception or returns Y_BLINKSEQSIZE_INVALID.
+     * On failure, throws an exception or returns YColorLed.BLINKSEQSIZE_INVALID.
      */
     function YColorLed_get_blinkSeqSize_async(callback,context)
     {
@@ -508,7 +508,7 @@ var YColorLed; // definition below
      *
      * @return an integer corresponding to the maximum length of the blinking sequence
      *
-     * On failure, throws an exception or returns Y_BLINKSEQMAXSIZE_INVALID.
+     * On failure, throws an exception or returns YColorLed.BLINKSEQMAXSIZE_INVALID.
      */
     function YColorLed_get_blinkSeqMaxSize()
     {
@@ -534,7 +534,7 @@ var YColorLed; // definition below
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      *
-     * On failure, throws an exception or returns Y_BLINKSEQMAXSIZE_INVALID.
+     * On failure, throws an exception or returns YColorLed.BLINKSEQMAXSIZE_INVALID.
      */
     function YColorLed_get_blinkSeqMaxSize_async(callback,context)
     {
@@ -562,7 +562,7 @@ var YColorLed; // definition below
      *
      * @return an integer
      *
-     * On failure, throws an exception or returns Y_BLINKSEQSIGNATURE_INVALID.
+     * On failure, throws an exception or returns YColorLed.BLINKSEQSIGNATURE_INVALID.
      */
     function YColorLed_get_blinkSeqSignature()
     {
@@ -591,7 +591,7 @@ var YColorLed; // definition below
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      *
-     * On failure, throws an exception or returns Y_BLINKSEQSIGNATURE_INVALID.
+     * On failure, throws an exception or returns YColorLed.BLINKSEQSIGNATURE_INVALID.
      */
     function YColorLed_get_blinkSeqSignature_async(callback,context)
     {
@@ -709,7 +709,7 @@ var YColorLed; // definition below
      * @param HSLcolor : desired HSL color when the transition is completed
      * @param msDelay : duration of the color transition, in milliseconds.
      *
-     * @return YAPI_SUCCESS if the call succeeds.
+     * @return YAPI.SUCCESS if the call succeeds.
      *         On failure, throws an exception or returns a negative error code.
      */
     function YColorLed_addHslMoveToBlinkSeq(HSLcolor,msDelay)
@@ -724,7 +724,7 @@ var YColorLed; // definition below
      * @param RGBcolor : desired RGB color when the transition is completed
      * @param msDelay : duration of the color transition, in milliseconds.
      *
-     * @return YAPI_SUCCESS if the call succeeds.
+     * @return YAPI.SUCCESS if the call succeeds.
      *         On failure, throws an exception or returns a negative error code.
      */
     function YColorLed_addRgbMoveToBlinkSeq(RGBcolor,msDelay)
@@ -737,7 +737,7 @@ var YColorLed; // definition below
      * run in a loop until it is stopped by stopBlinkSeq or an explicit
      * change.
      *
-     * @return YAPI_SUCCESS if the call succeeds.
+     * @return YAPI.SUCCESS if the call succeeds.
      *         On failure, throws an exception or returns a negative error code.
      */
     function YColorLed_startBlinkSeq()
@@ -748,7 +748,7 @@ var YColorLed; // definition below
     /**
      * Stops the preprogrammed blinking sequence.
      *
-     * @return YAPI_SUCCESS if the call succeeds.
+     * @return YAPI.SUCCESS if the call succeeds.
      *         On failure, throws an exception or returns a negative error code.
      */
     function YColorLed_stopBlinkSeq()
@@ -759,7 +759,7 @@ var YColorLed; // definition below
     /**
      * Resets the preprogrammed blinking sequence.
      *
-     * @return YAPI_SUCCESS if the call succeeds.
+     * @return YAPI.SUCCESS if the call succeeds.
      *         On failure, throws an exception or returns a negative error code.
      */
     function YColorLed_resetBlinkSeq()

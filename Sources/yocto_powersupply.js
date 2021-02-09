@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_powersupply.js 38899 2019-12-20 17:21:03Z mvuilleu $
+ *  $Id: yocto_powersupply.js 43619 2021-01-29 09:14:45Z mvuilleu $
  *
  *  Implements the high-level API for PowerSupply functions
  *
@@ -150,7 +150,7 @@ var YPowerSupply; // definition below
      *
      * @param newval : a floating point number corresponding to the voltage set point, in V
      *
-     * @return YAPI_SUCCESS if the call succeeds.
+     * @return YAPI.SUCCESS if the call succeeds.
      *
      * On failure, throws an exception or returns a negative error code.
      */
@@ -165,7 +165,7 @@ var YPowerSupply; // definition below
      *
      * @return a floating point number corresponding to the voltage set point, in V
      *
-     * On failure, throws an exception or returns Y_VOLTAGESETPOINT_INVALID.
+     * On failure, throws an exception or returns YPowerSupply.VOLTAGESETPOINT_INVALID.
      */
     function YPowerSupply_get_voltageSetPoint()
     {
@@ -191,7 +191,7 @@ var YPowerSupply; // definition below
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      *
-     * On failure, throws an exception or returns Y_VOLTAGESETPOINT_INVALID.
+     * On failure, throws an exception or returns YPowerSupply.VOLTAGESETPOINT_INVALID.
      */
     function YPowerSupply_get_voltageSetPoint_async(callback,context)
     {
@@ -216,7 +216,7 @@ var YPowerSupply; // definition below
      *
      * @param newval : a floating point number corresponding to the current limit, in mA
      *
-     * @return YAPI_SUCCESS if the call succeeds.
+     * @return YAPI.SUCCESS if the call succeeds.
      *
      * On failure, throws an exception or returns a negative error code.
      */
@@ -231,7 +231,7 @@ var YPowerSupply; // definition below
      *
      * @return a floating point number corresponding to the current limit, in mA
      *
-     * On failure, throws an exception or returns Y_CURRENTLIMIT_INVALID.
+     * On failure, throws an exception or returns YPowerSupply.CURRENTLIMIT_INVALID.
      */
     function YPowerSupply_get_currentLimit()
     {
@@ -257,7 +257,7 @@ var YPowerSupply; // definition below
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      *
-     * On failure, throws an exception or returns Y_CURRENTLIMIT_INVALID.
+     * On failure, throws an exception or returns YPowerSupply.CURRENTLIMIT_INVALID.
      */
     function YPowerSupply_get_currentLimit_async(callback,context)
     {
@@ -280,9 +280,10 @@ var YPowerSupply; // definition below
     /**
      * Returns the power supply output switch state.
      *
-     * @return either Y_POWEROUTPUT_OFF or Y_POWEROUTPUT_ON, according to the power supply output switch state
+     * @return either YPowerSupply.POWEROUTPUT_OFF or YPowerSupply.POWEROUTPUT_ON, according to the power
+     * supply output switch state
      *
-     * On failure, throws an exception or returns Y_POWEROUTPUT_INVALID.
+     * On failure, throws an exception or returns YPowerSupply.POWEROUTPUT_INVALID.
      */
     function YPowerSupply_get_powerOutput()
     {
@@ -303,12 +304,13 @@ var YPowerSupply; // definition below
      *         The callback function receives three arguments:
      *         - the user-specific context object
      *         - the YPowerSupply object that invoked the callback
-     *         - the result:either Y_POWEROUTPUT_OFF or Y_POWEROUTPUT_ON, according to the power supply output switch state
+     *         - the result:either YPowerSupply.POWEROUTPUT_OFF or YPowerSupply.POWEROUTPUT_ON, according to the
+     *         power supply output switch state
      * @param context : user-specific object that is passed as-is to the callback function
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      *
-     * On failure, throws an exception or returns Y_POWEROUTPUT_INVALID.
+     * On failure, throws an exception or returns YPowerSupply.POWEROUTPUT_INVALID.
      */
     function YPowerSupply_get_powerOutput_async(callback,context)
     {
@@ -331,9 +333,10 @@ var YPowerSupply; // definition below
     /**
      * Changes the power supply output switch state.
      *
-     * @param newval : either Y_POWEROUTPUT_OFF or Y_POWEROUTPUT_ON, according to the power supply output switch state
+     * @param newval : either YPowerSupply.POWEROUTPUT_OFF or YPowerSupply.POWEROUTPUT_ON, according to
+     * the power supply output switch state
      *
-     * @return YAPI_SUCCESS if the call succeeds.
+     * @return YAPI.SUCCESS if the call succeeds.
      *
      * On failure, throws an exception or returns a negative error code.
      */
@@ -346,9 +349,10 @@ var YPowerSupply; // definition below
     /**
      * Returns the output voltage control point.
      *
-     * @return either Y_VOLTAGESENSE_INT or Y_VOLTAGESENSE_EXT, according to the output voltage control point
+     * @return either YPowerSupply.VOLTAGESENSE_INT or YPowerSupply.VOLTAGESENSE_EXT, according to the
+     * output voltage control point
      *
-     * On failure, throws an exception or returns Y_VOLTAGESENSE_INVALID.
+     * On failure, throws an exception or returns YPowerSupply.VOLTAGESENSE_INVALID.
      */
     function YPowerSupply_get_voltageSense()
     {
@@ -369,12 +373,13 @@ var YPowerSupply; // definition below
      *         The callback function receives three arguments:
      *         - the user-specific context object
      *         - the YPowerSupply object that invoked the callback
-     *         - the result:either Y_VOLTAGESENSE_INT or Y_VOLTAGESENSE_EXT, according to the output voltage control point
+     *         - the result:either YPowerSupply.VOLTAGESENSE_INT or YPowerSupply.VOLTAGESENSE_EXT, according to
+     *         the output voltage control point
      * @param context : user-specific object that is passed as-is to the callback function
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      *
-     * On failure, throws an exception or returns Y_VOLTAGESENSE_INVALID.
+     * On failure, throws an exception or returns YPowerSupply.VOLTAGESENSE_INVALID.
      */
     function YPowerSupply_get_voltageSense_async(callback,context)
     {
@@ -397,9 +402,10 @@ var YPowerSupply; // definition below
     /**
      * Changes the voltage control point.
      *
-     * @param newval : either Y_VOLTAGESENSE_INT or Y_VOLTAGESENSE_EXT, according to the voltage control point
+     * @param newval : either YPowerSupply.VOLTAGESENSE_INT or YPowerSupply.VOLTAGESENSE_EXT, according to
+     * the voltage control point
      *
-     * @return YAPI_SUCCESS if the call succeeds.
+     * @return YAPI.SUCCESS if the call succeeds.
      *
      * On failure, throws an exception or returns a negative error code.
      */
@@ -414,7 +420,7 @@ var YPowerSupply; // definition below
      *
      * @return a floating point number corresponding to the measured output voltage, in V
      *
-     * On failure, throws an exception or returns Y_MEASUREDVOLTAGE_INVALID.
+     * On failure, throws an exception or returns YPowerSupply.MEASUREDVOLTAGE_INVALID.
      */
     function YPowerSupply_get_measuredVoltage()
     {
@@ -440,7 +446,7 @@ var YPowerSupply; // definition below
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      *
-     * On failure, throws an exception or returns Y_MEASUREDVOLTAGE_INVALID.
+     * On failure, throws an exception or returns YPowerSupply.MEASUREDVOLTAGE_INVALID.
      */
     function YPowerSupply_get_measuredVoltage_async(callback,context)
     {
@@ -465,7 +471,7 @@ var YPowerSupply; // definition below
      *
      * @return a floating point number corresponding to the measured output current, in mA
      *
-     * On failure, throws an exception or returns Y_MEASUREDCURRENT_INVALID.
+     * On failure, throws an exception or returns YPowerSupply.MEASUREDCURRENT_INVALID.
      */
     function YPowerSupply_get_measuredCurrent()
     {
@@ -491,7 +497,7 @@ var YPowerSupply; // definition below
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      *
-     * On failure, throws an exception or returns Y_MEASUREDCURRENT_INVALID.
+     * On failure, throws an exception or returns YPowerSupply.MEASUREDCURRENT_INVALID.
      */
     function YPowerSupply_get_measuredCurrent_async(callback,context)
     {
@@ -516,7 +522,7 @@ var YPowerSupply; // definition below
      *
      * @return a floating point number corresponding to the measured input voltage, in V
      *
-     * On failure, throws an exception or returns Y_INPUTVOLTAGE_INVALID.
+     * On failure, throws an exception or returns YPowerSupply.INPUTVOLTAGE_INVALID.
      */
     function YPowerSupply_get_inputVoltage()
     {
@@ -542,7 +548,7 @@ var YPowerSupply; // definition below
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      *
-     * On failure, throws an exception or returns Y_INPUTVOLTAGE_INVALID.
+     * On failure, throws an exception or returns YPowerSupply.INPUTVOLTAGE_INVALID.
      */
     function YPowerSupply_get_inputVoltage_async(callback,context)
     {
@@ -567,7 +573,7 @@ var YPowerSupply; // definition below
      *
      * @return a floating point number corresponding to the internal voltage, in V
      *
-     * On failure, throws an exception or returns Y_VINT_INVALID.
+     * On failure, throws an exception or returns YPowerSupply.VINT_INVALID.
      */
     function YPowerSupply_get_vInt()
     {
@@ -593,7 +599,7 @@ var YPowerSupply; // definition below
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      *
-     * On failure, throws an exception or returns Y_VINT_INVALID.
+     * On failure, throws an exception or returns YPowerSupply.VINT_INVALID.
      */
     function YPowerSupply_get_vInt_async(callback,context)
     {
@@ -618,7 +624,7 @@ var YPowerSupply; // definition below
      *
      * @return a floating point number corresponding to the LDO temperature, in Celsius
      *
-     * On failure, throws an exception or returns Y_LDOTEMPERATURE_INVALID.
+     * On failure, throws an exception or returns YPowerSupply.LDOTEMPERATURE_INVALID.
      */
     function YPowerSupply_get_ldoTemperature()
     {
@@ -644,7 +650,7 @@ var YPowerSupply; // definition below
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      *
-     * On failure, throws an exception or returns Y_LDOTEMPERATURE_INVALID.
+     * On failure, throws an exception or returns YPowerSupply.LDOTEMPERATURE_INVALID.
      */
     function YPowerSupply_get_ldoTemperature_async(callback,context)
     {
@@ -717,7 +723,7 @@ var YPowerSupply; // definition below
      *
      * @param newval : a floating point number corresponding to the voltage set point at device start up
      *
-     * @return YAPI_SUCCESS if the call succeeds.
+     * @return YAPI.SUCCESS if the call succeeds.
      *
      * On failure, throws an exception or returns a negative error code.
      */
@@ -732,7 +738,7 @@ var YPowerSupply; // definition below
      *
      * @return a floating point number corresponding to the selected voltage set point at device startup, in V
      *
-     * On failure, throws an exception or returns Y_VOLTAGEATSTARTUP_INVALID.
+     * On failure, throws an exception or returns YPowerSupply.VOLTAGEATSTARTUP_INVALID.
      */
     function YPowerSupply_get_voltageAtStartUp()
     {
@@ -758,7 +764,7 @@ var YPowerSupply; // definition below
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      *
-     * On failure, throws an exception or returns Y_VOLTAGEATSTARTUP_INVALID.
+     * On failure, throws an exception or returns YPowerSupply.VOLTAGEATSTARTUP_INVALID.
      */
     function YPowerSupply_get_voltageAtStartUp_async(callback,context)
     {
@@ -784,7 +790,7 @@ var YPowerSupply; // definition below
      *
      * @param newval : a floating point number corresponding to the current limit at device start up
      *
-     * @return YAPI_SUCCESS if the call succeeds.
+     * @return YAPI.SUCCESS if the call succeeds.
      *
      * On failure, throws an exception or returns a negative error code.
      */
@@ -799,7 +805,7 @@ var YPowerSupply; // definition below
      *
      * @return a floating point number corresponding to the selected current limit at device startup, in mA
      *
-     * On failure, throws an exception or returns Y_CURRENTATSTARTUP_INVALID.
+     * On failure, throws an exception or returns YPowerSupply.CURRENTATSTARTUP_INVALID.
      */
     function YPowerSupply_get_currentAtStartUp()
     {
@@ -825,7 +831,7 @@ var YPowerSupply; // definition below
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      *
-     * On failure, throws an exception or returns Y_CURRENTATSTARTUP_INVALID.
+     * On failure, throws an exception or returns YPowerSupply.CURRENTATSTARTUP_INVALID.
      */
     function YPowerSupply_get_currentAtStartUp_async(callback,context)
     {
@@ -939,7 +945,7 @@ var YPowerSupply; // definition below
      *         (floating-point number, representing the end voltage in V)
      * @param ms_duration : total duration of the transition, in milliseconds
      *
-     * @return YAPI_SUCCESS when the call succeeds.
+     * @return YAPI.SUCCESS when the call succeeds.
      */
     function YPowerSupply_voltageMove(V_target,ms_duration)
     {

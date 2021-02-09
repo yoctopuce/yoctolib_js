@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_altitude.js 39658 2020-03-12 15:36:29Z seb $
+ *  $Id: yocto_altitude.js 43580 2021-01-26 17:46:01Z mvuilleu $
  *
  *  Implements the high-level API for Altitude functions
  *
@@ -97,7 +97,7 @@ var YAltitude; // definition below
      *
      * @param newval : a floating point number corresponding to the current estimated altitude
      *
-     * @return YAPI_SUCCESS if the call succeeds.
+     * @return YAPI.SUCCESS if the call succeeds.
      *
      * On failure, throws an exception or returns a negative error code.
      */
@@ -118,7 +118,7 @@ var YAltitude; // definition below
      * level used to compute
      *         the altitude (QNH)
      *
-     * @return YAPI_SUCCESS if the call succeeds.
+     * @return YAPI.SUCCESS if the call succeeds.
      *
      * On failure, throws an exception or returns a negative error code.
      */
@@ -135,7 +135,7 @@ var YAltitude; // definition below
      * @return a floating point number corresponding to the barometric pressure adjusted to sea level used to compute
      *         the altitude (QNH)
      *
-     * On failure, throws an exception or returns Y_QNH_INVALID.
+     * On failure, throws an exception or returns YAltitude.QNH_INVALID.
      */
     function YAltitude_get_qnh()
     {
@@ -164,7 +164,7 @@ var YAltitude; // definition below
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      *
-     * On failure, throws an exception or returns Y_QNH_INVALID.
+     * On failure, throws an exception or returns YAltitude.QNH_INVALID.
      */
     function YAltitude_get_qnh_async(callback,context)
     {
@@ -191,7 +191,7 @@ var YAltitude; // definition below
      * @return a string corresponding to the technology used by the sesnor to compute
      *         altitude
      *
-     * On failure, throws an exception or returns Y_TECHNOLOGY_INVALID.
+     * On failure, throws an exception or returns YAltitude.TECHNOLOGY_INVALID.
      */
     function YAltitude_get_technology()
     {
@@ -219,7 +219,7 @@ var YAltitude; // definition below
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      *
-     * On failure, throws an exception or returns Y_TECHNOLOGY_INVALID.
+     * On failure, throws an exception or returns YAltitude.TECHNOLOGY_INVALID.
      */
     function YAltitude_get_technology_async(callback,context)
     {

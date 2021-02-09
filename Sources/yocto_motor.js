@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_motor.js 38899 2019-12-20 17:21:03Z mvuilleu $
+ *  $Id: yocto_motor.js 43619 2021-01-29 09:14:45Z mvuilleu $
  *
  *  Implements the high-level API for Motor functions
  *
@@ -145,10 +145,11 @@ var YMotor; // definition below
      * When an error condition occurred (LOVOLT, HICURR, HIHEAT, FAILSF), the controller
      * status must be explicitly reset using the resetStatus function.
      *
-     * @return a value among Y_MOTORSTATUS_IDLE, Y_MOTORSTATUS_BRAKE, Y_MOTORSTATUS_FORWD,
-     * Y_MOTORSTATUS_BACKWD, Y_MOTORSTATUS_LOVOLT, Y_MOTORSTATUS_HICURR, Y_MOTORSTATUS_HIHEAT and Y_MOTORSTATUS_FAILSF
+     * @return a value among YMotor.MOTORSTATUS_IDLE, YMotor.MOTORSTATUS_BRAKE, YMotor.MOTORSTATUS_FORWD,
+     * YMotor.MOTORSTATUS_BACKWD, YMotor.MOTORSTATUS_LOVOLT, YMotor.MOTORSTATUS_HICURR,
+     * YMotor.MOTORSTATUS_HIHEAT and YMotor.MOTORSTATUS_FAILSF
      *
-     * On failure, throws an exception or returns Y_MOTORSTATUS_INVALID.
+     * On failure, throws an exception or returns YMotor.MOTORSTATUS_INVALID.
      */
     function YMotor_get_motorStatus()
     {
@@ -180,13 +181,14 @@ var YMotor; // definition below
      *         The callback function receives three arguments:
      *         - the user-specific context object
      *         - the YMotor object that invoked the callback
-     *         - the result:a value among Y_MOTORSTATUS_IDLE, Y_MOTORSTATUS_BRAKE, Y_MOTORSTATUS_FORWD,
-     *         Y_MOTORSTATUS_BACKWD, Y_MOTORSTATUS_LOVOLT, Y_MOTORSTATUS_HICURR, Y_MOTORSTATUS_HIHEAT and Y_MOTORSTATUS_FAILSF
+     *         - the result:a value among YMotor.MOTORSTATUS_IDLE, YMotor.MOTORSTATUS_BRAKE,
+     *         YMotor.MOTORSTATUS_FORWD, YMotor.MOTORSTATUS_BACKWD, YMotor.MOTORSTATUS_LOVOLT,
+     *         YMotor.MOTORSTATUS_HICURR, YMotor.MOTORSTATUS_HIHEAT and YMotor.MOTORSTATUS_FAILSF
      * @param context : user-specific object that is passed as-is to the callback function
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      *
-     * On failure, throws an exception or returns Y_MOTORSTATUS_INVALID.
+     * On failure, throws an exception or returns YMotor.MOTORSTATUS_INVALID.
      */
     function YMotor_get_motorStatus_async(callback,context)
     {
@@ -221,7 +223,7 @@ var YMotor; // definition below
      *
      * @param newval : a floating point number corresponding to immediately the power sent to the motor
      *
-     * @return YAPI_SUCCESS if the call succeeds.
+     * @return YAPI.SUCCESS if the call succeeds.
      *
      * On failure, throws an exception or returns a negative error code.
      */
@@ -237,7 +239,7 @@ var YMotor; // definition below
      * @return a floating point number corresponding to the power sent to the motor, as a percentage
      * between -100% and +100%
      *
-     * On failure, throws an exception or returns Y_DRIVINGFORCE_INVALID.
+     * On failure, throws an exception or returns YMotor.DRIVINGFORCE_INVALID.
      */
     function YMotor_get_drivingForce()
     {
@@ -264,7 +266,7 @@ var YMotor; // definition below
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      *
-     * On failure, throws an exception or returns Y_DRIVINGFORCE_INVALID.
+     * On failure, throws an exception or returns YMotor.DRIVINGFORCE_INVALID.
      */
     function YMotor_get_drivingForce_async(callback,context)
     {
@@ -292,7 +294,7 @@ var YMotor; // definition below
      * @param newval : a floating point number corresponding to immediately the braking force applied to
      * the motor (in percents)
      *
-     * @return YAPI_SUCCESS if the call succeeds.
+     * @return YAPI.SUCCESS if the call succeeds.
      *
      * On failure, throws an exception or returns a negative error code.
      */
@@ -308,7 +310,7 @@ var YMotor; // definition below
      *
      * @return a floating point number corresponding to the braking force applied to the motor, as a percentage
      *
-     * On failure, throws an exception or returns Y_BRAKINGFORCE_INVALID.
+     * On failure, throws an exception or returns YMotor.BRAKINGFORCE_INVALID.
      */
     function YMotor_get_brakingForce()
     {
@@ -335,7 +337,7 @@ var YMotor; // definition below
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      *
-     * On failure, throws an exception or returns Y_BRAKINGFORCE_INVALID.
+     * On failure, throws an exception or returns YMotor.BRAKINGFORCE_INVALID.
      */
     function YMotor_get_brakingForce_async(callback,context)
     {
@@ -368,7 +370,7 @@ var YMotor; // definition below
      * controller automatically switches to error state
      *         and prevents further current draw
      *
-     * @return YAPI_SUCCESS if the call succeeds.
+     * @return YAPI.SUCCESS if the call succeeds.
      *
      * On failure, throws an exception or returns a negative error code.
      */
@@ -387,7 +389,7 @@ var YMotor; // definition below
      * automatically switches to error state
      *         and prevents further current draw
      *
-     * On failure, throws an exception or returns Y_CUTOFFVOLTAGE_INVALID.
+     * On failure, throws an exception or returns YMotor.CUTOFFVOLTAGE_INVALID.
      */
     function YMotor_get_cutOffVoltage()
     {
@@ -417,7 +419,7 @@ var YMotor; // definition below
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      *
-     * On failure, throws an exception or returns Y_CUTOFFVOLTAGE_INVALID.
+     * On failure, throws an exception or returns YMotor.CUTOFFVOLTAGE_INVALID.
      */
     function YMotor_get_cutOffVoltage_async(callback,context)
     {
@@ -444,7 +446,7 @@ var YMotor; // definition below
      * @return an integer corresponding to the current threshold (in mA) above which the controller automatically
      *         switches to error state
      *
-     * On failure, throws an exception or returns Y_OVERCURRENTLIMIT_INVALID.
+     * On failure, throws an exception or returns YMotor.OVERCURRENTLIMIT_INVALID.
      */
     function YMotor_get_overCurrentLimit()
     {
@@ -472,7 +474,7 @@ var YMotor; // definition below
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      *
-     * On failure, throws an exception or returns Y_OVERCURRENTLIMIT_INVALID.
+     * On failure, throws an exception or returns YMotor.OVERCURRENTLIMIT_INVALID.
      */
     function YMotor_get_overCurrentLimit_async(callback,context)
     {
@@ -503,7 +505,7 @@ var YMotor; // definition below
      * controller automatically
      *         switches to error state
      *
-     * @return YAPI_SUCCESS if the call succeeds.
+     * @return YAPI.SUCCESS if the call succeeds.
      *
      * On failure, throws an exception or returns a negative error code.
      */
@@ -522,7 +524,7 @@ var YMotor; // definition below
      *
      * @param newval : a floating point number corresponding to the PWM frequency used to control the motor
      *
-     * @return YAPI_SUCCESS if the call succeeds.
+     * @return YAPI.SUCCESS if the call succeeds.
      *
      * On failure, throws an exception or returns a negative error code.
      */
@@ -537,7 +539,7 @@ var YMotor; // definition below
      *
      * @return a floating point number corresponding to the PWM frequency used to control the motor
      *
-     * On failure, throws an exception or returns Y_FREQUENCY_INVALID.
+     * On failure, throws an exception or returns YMotor.FREQUENCY_INVALID.
      */
     function YMotor_get_frequency()
     {
@@ -563,7 +565,7 @@ var YMotor; // definition below
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      *
-     * On failure, throws an exception or returns Y_FREQUENCY_INVALID.
+     * On failure, throws an exception or returns YMotor.FREQUENCY_INVALID.
      */
     function YMotor_get_frequency_async(callback,context)
     {
@@ -591,7 +593,7 @@ var YMotor; // definition below
      * frequency to help
      *         it start up
      *
-     * On failure, throws an exception or returns Y_STARTERTIME_INVALID.
+     * On failure, throws an exception or returns YMotor.STARTERTIME_INVALID.
      */
     function YMotor_get_starterTime()
     {
@@ -620,7 +622,7 @@ var YMotor; // definition below
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      *
-     * On failure, throws an exception or returns Y_STARTERTIME_INVALID.
+     * On failure, throws an exception or returns YMotor.STARTERTIME_INVALID.
      */
     function YMotor_get_starterTime_async(callback,context)
     {
@@ -649,7 +651,7 @@ var YMotor; // definition below
      * at low frequency to help
      *         it start up
      *
-     * @return YAPI_SUCCESS if the call succeeds.
+     * @return YAPI.SUCCESS if the call succeeds.
      *
      * On failure, throws an exception or returns a negative error code.
      */
@@ -669,7 +671,7 @@ var YMotor; // definition below
      * autonomously without
      *         receiving any instruction from the control process
      *
-     * On failure, throws an exception or returns Y_FAILSAFETIMEOUT_INVALID.
+     * On failure, throws an exception or returns YMotor.FAILSAFETIMEOUT_INVALID.
      */
     function YMotor_get_failSafeTimeout()
     {
@@ -700,7 +702,7 @@ var YMotor; // definition below
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      *
-     * On failure, throws an exception or returns Y_FAILSAFETIMEOUT_INVALID.
+     * On failure, throws an exception or returns YMotor.FAILSAFETIMEOUT_INVALID.
      */
     function YMotor_get_failSafeTimeout_async(callback,context)
     {
@@ -732,7 +734,7 @@ var YMotor; // definition below
      * run autonomously without
      *         receiving any instruction from the control process
      *
-     * @return YAPI_SUCCESS if the call succeeds.
+     * @return YAPI.SUCCESS if the call succeeds.
      *
      * On failure, throws an exception or returns a negative error code.
      */
@@ -854,7 +856,7 @@ var YMotor; // definition below
      * @param targetPower : desired motor power, in percents (between -100% and +100%)
      * @param delay : duration (in ms) of the transition
      *
-     * @return YAPI_SUCCESS if the call succeeds.
+     * @return YAPI.SUCCESS if the call succeeds.
      *
      * On failure, throws an exception or returns a negative error code.
      */
@@ -869,7 +871,7 @@ var YMotor; // definition below
      * @param targetPower : desired braking force, in percents
      * @param delay : duration (in ms) of the transition
      *
-     * @return YAPI_SUCCESS if the call succeeds.
+     * @return YAPI.SUCCESS if the call succeeds.
      *
      * On failure, throws an exception or returns a negative error code.
      */

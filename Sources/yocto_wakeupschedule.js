@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_wakeupschedule.js 39434 2020-02-25 08:53:55Z seb $
+ *  $Id: yocto_wakeupschedule.js 43619 2021-01-29 09:14:45Z mvuilleu $
  *
  *  Implements the high-level API for WakeUpSchedule functions
  *
@@ -54,7 +54,7 @@ var Y_NEXTOCCURENCE_INVALID         = YAPI_INVALID_LONG;
 //--- (YWakeUpSchedule class start)
 /**
  * YWakeUpSchedule Class: wake up schedule control interface, available for instance in the
- * YoctoHub-GSM-3G-EU, the YoctoHub-GSM-3G-NA, the YoctoHub-Wireless-g or the YoctoHub-Wireless-n
+ * YoctoHub-GSM-3G-EU, the YoctoHub-GSM-3G-NA, the YoctoHub-GSM-4G or the YoctoHub-Wireless-n
  *
  * The YWakeUpSchedule class implements a wake up condition. The wake up time is
  * specified as a set of months and/or days and/or hours and/or minutes when the
@@ -117,7 +117,7 @@ var YWakeUpSchedule; // definition below
      *
      * @return an integer corresponding to the minutes in the 00-29 interval of each hour scheduled for wake up
      *
-     * On failure, throws an exception or returns Y_MINUTESA_INVALID.
+     * On failure, throws an exception or returns YWakeUpSchedule.MINUTESA_INVALID.
      */
     function YWakeUpSchedule_get_minutesA()
     {
@@ -143,7 +143,7 @@ var YWakeUpSchedule; // definition below
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      *
-     * On failure, throws an exception or returns Y_MINUTESA_INVALID.
+     * On failure, throws an exception or returns YWakeUpSchedule.MINUTESA_INVALID.
      */
     function YWakeUpSchedule_get_minutesA_async(callback,context)
     {
@@ -170,7 +170,7 @@ var YWakeUpSchedule; // definition below
      *
      * @param newval : an integer corresponding to the minutes in the 00-29 interval when a wake up must take place
      *
-     * @return YAPI_SUCCESS if the call succeeds.
+     * @return YAPI.SUCCESS if the call succeeds.
      *
      * On failure, throws an exception or returns a negative error code.
      */
@@ -185,7 +185,7 @@ var YWakeUpSchedule; // definition below
      *
      * @return an integer corresponding to the minutes in the 30-59 interval of each hour scheduled for wake up
      *
-     * On failure, throws an exception or returns Y_MINUTESB_INVALID.
+     * On failure, throws an exception or returns YWakeUpSchedule.MINUTESB_INVALID.
      */
     function YWakeUpSchedule_get_minutesB()
     {
@@ -211,7 +211,7 @@ var YWakeUpSchedule; // definition below
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      *
-     * On failure, throws an exception or returns Y_MINUTESB_INVALID.
+     * On failure, throws an exception or returns YWakeUpSchedule.MINUTESB_INVALID.
      */
     function YWakeUpSchedule_get_minutesB_async(callback,context)
     {
@@ -238,7 +238,7 @@ var YWakeUpSchedule; // definition below
      *
      * @param newval : an integer corresponding to the minutes in the 30-59 interval when a wake up must take place
      *
-     * @return YAPI_SUCCESS if the call succeeds.
+     * @return YAPI.SUCCESS if the call succeeds.
      *
      * On failure, throws an exception or returns a negative error code.
      */
@@ -253,7 +253,7 @@ var YWakeUpSchedule; // definition below
      *
      * @return an integer corresponding to the hours scheduled for wake up
      *
-     * On failure, throws an exception or returns Y_HOURS_INVALID.
+     * On failure, throws an exception or returns YWakeUpSchedule.HOURS_INVALID.
      */
     function YWakeUpSchedule_get_hours()
     {
@@ -279,7 +279,7 @@ var YWakeUpSchedule; // definition below
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      *
-     * On failure, throws an exception or returns Y_HOURS_INVALID.
+     * On failure, throws an exception or returns YWakeUpSchedule.HOURS_INVALID.
      */
     function YWakeUpSchedule_get_hours_async(callback,context)
     {
@@ -306,7 +306,7 @@ var YWakeUpSchedule; // definition below
      *
      * @param newval : an integer corresponding to the hours when a wake up must take place
      *
-     * @return YAPI_SUCCESS if the call succeeds.
+     * @return YAPI.SUCCESS if the call succeeds.
      *
      * On failure, throws an exception or returns a negative error code.
      */
@@ -321,7 +321,7 @@ var YWakeUpSchedule; // definition below
      *
      * @return an integer corresponding to the days of the week scheduled for wake up
      *
-     * On failure, throws an exception or returns Y_WEEKDAYS_INVALID.
+     * On failure, throws an exception or returns YWakeUpSchedule.WEEKDAYS_INVALID.
      */
     function YWakeUpSchedule_get_weekDays()
     {
@@ -347,7 +347,7 @@ var YWakeUpSchedule; // definition below
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      *
-     * On failure, throws an exception or returns Y_WEEKDAYS_INVALID.
+     * On failure, throws an exception or returns YWakeUpSchedule.WEEKDAYS_INVALID.
      */
     function YWakeUpSchedule_get_weekDays_async(callback,context)
     {
@@ -374,7 +374,7 @@ var YWakeUpSchedule; // definition below
      *
      * @param newval : an integer corresponding to the days of the week when a wake up must take place
      *
-     * @return YAPI_SUCCESS if the call succeeds.
+     * @return YAPI.SUCCESS if the call succeeds.
      *
      * On failure, throws an exception or returns a negative error code.
      */
@@ -389,7 +389,7 @@ var YWakeUpSchedule; // definition below
      *
      * @return an integer corresponding to the days of the month scheduled for wake up
      *
-     * On failure, throws an exception or returns Y_MONTHDAYS_INVALID.
+     * On failure, throws an exception or returns YWakeUpSchedule.MONTHDAYS_INVALID.
      */
     function YWakeUpSchedule_get_monthDays()
     {
@@ -415,7 +415,7 @@ var YWakeUpSchedule; // definition below
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      *
-     * On failure, throws an exception or returns Y_MONTHDAYS_INVALID.
+     * On failure, throws an exception or returns YWakeUpSchedule.MONTHDAYS_INVALID.
      */
     function YWakeUpSchedule_get_monthDays_async(callback,context)
     {
@@ -442,7 +442,7 @@ var YWakeUpSchedule; // definition below
      *
      * @param newval : an integer corresponding to the days of the month when a wake up must take place
      *
-     * @return YAPI_SUCCESS if the call succeeds.
+     * @return YAPI.SUCCESS if the call succeeds.
      *
      * On failure, throws an exception or returns a negative error code.
      */
@@ -457,7 +457,7 @@ var YWakeUpSchedule; // definition below
      *
      * @return an integer corresponding to the months scheduled for wake up
      *
-     * On failure, throws an exception or returns Y_MONTHS_INVALID.
+     * On failure, throws an exception or returns YWakeUpSchedule.MONTHS_INVALID.
      */
     function YWakeUpSchedule_get_months()
     {
@@ -483,7 +483,7 @@ var YWakeUpSchedule; // definition below
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      *
-     * On failure, throws an exception or returns Y_MONTHS_INVALID.
+     * On failure, throws an exception or returns YWakeUpSchedule.MONTHS_INVALID.
      */
     function YWakeUpSchedule_get_months_async(callback,context)
     {
@@ -510,7 +510,7 @@ var YWakeUpSchedule; // definition below
      *
      * @param newval : an integer corresponding to the months when a wake up must take place
      *
-     * @return YAPI_SUCCESS if the call succeeds.
+     * @return YAPI.SUCCESS if the call succeeds.
      *
      * On failure, throws an exception or returns a negative error code.
      */
@@ -525,7 +525,7 @@ var YWakeUpSchedule; // definition below
      *
      * @return an integer corresponding to the date/time (seconds) of the next wake up occurrence
      *
-     * On failure, throws an exception or returns Y_NEXTOCCURENCE_INVALID.
+     * On failure, throws an exception or returns YWakeUpSchedule.NEXTOCCURENCE_INVALID.
      */
     function YWakeUpSchedule_get_nextOccurence()
     {
@@ -551,7 +551,7 @@ var YWakeUpSchedule; // definition below
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      *
-     * On failure, throws an exception or returns Y_NEXTOCCURENCE_INVALID.
+     * On failure, throws an exception or returns YWakeUpSchedule.NEXTOCCURENCE_INVALID.
      */
     function YWakeUpSchedule_get_nextOccurence_async(callback,context)
     {
@@ -628,7 +628,7 @@ var YWakeUpSchedule; // definition below
      *
      * @param bitmap : Minutes 00-59 of each hour scheduled for wake up.
      *
-     * @return YAPI_SUCCESS if the call succeeds.
+     * @return YAPI.SUCCESS if the call succeeds.
      *
      * On failure, throws an exception or returns a negative error code.
      */
