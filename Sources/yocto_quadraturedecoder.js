@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_quadraturedecoder.js 43580 2021-01-26 17:46:01Z mvuilleu $
+ *  $Id: yocto_quadraturedecoder.js 44023 2021-02-25 09:23:38Z web $
  *
  *  Implements the high-level API for QuadratureDecoder functions
  *
@@ -44,6 +44,8 @@ if(typeof YAPI == "undefined") { if(typeof yAPI != "undefined") window["YAPI"]=y
 //--- (YQuadratureDecoder definitions)
 var Y_DECODING_OFF                  = 0;
 var Y_DECODING_ON                   = 1;
+var Y_DECODING_DIV2                 = 2;
+var Y_DECODING_DIV4                 = 3;
 var Y_DECODING_INVALID              = -1;
 var Y_SPEED_INVALID                 = YAPI_INVALID_DOUBLE;
 //--- (end of YQuadratureDecoder definitions)
@@ -69,7 +71,7 @@ var YQuadratureDecoder; // definition below
         this._className = 'QuadratureDecoder';
 
         this._speed                          = Y_SPEED_INVALID;            // MeasureVal
-        this._decoding                       = Y_DECODING_INVALID;         // OnOff
+        this._decoding                       = Y_DECODING_INVALID;         // OffOnDiv
         //--- (end of YQuadratureDecoder constructor)
     }
 
@@ -158,14 +160,15 @@ var YQuadratureDecoder; // definition below
     /**
      * Returns the current activation state of the quadrature decoder.
      *
-     * @return either YQuadratureDecoder.DECODING_OFF or YQuadratureDecoder.DECODING_ON, according to the
-     * current activation state of the quadrature decoder
+     * @return a value among YQuadratureDecoder.DECODING_OFF, YQuadratureDecoder.DECODING_ON,
+     * YQuadratureDecoder.DECODING_DIV2 and YQuadratureDecoder.DECODING_DIV4 corresponding to the current
+     * activation state of the quadrature decoder
      *
      * On failure, throws an exception or returns YQuadratureDecoder.DECODING_INVALID.
      */
     function YQuadratureDecoder_get_decoding()
     {
-        var res;                    // enumONOFF;
+        var res;                    // enumOFFONDIV;
         if (this._cacheExpiration <= YAPI.GetTickCount()) {
             if (this.load(YAPI.defaultCacheValidity) != YAPI_SUCCESS) {
                 return Y_DECODING_INVALID;
@@ -182,8 +185,9 @@ var YQuadratureDecoder; // definition below
      *         The callback function receives three arguments:
      *         - the user-specific context object
      *         - the YQuadratureDecoder object that invoked the callback
-     *         - the result:either YQuadratureDecoder.DECODING_OFF or YQuadratureDecoder.DECODING_ON, according to
-     *         the current activation state of the quadrature decoder
+     *         - the result:a value among YQuadratureDecoder.DECODING_OFF, YQuadratureDecoder.DECODING_ON,
+     *         YQuadratureDecoder.DECODING_DIV2 and YQuadratureDecoder.DECODING_DIV4 corresponding to the current
+     *         activation state of the quadrature decoder
      * @param context : user-specific object that is passed as-is to the callback function
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
@@ -192,7 +196,7 @@ var YQuadratureDecoder; // definition below
      */
     function YQuadratureDecoder_get_decoding_async(callback,context)
     {
-        var res;                    // enumONOFF;
+        var res;                    // enumOFFONDIV;
         var loadcb;                 // func;
         loadcb = function(ctx,obj,res) {
             if (res != YAPI_SUCCESS) {
@@ -213,8 +217,9 @@ var YQuadratureDecoder; // definition below
      * Remember to call the saveToFlash()
      * method of the module if the modification must be kept.
      *
-     * @param newval : either YQuadratureDecoder.DECODING_OFF or YQuadratureDecoder.DECODING_ON, according
-     * to the activation state of the quadrature decoder
+     * @param newval : a value among YQuadratureDecoder.DECODING_OFF, YQuadratureDecoder.DECODING_ON,
+     * YQuadratureDecoder.DECODING_DIV2 and YQuadratureDecoder.DECODING_DIV4 corresponding to the
+     * activation state of the quadrature decoder
      *
      * @return YAPI.SUCCESS if the call succeeds.
      *
@@ -307,6 +312,8 @@ var YQuadratureDecoder; // definition below
         SPEED_INVALID               : YAPI_INVALID_DOUBLE,
         DECODING_OFF                : 0,
         DECODING_ON                 : 1,
+        DECODING_DIV2               : 2,
+        DECODING_DIV4               : 3,
         DECODING_INVALID            : -1
     }, {
         // Class methods
