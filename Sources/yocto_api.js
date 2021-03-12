@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_api.js 43619 2021-01-29 09:14:45Z mvuilleu $
+ * $Id: yocto_api.js 44114 2021-03-03 17:47:55Z mvuilleu $
  *
  * High-level programming interface, common to all modules
  *
@@ -2677,7 +2677,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
      */
     function YAPI_GetAPIVersion()
     {
-        return "1.10.44029";
+        return "1.10.44175";
     }
 
     /**
@@ -8925,7 +8925,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
      * call registerHub() at application initialization time.
      *
      * @param func : a string that uniquely characterizes the data logger, for instance
-     *         RX420MA1.dataLogger.
+     *         LIGHTMK3.dataLogger.
      *
      * @return a YDataLogger object allowing you to drive the data logger.
      */
@@ -12016,7 +12016,7 @@ function yFirstModule()
  * call registerHub() at application initialization time.
  *
  * @param func : a string that uniquely characterizes the data logger, for instance
- *         RX420MA1.dataLogger.
+ *         LIGHTMK3.dataLogger.
  *
  * @return a YDataLogger object allowing you to drive the data logger.
  */
