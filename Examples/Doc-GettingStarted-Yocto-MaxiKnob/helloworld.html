@@ -1,0 +1,87 @@
+<HTML>
+<HEAD>
+ <TITLE>Hello World</TITLE>
+ <SCRIPT type="text/javascript" src="../../Sources/yocto_api.js"></SCRIPT>
+ <SCRIPT type="text/javascript" src="../../Sources/yocto_buzzer.js"></SCRIPT>
+ <SCRIPT type="text/javascript" src="../../Sources/yocto_colorledcluster.js"></SCRIPT>
+ <SCRIPT type="text/javascript" src="../../Sources/yocto_anbutton.js"></SCRIPT>
+  <SCRIPT type="text/javascript" src="../../Sources/yocto_quadraturedecoder.js"></SCRIPT>
+
+
+ <SCRIPT language='javascript1.5' type='text/JavaScript'>
+ <!--
+  var first_run = true;
+  var lastPos = 0;
+
+  function notefreq(note)
+  {
+    return  (220.0 * Maths.Exp(note * Maths.Log(2) / 12));
+  }
+
+  // Setup the API to use the VirtualHub on local machine
+  if(yRegisterHub('http://127.0.0.1:4444/') != YAPI_SUCCESS) {
+    alert("Cannot contact VirtualHub on 127.0.0.1");
+  }
+
+  function refresh()
+  {
+    serial = document.getElementById('serial').value;
+    if(serial == '') {
+      // Detect any conected module suitable for the demo
+      buz = yFirstBuzzer();
+      if(buz) {
+        serial = buz.module().get_serialNumber();
+        document.getElementById('serial').value = serial;
+      }
+    }
+
+    buz = yFindBuzzer(serial + ".buzzer");
+    if(buz.isOnline()) {
+      document.getElementById('msg').value = '';
+      var buz    = yFindBuzzer(serial + ".buzzer");
+      var leds   = yFindColorLed(serial + ".colorLed");
+      var button = yFindAnButton(serial + ".anButton1");
+      var qd     = yQuadraticDecoder(serial + ".quadraticDecoder1");
+
+      if (!button.isOnline() || !qd.isOnline()) {
+      document.getElementById('msg').value ="Make sure the Yocto-MaxiKnob is configured with at least on AnButton and  one QuadratureDecoder";
+      } else{
+        if (first_run) {
+          lastPos = parseInt(qd.get_currentValue());
+          buz.set_volume(75);
+          first_run = false;
+        }
+        if (buz.isOnline()) {
+          if (button.get_isPressed()) {
+            lastPos = 0;
+            qd.set_currentValue(0);
+            buz.playNotes("'E32 C8");
+            leds.set_rgbColor(0, 1, 0x000000);
+          } else {
+            let p = parseInt(qd.get_currentValue());
+            if (lastPos != p) {
+              lastPos = p;
+              buz.pulse(notefreq(p), 100);
+              leds.set_hslColor(0, 1, 0x00FF7f | (p % 255) << 16);
+            }
+          }
+        }
+      }
+    } else {
+      document.getElementById('msg').value = 'Module not connected';
+      return;
+    }
+    setTimeout('refresh()',500);
+  }
+
+ -->
+ </SCRIPT>
+</HEAD>
+<BODY onload='refresh();'>
+ Module to use: <input id='serial'>
+ <input id='msg'   style='color:red;border:none;' readonly><br>
+ Press a  button #1, or turn the encoder #1
+
+ <br>
+</BODY>
+</HTML>

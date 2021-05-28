@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_watchdog.js 43619 2021-01-29 09:14:45Z mvuilleu $
+ *  $Id: yocto_watchdog.js 44548 2021-04-13 09:56:42Z mvuilleu $
  *
  *  Implements the high-level API for Watchdog functions
  *
@@ -65,6 +65,7 @@ var Y_DELAYEDPULSETIMER_INVALID     = null;
 var Y_COUNTDOWN_INVALID             = YAPI_INVALID_LONG;
 var Y_TRIGGERDELAY_INVALID          = YAPI_INVALID_LONG;
 var Y_TRIGGERDURATION_INVALID       = YAPI_INVALID_LONG;
+var Y_LASTTRIGGER_INVALID           = YAPI_INVALID_UINT;
 //--- (end of YWatchdog definitions)
 
 //--- (YWatchdog class start)
@@ -104,6 +105,7 @@ var YWatchdog; // definition below
         this._running                        = Y_RUNNING_INVALID;          // OnOff
         this._triggerDelay                   = Y_TRIGGERDELAY_INVALID;     // Time
         this._triggerDuration                = Y_TRIGGERDURATION_INVALID;  // Time
+        this._lastTrigger                    = Y_LASTTRIGGER_INVALID;      // UInt31
         this._firm                           = 0;                          // int
         //--- (end of YWatchdog constructor)
     }
@@ -148,6 +150,9 @@ var YWatchdog; // definition below
             return 1;
         case "triggerDuration":
             this._triggerDuration = parseInt(val);
+            return 1;
+        case "lastTrigger":
+            this._lastTrigger = parseInt(val);
             return 1;
         }
         return _super._parseAttr.call(this, name, val, _super._super);
@@ -1008,6 +1013,57 @@ var YWatchdog; // definition below
     }
 
     /**
+     * Returns the number of seconds spent since the last output power-up event.
+     *
+     * @return an integer corresponding to the number of seconds spent since the last output power-up event
+     *
+     * On failure, throws an exception or returns YWatchdog.LASTTRIGGER_INVALID.
+     */
+    function YWatchdog_get_lastTrigger()
+    {
+        var res;                    // int;
+        if (this._cacheExpiration <= YAPI.GetTickCount()) {
+            if (this.load(YAPI.defaultCacheValidity) != YAPI_SUCCESS) {
+                return Y_LASTTRIGGER_INVALID;
+            }
+        }
+        res = this._lastTrigger;
+        return res;
+    }
+
+    /**
+     * Gets the number of seconds spent since the last output power-up event.
+     *
+     * @param callback : callback function that is invoked when the result is known.
+     *         The callback function receives three arguments:
+     *         - the user-specific context object
+     *         - the YWatchdog object that invoked the callback
+     *         - the result:an integer corresponding to the number of seconds spent since the last output power-up event
+     * @param context : user-specific object that is passed as-is to the callback function
+     *
+     * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
+     *
+     * On failure, throws an exception or returns YWatchdog.LASTTRIGGER_INVALID.
+     */
+    function YWatchdog_get_lastTrigger_async(callback,context)
+    {
+        var res;                    // int;
+        var loadcb;                 // func;
+        loadcb = function(ctx,obj,res) {
+            if (res != YAPI_SUCCESS) {
+                callback(context, obj, Y_LASTTRIGGER_INVALID);
+            } else {
+                callback(context, obj, obj._lastTrigger);
+            }
+        };
+        if (this._cacheExpiration <= YAPI.GetTickCount()) {
+            this.load_async(YAPI.defaultCacheValidity,loadcb,null);
+        } else {
+            loadcb(null, this, YAPI_SUCCESS);
+        }
+    }
+
+    /**
      * Retrieves a watchdog for a given identifier.
      * The identifier can be specified using several formats:
      * <ul>
@@ -1142,7 +1198,8 @@ var YWatchdog; // definition below
         RUNNING_ON                  : 1,
         RUNNING_INVALID             : -1,
         TRIGGERDELAY_INVALID        : YAPI_INVALID_LONG,
-        TRIGGERDURATION_INVALID     : YAPI_INVALID_LONG
+        TRIGGERDURATION_INVALID     : YAPI_INVALID_LONG,
+        LASTTRIGGER_INVALID         : YAPI_INVALID_UINT
     }, {
         // Class methods
         FindWatchdog                : YWatchdog_FindWatchdog,
@@ -1222,6 +1279,10 @@ var YWatchdog; // definition below
         triggerDuration_async       : YWatchdog_get_triggerDuration_async,
         set_triggerDuration         : YWatchdog_set_triggerDuration,
         setTriggerDuration          : YWatchdog_set_triggerDuration,
+        get_lastTrigger             : YWatchdog_get_lastTrigger,
+        lastTrigger                 : YWatchdog_get_lastTrigger,
+        get_lastTrigger_async       : YWatchdog_get_lastTrigger_async,
+        lastTrigger_async           : YWatchdog_get_lastTrigger_async,
         toggle                      : YWatchdog_toggle,
         nextWatchdog                : YWatchdog_nextWatchdog,
         _parseAttr                  : YWatchdog_parseAttr

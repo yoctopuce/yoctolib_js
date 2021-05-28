@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_colorledcluster.js 43619 2021-01-29 09:14:45Z mvuilleu $
+ *  $Id: yocto_colorledcluster.js 44921 2021-05-06 08:03:05Z mvuilleu $
  *
  *  Implements the high-level API for ColorLedCluster functions
  *
@@ -44,6 +44,7 @@ if(typeof YAPI == "undefined") { if(typeof yAPI != "undefined") window["YAPI"]=y
 //--- (YColorLedCluster definitions)
 var Y_LEDTYPE_RGB                   = 0;
 var Y_LEDTYPE_RGBW                  = 1;
+var Y_LEDTYPE_WS2811                = 2;
 var Y_LEDTYPE_INVALID               = -1;
 var Y_ACTIVELEDCOUNT_INVALID        = YAPI_INVALID_UINT;
 var Y_MAXLEDCOUNT_INVALID           = YAPI_INVALID_UINT;
@@ -185,8 +186,8 @@ var YColorLedCluster; // definition below
     /**
      * Returns the RGB LED type currently handled by the device.
      *
-     * @return either YColorLedCluster.LEDTYPE_RGB or YColorLedCluster.LEDTYPE_RGBW, according to the RGB
-     * LED type currently handled by the device
+     * @return a value among YColorLedCluster.LEDTYPE_RGB, YColorLedCluster.LEDTYPE_RGBW and
+     * YColorLedCluster.LEDTYPE_WS2811 corresponding to the RGB LED type currently handled by the device
      *
      * On failure, throws an exception or returns YColorLedCluster.LEDTYPE_INVALID.
      */
@@ -209,8 +210,8 @@ var YColorLedCluster; // definition below
      *         The callback function receives three arguments:
      *         - the user-specific context object
      *         - the YColorLedCluster object that invoked the callback
-     *         - the result:either YColorLedCluster.LEDTYPE_RGB or YColorLedCluster.LEDTYPE_RGBW, according to the
-     *         RGB LED type currently handled by the device
+     *         - the result:a value among YColorLedCluster.LEDTYPE_RGB, YColorLedCluster.LEDTYPE_RGBW and
+     *         YColorLedCluster.LEDTYPE_WS2811 corresponding to the RGB LED type currently handled by the device
      * @param context : user-specific object that is passed as-is to the callback function
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
@@ -240,8 +241,8 @@ var YColorLedCluster; // definition below
      * Remember to call the matching module
      * saveToFlash() method to save the setting permanently.
      *
-     * @param newval : either YColorLedCluster.LEDTYPE_RGB or YColorLedCluster.LEDTYPE_RGBW, according to
-     * the RGB LED type currently handled by the device
+     * @param newval : a value among YColorLedCluster.LEDTYPE_RGB, YColorLedCluster.LEDTYPE_RGBW and
+     * YColorLedCluster.LEDTYPE_WS2811 corresponding to the RGB LED type currently handled by the device
      *
      * @return YAPI.SUCCESS if the call succeeds.
      *
@@ -1449,6 +1450,7 @@ var YColorLedCluster; // definition below
         ACTIVELEDCOUNT_INVALID      : YAPI_INVALID_UINT,
         LEDTYPE_RGB                 : 0,
         LEDTYPE_RGBW                : 1,
+        LEDTYPE_WS2811              : 2,
         LEDTYPE_INVALID             : -1,
         MAXLEDCOUNT_INVALID         : YAPI_INVALID_UINT,
         BLINKSEQMAXCOUNT_INVALID    : YAPI_INVALID_UINT,

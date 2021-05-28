@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_quadraturedecoder.js 44023 2021-02-25 09:23:38Z web $
+ *  $Id: yocto_quadraturedecoder.js 45292 2021-05-25 23:27:54Z mvuilleu $
  *
  *  Implements the high-level API for QuadratureDecoder functions
  *
@@ -44,10 +44,9 @@ if(typeof YAPI == "undefined") { if(typeof yAPI != "undefined") window["YAPI"]=y
 //--- (YQuadratureDecoder definitions)
 var Y_DECODING_OFF                  = 0;
 var Y_DECODING_ON                   = 1;
-var Y_DECODING_DIV2                 = 2;
-var Y_DECODING_DIV4                 = 3;
 var Y_DECODING_INVALID              = -1;
 var Y_SPEED_INVALID                 = YAPI_INVALID_DOUBLE;
+var Y_EDGESPERCYCLE_INVALID         = YAPI_INVALID_UINT;
 //--- (end of YQuadratureDecoder definitions)
 
 //--- (YQuadratureDecoder class start)
@@ -71,7 +70,8 @@ var YQuadratureDecoder; // definition below
         this._className = 'QuadratureDecoder';
 
         this._speed                          = Y_SPEED_INVALID;            // MeasureVal
-        this._decoding                       = Y_DECODING_INVALID;         // OffOnDiv
+        this._decoding                       = Y_DECODING_INVALID;         // OnOff
+        this._edgesPerCycle                  = Y_EDGESPERCYCLE_INVALID;    // UInt31
         //--- (end of YQuadratureDecoder constructor)
     }
 
@@ -85,6 +85,9 @@ var YQuadratureDecoder; // definition below
             return 1;
         case "decoding":
             this._decoding = parseInt(val);
+            return 1;
+        case "edgesPerCycle":
+            this._edgesPerCycle = parseInt(val);
             return 1;
         }
         return _super._parseAttr.call(this, name, val, _super._super);
@@ -107,9 +110,9 @@ var YQuadratureDecoder; // definition below
     }
 
     /**
-     * Returns the increments frequency, in Hz.
+     * Returns the cycle frequency, in Hz.
      *
-     * @return a floating point number corresponding to the increments frequency, in Hz
+     * @return a floating point number corresponding to the cycle frequency, in Hz
      *
      * On failure, throws an exception or returns YQuadratureDecoder.SPEED_INVALID.
      */
@@ -126,13 +129,13 @@ var YQuadratureDecoder; // definition below
     }
 
     /**
-     * Gets the increments frequency, in Hz.
+     * Gets the cycle frequency, in Hz.
      *
      * @param callback : callback function that is invoked when the result is known.
      *         The callback function receives three arguments:
      *         - the user-specific context object
      *         - the YQuadratureDecoder object that invoked the callback
-     *         - the result:a floating point number corresponding to the increments frequency, in Hz
+     *         - the result:a floating point number corresponding to the cycle frequency, in Hz
      * @param context : user-specific object that is passed as-is to the callback function
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
@@ -160,15 +163,14 @@ var YQuadratureDecoder; // definition below
     /**
      * Returns the current activation state of the quadrature decoder.
      *
-     * @return a value among YQuadratureDecoder.DECODING_OFF, YQuadratureDecoder.DECODING_ON,
-     * YQuadratureDecoder.DECODING_DIV2 and YQuadratureDecoder.DECODING_DIV4 corresponding to the current
-     * activation state of the quadrature decoder
+     * @return either YQuadratureDecoder.DECODING_OFF or YQuadratureDecoder.DECODING_ON, according to the
+     * current activation state of the quadrature decoder
      *
      * On failure, throws an exception or returns YQuadratureDecoder.DECODING_INVALID.
      */
     function YQuadratureDecoder_get_decoding()
     {
-        var res;                    // enumOFFONDIV;
+        var res;                    // enumONOFF;
         if (this._cacheExpiration <= YAPI.GetTickCount()) {
             if (this.load(YAPI.defaultCacheValidity) != YAPI_SUCCESS) {
                 return Y_DECODING_INVALID;
@@ -185,9 +187,8 @@ var YQuadratureDecoder; // definition below
      *         The callback function receives three arguments:
      *         - the user-specific context object
      *         - the YQuadratureDecoder object that invoked the callback
-     *         - the result:a value among YQuadratureDecoder.DECODING_OFF, YQuadratureDecoder.DECODING_ON,
-     *         YQuadratureDecoder.DECODING_DIV2 and YQuadratureDecoder.DECODING_DIV4 corresponding to the current
-     *         activation state of the quadrature decoder
+     *         - the result:either YQuadratureDecoder.DECODING_OFF or YQuadratureDecoder.DECODING_ON, according to
+     *         the current activation state of the quadrature decoder
      * @param context : user-specific object that is passed as-is to the callback function
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
@@ -196,7 +197,7 @@ var YQuadratureDecoder; // definition below
      */
     function YQuadratureDecoder_get_decoding_async(callback,context)
     {
-        var res;                    // enumOFFONDIV;
+        var res;                    // enumONOFF;
         var loadcb;                 // func;
         loadcb = function(ctx,obj,res) {
             if (res != YAPI_SUCCESS) {
@@ -217,9 +218,8 @@ var YQuadratureDecoder; // definition below
      * Remember to call the saveToFlash()
      * method of the module if the modification must be kept.
      *
-     * @param newval : a value among YQuadratureDecoder.DECODING_OFF, YQuadratureDecoder.DECODING_ON,
-     * YQuadratureDecoder.DECODING_DIV2 and YQuadratureDecoder.DECODING_DIV4 corresponding to the
-     * activation state of the quadrature decoder
+     * @param newval : either YQuadratureDecoder.DECODING_OFF or YQuadratureDecoder.DECODING_ON, according
+     * to the activation state of the quadrature decoder
      *
      * @return YAPI.SUCCESS if the call succeeds.
      *
@@ -229,6 +229,74 @@ var YQuadratureDecoder; // definition below
     {   var rest_val;
         rest_val = String(newval);
         return this._setAttr('decoding',rest_val);
+    }
+
+    /**
+     * Returns the edge count per full cycle configuration setting.
+     *
+     * @return an integer corresponding to the edge count per full cycle configuration setting
+     *
+     * On failure, throws an exception or returns YQuadratureDecoder.EDGESPERCYCLE_INVALID.
+     */
+    function YQuadratureDecoder_get_edgesPerCycle()
+    {
+        var res;                    // int;
+        if (this._cacheExpiration <= YAPI.GetTickCount()) {
+            if (this.load(YAPI.defaultCacheValidity) != YAPI_SUCCESS) {
+                return Y_EDGESPERCYCLE_INVALID;
+            }
+        }
+        res = this._edgesPerCycle;
+        return res;
+    }
+
+    /**
+     * Gets the edge count per full cycle configuration setting.
+     *
+     * @param callback : callback function that is invoked when the result is known.
+     *         The callback function receives three arguments:
+     *         - the user-specific context object
+     *         - the YQuadratureDecoder object that invoked the callback
+     *         - the result:an integer corresponding to the edge count per full cycle configuration setting
+     * @param context : user-specific object that is passed as-is to the callback function
+     *
+     * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
+     *
+     * On failure, throws an exception or returns YQuadratureDecoder.EDGESPERCYCLE_INVALID.
+     */
+    function YQuadratureDecoder_get_edgesPerCycle_async(callback,context)
+    {
+        var res;                    // int;
+        var loadcb;                 // func;
+        loadcb = function(ctx,obj,res) {
+            if (res != YAPI_SUCCESS) {
+                callback(context, obj, Y_EDGESPERCYCLE_INVALID);
+            } else {
+                callback(context, obj, obj._edgesPerCycle);
+            }
+        };
+        if (this._cacheExpiration <= YAPI.GetTickCount()) {
+            this.load_async(YAPI.defaultCacheValidity,loadcb,null);
+        } else {
+            loadcb(null, this, YAPI_SUCCESS);
+        }
+    }
+
+    /**
+     * Changes the edge count per full cycle configuration setting.
+     * Remember to call the saveToFlash()
+     * method of the module if the modification must be kept.
+     *
+     * @param newval : an integer corresponding to the edge count per full cycle configuration setting
+     *
+     * @return YAPI.SUCCESS if the call succeeds.
+     *
+     * On failure, throws an exception or returns a negative error code.
+     */
+    function YQuadratureDecoder_set_edgesPerCycle(newval)
+    {   var rest_val;
+        rest_val = String(newval);
+        return this._setAttr('edgesPerCycle',rest_val);
     }
 
     /**
@@ -312,9 +380,8 @@ var YQuadratureDecoder; // definition below
         SPEED_INVALID               : YAPI_INVALID_DOUBLE,
         DECODING_OFF                : 0,
         DECODING_ON                 : 1,
-        DECODING_DIV2               : 2,
-        DECODING_DIV4               : 3,
-        DECODING_INVALID            : -1
+        DECODING_INVALID            : -1,
+        EDGESPERCYCLE_INVALID       : YAPI_INVALID_UINT
     }, {
         // Class methods
         FindQuadratureDecoder       : YQuadratureDecoder_FindQuadratureDecoder,
@@ -333,6 +400,12 @@ var YQuadratureDecoder; // definition below
         decoding_async              : YQuadratureDecoder_get_decoding_async,
         set_decoding                : YQuadratureDecoder_set_decoding,
         setDecoding                 : YQuadratureDecoder_set_decoding,
+        get_edgesPerCycle           : YQuadratureDecoder_get_edgesPerCycle,
+        edgesPerCycle               : YQuadratureDecoder_get_edgesPerCycle,
+        get_edgesPerCycle_async     : YQuadratureDecoder_get_edgesPerCycle_async,
+        edgesPerCycle_async         : YQuadratureDecoder_get_edgesPerCycle_async,
+        set_edgesPerCycle           : YQuadratureDecoder_set_edgesPerCycle,
+        setEdgesPerCycle            : YQuadratureDecoder_set_edgesPerCycle,
         nextQuadratureDecoder       : YQuadratureDecoder_nextQuadratureDecoder,
         _parseAttr                  : YQuadratureDecoder_parseAttr
     });

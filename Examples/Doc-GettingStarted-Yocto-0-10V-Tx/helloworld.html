@@ -15,7 +15,7 @@
  var vout2;
 
  function refresh()
- { 
+ {
      var serial = document.getElementById('serial').value;
      if(serial == '') {
          // Detect any conected module suitable for the demo
@@ -32,19 +32,19 @@
      if(vout1.isOnline()) {
          document.getElementById('msg').value = '';
      } else {
-         document.getElementById('msg').value = 'Module not connected';         
+         document.getElementById('msg').value = 'Module not connected';
          setTimeout('refresh()',500);
      }
  }
 
  function updateVoltage(voltage)
- { 
-     vout1.set_dutyCycle(voltage);      // immediate change
-     vout2.dutyCycleMove(voltage,3000); // smooth change
+ {
+     vout1.set_currentVoltage(voltage);      // immediate change
+     vout2.voltageMove(voltage,3000); // smooth change
  }
  -->
  </SCRIPT>
-</HEAD>  
+</HEAD>
 <BODY onload='refresh();'>
  Module to use: <input id='serial'>
  <input id='msg' style='color:red;border:none;' readonly><br>
@@ -54,4 +54,4 @@
  <a href='javascript:updateVoltage(7.5);'>Change output voltage to 7.5 V</a><br>
  <a href='javascript:updateVoltage(10.0);'>Change output voltage to 10.0 V</a><br>
 </BODY>
-</HTML> 
+</HTML>
