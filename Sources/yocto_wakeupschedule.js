@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_wakeupschedule.js 43619 2021-01-29 09:14:45Z mvuilleu $
+ *  $Id: yocto_wakeupschedule.js 45843 2021-08-04 07:51:59Z mvuilleu $
  *
  *  Implements the high-level API for WakeUpSchedule functions
  *
@@ -54,7 +54,7 @@ var Y_NEXTOCCURENCE_INVALID         = YAPI_INVALID_LONG;
 //--- (YWakeUpSchedule class start)
 /**
  * YWakeUpSchedule Class: wake up schedule control interface, available for instance in the
- * YoctoHub-GSM-3G-EU, the YoctoHub-GSM-3G-NA, the YoctoHub-GSM-4G or the YoctoHub-Wireless-n
+ * YoctoHub-GSM-2G, the YoctoHub-GSM-3G-EU, the YoctoHub-GSM-4G or the YoctoHub-Wireless-n
  *
  * The YWakeUpSchedule class implements a wake up condition. The wake up time is
  * specified as a set of months and/or days and/or hours and/or minutes when the
@@ -595,7 +595,7 @@ var YWakeUpSchedule; // definition below
      * call registerHub() at application initialization time.
      *
      * @param func : a string that uniquely characterizes the wake up schedule, for instance
-     *         YHUBGSM3.wakeUpSchedule1.
+     *         YHUBGSM1.wakeUpSchedule1.
      *
      * @return a YWakeUpSchedule object allowing you to drive the wake up schedule.
      */
@@ -767,7 +767,7 @@ var YWakeUpSchedule; // definition below
  * call registerHub() at application initialization time.
  *
  * @param func : a string that uniquely characterizes the wake up schedule, for instance
- *         YHUBGSM3.wakeUpSchedule1.
+ *         YHUBGSM1.wakeUpSchedule1.
  *
  * @return a YWakeUpSchedule object allowing you to drive the wake up schedule.
  */

@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_quadraturedecoder.js 45292 2021-05-25 23:27:54Z mvuilleu $
+ *  $Id: yocto_quadraturedecoder.js 45843 2021-08-04 07:51:59Z mvuilleu $
  *
  *  Implements the high-level API for QuadratureDecoder functions
  *
@@ -51,7 +51,8 @@ var Y_EDGESPERCYCLE_INVALID         = YAPI_INVALID_UINT;
 
 //--- (YQuadratureDecoder class start)
 /**
- * YQuadratureDecoder Class: quadrature decoder control interface, available for instance in the Yocto-PWM-Rx
+ * YQuadratureDecoder Class: quadrature decoder control interface, available for instance in the
+ * Yocto-MaxiKnob or the Yocto-PWM-Rx
  *
  * The YQuadratureDecoder class allows you to read and configure Yoctopuce quadrature decoders.
  * It inherits from YSensor class the core functions to read measurements,
@@ -323,7 +324,7 @@ var YQuadratureDecoder; // definition below
      * call registerHub() at application initialization time.
      *
      * @param func : a string that uniquely characterizes the quadrature decoder, for instance
-     *         YPWMRX01.quadratureDecoder.
+     *         YMXBTN01.quadratureDecoder1.
      *
      * @return a YQuadratureDecoder object allowing you to drive the quadrature decoder.
      */
@@ -438,7 +439,7 @@ var YQuadratureDecoder; // definition below
  * call registerHub() at application initialization time.
  *
  * @param func : a string that uniquely characterizes the quadrature decoder, for instance
- *         YPWMRX01.quadratureDecoder.
+ *         YMXBTN01.quadratureDecoder1.
  *
  * @return a YQuadratureDecoder object allowing you to drive the quadrature decoder.
  */

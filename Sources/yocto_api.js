@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_api.js 45292 2021-05-25 23:27:54Z mvuilleu $
+ * $Id: yocto_api.js 46595 2021-09-24 16:42:28Z mvuilleu $
  *
  * High-level programming interface, common to all modules
  *
@@ -54,6 +54,7 @@ var YAPI_DOUBLE_ACCES               = -11;     // you have two process that try 
 var YAPI_UNAUTHORIZED               = -12;     // unauthorized access to password-protected device
 var YAPI_RTC_NOT_READY              = -13;     // real-time clock has not been initialized (or time was lost)
 var YAPI_FILE_NOT_FOUND             = -14;     // the file is not found
+var YAPI_SSL_ERROR                  = -15;     // Error reported by mbedSSL
 
 var YAPI_INVALID_INT                = 0x7fffffff;
 var YAPI_INVALID_UINT               = -1;
@@ -2677,7 +2678,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
      */
     function YAPI_GetAPIVersion()
     {
-        return "1.10.45343";
+        return "1.10.47582";
     }
 
     /**
@@ -2834,7 +2835,8 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
     }
 
     /**
-     * Setup the Yoctopuce library to use modules connected on a given machine. The
+     * Setup the Yoctopuce library to use modules connected on a given machine. Idealy this
+     * call will be made once at the begining of your application.  The
      * parameter will determine how the API will work. Use the following values:
      *
      * <b>usb</b>: When the usb keyword is used, the API will work with
@@ -2867,7 +2869,9 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
      *
      * http://username:password@address:port
      *
-     * You can call <i>RegisterHub</i> several times to connect to several machines.
+     * You can call <i>RegisterHub</i> several times to connect to several machines. On
+     * the other hand, it is useless and even counterproductive to call <i>RegisterHub</i>
+     * with to same address multiple times during the life of the application.
      *
      * @param url : a string containing either "usb","callback" or the
      *         root URL of the hub to monitor
@@ -3651,6 +3655,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
     _YAPI.prototype.UNAUTHORIZED          = -12;     // unauthorized access to password-protected device
     _YAPI.prototype.RTC_NOT_READY         = -13;     // real-time clock has not been initialized (or time was lost)
     _YAPI.prototype.FILE_NOT_FOUND        = -14;     // the file is not found
+    _YAPI.prototype.SSL_ERROR             = -15;     // Error reported by mbedSSL
 //--- (end of generated code: YFunction return codes)
 
     _YAPI.prototype.INVALID_INT           = YAPI_INVALID_INT;
@@ -5509,16 +5514,26 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
         if (this._isAvg) {
             while (idx + 3 < udat.length) {
                 dat.length = 0;
-                dat.push(this._decodeVal(udat[idx + 2] + (((udat[idx + 3]) << (16)))));
-                dat.push(this._decodeAvg(udat[idx] + (((((udat[idx + 1]) ^ (0x8000))) << (16))), 1));
-                dat.push(this._decodeVal(udat[idx + 4] + (((udat[idx + 5]) << (16)))));
+                if ((udat[idx] == 65535) && (udat[idx + 1] == 65535)) {
+                    dat.push(NaN);
+                    dat.push(NaN);
+                    dat.push(NaN);
+                } else {
+                    dat.push(this._decodeVal(udat[idx + 2] + (((udat[idx + 3]) << (16)))));
+                    dat.push(this._decodeAvg(udat[idx] + (((((udat[idx + 1]) ^ (0x8000))) << (16))), 1));
+                    dat.push(this._decodeVal(udat[idx + 4] + (((udat[idx + 5]) << (16)))));
+                }
                 idx = idx + 6;
                 this._values.push(dat.slice());
             }
         } else {
             while (idx + 1 < udat.length) {
                 dat.length = 0;
-                dat.push(this._decodeAvg(udat[idx] + (((((udat[idx + 1]) ^ (0x8000))) << (16))), 1));
+                if ((udat[idx] == 65535) && (udat[idx + 1] == 65535)) {
+                    dat.push(NaN);
+                } else {
+                    dat.push(this._decodeAvg(udat[idx] + (((((udat[idx + 1]) ^ (0x8000))) << (16))), 1));
+                }
                 this._values.push(dat.slice());
                 idx = idx + 2;
             }
@@ -6124,6 +6139,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
         var tim;                    // float;
         var itv;                    // float;
         var fitv;                   // float;
+        var avgv;                   // float;
         var end_;                   // float;
         var nCols;                  // int;
         var minCol;                 // int;
@@ -6175,8 +6191,9 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
             } else {
                 end_ = tim + itv;
             }
-            if ((end_ > this._startTimeMs) && ((this._endTimeMs == 0) || (tim < this._endTimeMs))) {
-                this._measures.push(new YMeasure(tim / 1000, end_ / 1000, dataRows[ii][minCol], dataRows[ii][avgCol], dataRows[ii][maxCol]));
+            avgv = dataRows[ii][avgCol];
+            if ((end_ > this._startTimeMs) && ((this._endTimeMs == 0) || (tim < this._endTimeMs)) && !(isNaN(avgv))) {
+                this._measures.push(new YMeasure(tim / 1000, end_ / 1000, dataRows[ii][minCol], avgv, dataRows[ii][maxCol]));
             }
             tim = end_;
         }
@@ -8925,7 +8942,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
      * call registerHub() at application initialization time.
      *
      * @param func : a string that uniquely characterizes the data logger, for instance
-     *         RX420MA1.dataLogger.
+     *         LIGHTMK4.dataLogger.
      *
      * @return a YDataLogger object allowing you to drive the data logger.
      */
@@ -11620,7 +11637,8 @@ function yEnableExceptions()
 }
 
 /**
- * Setup the Yoctopuce library to use modules connected on a given machine. The
+ * Setup the Yoctopuce library to use modules connected on a given machine. Idealy this
+ * call will be made once at the begining of your application.  The
  * parameter will determine how the API will work. Use the following values:
  *
  * <b>usb</b>: When the usb keyword is used, the API will work with
@@ -11653,7 +11671,9 @@ function yEnableExceptions()
  *
  * http://username:password@address:port
  *
- * You can call <i>RegisterHub</i> several times to connect to several machines.
+ * You can call <i>RegisterHub</i> several times to connect to several machines. On
+ * the other hand, it is useless and even counterproductive to call <i>RegisterHub</i>
+ * with to same address multiple times during the life of the application.
  *
  * @param url : a string containing either "usb","callback" or the
  *         root URL of the hub to monitor
@@ -12016,7 +12036,7 @@ function yFirstModule()
  * call registerHub() at application initialization time.
  *
  * @param func : a string that uniquely characterizes the data logger, for instance
- *         RX420MA1.dataLogger.
+ *         LIGHTMK4.dataLogger.
  *
  * @return a YDataLogger object allowing you to drive the data logger.
  */
