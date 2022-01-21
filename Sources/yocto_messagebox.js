@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_messagebox.js 43619 2021-01-29 09:14:45Z mvuilleu $
+ * $Id: yocto_messagebox.js 48014 2022-01-12 08:06:41Z seb $
  *
  * Implements the high-level API for MessageBox functions
  *
@@ -770,7 +770,7 @@ var YSms; // definition below
                     n = n - 1;
                     v2 = 4 * (res).charCodeAt(n) + v1;
                     if ((expasc).charCodeAt(i-3) == 45) {
-                        v2 += 128;
+                        v2 = v2 + 128;
                     }
                     res[n] = v2;
                 }
