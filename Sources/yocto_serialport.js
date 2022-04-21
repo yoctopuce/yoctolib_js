@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_serialport.js 43619 2021-01-29 09:14:45Z mvuilleu $
+ * $Id: yocto_serialport.js 48954 2022-03-14 09:55:13Z seb $
  *
  * Implements the high-level API for SerialPort functions
  *
@@ -1793,6 +1793,23 @@ var YSerialPort; // definition below
     }
 
     /**
+     * Emits a BREAK condition on the serial interface. When the specified
+     * duration is 0, the BREAK signal will be exactly one character wide.
+     * When the duration is between 1 and 100, the BREAK condition will
+     * be hold for the specified number of milliseconds.
+     *
+     * @param duration : 0 for a standard BREAK, or duration between 1 and 100 ms
+     *
+     * @return YAPI.SUCCESS if the call succeeds.
+     *
+     * On failure, throws an exception or returns a negative error code.
+     */
+    function YSerialPort_sendBreak(duration)
+    {
+        return this.sendCommand("B"+String(Math.round(duration)));
+    }
+
+    /**
      * Manually sets the state of the RTS line. This function has no effect when
      * hardware handshake is enabled, as the RTS line is driven automatically.
      *
@@ -2587,6 +2604,7 @@ var YSerialPort; // definition below
         readBin                     : YSerialPort_readBin,
         readArray                   : YSerialPort_readArray,
         readHex                     : YSerialPort_readHex,
+        sendBreak                   : YSerialPort_sendBreak,
         set_RTS                     : YSerialPort_set_RTS,
         setRTS                      : YSerialPort_set_RTS,
         get_CTS                     : YSerialPort_get_CTS,

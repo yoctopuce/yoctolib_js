@@ -42,6 +42,9 @@ if(typeof YAPI == "undefined") { if(typeof yAPI != "undefined") window["YAPI"]=y
 //--- (YInputChain return codes)
 //--- (end of YInputChain return codes)
 //--- (YInputChain definitions)
+var Y_LOOPBACKTEST_OFF              = 0;
+var Y_LOOPBACKTEST_ON               = 1;
+var Y_LOOPBACKTEST_INVALID          = -1;
 var Y_EXPECTEDNODES_INVALID         = YAPI_INVALID_UINT;
 var Y_DETECTEDNODES_INVALID         = YAPI_INVALID_UINT;
 var Y_REFRESHRATE_INVALID           = YAPI_INVALID_UINT;
@@ -82,6 +85,7 @@ var YInputChain; // definition below
 
         this._expectedNodes                  = Y_EXPECTEDNODES_INVALID;    // UInt31
         this._detectedNodes                  = Y_DETECTEDNODES_INVALID;    // UInt31
+        this._loopbackTest                   = Y_LOOPBACKTEST_INVALID;     // OnOff
         this._refreshRate                    = Y_REFRESHRATE_INVALID;      // UInt31
         this._bitChain1                      = Y_BITCHAIN1_INVALID;        // Text
         this._bitChain2                      = Y_BITCHAIN2_INVALID;        // Text
@@ -110,6 +114,9 @@ var YInputChain; // definition below
             return 1;
         case "detectedNodes":
             this._detectedNodes = parseInt(val);
+            return 1;
+        case "loopbackTest":
+            this._loopbackTest = parseInt(val);
             return 1;
         case "refreshRate":
             this._refreshRate = parseInt(val);
@@ -262,6 +269,81 @@ var YInputChain; // definition below
         } else {
             loadcb(null, this, YAPI_SUCCESS);
         }
+    }
+
+    /**
+     * Returns the activation state of the exhaustive chain connectivity test.
+     * The connectivity test requires a cable connecting the end of the chain
+     * to the loopback test connector.
+     *
+     * @return either YInputChain.LOOPBACKTEST_OFF or YInputChain.LOOPBACKTEST_ON, according to the
+     * activation state of the exhaustive chain connectivity test
+     *
+     * On failure, throws an exception or returns YInputChain.LOOPBACKTEST_INVALID.
+     */
+    function YInputChain_get_loopbackTest()
+    {
+        var res;                    // enumONOFF;
+        if (this._cacheExpiration <= YAPI.GetTickCount()) {
+            if (this.load(YAPI.defaultCacheValidity) != YAPI_SUCCESS) {
+                return Y_LOOPBACKTEST_INVALID;
+            }
+        }
+        res = this._loopbackTest;
+        return res;
+    }
+
+    /**
+     * Gets the activation state of the exhaustive chain connectivity test.
+     * The connectivity test requires a cable connecting the end of the chain
+     * to the loopback test connector.
+     *
+     * @param callback : callback function that is invoked when the result is known.
+     *         The callback function receives three arguments:
+     *         - the user-specific context object
+     *         - the YInputChain object that invoked the callback
+     *         - the result:either YInputChain.LOOPBACKTEST_OFF or YInputChain.LOOPBACKTEST_ON, according to the
+     *         activation state of the exhaustive chain connectivity test
+     * @param context : user-specific object that is passed as-is to the callback function
+     *
+     * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
+     *
+     * On failure, throws an exception or returns YInputChain.LOOPBACKTEST_INVALID.
+     */
+    function YInputChain_get_loopbackTest_async(callback,context)
+    {
+        var res;                    // enumONOFF;
+        var loadcb;                 // func;
+        loadcb = function(ctx,obj,res) {
+            if (res != YAPI_SUCCESS) {
+                callback(context, obj, Y_LOOPBACKTEST_INVALID);
+            } else {
+                callback(context, obj, obj._loopbackTest);
+            }
+        };
+        if (this._cacheExpiration <= YAPI.GetTickCount()) {
+            this.load_async(YAPI.defaultCacheValidity,loadcb,null);
+        } else {
+            loadcb(null, this, YAPI_SUCCESS);
+        }
+    }
+
+    /**
+     * Changes the activation state of the exhaustive chain connectivity test.
+     * The connectivity test requires a cable connecting the end of the chain
+     * to the loopback test connector.
+     *
+     * @param newval : either YInputChain.LOOPBACKTEST_OFF or YInputChain.LOOPBACKTEST_ON, according to
+     * the activation state of the exhaustive chain connectivity test
+     *
+     * @return YAPI.SUCCESS if the call succeeds.
+     *
+     * On failure, throws an exception or returns a negative error code.
+     */
+    function YInputChain_set_loopbackTest(newval)
+    {   var rest_val;
+        rest_val = String(newval);
+        return this._setAttr('loopbackTest',rest_val);
     }
 
     /**
@@ -1137,6 +1219,9 @@ var YInputChain; // definition below
         // Constants
         EXPECTEDNODES_INVALID       : YAPI_INVALID_UINT,
         DETECTEDNODES_INVALID       : YAPI_INVALID_UINT,
+        LOOPBACKTEST_OFF            : 0,
+        LOOPBACKTEST_ON             : 1,
+        LOOPBACKTEST_INVALID        : -1,
         REFRESHRATE_INVALID         : YAPI_INVALID_UINT,
         BITCHAIN1_INVALID           : YAPI_INVALID_STRING,
         BITCHAIN2_INVALID           : YAPI_INVALID_STRING,
@@ -1163,6 +1248,12 @@ var YInputChain; // definition below
         detectedNodes               : YInputChain_get_detectedNodes,
         get_detectedNodes_async     : YInputChain_get_detectedNodes_async,
         detectedNodes_async         : YInputChain_get_detectedNodes_async,
+        get_loopbackTest            : YInputChain_get_loopbackTest,
+        loopbackTest                : YInputChain_get_loopbackTest,
+        get_loopbackTest_async      : YInputChain_get_loopbackTest_async,
+        loopbackTest_async          : YInputChain_get_loopbackTest_async,
+        set_loopbackTest            : YInputChain_set_loopbackTest,
+        setLoopbackTest             : YInputChain_set_loopbackTest,
         get_refreshRate             : YInputChain_get_refreshRate,
         refreshRate                 : YInputChain_get_refreshRate,
         get_refreshRate_async       : YInputChain_get_refreshRate_async,

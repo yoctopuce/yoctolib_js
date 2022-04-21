@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_multisenscontroller.js 43619 2021-01-29 09:14:45Z mvuilleu $
+ *  $Id: yocto_multisenscontroller.js 49501 2022-04-21 07:09:25Z mvuilleu $
  *
  *  Implements the high-level API for MultiSensController functions
  *
@@ -47,6 +47,7 @@ var Y_MAINTENANCEMODE_TRUE          = 1;
 var Y_MAINTENANCEMODE_INVALID       = -1;
 var Y_NSENSORS_INVALID              = YAPI_INVALID_UINT;
 var Y_MAXSENSORS_INVALID            = YAPI_INVALID_UINT;
+var Y_LASTADDRESSDETECTED_INVALID   = YAPI_INVALID_UINT;
 var Y_COMMAND_INVALID               = YAPI_INVALID_STRING;
 //--- (end of YMultiSensController definitions)
 
@@ -73,6 +74,7 @@ var YMultiSensController; // definition below
         this._nSensors                       = Y_NSENSORS_INVALID;         // UInt31
         this._maxSensors                     = Y_MAXSENSORS_INVALID;       // UInt31
         this._maintenanceMode                = Y_MAINTENANCEMODE_INVALID;  // Bool
+        this._lastAddressDetected            = Y_LASTADDRESSDETECTED_INVALID; // UInt31
         this._command                        = Y_COMMAND_INVALID;          // Text
         //--- (end of YMultiSensController constructor)
     }
@@ -90,6 +92,9 @@ var YMultiSensController; // definition below
             return 1;
         case "maintenanceMode":
             this._maintenanceMode = parseInt(val);
+            return 1;
+        case "lastAddressDetected":
+            this._lastAddressDetected = parseInt(val);
             return 1;
         case "command":
             this._command = val;
@@ -154,7 +159,7 @@ var YMultiSensController; // definition below
      * saveToFlash() method of the module if the
      * modification must be kept. It is recommended to restart the
      * device with  module->reboot() after modifying
-     * (and saving) this settings
+     * (and saving) this settings.
      *
      * @param newval : an integer corresponding to the number of sensors to poll
      *
@@ -291,6 +296,63 @@ var YMultiSensController; // definition below
         return this._setAttr('maintenanceMode',rest_val);
     }
 
+    /**
+     * Returns the I2C address of the most recently detected sensor. This method can
+     * be used to in case of I2C communication error to determine what is the
+     * last sensor that can be reached, or after a call to setupAddress
+     * to make sure that the address change was properly processed.
+     *
+     * @return an integer corresponding to the I2C address of the most recently detected sensor
+     *
+     * On failure, throws an exception or returns YMultiSensController.LASTADDRESSDETECTED_INVALID.
+     */
+    function YMultiSensController_get_lastAddressDetected()
+    {
+        var res;                    // int;
+        if (this._cacheExpiration <= YAPI.GetTickCount()) {
+            if (this.load(YAPI.defaultCacheValidity) != YAPI_SUCCESS) {
+                return Y_LASTADDRESSDETECTED_INVALID;
+            }
+        }
+        res = this._lastAddressDetected;
+        return res;
+    }
+
+    /**
+     * Gets the I2C address of the most recently detected sensor. This method can
+     * be used to in case of I2C communication error to determine what is the
+     * last sensor that can be reached, or after a call to setupAddress
+     * to make sure that the address change was properly processed.
+     *
+     * @param callback : callback function that is invoked when the result is known.
+     *         The callback function receives three arguments:
+     *         - the user-specific context object
+     *         - the YMultiSensController object that invoked the callback
+     *         - the result:an integer corresponding to the I2C address of the most recently detected sensor
+     * @param context : user-specific object that is passed as-is to the callback function
+     *
+     * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
+     *
+     * On failure, throws an exception or returns YMultiSensController.LASTADDRESSDETECTED_INVALID.
+     */
+    function YMultiSensController_get_lastAddressDetected_async(callback,context)
+    {
+        var res;                    // int;
+        var loadcb;                 // func;
+        loadcb = function(ctx,obj,res) {
+            if (res != YAPI_SUCCESS) {
+                callback(context, obj, Y_LASTADDRESSDETECTED_INVALID);
+            } else {
+                callback(context, obj, obj._lastAddressDetected);
+            }
+        };
+        if (this._cacheExpiration <= YAPI.GetTickCount()) {
+            this.load_async(YAPI.defaultCacheValidity,loadcb,null);
+        } else {
+            loadcb(null, this, YAPI_SUCCESS);
+        }
+    }
+
     function YMultiSensController_get_command()
     {
         var res;                    // string;
@@ -381,9 +443,10 @@ var YMultiSensController; // definition below
      * Configures the I2C address of the only sensor connected to the device.
      * It is recommended to put the the device in maintenance mode before
      * changing sensor addresses.  This method is only intended to work with a single
-     * sensor connected to the device, if several sensors are connected, the result
+     * sensor connected to the device. If several sensors are connected, the result
      * is unpredictable.
-     * Note that the device is probably expecting to find a string of sensors with specific
+     *
+     * Note that the device is expecting to find a sensor or a string of sensors with specific
      * addresses. Check the device documentation to find out which addresses should be used.
      *
      * @param addr : new address of the connected sensor
@@ -394,8 +457,42 @@ var YMultiSensController; // definition below
     function YMultiSensController_setupAddress(addr)
     {
         var cmd;                    // str;
+        var res;                    // int;
         cmd = "A"+String(Math.round(addr));
-        return this.set_command(cmd);
+        res = this.set_command(cmd);
+        if (!(res == YAPI_SUCCESS)) {
+            return this._throw(YAPI_IO_ERROR,"unable to trigger address change",YAPI_IO_ERROR);
+        }
+        YAPI.Sleep(1500);
+        res = this.get_lastAddressDetected();
+        if (!(res > 0)) {
+            return this._throw(YAPI_IO_ERROR,"IR sensor not found",YAPI_IO_ERROR);
+        }
+        if (!(res == addr)) {
+            return this._throw(YAPI_IO_ERROR,"address change failed",YAPI_IO_ERROR);
+        }
+        return YAPI_SUCCESS;
+    }
+
+    /**
+     * Triggers the I2C address detection procedure for the only sensor connected to the device.
+     * This method is only intended to work with a single sensor connected to the device.
+     * If several sensors are connected, the result is unpredictable.
+     *
+     * @return the I2C address of the detected sensor, or 0 if none is found
+     *
+     * On failure, throws an exception or returns a negative error code.
+     */
+    function YMultiSensController_get_sensorAddress()
+    {
+        var res;                    // int;
+        res = this.set_command("a");
+        if (!(res == YAPI_SUCCESS)) {
+            return this._throw(YAPI_IO_ERROR,"unable to trigger address detection",res);
+        }
+        YAPI.Sleep(1000);
+        res = this.get_lastAddressDetected();
+        return res;
     }
 
     /**
@@ -442,6 +539,7 @@ var YMultiSensController; // definition below
         MAINTENANCEMODE_FALSE       : 0,
         MAINTENANCEMODE_TRUE        : 1,
         MAINTENANCEMODE_INVALID     : -1,
+        LASTADDRESSDETECTED_INVALID : YAPI_INVALID_UINT,
         COMMAND_INVALID             : YAPI_INVALID_STRING
     }, {
         // Class methods
@@ -465,6 +563,10 @@ var YMultiSensController; // definition below
         maintenanceMode_async       : YMultiSensController_get_maintenanceMode_async,
         set_maintenanceMode         : YMultiSensController_set_maintenanceMode,
         setMaintenanceMode          : YMultiSensController_set_maintenanceMode,
+        get_lastAddressDetected     : YMultiSensController_get_lastAddressDetected,
+        lastAddressDetected         : YMultiSensController_get_lastAddressDetected,
+        get_lastAddressDetected_async : YMultiSensController_get_lastAddressDetected_async,
+        lastAddressDetected_async   : YMultiSensController_get_lastAddressDetected_async,
         get_command                 : YMultiSensController_get_command,
         command                     : YMultiSensController_get_command,
         get_command_async           : YMultiSensController_get_command_async,
@@ -472,6 +574,8 @@ var YMultiSensController; // definition below
         set_command                 : YMultiSensController_set_command,
         setCommand                  : YMultiSensController_set_command,
         setupAddress                : YMultiSensController_setupAddress,
+        get_sensorAddress           : YMultiSensController_get_sensorAddress,
+        sensorAddress               : YMultiSensController_get_sensorAddress,
         nextMultiSensController     : YMultiSensController_nextMultiSensController,
         _parseAttr                  : YMultiSensController_parseAttr
     });

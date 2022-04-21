@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_network.js 48183 2022-01-20 10:26:11Z mvuilleu $
+ *  $Id: yocto_network.js 49385 2022-04-06 00:49:27Z mvuilleu $
  *
  *  Implements the high-level API for Network functions
  *
@@ -73,6 +73,7 @@ var Y_MACADDRESS_INVALID            = YAPI_INVALID_STRING;
 var Y_IPADDRESS_INVALID             = YAPI_INVALID_STRING;
 var Y_SUBNETMASK_INVALID            = YAPI_INVALID_STRING;
 var Y_ROUTER_INVALID                = YAPI_INVALID_STRING;
+var Y_CURRENTDNS_INVALID            = YAPI_INVALID_STRING;
 var Y_IPCONFIG_INVALID              = YAPI_INVALID_STRING;
 var Y_PRIMARYDNS_INVALID            = YAPI_INVALID_STRING;
 var Y_SECONDARYDNS_INVALID          = YAPI_INVALID_STRING;
@@ -94,7 +95,7 @@ var Y_POECURRENT_INVALID            = YAPI_INVALID_UINT;
 //--- (YNetwork class start)
 /**
  * YNetwork Class: network interface control interface, available for instance in the
- * YoctoHub-Ethernet, the YoctoHub-GSM-4G, the YoctoHub-Wireless-g or the YoctoHub-Wireless-n
+ * YoctoHub-Ethernet, the YoctoHub-GSM-4G, the YoctoHub-Wireless-SR or the YoctoHub-Wireless-n
  *
  * YNetwork objects provide access to TCP/IP parameters of Yoctopuce
  * devices that include a built-in network interface.
@@ -116,6 +117,7 @@ var YNetwork; // definition below
         this._ipAddress                      = Y_IPADDRESS_INVALID;        // IPAddress
         this._subnetMask                     = Y_SUBNETMASK_INVALID;       // IPAddress
         this._router                         = Y_ROUTER_INVALID;           // IPAddress
+        this._currentDNS                     = Y_CURRENTDNS_INVALID;       // IPAddress
         this._ipConfig                       = Y_IPCONFIG_INVALID;         // IPConfig
         this._primaryDNS                     = Y_PRIMARYDNS_INVALID;       // IPAddress
         this._secondaryDNS                   = Y_SECONDARYDNS_INVALID;     // IPAddress
@@ -157,6 +159,9 @@ var YNetwork; // definition below
             return 1;
         case "router":
             this._router = val;
+            return 1;
+        case "currentDNS":
+            this._currentDNS = val;
             return 1;
         case "ipConfig":
             this._ipConfig = val;
@@ -499,6 +504,57 @@ var YNetwork; // definition below
                 callback(context, obj, Y_ROUTER_INVALID);
             } else {
                 callback(context, obj, obj._router);
+            }
+        };
+        if (this._cacheExpiration <= YAPI.GetTickCount()) {
+            this.load_async(YAPI.defaultCacheValidity,loadcb,null);
+        } else {
+            loadcb(null, this, YAPI_SUCCESS);
+        }
+    }
+
+    /**
+     * Returns the IP address of the DNS server currently used by the device.
+     *
+     * @return a string corresponding to the IP address of the DNS server currently used by the device
+     *
+     * On failure, throws an exception or returns YNetwork.CURRENTDNS_INVALID.
+     */
+    function YNetwork_get_currentDNS()
+    {
+        var res;                    // string;
+        if (this._cacheExpiration <= YAPI.GetTickCount()) {
+            if (this.load(YAPI.defaultCacheValidity) != YAPI_SUCCESS) {
+                return Y_CURRENTDNS_INVALID;
+            }
+        }
+        res = this._currentDNS;
+        return res;
+    }
+
+    /**
+     * Gets the IP address of the DNS server currently used by the device.
+     *
+     * @param callback : callback function that is invoked when the result is known.
+     *         The callback function receives three arguments:
+     *         - the user-specific context object
+     *         - the YNetwork object that invoked the callback
+     *         - the result:a string corresponding to the IP address of the DNS server currently used by the device
+     * @param context : user-specific object that is passed as-is to the callback function
+     *
+     * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
+     *
+     * On failure, throws an exception or returns YNetwork.CURRENTDNS_INVALID.
+     */
+    function YNetwork_get_currentDNS_async(callback,context)
+    {
+        var res;                    // string;
+        var loadcb;                 // func;
+        loadcb = function(ctx,obj,res) {
+            if (res != YAPI_SUCCESS) {
+                callback(context, obj, Y_CURRENTDNS_INVALID);
+            } else {
+                callback(context, obj, obj._currentDNS);
             }
         };
         if (this._cacheExpiration <= YAPI.GetTickCount()) {
@@ -2084,6 +2140,7 @@ var YNetwork; // definition below
         IPADDRESS_INVALID           : YAPI_INVALID_STRING,
         SUBNETMASK_INVALID          : YAPI_INVALID_STRING,
         ROUTER_INVALID              : YAPI_INVALID_STRING,
+        CURRENTDNS_INVALID          : YAPI_INVALID_STRING,
         IPCONFIG_INVALID            : YAPI_INVALID_STRING,
         PRIMARYDNS_INVALID          : YAPI_INVALID_STRING,
         SECONDARYDNS_INVALID        : YAPI_INVALID_STRING,
@@ -2147,6 +2204,10 @@ var YNetwork; // definition below
         router                      : YNetwork_get_router,
         get_router_async            : YNetwork_get_router_async,
         router_async                : YNetwork_get_router_async,
+        get_currentDNS              : YNetwork_get_currentDNS,
+        currentDNS                  : YNetwork_get_currentDNS,
+        get_currentDNS_async        : YNetwork_get_currentDNS_async,
+        currentDNS_async            : YNetwork_get_currentDNS_async,
         get_ipConfig                : YNetwork_get_ipConfig,
         ipConfig                    : YNetwork_get_ipConfig,
         get_ipConfig_async          : YNetwork_get_ipConfig_async,
