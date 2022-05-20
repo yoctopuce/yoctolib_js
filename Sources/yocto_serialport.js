@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_serialport.js 48954 2022-03-14 09:55:13Z seb $
+ * $Id: yocto_serialport.js 49818 2022-05-19 09:57:42Z seb $
  *
  * Implements the high-level API for SerialPort functions
  *
@@ -50,6 +50,7 @@ var Y_VOLTAGELEVEL_TTL5VR           = 4;
 var Y_VOLTAGELEVEL_RS232            = 5;
 var Y_VOLTAGELEVEL_RS485            = 6;
 var Y_VOLTAGELEVEL_TTL1V8           = 7;
+var Y_VOLTAGELEVEL_SDI12            = 8;
 var Y_VOLTAGELEVEL_INVALID          = -1;
 var Y_RXCOUNT_INVALID               = YAPI_INVALID_UINT;
 var Y_TXCOUNT_INVALID               = YAPI_INVALID_UINT;
@@ -183,6 +184,8 @@ var YSerialPort; // definition below
         this._rxptr                          = 0;                          // int
         this._rxbuff                         = "";                         // bin
         this._rxbuffptr                      = 0;                          // int
+        this._eventCallback                  = null;                       // YSnoopingCallback
+        this._eventPos                       = 0;                          // int
         //--- (end of generated code: YSerialPort constructor)
     }
 
@@ -929,8 +932,8 @@ var YSerialPort; // definition below
      *
      * @return a value among YSerialPort.VOLTAGELEVEL_OFF, YSerialPort.VOLTAGELEVEL_TTL3V,
      * YSerialPort.VOLTAGELEVEL_TTL3VR, YSerialPort.VOLTAGELEVEL_TTL5V, YSerialPort.VOLTAGELEVEL_TTL5VR,
-     * YSerialPort.VOLTAGELEVEL_RS232, YSerialPort.VOLTAGELEVEL_RS485 and YSerialPort.VOLTAGELEVEL_TTL1V8
-     * corresponding to the voltage level used on the serial line
+     * YSerialPort.VOLTAGELEVEL_RS232, YSerialPort.VOLTAGELEVEL_RS485, YSerialPort.VOLTAGELEVEL_TTL1V8 and
+     * YSerialPort.VOLTAGELEVEL_SDI12 corresponding to the voltage level used on the serial line
      *
      * On failure, throws an exception or returns YSerialPort.VOLTAGELEVEL_INVALID.
      */
@@ -955,8 +958,8 @@ var YSerialPort; // definition below
      *         - the YSerialPort object that invoked the callback
      *         - the result:a value among YSerialPort.VOLTAGELEVEL_OFF, YSerialPort.VOLTAGELEVEL_TTL3V,
      *         YSerialPort.VOLTAGELEVEL_TTL3VR, YSerialPort.VOLTAGELEVEL_TTL5V, YSerialPort.VOLTAGELEVEL_TTL5VR,
-     *         YSerialPort.VOLTAGELEVEL_RS232, YSerialPort.VOLTAGELEVEL_RS485 and YSerialPort.VOLTAGELEVEL_TTL1V8
-     *         corresponding to the voltage level used on the serial line
+     *         YSerialPort.VOLTAGELEVEL_RS232, YSerialPort.VOLTAGELEVEL_RS485, YSerialPort.VOLTAGELEVEL_TTL1V8 and
+     *         YSerialPort.VOLTAGELEVEL_SDI12 corresponding to the voltage level used on the serial line
      * @param context : user-specific object that is passed as-is to the callback function
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
@@ -992,8 +995,8 @@ var YSerialPort; // definition below
      *
      * @param newval : a value among YSerialPort.VOLTAGELEVEL_OFF, YSerialPort.VOLTAGELEVEL_TTL3V,
      * YSerialPort.VOLTAGELEVEL_TTL3VR, YSerialPort.VOLTAGELEVEL_TTL5V, YSerialPort.VOLTAGELEVEL_TTL5VR,
-     * YSerialPort.VOLTAGELEVEL_RS232, YSerialPort.VOLTAGELEVEL_RS485 and YSerialPort.VOLTAGELEVEL_TTL1V8
-     * corresponding to the voltage type used on the serial line
+     * YSerialPort.VOLTAGELEVEL_RS232, YSerialPort.VOLTAGELEVEL_RS485, YSerialPort.VOLTAGELEVEL_TTL1V8 and
+     * YSerialPort.VOLTAGELEVEL_SDI12 corresponding to the voltage type used on the serial line
      *
      * @return YAPI.SUCCESS if the call succeeds.
      *
@@ -1889,6 +1892,65 @@ var YSerialPort; // definition below
     }
 
     /**
+     * Registers a callback function to be called each time that a message is sent or
+     * received by the serial port.
+     *
+     * @param callback : the callback function to call, or a null pointer.
+     *         The callback function should take four arguments:
+     *         the YSerialPort object that emitted the event, and
+     *         the SnoopingRecord object that describes the message
+     *         sent or received.
+     *         On failure, throws an exception or returns a negative error code.
+     */
+    function YSerialPort_registerSnoopingCallback(callback)
+    {
+        if (callback != null) {
+            this.registerValueCallback(yInternalEventCallback);
+        } else {
+            this.registerValueCallback(null);
+        }
+        // register user callback AFTER the internal pseudo-event,
+        // to make sure we start with future events only
+        this._eventCallback = callback;
+        return 0;
+    }
+
+    function YSerialPort_internalEventHandler(advstr)
+    {
+        var url;                    // str;
+        var msgbin;                 // bin;
+        var msgarr = [];            // strArr;
+        var msglen;                 // int;
+        var idx;                    // int;
+        if (!(this._eventCallback != null)) {
+            // first simulated event, use it only to initialize reference values
+            this._eventPos = 0;
+        }
+
+        url = "rxmsg.json?pos="+String(Math.round(this._eventPos))+"&maxw=0&t=0";
+        msgbin = this._download(url);
+        msgarr = this._json_get_array(msgbin);
+        msglen = msgarr.length;
+        if (msglen == 0) {
+            return YAPI_SUCCESS;
+        }
+        // last element of array is the new position
+        msglen = msglen - 1;
+        if (!(this._eventCallback != null)) {
+            // first simulated event, use it only to initialize reference values
+            this._eventPos = YAPI._atoi(msgarr[msglen]);
+            return YAPI_SUCCESS;
+        }
+        this._eventPos = YAPI._atoi(msgarr[msglen]);
+        idx = 0;
+        while (idx < msglen) {
+            this._eventCallback(this, new YSnoopingRecord(msgarr[idx]));
+            idx = idx + 1;
+        }
+        return YAPI_SUCCESS;
+    }
+
+    /**
      * Sends an ASCII string to the serial port, preceeded with an STX code and
      * followed by an ETX code.
      *
@@ -2506,6 +2568,7 @@ var YSerialPort; // definition below
         VOLTAGELEVEL_RS232          : 5,
         VOLTAGELEVEL_RS485          : 6,
         VOLTAGELEVEL_TTL1V8         : 7,
+        VOLTAGELEVEL_SDI12          : 8,
         VOLTAGELEVEL_INVALID        : -1,
         SERIALMODE_INVALID          : YAPI_INVALID_STRING
     }, {
@@ -2610,6 +2673,8 @@ var YSerialPort; // definition below
         get_CTS                     : YSerialPort_get_CTS,
         CTS                         : YSerialPort_get_CTS,
         snoopMessages               : YSerialPort_snoopMessages,
+        registerSnoopingCallback    : YSerialPort_registerSnoopingCallback,
+        _internalEventHandler       : YSerialPort_internalEventHandler,
         writeStxEtx                 : YSerialPort_writeStxEtx,
         writeMODBUS                 : YSerialPort_writeMODBUS,
         queryMODBUS                 : YSerialPort_queryMODBUS,

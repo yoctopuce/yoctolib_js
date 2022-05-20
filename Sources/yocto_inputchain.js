@@ -59,9 +59,9 @@ var Y_WATCHDOGPERIOD_INVALID        = YAPI_INVALID_UINT;
 var Y_CHAINDIAGS_INVALID            = YAPI_INVALID_UINT;
 //--- (end of YInputChain definitions)
 
-function yInternalEventCallback(YInputChain_inputChain, str_value)
+function yInternalEventCallback(YInputChain_obj, str_value)
 {
-    YInputChain_inputChain._internalEventHandler(str_value);
+    YInputChain_obj._internalEventHandler(str_value);
 }
 
 //--- (YInputChain class start)
