@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_genericsensor.js 49385 2022-04-06 00:49:27Z mvuilleu $
+ *  $Id: yocto_genericsensor.js 49903 2022-05-25 14:18:36Z mvuilleu $
  *
  *  Implements the high-level API for GenericSensor functions
  *
@@ -47,6 +47,7 @@ var Y_SIGNALSAMPLING_HIGH_RATE_FILTERED = 1;
 var Y_SIGNALSAMPLING_LOW_NOISE      = 2;
 var Y_SIGNALSAMPLING_LOW_NOISE_FILTERED = 3;
 var Y_SIGNALSAMPLING_HIGHEST_RATE   = 4;
+var Y_SIGNALSAMPLING_AC             = 5;
 var Y_SIGNALSAMPLING_INVALID        = -1;
 var Y_ENABLED_FALSE                 = 0;
 var Y_ENABLED_TRUE                  = 1;
@@ -477,8 +478,8 @@ var YGenericSensor; // definition below
      *
      * @return a value among YGenericSensor.SIGNALSAMPLING_HIGH_RATE,
      * YGenericSensor.SIGNALSAMPLING_HIGH_RATE_FILTERED, YGenericSensor.SIGNALSAMPLING_LOW_NOISE,
-     * YGenericSensor.SIGNALSAMPLING_LOW_NOISE_FILTERED and YGenericSensor.SIGNALSAMPLING_HIGHEST_RATE
-     * corresponding to the electric signal sampling method to use
+     * YGenericSensor.SIGNALSAMPLING_LOW_NOISE_FILTERED, YGenericSensor.SIGNALSAMPLING_HIGHEST_RATE and
+     * YGenericSensor.SIGNALSAMPLING_AC corresponding to the electric signal sampling method to use
      *
      * On failure, throws an exception or returns YGenericSensor.SIGNALSAMPLING_INVALID.
      */
@@ -508,8 +509,8 @@ var YGenericSensor; // definition below
      *         - the YGenericSensor object that invoked the callback
      *         - the result:a value among YGenericSensor.SIGNALSAMPLING_HIGH_RATE,
      *         YGenericSensor.SIGNALSAMPLING_HIGH_RATE_FILTERED, YGenericSensor.SIGNALSAMPLING_LOW_NOISE,
-     *         YGenericSensor.SIGNALSAMPLING_LOW_NOISE_FILTERED and YGenericSensor.SIGNALSAMPLING_HIGHEST_RATE
-     *         corresponding to the electric signal sampling method to use
+     *         YGenericSensor.SIGNALSAMPLING_LOW_NOISE_FILTERED, YGenericSensor.SIGNALSAMPLING_HIGHEST_RATE and
+     *         YGenericSensor.SIGNALSAMPLING_AC corresponding to the electric signal sampling method to use
      * @param context : user-specific object that is passed as-is to the callback function
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
@@ -546,8 +547,8 @@ var YGenericSensor; // definition below
      *
      * @param newval : a value among YGenericSensor.SIGNALSAMPLING_HIGH_RATE,
      * YGenericSensor.SIGNALSAMPLING_HIGH_RATE_FILTERED, YGenericSensor.SIGNALSAMPLING_LOW_NOISE,
-     * YGenericSensor.SIGNALSAMPLING_LOW_NOISE_FILTERED and YGenericSensor.SIGNALSAMPLING_HIGHEST_RATE
-     * corresponding to the electric signal sampling method to use
+     * YGenericSensor.SIGNALSAMPLING_LOW_NOISE_FILTERED, YGenericSensor.SIGNALSAMPLING_HIGHEST_RATE and
+     * YGenericSensor.SIGNALSAMPLING_AC corresponding to the electric signal sampling method to use
      *
      * @return YAPI.SUCCESS if the call succeeds.
      *
@@ -738,6 +739,7 @@ var YGenericSensor; // definition below
         SIGNALSAMPLING_LOW_NOISE    : 2,
         SIGNALSAMPLING_LOW_NOISE_FILTERED : 3,
         SIGNALSAMPLING_HIGHEST_RATE : 4,
+        SIGNALSAMPLING_AC           : 5,
         SIGNALSAMPLING_INVALID      : -1,
         ENABLED_FALSE               : 0,
         ENABLED_TRUE                : 1,

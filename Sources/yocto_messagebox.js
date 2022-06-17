@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_messagebox.js 48014 2022-01-12 08:06:41Z seb $
+ * $Id: yocto_messagebox.js 50144 2022-06-17 06:59:52Z seb $
  *
  * Implements the high-level API for MessageBox functions
  *
@@ -549,13 +549,13 @@ var YSms; // definition below
             }
         }
         this._parts = sorted;
-        this._npdu = sorted.length;
         // inherit header fields from first part
         subsms = this._parts[0];
         retcode = this.parsePdu(subsms.get_pdu());
         if (retcode != YAPI_SUCCESS) {
             return retcode;
         }
+        this._npdu = sorted.length;
         // concatenate user data from all parts
         totsize = 0;
         partno = 0;
@@ -1282,7 +1282,7 @@ var YSms; // definition below
         var retcode;                // int;
         var pdu;                    // YSms;
 
-        if (this._slot > 0) {
+        if (this._npdu < 2) {
             return this._mbox.clearSIMSlot(this._slot);
         }
         retcode = YAPI_SUCCESS;
@@ -1836,8 +1836,99 @@ var YMessageBox; // definition below
 
     function YMessageBox_clearSIMSlot(slot)
     {
-        this._prevBitmapStr = "";
-        return this.set_command("DS"+String(Math.round(slot)));
+        var retry;                  // int;
+        var idx;                    // int;
+        var res;                    // str;
+        var bitmapStr;              // str;
+        var int_res;                // int;
+        var newBitmap;              // bin;
+        var bitVal;                 // int;
+
+        retry = 5;
+        while (retry > 0) {
+            this.clearCache();
+            bitmapStr = this.get_slotsBitmap();
+            newBitmap = YAPI._hexStrToBin(bitmapStr);
+            idx = ((slot) >> (3));
+            if (idx < (newBitmap).length) {
+                bitVal = ((1) << ((((slot) & (7)))));
+                if (((((newBitmap).charCodeAt(idx)) & (bitVal))) != 0) {
+                    this._prevBitmapStr = "";
+                    int_res = this.set_command("DS"+String(Math.round(slot)));
+                    if (int_res < 0) {
+                        return int_res;
+                    }
+                } else {
+                    return YAPI_SUCCESS;
+                }
+            } else {
+                return YAPI_INVALID_ARGUMENT;
+            }
+            res = this._AT("");
+            retry = retry - 1;
+        }
+        return YAPI_IO_ERROR;
+    }
+
+    function YMessageBox_AT(cmd)
+    {
+        var chrPos;                 // int;
+        var cmdLen;                 // int;
+        var waitMore;               // int;
+        var res;                    // str;
+        var buff;                   // bin;
+        var bufflen;                // int;
+        var buffstr;                // str;
+        var buffstrlen;             // int;
+        var idx;                    // int;
+        var suffixlen;              // int;
+        // copied form the YCellular class
+        // quote dangerous characters used in AT commands
+        cmdLen = (cmd).length;
+        chrPos = (cmd).indexOf("#");
+        while (chrPos >= 0) {
+            cmd = ""+(cmd).substr( 0, chrPos)+""+String.fromCharCode(37)+"23"+(cmd).substr( chrPos+1, cmdLen-chrPos-1);
+            cmdLen = cmdLen + 2;
+            chrPos = (cmd).indexOf("#");
+        }
+        chrPos = (cmd).indexOf("+");
+        while (chrPos >= 0) {
+            cmd = ""+(cmd).substr( 0, chrPos)+""+String.fromCharCode(37)+"2B"+(cmd).substr( chrPos+1, cmdLen-chrPos-1);
+            cmdLen = cmdLen + 2;
+            chrPos = (cmd).indexOf("+");
+        }
+        chrPos = (cmd).indexOf("=");
+        while (chrPos >= 0) {
+            cmd = ""+(cmd).substr( 0, chrPos)+""+String.fromCharCode(37)+"3D"+(cmd).substr( chrPos+1, cmdLen-chrPos-1);
+            cmdLen = cmdLen + 2;
+            chrPos = (cmd).indexOf("=");
+        }
+        cmd = "at.txt?cmd="+cmd;
+        res = "";
+        // max 2 minutes (each iteration may take up to 5 seconds if waiting)
+        waitMore = 24;
+        while (waitMore > 0) {
+            buff = this._download(cmd);
+            bufflen = (buff).length;
+            buffstr = buff;
+            buffstrlen = (buffstr).length;
+            idx = bufflen - 1;
+            while ((idx > 0) && ((buff).charCodeAt(idx) != 64) && ((buff).charCodeAt(idx) != 10) && ((buff).charCodeAt(idx) != 13)) {
+                idx = idx - 1;
+            }
+            if ((buff).charCodeAt(idx) == 64) {
+                // continuation detected
+                suffixlen = bufflen - idx;
+                cmd = "at.txt?cmd="+(buffstr).substr( buffstrlen - suffixlen, suffixlen);
+                buffstr = (buffstr).substr( 0, buffstrlen - suffixlen);
+                waitMore = waitMore - 1;
+            } else {
+                // request complete
+                waitMore = 0;
+            }
+            res = ""+res+""+buffstr;
+        }
+        return res;
     }
 
     function YMessageBox_fetchPdu(slot)
@@ -2510,6 +2601,7 @@ var YMessageBox; // definition below
         setCommand                  : YMessageBox_set_command,
         nextMsgRef                  : YMessageBox_nextMsgRef,
         clearSIMSlot                : YMessageBox_clearSIMSlot,
+        _AT                         : YMessageBox_AT,
         fetchPdu                    : YMessageBox_fetchPdu,
         initGsm2Unicode             : YMessageBox_initGsm2Unicode,
         gsm2unicode                 : YMessageBox_gsm2unicode,

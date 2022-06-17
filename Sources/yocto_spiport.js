@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_spiport.js 49744 2022-05-11 15:13:45Z mvuilleu $
+ *  $Id: yocto_spiport.js 49903 2022-05-25 14:18:36Z mvuilleu $
  *
  *  Implements the high-level API for SpiPort functions
  *
@@ -189,6 +189,7 @@ var YSpiPort; // definition below
         this._rxptr                          = 0;                          // int
         this._rxbuff                         = "";                         // bin
         this._rxbuffptr                      = 0;                          // int
+        this._eventPos                       = 0;                          // int
         //--- (end of generated code: YSpiPort constructor)
     }
 
@@ -1516,6 +1517,7 @@ var YSpiPort; // definition below
      */
     function YSpiPort_reset()
     {
+        this._eventPos = 0;
         this._rxptr = 0;
         this._rxbuffptr = 0;
         this._rxbuff = new Uint8Array(0);
