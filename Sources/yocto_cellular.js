@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_cellular.js 43619 2021-01-29 09:14:45Z mvuilleu $
+ * $Id: yocto_cellular.js 50281 2022-06-30 07:21:14Z mvuilleu $
  *
  * Implements the high-level API for Cellular functions
  *
@@ -6158,6 +6158,47 @@ var YCellular; // definition below
     }
 
     /**
+     * Returns the list available radio communication profiles, as a string array
+     * (YoctoHub-GSM-4G only).
+     * Each string is a made of a numerical ID, followed by a colon,
+     * followed by the profile description.
+     *
+     * @return a list of string describing available radio communication profiles.
+     */
+    function YCellular_get_communicationProfiles()
+    {
+        var profiles;               // str;
+        var lines = [];             // strArr;
+        var nlines;                 // int;
+        var idx;                    // int;
+        var line;                   // str;
+        var cpos;                   // int;
+        var profno;                 // int;
+        var res = [];               // strArr;
+
+        profiles = this._AT("+UMNOPROF=?");
+        lines = (profiles).split('\n');
+        nlines = lines.length;
+        if (!(nlines > 0)) {
+            return this._throw(YAPI_IO_ERROR,"fail to retrieve profile list",res);
+        }
+        res.length = 0;
+        idx = 0;
+        while (idx < nlines) {
+            line = lines[idx];
+            cpos = (line).indexOf(":");
+            if (cpos > 0) {
+                profno = YAPI._atoi((line).substr( 0, cpos));
+                if (profno > 0) {
+                    res.push(line);
+                }
+            }
+            idx = idx + 1;
+        }
+        return res;
+    }
+
+    /**
      * Continues the enumeration of cellular interfaces started using yFirstCellular().
      * Caution: You can't make any assumption about the returned cellular interfaces order.
      * If you want to find a specific a cellular interface, use Cellular.findCellular()
@@ -6530,6 +6571,8 @@ var YCellular; // definition below
         quickCellSurvey             : YCellular_quickCellSurvey,
         imm_decodePLMN              : YCellular_imm_decodePLMN,
         decodePLMN                  : YCellular_decodePLMN,
+        get_communicationProfiles   : YCellular_get_communicationProfiles,
+        communicationProfiles       : YCellular_get_communicationProfiles,
         nextCellular                : YCellular_nextCellular,
         _parseAttr                  : YCellular_parseAttr
     });

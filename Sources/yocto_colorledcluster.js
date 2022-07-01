@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_colorledcluster.js 45843 2021-08-04 07:51:59Z mvuilleu $
+ *  $Id: yocto_colorledcluster.js 50281 2022-06-30 07:21:14Z mvuilleu $
  *
  *  Implements the high-level API for ColorLedCluster functions
  *
@@ -48,6 +48,7 @@ var Y_LEDTYPE_WS2811                = 2;
 var Y_LEDTYPE_INVALID               = -1;
 var Y_ACTIVELEDCOUNT_INVALID        = YAPI_INVALID_UINT;
 var Y_MAXLEDCOUNT_INVALID           = YAPI_INVALID_UINT;
+var Y_DYNAMICLEDCOUNT_INVALID       = YAPI_INVALID_UINT;
 var Y_BLINKSEQMAXCOUNT_INVALID      = YAPI_INVALID_UINT;
 var Y_BLINKSEQMAXSIZE_INVALID       = YAPI_INVALID_UINT;
 var Y_COMMAND_INVALID               = YAPI_INVALID_STRING;
@@ -82,6 +83,7 @@ var YColorLedCluster; // definition below
         this._activeLedCount                 = Y_ACTIVELEDCOUNT_INVALID;   // UInt31
         this._ledType                        = Y_LEDTYPE_INVALID;          // LedType
         this._maxLedCount                    = Y_MAXLEDCOUNT_INVALID;      // UInt31
+        this._dynamicLedCount                = Y_DYNAMICLEDCOUNT_INVALID;  // UInt31
         this._blinkSeqMaxCount               = Y_BLINKSEQMAXCOUNT_INVALID; // UInt31
         this._blinkSeqMaxSize                = Y_BLINKSEQMAXSIZE_INVALID;  // UInt31
         this._command                        = Y_COMMAND_INVALID;          // Text
@@ -101,6 +103,9 @@ var YColorLedCluster; // definition below
             return 1;
         case "maxLedCount":
             this._maxLedCount = parseInt(val);
+            return 1;
+        case "dynamicLedCount":
+            this._dynamicLedCount = parseInt(val);
             return 1;
         case "blinkSeqMaxCount":
             this._blinkSeqMaxCount = parseInt(val);
@@ -296,6 +301,59 @@ var YColorLedCluster; // definition below
                 callback(context, obj, Y_MAXLEDCOUNT_INVALID);
             } else {
                 callback(context, obj, obj._maxLedCount);
+            }
+        };
+        if (this._cacheExpiration == 0) {
+            this.load_async(YAPI.defaultCacheValidity,loadcb,null);
+        } else {
+            loadcb(null, this, YAPI_SUCCESS);
+        }
+    }
+
+    /**
+     * Returns the maximum number of LEDs that can perform autonomous transitions and sequences.
+     *
+     * @return an integer corresponding to the maximum number of LEDs that can perform autonomous
+     * transitions and sequences
+     *
+     * On failure, throws an exception or returns YColorLedCluster.DYNAMICLEDCOUNT_INVALID.
+     */
+    function YColorLedCluster_get_dynamicLedCount()
+    {
+        var res;                    // int;
+        if (this._cacheExpiration == 0) {
+            if (this.load(YAPI.defaultCacheValidity) != YAPI_SUCCESS) {
+                return Y_DYNAMICLEDCOUNT_INVALID;
+            }
+        }
+        res = this._dynamicLedCount;
+        return res;
+    }
+
+    /**
+     * Gets the maximum number of LEDs that can perform autonomous transitions and sequences.
+     *
+     * @param callback : callback function that is invoked when the result is known.
+     *         The callback function receives three arguments:
+     *         - the user-specific context object
+     *         - the YColorLedCluster object that invoked the callback
+     *         - the result:an integer corresponding to the maximum number of LEDs that can perform autonomous
+     *         transitions and sequences
+     * @param context : user-specific object that is passed as-is to the callback function
+     *
+     * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
+     *
+     * On failure, throws an exception or returns YColorLedCluster.DYNAMICLEDCOUNT_INVALID.
+     */
+    function YColorLedCluster_get_dynamicLedCount_async(callback,context)
+    {
+        var res;                    // int;
+        var loadcb;                 // func;
+        loadcb = function(ctx,obj,res) {
+            if (res != YAPI_SUCCESS) {
+                callback(context, obj, Y_DYNAMICLEDCOUNT_INVALID);
+            } else {
+                callback(context, obj, obj._dynamicLedCount);
             }
         };
         if (this._cacheExpiration == 0) {
@@ -1453,6 +1511,7 @@ var YColorLedCluster; // definition below
         LEDTYPE_WS2811              : 2,
         LEDTYPE_INVALID             : -1,
         MAXLEDCOUNT_INVALID         : YAPI_INVALID_UINT,
+        DYNAMICLEDCOUNT_INVALID     : YAPI_INVALID_UINT,
         BLINKSEQMAXCOUNT_INVALID    : YAPI_INVALID_UINT,
         BLINKSEQMAXSIZE_INVALID     : YAPI_INVALID_UINT,
         COMMAND_INVALID             : YAPI_INVALID_STRING
@@ -1478,6 +1537,10 @@ var YColorLedCluster; // definition below
         maxLedCount                 : YColorLedCluster_get_maxLedCount,
         get_maxLedCount_async       : YColorLedCluster_get_maxLedCount_async,
         maxLedCount_async           : YColorLedCluster_get_maxLedCount_async,
+        get_dynamicLedCount         : YColorLedCluster_get_dynamicLedCount,
+        dynamicLedCount             : YColorLedCluster_get_dynamicLedCount,
+        get_dynamicLedCount_async   : YColorLedCluster_get_dynamicLedCount_async,
+        dynamicLedCount_async       : YColorLedCluster_get_dynamicLedCount_async,
         get_blinkSeqMaxCount        : YColorLedCluster_get_blinkSeqMaxCount,
         blinkSeqMaxCount            : YColorLedCluster_get_blinkSeqMaxCount,
         get_blinkSeqMaxCount_async  : YColorLedCluster_get_blinkSeqMaxCount_async,
