@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_cellular.js 50281 2022-06-30 07:21:14Z mvuilleu $
+ * $Id: yocto_cellular.js 50494 2022-07-19 16:08:56Z mvuilleu $
  *
  * Implements the high-level API for Cellular functions
  *
@@ -6189,7 +6189,7 @@ var YCellular; // definition below
             cpos = (line).indexOf(":");
             if (cpos > 0) {
                 profno = YAPI._atoi((line).substr( 0, cpos));
-                if (profno > 0) {
+                if (profno > 1) {
                     res.push(line);
                 }
             }

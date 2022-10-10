@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_genericsensor.js 49903 2022-05-25 14:18:36Z mvuilleu $
+ *  $Id: yocto_genericsensor.js 50689 2022-08-17 14:37:15Z mvuilleu $
  *
  *  Implements the high-level API for GenericSensor functions
  *
@@ -98,7 +98,7 @@ var YGenericSensor; // definition below
     {
         switch(name) {
         case "signalValue":
-            this._signalValue = Math.round(val * 1000.0 / 65536.0) / 1000.0;
+            this._signalValue = Math.round(val / 65.536) / 1000.0;
             return 1;
         case "signalUnit":
             this._signalUnit = val;
@@ -110,7 +110,7 @@ var YGenericSensor; // definition below
             this._valueRange = val;
             return 1;
         case "signalBias":
-            this._signalBias = Math.round(val * 1000.0 / 65536.0) / 1000.0;
+            this._signalBias = Math.round(val / 65.536) / 1000.0;
             return 1;
         case "signalSampling":
             this._signalSampling = parseInt(val);

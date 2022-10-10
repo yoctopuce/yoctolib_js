@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_steppermotor.js 43619 2021-01-29 09:14:45Z mvuilleu $
+ *  $Id: yocto_steppermotor.js 50689 2022-08-17 14:37:15Z mvuilleu $
  *
  *  Implements the high-level API for StepperMotor functions
  *
@@ -121,16 +121,16 @@ var YStepperMotor; // definition below
             this._stepPos = val / 16.0;
             return 1;
         case "speed":
-            this._speed = Math.round(val * 1000.0 / 65536.0) / 1000.0;
+            this._speed = Math.round(val / 65.536) / 1000.0;
             return 1;
         case "pullinSpeed":
-            this._pullinSpeed = Math.round(val * 1000.0 / 65536.0) / 1000.0;
+            this._pullinSpeed = Math.round(val / 65.536) / 1000.0;
             return 1;
         case "maxAccel":
-            this._maxAccel = Math.round(val * 1000.0 / 65536.0) / 1000.0;
+            this._maxAccel = Math.round(val / 65.536) / 1000.0;
             return 1;
         case "maxSpeed":
-            this._maxSpeed = Math.round(val * 1000.0 / 65536.0) / 1000.0;
+            this._maxSpeed = Math.round(val / 65.536) / 1000.0;
             return 1;
         case "stepping":
             this._stepping = parseInt(val);

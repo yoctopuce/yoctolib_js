@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_realtimeclock.js 48183 2022-01-20 10:26:11Z mvuilleu $
+ *  $Id: yocto_realtimeclock.js 50595 2022-07-28 07:54:15Z mvuilleu $
  *
  *  Implements the high-level API for RealTimeClock functions
  *
@@ -45,6 +45,9 @@ if(typeof YAPI == "undefined") { if(typeof yAPI != "undefined") window["YAPI"]=y
 var Y_TIMESET_FALSE                 = 0;
 var Y_TIMESET_TRUE                  = 1;
 var Y_TIMESET_INVALID               = -1;
+var Y_DISABLEHOSTSYNC_FALSE         = 0;
+var Y_DISABLEHOSTSYNC_TRUE          = 1;
+var Y_DISABLEHOSTSYNC_INVALID       = -1;
 var Y_UNIXTIME_INVALID              = YAPI_INVALID_LONG;
 var Y_DATETIME_INVALID              = YAPI_INVALID_STRING;
 var Y_UTCOFFSET_INVALID             = YAPI_INVALID_INT;
@@ -77,6 +80,7 @@ var YRealTimeClock; // definition below
         this._dateTime                       = Y_DATETIME_INVALID;         // Text
         this._utcOffset                      = Y_UTCOFFSET_INVALID;        // Int
         this._timeSet                        = Y_TIMESET_INVALID;          // Bool
+        this._disableHostSync                = Y_DISABLEHOSTSYNC_INVALID;  // Bool
         //--- (end of YRealTimeClock constructor)
     }
 
@@ -96,6 +100,9 @@ var YRealTimeClock; // definition below
             return 1;
         case "timeSet":
             this._timeSet = parseInt(val);
+            return 1;
+        case "disableHostSync":
+            this._disableHostSync = parseInt(val);
             return 1;
         }
         return _super._parseAttr.call(this, name, val, _super._super);
@@ -343,6 +350,81 @@ var YRealTimeClock; // definition below
     }
 
     /**
+     * Returns true if the automatic clock synchronization with host has been disabled,
+     * and false otherwise.
+     *
+     * @return either YRealTimeClock.DISABLEHOSTSYNC_FALSE or YRealTimeClock.DISABLEHOSTSYNC_TRUE,
+     * according to true if the automatic clock synchronization with host has been disabled,
+     *         and false otherwise
+     *
+     * On failure, throws an exception or returns YRealTimeClock.DISABLEHOSTSYNC_INVALID.
+     */
+    function YRealTimeClock_get_disableHostSync()
+    {
+        var res;                    // enumBOOL;
+        if (this._cacheExpiration <= YAPI.GetTickCount()) {
+            if (this.load(YAPI.defaultCacheValidity) != YAPI_SUCCESS) {
+                return Y_DISABLEHOSTSYNC_INVALID;
+            }
+        }
+        res = this._disableHostSync;
+        return res;
+    }
+
+    /**
+     * Gets true if the automatic clock synchronization with host has been disabled,
+     * and false otherwise.
+     *
+     * @param callback : callback function that is invoked when the result is known.
+     *         The callback function receives three arguments:
+     *         - the user-specific context object
+     *         - the YRealTimeClock object that invoked the callback
+     *         - the result:either YRealTimeClock.DISABLEHOSTSYNC_FALSE or YRealTimeClock.DISABLEHOSTSYNC_TRUE,
+     *         according to true if the automatic clock synchronization with host has been disabled,
+     *         and false otherwise
+     * @param context : user-specific object that is passed as-is to the callback function
+     *
+     * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
+     *
+     * On failure, throws an exception or returns YRealTimeClock.DISABLEHOSTSYNC_INVALID.
+     */
+    function YRealTimeClock_get_disableHostSync_async(callback,context)
+    {
+        var res;                    // enumBOOL;
+        var loadcb;                 // func;
+        loadcb = function(ctx,obj,res) {
+            if (res != YAPI_SUCCESS) {
+                callback(context, obj, Y_DISABLEHOSTSYNC_INVALID);
+            } else {
+                callback(context, obj, obj._disableHostSync);
+            }
+        };
+        if (this._cacheExpiration <= YAPI.GetTickCount()) {
+            this.load_async(YAPI.defaultCacheValidity,loadcb,null);
+        } else {
+            loadcb(null, this, YAPI_SUCCESS);
+        }
+    }
+
+    /**
+     * Changes the automatic clock synchronization with host working state.
+     * To disable automatic synchronization, set the value to true.
+     * To enable automatic synchronization (default), set the value to false.
+     *
+     * @param newval : either YRealTimeClock.DISABLEHOSTSYNC_FALSE or YRealTimeClock.DISABLEHOSTSYNC_TRUE,
+     * according to the automatic clock synchronization with host working state
+     *
+     * @return YAPI.SUCCESS if the call succeeds.
+     *
+     * On failure, throws an exception or returns a negative error code.
+     */
+    function YRealTimeClock_set_disableHostSync(newval)
+    {   var rest_val;
+        rest_val = String(newval);
+        return this._setAttr('disableHostSync',rest_val);
+    }
+
+    /**
      * Retrieves a real-time clock for a given identifier.
      * The identifier can be specified using several formats:
      * <ul>
@@ -425,7 +507,10 @@ var YRealTimeClock; // definition below
         UTCOFFSET_INVALID           : YAPI_INVALID_INT,
         TIMESET_FALSE               : 0,
         TIMESET_TRUE                : 1,
-        TIMESET_INVALID             : -1
+        TIMESET_INVALID             : -1,
+        DISABLEHOSTSYNC_FALSE       : 0,
+        DISABLEHOSTSYNC_TRUE        : 1,
+        DISABLEHOSTSYNC_INVALID     : -1
     }, {
         // Class methods
         FindRealTimeClock           : YRealTimeClock_FindRealTimeClock,
@@ -452,6 +537,12 @@ var YRealTimeClock; // definition below
         timeSet                     : YRealTimeClock_get_timeSet,
         get_timeSet_async           : YRealTimeClock_get_timeSet_async,
         timeSet_async               : YRealTimeClock_get_timeSet_async,
+        get_disableHostSync         : YRealTimeClock_get_disableHostSync,
+        disableHostSync             : YRealTimeClock_get_disableHostSync,
+        get_disableHostSync_async   : YRealTimeClock_get_disableHostSync_async,
+        disableHostSync_async       : YRealTimeClock_get_disableHostSync_async,
+        set_disableHostSync         : YRealTimeClock_set_disableHostSync,
+        setDisableHostSync          : YRealTimeClock_set_disableHostSync,
         nextRealTimeClock           : YRealTimeClock_nextRealTimeClock,
         _parseAttr                  : YRealTimeClock_parseAttr
     });

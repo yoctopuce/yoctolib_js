@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_pwmoutput.js 43619 2021-01-29 09:14:45Z mvuilleu $
+ *  $Id: yocto_pwmoutput.js 50689 2022-08-17 14:37:15Z mvuilleu $
  *
  *  Implements the high-level API for PwmOutput functions
  *
@@ -96,16 +96,16 @@ var YPwmOutput; // definition below
             this._enabled = parseInt(val);
             return 1;
         case "frequency":
-            this._frequency = Math.round(val * 1000.0 / 65536.0) / 1000.0;
+            this._frequency = Math.round(val / 65.536) / 1000.0;
             return 1;
         case "period":
-            this._period = Math.round(val * 1000.0 / 65536.0) / 1000.0;
+            this._period = Math.round(val / 65.536) / 1000.0;
             return 1;
         case "dutyCycle":
-            this._dutyCycle = Math.round(val * 1000.0 / 65536.0) / 1000.0;
+            this._dutyCycle = Math.round(val / 65.536) / 1000.0;
             return 1;
         case "pulseDuration":
-            this._pulseDuration = Math.round(val * 1000.0 / 65536.0) / 1000.0;
+            this._pulseDuration = Math.round(val / 65.536) / 1000.0;
             return 1;
         case "pwmTransition":
             this._pwmTransition = val;
@@ -114,7 +114,7 @@ var YPwmOutput; // definition below
             this._enabledAtPowerOn = parseInt(val);
             return 1;
         case "dutyCycleAtPowerOn":
-            this._dutyCycleAtPowerOn = Math.round(val * 1000.0 / 65536.0) / 1000.0;
+            this._dutyCycleAtPowerOn = Math.round(val / 65.536) / 1000.0;
             return 1;
         }
         return _super._parseAttr.call(this, name, val, _super._super);

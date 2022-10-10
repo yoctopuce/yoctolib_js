@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_api.js 46595 2021-09-24 16:42:28Z mvuilleu $
+ * $Id: yocto_api.js 51266 2022-10-10 09:18:25Z seb $
  *
  * High-level programming interface, common to all modules
  *
@@ -2678,7 +2678,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
      */
     function YAPI_GetAPIVersion()
     {
-        return "1.10.50357";
+        return "1.10.51266";
     }
 
     /**
@@ -6729,16 +6729,16 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
             this._unit = val;
             return 1;
         case "currentValue":
-            this._currentValue = Math.round(val * 1000.0 / 65536.0) / 1000.0;
+            this._currentValue = Math.round(val / 65.536) / 1000.0;
             return 1;
         case "lowestValue":
-            this._lowestValue = Math.round(val * 1000.0 / 65536.0) / 1000.0;
+            this._lowestValue = Math.round(val / 65.536) / 1000.0;
             return 1;
         case "highestValue":
-            this._highestValue = Math.round(val * 1000.0 / 65536.0) / 1000.0;
+            this._highestValue = Math.round(val / 65.536) / 1000.0;
             return 1;
         case "currentRawValue":
-            this._currentRawValue = Math.round(val * 1000.0 / 65536.0) / 1000.0;
+            this._currentRawValue = Math.round(val / 65.536) / 1000.0;
             return 1;
         case "logFrequency":
             this._logFrequency = val;
@@ -6753,7 +6753,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
             this._calibrationParam = val;
             return 1;
         case "resolution":
-            this._resolution = Math.round(val * 1000.0 / 65536.0) / 1000.0;
+            this._resolution = Math.round(val / 65.536) / 1000.0;
             return 1;
         case "sensorState":
             this._sensorState = parseInt(val);
@@ -11254,6 +11254,26 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
     }
 
     /**
+     * Adds a file to the uploaded data at the next HTTP callback.
+     * This function only affects the next HTTP callback and only works in
+     * HTTP callback mode.
+     *
+     * @param filename : the name of the file to upload at the next HTTP callback
+     *
+     * @return nothing.
+     */
+    function YModule_addFileToHTTPCallback(filename)
+    {
+        var content;                // bin;
+
+        content = this._download("@YCB+" + filename);
+        if ((content).length == 0) {
+            return YAPI_NOT_SUPPORTED;
+        }
+        return YAPI_SUCCESS;
+    }
+
+    /**
      * Returns the unique hardware identifier of the module.
      * The unique hardware identifier is made of the device serial
      * number followed by string ".module".
@@ -11490,6 +11510,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
         _tryExec                    : YModule_tryExec,
         set_allSettings             : YModule_set_allSettings,
         setAllSettings              : YModule_set_allSettings,
+        addFileToHTTPCallback       : YModule_addFileToHTTPCallback,
         get_hardwareId              : YModule_get_hardwareId,
         hardwareId                  : YModule_get_hardwareId,
         download                    : YModule_download,
