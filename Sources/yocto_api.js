@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_api.js 51266 2022-10-10 09:18:25Z seb $
+ * $Id: yocto_api.js 51903 2022-11-29 17:25:59Z mvuilleu $
  *
  * High-level programming interface, common to all modules
  *
@@ -2678,7 +2678,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
      */
     function YAPI_GetAPIVersion()
     {
-        return "1.10.51266";
+        return "1.10.52094";
     }
 
     /**
@@ -5389,6 +5389,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
         this._calraw                         = [];                         // floatArr
         this._calref                         = [];                         // floatArr
         this._values                         = [];                         // floatArrArr
+        this._isLoaded                       = 0;                          // bool
         //--- (end of generated code: YDataStream constructor)
 
         this._parent = obj_parent;
@@ -5503,6 +5504,9 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
         var idx;                    // int;
         var udat = [];              // intArr;
         var dat = [];               // floatArr;
+        if (this._isLoaded && !(this._isClosed)) {
+            return YAPI_SUCCESS;
+        }
         if ((sdata).length == 0) {
             this._nRows = 0;
             return YAPI_SUCCESS;
@@ -5540,13 +5544,33 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
         }
 
         this._nRows = this._values.length;
+        this._isLoaded = true;
         return YAPI_SUCCESS;
+    }
+
+    function YDataStream_wasLoaded()
+    {
+        return this._isLoaded;
     }
 
     function YDataStream_get_url()
     {
         var url;                    // str;
         url = "logger.json?id="+this._functionId+"&run="+String(Math.round(this._runNo))+"&utc="+String(Math.round(this._utcStamp));
+        return url;
+    }
+
+    function YDataStream_get_baseurl()
+    {
+        var url;                    // str;
+        url = "logger.json?id="+this._functionId+"&run="+String(Math.round(this._runNo))+"&utc=";
+        return url;
+    }
+
+    function YDataStream_get_urlsuffix()
+    {
+        var url;                    // str;
+        url = ""+String(Math.round(this._utcStamp));
         return url;
     }
 
@@ -5851,7 +5875,10 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
     // Methods
     YDataStream.prototype._initFromDataSet            = YDataStream_initFromDataSet;
     YDataStream.prototype._parseStream                = YDataStream_parseStream;
+    YDataStream.prototype._wasLoaded                  = YDataStream_wasLoaded;
     YDataStream.prototype._get_url                    = YDataStream_get_url;
+    YDataStream.prototype._get_baseurl                = YDataStream_get_baseurl;
+    YDataStream.prototype._get_urlsuffix              = YDataStream_get_urlsuffix;
     YDataStream.prototype.loadStream                  = YDataStream_loadStream;
     YDataStream.prototype._decodeVal                  = YDataStream_decodeVal;
     YDataStream.prototype._decodeAvg                  = YDataStream_decodeAvg;
@@ -5919,6 +5946,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
         this._hardwareId                     = "";                         // str
         this._functionId                     = "";                         // str
         this._unit                           = "";                         // str
+        this._bulkLoad                       = 0;                          // int
         this._startTimeMs                    = 0;                          // float
         this._endTimeMs                      = 0;                          // float
         this._progress                       = 0;                          // int
@@ -6034,9 +6062,11 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
             } else {
                 // stream that are partially in the dataset
                 // we need to parse data to filter value outside the dataset
-                url =  this._streams[ii]._get_url();
-                data = this._parent._download(url);
-                this._streams[ii]._parseStream(data);
+                if (!( this._streams[ii]._wasLoaded())) {
+                    url =  this._streams[ii]._get_url();
+                    data = this._parent._download(url);
+                    this._streams[ii]._parseStream(data);
+                }
                 dataRows =  this._streams[ii].get_dataRows();
                 if (dataRows.length == 0) {
                     return this.get_progress();
@@ -6087,8 +6117,10 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
                         if (previewMaxVal < maxVal) {
                             previewMaxVal = maxVal;
                         }
-                        previewTotalAvg = previewTotalAvg + (avgVal * mitv);
-                        previewTotalTime = previewTotalTime + mitv;
+                        if (!(isNaN(avgVal))) {
+                            previewTotalAvg = previewTotalAvg + (avgVal * mitv);
+                            previewTotalTime = previewTotalTime + mitv;
+                        }
                     }
                     tim = end_;
                     m_pos = m_pos + 1;
@@ -6146,6 +6178,15 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
         var avgCol;                 // int;
         var maxCol;                 // int;
         var firstMeasure;           // bool;
+        var baseurl;                // str;
+        var url;                    // str;
+        var suffix;                 // str;
+        var suffixes = [];          // strArr;
+        var idx;                    // int;
+        var bulkFile;               // bin;
+        var streamStr = [];         // strArr;
+        var urlIdx;                 // int;
+        var streamBin;              // bin;
 
         if (progress != this._progress) {
             return this._progress;
@@ -6154,7 +6195,9 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
             return this.loadSummary(data);
         }
         stream = this._streams[this._progress];
-        stream._parseStream(data);
+        if (!(stream._wasLoaded())) {
+            stream._parseStream(data);
+        }
         dataRows = stream.get_dataRows();
         this._progress = this._progress + 1;
         if (dataRows.length == 0) {
@@ -6196,6 +6239,40 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
                 this._measures.push(new YMeasure(tim / 1000, end_ / 1000, dataRows[ii][minCol], avgv, dataRows[ii][maxCol]));
             }
             tim = end_;
+        }
+        // Perform bulk preload to speed-up network transfer
+        if ((this._bulkLoad > 0) && (this._progress < this._streams.length)) {
+            stream = this._streams[this._progress];
+            if (stream._wasLoaded()) {
+                return this.get_progress();
+            }
+            baseurl = stream._get_baseurl();
+            url = stream._get_url();
+            suffix = stream._get_urlsuffix();
+            suffixes.push(suffix);
+            idx = this._progress+1;
+            while ((idx < this._streams.length) && (suffixes.length < this._bulkLoad)) {
+                stream = this._streams[idx];
+                if (!(stream._wasLoaded()) && (stream._get_baseurl() == baseurl)) {
+                    suffix = stream._get_urlsuffix();
+                    suffixes.push(suffix);
+                    url = url + "," + suffix;
+                }
+                idx = idx + 1;
+            }
+            bulkFile = this._parent._download(url);
+            streamStr = this._parent._json_get_array(bulkFile);
+            urlIdx = 0;
+            idx = this._progress;
+            while ((idx < this._streams.length) && (urlIdx < suffixes.length) && (urlIdx < streamStr.length)) {
+                stream = this._streams[idx];
+                if ((stream._get_baseurl() == baseurl) && (stream._get_urlsuffix() == suffixes[urlIdx])) {
+                    streamBin = streamStr[urlIdx];
+                    stream._parseStream(streamBin);
+                    urlIdx = urlIdx + 1;
+                }
+                idx = idx + 1;
+            }
         }
         return this.get_progress();
     }
@@ -6345,6 +6422,10 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
                 return 100;
             } else {
                 stream = this._streams[this._progress];
+                if (stream._wasLoaded()) {
+                    // Do not reload stream if it was already loaded
+                    return this.processMore(this._progress, "");
+                }
                 url = stream._get_url();
             }
         }
@@ -6515,6 +6596,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
 
         this._functionId = loadval.id;
         this._unit       = loadval.unit;
+        this._bulkLoad   = (loadval.bulk ? parseInt(loadval.bulk) : 0);
         if(loadval.calib) {
             this._calib  = YAPI._decodeFloats(loadval.calib);
             this._calib[0] = parseInt(this._calib[0] / 1000);
