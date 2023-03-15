@@ -47,7 +47,7 @@
                 document.getElementById('regvalue').innerHTML = reg;
                 document.getElementById('valuespan').style.display = '';
                 document.getElementById('value').innerHTML = value;
-                if ((reg % 30000) < 10000) {
+                if ((reg % 40000) < 10000) {
                     document.getElementById('newvaluespan').style.display = '';
                 }
             }
@@ -55,8 +55,8 @@
 
         function newValuechanged() {
             newvalue = parseInt(document.getElementById('newvalue').value);
-            if (reg >= 30001)
-                serialport.modbusWriteRegister(slave, reg - 30001, newvalue);
+            if (reg >= 40001)
+                serialport.modbusWriteRegister(slave, reg - 40001, newvalue);
             else
                 serialport.modbusWriteBit(slave, reg - 1, newvalue);
             document.getElementById('value').innerHTML = modbus_readvalue(slave, reg);
@@ -71,8 +71,8 @@
  slave:<input id='slaveinput' onchange='javascript:slavechanged()'>
  <span id='slavevalue'></span><br>
  <span id='regspan' style='display:none'>
- Please select a Coil No (>=1), Input Bit No (>=10001+)<br>
- Input Register No (>=30001) or Register No (>=40001)<br>
+ Please select a Coil No (>=1), Input Bit No (>=10001)<br>
+ Input Register No (>=30001) or Holding Register No (>=40001)<br>
  No: <input id='reginput' onchange='javascript:regchanged()'>
  <span id='regvalue'></span><br>
  </span>

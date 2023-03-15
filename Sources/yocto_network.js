@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_network.js 49385 2022-04-06 00:49:27Z mvuilleu $
+ *  $Id: yocto_network.js 53420 2023-03-06 10:38:51Z mvuilleu $
  *
  *  Implements the high-level API for Network functions
  *
@@ -69,6 +69,9 @@ var Y_CALLBACKENCODING_YOCTO_API_JZON = 10;
 var Y_CALLBACKENCODING_PRTG         = 11;
 var Y_CALLBACKENCODING_INFLUXDB_V2  = 12;
 var Y_CALLBACKENCODING_INVALID      = -1;
+var Y_CALLBACKTEMPLATE_OFF          = 0;
+var Y_CALLBACKTEMPLATE_ON           = 1;
+var Y_CALLBACKTEMPLATE_INVALID      = -1;
 var Y_MACADDRESS_INVALID            = YAPI_INVALID_STRING;
 var Y_IPADDRESS_INVALID             = YAPI_INVALID_STRING;
 var Y_SUBNETMASK_INVALID            = YAPI_INVALID_STRING;
@@ -131,6 +134,7 @@ var YNetwork; // definition below
         this._callbackUrl                    = Y_CALLBACKURL_INVALID;      // Text
         this._callbackMethod                 = Y_CALLBACKMETHOD_INVALID;   // HTTPMethod
         this._callbackEncoding               = Y_CALLBACKENCODING_INVALID; // CallbackEncoding
+        this._callbackTemplate               = Y_CALLBACKTEMPLATE_INVALID; // OnOff
         this._callbackCredentials            = Y_CALLBACKCREDENTIALS_INVALID; // Credentials
         this._callbackInitialDelay           = Y_CALLBACKINITIALDELAY_INVALID; // UInt31
         this._callbackSchedule               = Y_CALLBACKSCHEDULE_INVALID; // CallbackSchedule
@@ -201,6 +205,9 @@ var YNetwork; // definition below
             return 1;
         case "callbackEncoding":
             this._callbackEncoding = parseInt(val);
+            return 1;
+        case "callbackTemplate":
+            this._callbackTemplate = parseInt(val);
             return 1;
         case "callbackCredentials":
             this._callbackCredentials = val;
@@ -1525,6 +1532,84 @@ var YNetwork; // definition below
     }
 
     /**
+     * Returns the activation state of the custom template file to customize callback
+     * format. If the custom callback template is disabled, it will be ignored even
+     * if present on the YoctoHub.
+     *
+     * @return either YNetwork.CALLBACKTEMPLATE_OFF or YNetwork.CALLBACKTEMPLATE_ON, according to the
+     * activation state of the custom template file to customize callback
+     *         format
+     *
+     * On failure, throws an exception or returns YNetwork.CALLBACKTEMPLATE_INVALID.
+     */
+    function YNetwork_get_callbackTemplate()
+    {
+        var res;                    // enumONOFF;
+        if (this._cacheExpiration <= YAPI.GetTickCount()) {
+            if (this.load(YAPI.defaultCacheValidity) != YAPI_SUCCESS) {
+                return Y_CALLBACKTEMPLATE_INVALID;
+            }
+        }
+        res = this._callbackTemplate;
+        return res;
+    }
+
+    /**
+     * Gets the activation state of the custom template file to customize callback
+     * format. If the custom callback template is disabled, it will be ignored even
+     * if present on the YoctoHub.
+     *
+     * @param callback : callback function that is invoked when the result is known.
+     *         The callback function receives three arguments:
+     *         - the user-specific context object
+     *         - the YNetwork object that invoked the callback
+     *         - the result:either YNetwork.CALLBACKTEMPLATE_OFF or YNetwork.CALLBACKTEMPLATE_ON, according to the
+     *         activation state of the custom template file to customize callback
+     *         format
+     * @param context : user-specific object that is passed as-is to the callback function
+     *
+     * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
+     *
+     * On failure, throws an exception or returns YNetwork.CALLBACKTEMPLATE_INVALID.
+     */
+    function YNetwork_get_callbackTemplate_async(callback,context)
+    {
+        var res;                    // enumONOFF;
+        var loadcb;                 // func;
+        loadcb = function(ctx,obj,res) {
+            if (res != YAPI_SUCCESS) {
+                callback(context, obj, Y_CALLBACKTEMPLATE_INVALID);
+            } else {
+                callback(context, obj, obj._callbackTemplate);
+            }
+        };
+        if (this._cacheExpiration <= YAPI.GetTickCount()) {
+            this.load_async(YAPI.defaultCacheValidity,loadcb,null);
+        } else {
+            loadcb(null, this, YAPI_SUCCESS);
+        }
+    }
+
+    /**
+     * Enable the use of a template file to customize callbacks format.
+     * When the custom callback template file is enabled, the template file
+     * will be loaded for each callback in order to build the data to post to the
+     * server. If template file does not exist on the YoctoHub, the callback will
+     * fail with an error message indicating the name of the expected template file.
+     *
+     * @param newval : either YNetwork.CALLBACKTEMPLATE_OFF or YNetwork.CALLBACKTEMPLATE_ON
+     *
+     * @return YAPI.SUCCESS if the call succeeds.
+     *
+     * On failure, throws an exception or returns a negative error code.
+     */
+    function YNetwork_set_callbackTemplate(newval)
+    {   var rest_val;
+        rest_val = String(newval);
+        return this._setAttr('callbackTemplate',rest_val);
+    }
+
+    /**
      * Returns a hashed version of the notification callback credentials if set,
      * or an empty string otherwise.
      *
@@ -2172,6 +2257,9 @@ var YNetwork; // definition below
         CALLBACKENCODING_PRTG       : 11,
         CALLBACKENCODING_INFLUXDB_V2 : 12,
         CALLBACKENCODING_INVALID    : -1,
+        CALLBACKTEMPLATE_OFF        : 0,
+        CALLBACKTEMPLATE_ON         : 1,
+        CALLBACKTEMPLATE_INVALID    : -1,
         CALLBACKCREDENTIALS_INVALID : YAPI_INVALID_STRING,
         CALLBACKINITIALDELAY_INVALID : YAPI_INVALID_UINT,
         CALLBACKSCHEDULE_INVALID    : YAPI_INVALID_STRING,
@@ -2286,6 +2374,12 @@ var YNetwork; // definition below
         callbackEncoding_async      : YNetwork_get_callbackEncoding_async,
         set_callbackEncoding        : YNetwork_set_callbackEncoding,
         setCallbackEncoding         : YNetwork_set_callbackEncoding,
+        get_callbackTemplate        : YNetwork_get_callbackTemplate,
+        callbackTemplate            : YNetwork_get_callbackTemplate,
+        get_callbackTemplate_async  : YNetwork_get_callbackTemplate_async,
+        callbackTemplate_async      : YNetwork_get_callbackTemplate_async,
+        set_callbackTemplate        : YNetwork_set_callbackTemplate,
+        setCallbackTemplate         : YNetwork_set_callbackTemplate,
         get_callbackCredentials     : YNetwork_get_callbackCredentials,
         callbackCredentials         : YNetwork_get_callbackCredentials,
         get_callbackCredentials_async : YNetwork_get_callbackCredentials_async,

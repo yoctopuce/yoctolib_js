@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_serialport.js 49903 2022-05-25 14:18:36Z mvuilleu $
+ * $Id: yocto_serialport.js 52892 2023-01-25 10:13:30Z seb $
  *
  * Implements the high-level API for SerialPort functions
  *
@@ -1257,16 +1257,29 @@ var YSerialPort; // definition below
      */
     function YSerialPort_read_avail()
     {
-        var buff;                   // bin;
-        var bufflen;                // int;
+        var availPosStr;            // str;
+        var atPos;                  // int;
         var res;                    // int;
+        var databin;                // bin;
 
-        buff = this._download("rxcnt.bin?pos="+String(Math.round(this._rxptr)));
-        bufflen = (buff).length - 1;
-        while ((bufflen > 0) && ((buff).charCodeAt(bufflen) != 64)) {
-            bufflen = bufflen - 1;
-        }
-        res = YAPI._atoi((buff).substr( 0, bufflen));
+        databin = this._download("rxcnt.bin?pos="+String(Math.round(this._rxptr)));
+        availPosStr = databin;
+        atPos = (availPosStr).indexOf("@");
+        res = YAPI._atoi((availPosStr).substr( 0, atPos));
+        return res;
+    }
+
+    function YSerialPort_end_tell()
+    {
+        var availPosStr;            // str;
+        var atPos;                  // int;
+        var res;                    // int;
+        var databin;                // bin;
+
+        databin = this._download("rxcnt.bin?pos="+String(Math.round(this._rxptr)));
+        availPosStr = databin;
+        atPos = (availPosStr).indexOf("@");
+        res = YAPI._atoi((availPosStr).substr( atPos+1, (availPosStr).length-atPos-1));
         return res;
     }
 
@@ -1284,13 +1297,22 @@ var YSerialPort; // definition below
      */
     function YSerialPort_queryLine(query,maxWait)
     {
+        var prevpos;                // int;
         var url;                    // str;
         var msgbin;                 // bin;
         var msgarr = [];            // strArr;
         var msglen;                 // int;
         var res;                    // str;
+        if ((query).length <= 80) {
+            // fast query
+            url = "rxmsg.json?len=1&maxw="+String(Math.round(maxWait))+"&cmd=!"+this._escapeAttr(query);
+        } else {
+            // long query
+            prevpos = this.end_tell();
+            this._upload("txdata", query + "\r\n");
+            url = "rxmsg.json?len=1&maxw="+String(Math.round(maxWait))+"&pos="+String(Math.round(prevpos));
+        }
 
-        url = "rxmsg.json?len=1&maxw="+String(Math.round(maxWait))+"&cmd=!"+this._escapeAttr(query);
         msgbin = this._download(url);
         msgarr = this._json_get_array(msgbin);
         msglen = msgarr.length;
@@ -1322,13 +1344,22 @@ var YSerialPort; // definition below
      */
     function YSerialPort_queryHex(hexString,maxWait)
     {
+        var prevpos;                // int;
         var url;                    // str;
         var msgbin;                 // bin;
         var msgarr = [];            // strArr;
         var msglen;                 // int;
         var res;                    // str;
+        if ((hexString).length <= 80) {
+            // fast query
+            url = "rxmsg.json?len=1&maxw="+String(Math.round(maxWait))+"&cmd=$"+hexString;
+        } else {
+            // long query
+            prevpos = this.end_tell();
+            this._upload("txdata", YAPI._hexStrToBin(hexString));
+            url = "rxmsg.json?len=1&maxw="+String(Math.round(maxWait))+"&pos="+String(Math.round(prevpos));
+        }
 
-        url = "rxmsg.json?len=1&maxw="+String(Math.round(maxWait))+"&cmd=$"+hexString;
         msgbin = this._download(url);
         msgarr = this._json_get_array(msgbin);
         msglen = msgarr.length;
@@ -2006,6 +2037,7 @@ var YSerialPort; // definition below
         var nib;                    // int;
         var i;                      // int;
         var cmd;                    // str;
+        var prevpos;                // int;
         var url;                    // str;
         var pat;                    // str;
         var msgs;                   // bin;
@@ -2023,8 +2055,16 @@ var YSerialPort; // definition below
             cmd = ""+cmd+""+('00'+(((pduBytes[i]) & (0xff))).toString(16)).slice(-2).toUpperCase();
             i = i + 1;
         }
+        if ((cmd).length <= 80) {
+            // fast query
+            url = "rxmsg.json?cmd=:"+cmd+"&pat=:"+pat;
+        } else {
+            // long query
+            prevpos = this.end_tell();
+            this._upload("txdata:", YAPI._hexStrToBin(cmd));
+            url = "rxmsg.json?pos="+String(Math.round(prevpos))+"&maxw=2000&pat=:"+pat;
+        }
 
-        url = "rxmsg.json?cmd=:"+cmd+"&pat=:"+pat;
         msgs = this._download(url);
         reps = this._json_get_array(msgs);
         if (!(reps.length > 1)) {
@@ -2190,6 +2230,9 @@ var YSerialPort; // definition below
         var regpos;                 // int;
         var idx;                    // int;
         var val;                    // int;
+        if (!(nWords<=256)) {
+            return this._throw(YAPI_INVALID_ARGUMENT,"Cannot read more than 256 words",res);
+        }
         pdu.push(0x03);
         pdu.push(((pduAddr) >> (8)));
         pdu.push(((pduAddr) & (0xff)));
@@ -2655,6 +2698,7 @@ var YSerialPort; // definition below
         read_seek                   : YSerialPort_read_seek,
         read_tell                   : YSerialPort_read_tell,
         read_avail                  : YSerialPort_read_avail,
+        end_tell                    : YSerialPort_end_tell,
         queryLine                   : YSerialPort_queryLine,
         queryHex                    : YSerialPort_queryHex,
         uploadJob                   : YSerialPort_uploadJob,

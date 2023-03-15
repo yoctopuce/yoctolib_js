@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_power.js 50689 2022-08-17 14:37:15Z mvuilleu $
+ *  $Id: yocto_power.js 53420 2023-03-06 10:38:51Z mvuilleu $
  *
  *  Implements the high-level API for Power functions
  *
@@ -42,6 +42,7 @@ if(typeof YAPI == "undefined") { if(typeof yAPI != "undefined") window["YAPI"]=y
 //--- (YPower return codes)
 //--- (end of YPower return codes)
 //--- (YPower definitions)
+var Y_POWERFACTOR_INVALID           = YAPI_INVALID_DOUBLE;
 var Y_COSPHI_INVALID                = YAPI_INVALID_DOUBLE;
 var Y_METER_INVALID                 = YAPI_INVALID_DOUBLE;
 var Y_DELIVEREDENERGYMETER_INVALID  = YAPI_INVALID_DOUBLE;
@@ -70,6 +71,7 @@ var YPower; // definition below
         YSensor.call(this, str_func);
         this._className = 'Power';
 
+        this._powerFactor                    = Y_POWERFACTOR_INVALID;      // MeasureVal
         this._cosPhi                         = Y_COSPHI_INVALID;           // MeasureVal
         this._meter                          = Y_METER_INVALID;            // MeasureVal
         this._deliveredEnergyMeter           = Y_DELIVEREDENERGYMETER_INVALID; // MeasureVal
@@ -83,6 +85,9 @@ var YPower; // definition below
     function YPower_parseAttr(name, val, _super)
     {
         switch(name) {
+        case "powerFactor":
+            this._powerFactor = Math.round(val / 65.536) / 1000.0;
+            return 1;
         case "cosPhi":
             this._cosPhi = Math.round(val / 65.536) / 1000.0;
             return 1;
@@ -103,11 +108,73 @@ var YPower; // definition below
     }
 
     /**
-     * Returns the power factor (the ratio between the real power consumed,
-     * measured in W, and the apparent power provided, measured in VA).
+     * Returns the power factor (PF), i.e. ratio between the active power consumed (in W)
+     * and the apparent power provided (VA).
      *
-     * @return a floating point number corresponding to the power factor (the ratio between the real power consumed,
-     *         measured in W, and the apparent power provided, measured in VA)
+     * @return a floating point number corresponding to the power factor (PF), i.e
+     *
+     * On failure, throws an exception or returns YPower.POWERFACTOR_INVALID.
+     */
+    function YPower_get_powerFactor()
+    {
+        var res;                    // float;
+        if (this._cacheExpiration <= YAPI.GetTickCount()) {
+            if (this.load(YAPI.defaultCacheValidity) != YAPI_SUCCESS) {
+                return Y_POWERFACTOR_INVALID;
+            }
+        }
+        res = this._powerFactor;
+        if (res == Y_POWERFACTOR_INVALID) {
+            res = this._cosPhi;
+        }
+        res = Math.round(res * 1000) / 1000;
+        return res;
+    }
+
+    /**
+     * Gets the power factor (PF), i.e. ratio between the active power consumed (in W)
+     * and the apparent power provided (VA).
+     *
+     * @param callback : callback function that is invoked when the result is known.
+     *         The callback function receives three arguments:
+     *         - the user-specific context object
+     *         - the YPower object that invoked the callback
+     *         - the result:a floating point number corresponding to the power factor (PF), i.e
+     * @param context : user-specific object that is passed as-is to the callback function
+     *
+     * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
+     *
+     * On failure, throws an exception or returns YPower.POWERFACTOR_INVALID.
+     */
+    function YPower_get_powerFactor_async(callback,context)
+    {
+        var res;                    // float;
+        var loadcb;                 // func;
+        loadcb = function(ctx,obj,res) {
+            if (res != YAPI_SUCCESS) {
+                callback(context, obj, Y_POWERFACTOR_INVALID);
+            } else {
+                res = obj._powerFactor;
+                if (res == Y_POWERFACTOR_INVALID) {
+                    res = obj._cosPhi;
+                }
+                callback(context, obj, Math.round(res * 1000) / 1000);
+            }
+        };
+        if (this._cacheExpiration <= YAPI.GetTickCount()) {
+            this.load_async(YAPI.defaultCacheValidity,loadcb,null);
+        } else {
+            loadcb(null, this, YAPI_SUCCESS);
+        }
+    }
+
+    /**
+     * Returns the Displacement Power factor (DPF), i.e. cosine of the phase shift between
+     * the voltage and current fundamentals.
+     * On the Yocto-Watt (V1), the value returned by this method correponds to the
+     * power factor as this device is cannot estimate the true DPF.
+     *
+     * @return a floating point number corresponding to the Displacement Power factor (DPF), i.e
      *
      * On failure, throws an exception or returns YPower.COSPHI_INVALID.
      */
@@ -124,16 +191,16 @@ var YPower; // definition below
     }
 
     /**
-     * Gets the power factor (the ratio between the real power consumed,
-     * measured in W, and the apparent power provided, measured in VA).
+     * Gets the Displacement Power factor (DPF), i.e. cosine of the phase shift between
+     * the voltage and current fundamentals.
+     * On the Yocto-Watt (V1), the value returned by this method correponds to the
+     * power factor as this device is cannot estimate the true DPF.
      *
      * @param callback : callback function that is invoked when the result is known.
      *         The callback function receives three arguments:
      *         - the user-specific context object
      *         - the YPower object that invoked the callback
-     *         - the result:a floating point number corresponding to the power factor (the ratio between the real
-     *         power consumed,
-     *         measured in W, and the apparent power provided, measured in VA)
+     *         - the result:a floating point number corresponding to the Displacement Power factor (DPF), i.e
      * @param context : user-specific object that is passed as-is to the callback function
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
@@ -165,12 +232,14 @@ var YPower; // definition below
     }
 
     /**
-     * Returns the energy counter, maintained by the wattmeter by integrating the power consumption over time,
-     * but only when positive. Note that this counter is reset at each start of the device.
+     * Returns the energy counter, maintained by the wattmeter by integrating the
+     * power consumption over time. This is the sum of forward and backwad energy transfers,
+     * if you are insterested in only one direction, use  get_receivedEnergyMeter() or
+     * get_deliveredEnergyMeter(). Note that this counter is reset at each start of the device.
      *
      * @return a floating point number corresponding to the energy counter, maintained by the wattmeter by
-     * integrating the power consumption over time,
-     *         but only when positive
+     * integrating the
+     *         power consumption over time
      *
      * On failure, throws an exception or returns YPower.METER_INVALID.
      */
@@ -187,16 +256,18 @@ var YPower; // definition below
     }
 
     /**
-     * Gets the energy counter, maintained by the wattmeter by integrating the power consumption over time,
-     * but only when positive. Note that this counter is reset at each start of the device.
+     * Gets the energy counter, maintained by the wattmeter by integrating the
+     * power consumption over time. This is the sum of forward and backwad energy transfers,
+     * if you are insterested in only one direction, use  get_receivedEnergyMeter() or
+     * get_deliveredEnergyMeter(). Note that this counter is reset at each start of the device.
      *
      * @param callback : callback function that is invoked when the result is known.
      *         The callback function receives three arguments:
      *         - the user-specific context object
      *         - the YPower object that invoked the callback
      *         - the result:a floating point number corresponding to the energy counter, maintained by the
-     *         wattmeter by integrating the power consumption over time,
-     *         but only when positive
+     *         wattmeter by integrating the
+     *         power consumption over time
      * @param context : user-specific object that is passed as-is to the callback function
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
@@ -476,6 +547,7 @@ var YPower; // definition below
     //--- (YPower initialization)
     YPower = YSensor._Subclass(_YPower, {
         // Constants
+        POWERFACTOR_INVALID         : YAPI_INVALID_DOUBLE,
         COSPHI_INVALID              : YAPI_INVALID_DOUBLE,
         METER_INVALID               : YAPI_INVALID_DOUBLE,
         DELIVEREDENERGYMETER_INVALID : YAPI_INVALID_DOUBLE,
@@ -487,6 +559,10 @@ var YPower; // definition below
         FirstPower                  : YPower_FirstPower
     }, {
         // Methods
+        get_powerFactor             : YPower_get_powerFactor,
+        powerFactor                 : YPower_get_powerFactor,
+        get_powerFactor_async       : YPower_get_powerFactor_async,
+        powerFactor_async           : YPower_get_powerFactor_async,
         get_cosPhi                  : YPower_get_cosPhi,
         cosPhi                      : YPower_get_cosPhi,
         get_cosPhi_async            : YPower_get_cosPhi_async,

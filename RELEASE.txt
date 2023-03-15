@@ -1,3 +1,5 @@
-Javascript v1.10.52094
+Javascript v1.10.53532
 
-- Add support for connecting to VirtualHub-4web
+- Add support for callbackTemplate and powerFactor
+- Improve YSerialPort, YSpiPort and I2cPort class
+- Fix a few typos in the doc

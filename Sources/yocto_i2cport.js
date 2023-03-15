@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_i2cport.js 43619 2021-01-29 09:14:45Z mvuilleu $
+ *  $Id: yocto_i2cport.js 52943 2023-01-26 15:46:47Z mvuilleu $
  *
  *  Implements the high-level API for I2cPort functions
  *
@@ -1215,16 +1215,29 @@ var YI2cPort; // definition below
      */
     function YI2cPort_read_avail()
     {
-        var buff;                   // bin;
-        var bufflen;                // int;
+        var availPosStr;            // str;
+        var atPos;                  // int;
         var res;                    // int;
+        var databin;                // bin;
 
-        buff = this._download("rxcnt.bin?pos="+String(Math.round(this._rxptr)));
-        bufflen = (buff).length - 1;
-        while ((bufflen > 0) && ((buff).charCodeAt(bufflen) != 64)) {
-            bufflen = bufflen - 1;
-        }
-        res = YAPI._atoi((buff).substr( 0, bufflen));
+        databin = this._download("rxcnt.bin?pos="+String(Math.round(this._rxptr)));
+        availPosStr = databin;
+        atPos = (availPosStr).indexOf("@");
+        res = YAPI._atoi((availPosStr).substr( 0, atPos));
+        return res;
+    }
+
+    function YI2cPort_end_tell()
+    {
+        var availPosStr;            // str;
+        var atPos;                  // int;
+        var res;                    // int;
+        var databin;                // bin;
+
+        databin = this._download("rxcnt.bin?pos="+String(Math.round(this._rxptr)));
+        availPosStr = databin;
+        atPos = (availPosStr).indexOf("@");
+        res = YAPI._atoi((availPosStr).substr( atPos+1, (availPosStr).length-atPos-1));
         return res;
     }
 
@@ -1242,13 +1255,22 @@ var YI2cPort; // definition below
      */
     function YI2cPort_queryLine(query,maxWait)
     {
+        var prevpos;                // int;
         var url;                    // str;
         var msgbin;                 // bin;
         var msgarr = [];            // strArr;
         var msglen;                 // int;
         var res;                    // str;
+        if ((query).length <= 80) {
+            // fast query
+            url = "rxmsg.json?len=1&maxw="+String(Math.round(maxWait))+"&cmd=!"+this._escapeAttr(query);
+        } else {
+            // long query
+            prevpos = this.end_tell();
+            this._upload("txdata", query + "\r\n");
+            url = "rxmsg.json?len=1&maxw="+String(Math.round(maxWait))+"&pos="+String(Math.round(prevpos));
+        }
 
-        url = "rxmsg.json?len=1&maxw="+String(Math.round(maxWait))+"&cmd=!"+this._escapeAttr(query);
         msgbin = this._download(url);
         msgarr = this._json_get_array(msgbin);
         msglen = msgarr.length;
@@ -1280,13 +1302,22 @@ var YI2cPort; // definition below
      */
     function YI2cPort_queryHex(hexString,maxWait)
     {
+        var prevpos;                // int;
         var url;                    // str;
         var msgbin;                 // bin;
         var msgarr = [];            // strArr;
         var msglen;                 // int;
         var res;                    // str;
+        if ((hexString).length <= 80) {
+            // fast query
+            url = "rxmsg.json?len=1&maxw="+String(Math.round(maxWait))+"&cmd=$"+hexString;
+        } else {
+            // long query
+            prevpos = this.end_tell();
+            this._upload("txdata", YAPI._hexStrToBin(hexString));
+            url = "rxmsg.json?len=1&maxw="+String(Math.round(maxWait))+"&pos="+String(Math.round(prevpos));
+        }
 
-        url = "rxmsg.json?len=1&maxw="+String(Math.round(maxWait))+"&cmd=$"+hexString;
         msgbin = this._download(url);
         msgarr = this._json_get_array(msgbin);
         msglen = msgarr.length;
@@ -1457,6 +1488,10 @@ var YI2cPort; // definition below
         var msg;                    // str;
         var reply;                  // str;
         var rcvbytes;               // bin;
+        rcvbytes = new Uint8Array(0);
+        if (!(rcvCount<=512)) {
+            return this._throw(YAPI_INVALID_ARGUMENT,"Cannot read more than 512 bytes",rcvbytes);
+        }
         msg = "@"+('00'+(slaveAddr).toString(16)).slice(-2).toLowerCase()+":";
         nBytes = (buff).length;
         idx = 0;
@@ -1466,13 +1501,22 @@ var YI2cPort; // definition below
             idx = idx + 1;
         }
         idx = 0;
+        if (rcvCount > 54) {
+            while (rcvCount - idx > 255) {
+                msg = ""+msg+"xx*FF";
+                idx = idx + 255;
+            }
+            if (rcvCount - idx > 2) {
+                msg = ""+msg+"xx*"+('00'+((rcvCount - idx)).toString(16)).slice(-2).toUpperCase();
+                idx = rcvCount;
+            }
+        }
         while (idx < rcvCount) {
             msg = ""+msg+"xx";
             idx = idx + 1;
         }
 
         reply = this.queryLine(msg,1000);
-        rcvbytes = new Uint8Array(0);
         if (!((reply).length > 0)) {
             return this._throw(YAPI_IO_ERROR,"No response from I2C device",rcvbytes);
         }
@@ -1511,6 +1555,10 @@ var YI2cPort; // definition below
         var reply;                  // str;
         var rcvbytes;               // bin;
         var res = [];               // intArr;
+        res.length = 0;
+        if (!(rcvCount<=512)) {
+            return this._throw(YAPI_INVALID_ARGUMENT,"Cannot read more than 512 bytes",res);
+        }
         msg = "@"+('00'+(slaveAddr).toString(16)).slice(-2).toLowerCase()+":";
         nBytes = values.length;
         idx = 0;
@@ -1520,6 +1568,16 @@ var YI2cPort; // definition below
             idx = idx + 1;
         }
         idx = 0;
+        if (rcvCount > 54) {
+            while (rcvCount - idx > 255) {
+                msg = ""+msg+"xx*FF";
+                idx = idx + 255;
+            }
+            if (rcvCount - idx > 2) {
+                msg = ""+msg+"xx*"+('00'+((rcvCount - idx)).toString(16)).slice(-2).toUpperCase();
+                idx = rcvCount;
+            }
+        }
         while (idx < rcvCount) {
             msg = ""+msg+"xx";
             idx = idx + 1;
@@ -1903,6 +1961,7 @@ var YI2cPort; // definition below
         read_seek                   : YI2cPort_read_seek,
         read_tell                   : YI2cPort_read_tell,
         read_avail                  : YI2cPort_read_avail,
+        end_tell                    : YI2cPort_end_tell,
         queryLine                   : YI2cPort_queryLine,
         queryHex                    : YI2cPort_queryHex,
         uploadJob                   : YI2cPort_uploadJob,
