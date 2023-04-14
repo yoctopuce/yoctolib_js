@@ -1,5 +1,3 @@
-Javascript v1.10.53532
+Javascript v1.10.54037
 
-- Add support for callbackTemplate and powerFactor
-- Improve YSerialPort, YSpiPort and I2cPort class
-- Fix a few typos in the doc
+- Add YInputCapture class

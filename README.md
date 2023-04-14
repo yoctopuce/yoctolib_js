@@ -4,9 +4,10 @@ Yoctopuce library for JavaScript (DEPRECATED)
 **Important: this is an old version of Yoctopuce library for
 Javascript (using synchronous XMLHttpRequests).**
 It has been preserved to avoid breaking dependencies, but is not any more updated.
-We recommend using the [EcmaScript 2017](https://github.com/yoctopuce/yoctolib_es2017) version, 
+We recommend using the [TypeScript](https://github.com/yoctopuce/yoctolib_ts) version, 
 which has full support for asynchronous I/O, implements more efficient HTTP requests and
-includes WebSocket support.
+includes WebSocket support. The TypeScript library includes pure JavaScript files
+transpiled from TypeScript, ready to use in the `dist/` subdirectory
 
 ## License information
 
