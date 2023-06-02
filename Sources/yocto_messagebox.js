@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_messagebox.js 50144 2022-06-17 06:59:52Z seb $
+ * $Id: yocto_messagebox.js 54314 2023-05-01 14:21:11Z seb $
  *
  * Implements the high-level API for MessageBox functions
  *
@@ -689,7 +689,7 @@ var YSms; // definition below
             }
             // remove padding digit if needed
             if ((((addr).charCodeAt(ofs+siz)) >> (4)) == 15) {
-                res = (res).substr( 0, (res).length-1);
+                res = (res).substr(0, (res).length-1);
             }
             return res;
         }
@@ -733,7 +733,7 @@ var YSms; // definition below
         }
         if ((exp).substr(4, 1) == "-" || (exp).substr(4, 1) == "/") {
             // ignore century
-            exp = (exp).substr( 2, explen-2);
+            exp = (exp).substr(2, explen-2);
             explen = (exp).length;
         }
         expasc = exp;
@@ -1887,19 +1887,19 @@ var YMessageBox; // definition below
         cmdLen = (cmd).length;
         chrPos = (cmd).indexOf("#");
         while (chrPos >= 0) {
-            cmd = ""+(cmd).substr( 0, chrPos)+""+String.fromCharCode(37)+"23"+(cmd).substr( chrPos+1, cmdLen-chrPos-1);
+            cmd = ""+(cmd).substr(0, chrPos)+""+String.fromCharCode(37)+"23"+(cmd).substr(chrPos+1, cmdLen-chrPos-1);
             cmdLen = cmdLen + 2;
             chrPos = (cmd).indexOf("#");
         }
         chrPos = (cmd).indexOf("+");
         while (chrPos >= 0) {
-            cmd = ""+(cmd).substr( 0, chrPos)+""+String.fromCharCode(37)+"2B"+(cmd).substr( chrPos+1, cmdLen-chrPos-1);
+            cmd = ""+(cmd).substr(0, chrPos)+""+String.fromCharCode(37)+"2B"+(cmd).substr(chrPos+1, cmdLen-chrPos-1);
             cmdLen = cmdLen + 2;
             chrPos = (cmd).indexOf("+");
         }
         chrPos = (cmd).indexOf("=");
         while (chrPos >= 0) {
-            cmd = ""+(cmd).substr( 0, chrPos)+""+String.fromCharCode(37)+"3D"+(cmd).substr( chrPos+1, cmdLen-chrPos-1);
+            cmd = ""+(cmd).substr(0, chrPos)+""+String.fromCharCode(37)+"3D"+(cmd).substr(chrPos+1, cmdLen-chrPos-1);
             cmdLen = cmdLen + 2;
             chrPos = (cmd).indexOf("=");
         }
@@ -1919,8 +1919,8 @@ var YMessageBox; // definition below
             if ((buff).charCodeAt(idx) == 64) {
                 // continuation detected
                 suffixlen = bufflen - idx;
-                cmd = "at.txt?cmd="+(buffstr).substr( buffstrlen - suffixlen, suffixlen);
-                buffstr = (buffstr).substr( 0, buffstrlen - suffixlen);
+                cmd = "at.txt?cmd="+(buffstr).substr(buffstrlen - suffixlen, suffixlen);
+                buffstr = (buffstr).substr(0, buffstrlen - suffixlen);
                 waitMore = waitMore - 1;
             } else {
                 // request complete

@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_steppermotor.js 50689 2022-08-17 14:37:15Z mvuilleu $
+ *  $Id: yocto_steppermotor.js 54314 2023-05-01 14:21:11Z seb $
  *
  *  Implements the high-level API for StepperMotor functions
  *
@@ -1122,7 +1122,7 @@ var YStepperMotor; // definition below
         var retBin;                 // bin;
         var res;                    // int;
         id = this.get_functionId();
-        id = (id).substr( 12, 1);
+        id = (id).substr(12, 1);
         url = "cmd.txt?"+id+"="+command;
         //may throw an exception
         retBin = this._download(url);

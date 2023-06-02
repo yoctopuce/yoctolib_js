@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_cellular.js 50494 2022-07-19 16:08:56Z mvuilleu $
+ * $Id: yocto_cellular.js 54314 2023-05-01 14:21:11Z seb $
  *
  * Implements the high-level API for Cellular functions
  *
@@ -1544,19 +1544,19 @@ var YCellular; // definition below
         cmdLen = (cmd).length;
         chrPos = (cmd).indexOf("#");
         while (chrPos >= 0) {
-            cmd = ""+(cmd).substr( 0, chrPos)+""+String.fromCharCode(37)+"23"+(cmd).substr( chrPos+1, cmdLen-chrPos-1);
+            cmd = ""+(cmd).substr(0, chrPos)+""+String.fromCharCode(37)+"23"+(cmd).substr(chrPos+1, cmdLen-chrPos-1);
             cmdLen = cmdLen + 2;
             chrPos = (cmd).indexOf("#");
         }
         chrPos = (cmd).indexOf("+");
         while (chrPos >= 0) {
-            cmd = ""+(cmd).substr( 0, chrPos)+""+String.fromCharCode(37)+"2B"+(cmd).substr( chrPos+1, cmdLen-chrPos-1);
+            cmd = ""+(cmd).substr(0, chrPos)+""+String.fromCharCode(37)+"2B"+(cmd).substr(chrPos+1, cmdLen-chrPos-1);
             cmdLen = cmdLen + 2;
             chrPos = (cmd).indexOf("+");
         }
         chrPos = (cmd).indexOf("=");
         while (chrPos >= 0) {
-            cmd = ""+(cmd).substr( 0, chrPos)+""+String.fromCharCode(37)+"3D"+(cmd).substr( chrPos+1, cmdLen-chrPos-1);
+            cmd = ""+(cmd).substr(0, chrPos)+""+String.fromCharCode(37)+"3D"+(cmd).substr(chrPos+1, cmdLen-chrPos-1);
             cmdLen = cmdLen + 2;
             chrPos = (cmd).indexOf("=");
         }
@@ -1576,8 +1576,8 @@ var YCellular; // definition below
             if ((buff).charCodeAt(idx) == 64) {
                 // continuation detected
                 suffixlen = bufflen - idx;
-                cmd = "at.txt?cmd="+(buffstr).substr( buffstrlen - suffixlen, suffixlen);
-                buffstr = (buffstr).substr( 0, buffstrlen - suffixlen);
+                cmd = "at.txt?cmd="+(buffstr).substr(buffstrlen - suffixlen, suffixlen);
+                buffstr = (buffstr).substr(0, buffstrlen - suffixlen);
                 waitMore = waitMore - 1;
             } else {
                 // request complete
@@ -1610,14 +1610,14 @@ var YCellular; // definition below
         idx = (cops).indexOf("(");
         while (idx >= 0) {
             slen = slen - (idx+1);
-            cops = (cops).substr( idx+1, slen);
+            cops = (cops).substr(idx+1, slen);
             idx = (cops).indexOf("\"");
             if (idx > 0) {
                 slen = slen - (idx+1);
-                cops = (cops).substr( idx+1, slen);
+                cops = (cops).substr(idx+1, slen);
                 idx = (cops).indexOf("\"");
                 if (idx > 0) {
-                    res.push((cops).substr( 0, idx));
+                    res.push((cops).substr(0, idx));
                 }
             }
             idx = (cops).indexOf("(");
@@ -1672,25 +1672,25 @@ var YCellular; // definition below
         recs = (moni).split('#');
         // process each line in turn
         res.length = 0;
-        for (ii in recs) {
-            if(ii=='indexOf') continue; // IE8 Don'tEnum bug
-            llen = (recs[ii]).length - 2;
+        for (ii_0 in recs) {
+            if(ii_0 =='indexOf') continue; // IE8 Don'tEnum bug
+            llen = (recs[ii_0]).length - 2;
             if (llen >= 44) {
-                if ((recs[ii]).substr(41, 3) == "dbm") {
-                    lac = parseInt((recs[ii]).substr(16, 4), 16);
-                    cellId = parseInt((recs[ii]).substr(23, 4), 16);
-                    dbms = (recs[ii]).substr(37, 4);
+                if ((recs[ii_0]).substr(41, 3) == "dbm") {
+                    lac = parseInt((recs[ii_0]).substr(16, 4), 16);
+                    cellId = parseInt((recs[ii_0]).substr(23, 4), 16);
+                    dbms = (recs[ii_0]).substr(37, 4);
                     if ((dbms).substr(0, 1) == " ") {
                         dbms = (dbms).substr(1, 3);
                     }
                     dbm = YAPI._atoi(dbms);
                     if (llen > 66) {
-                        tads = (recs[ii]).substr(54, 2);
+                        tads = (recs[ii_0]).substr(54, 2);
                         if ((tads).substr(0, 1) == " ") {
                             tads = (tads).substr(1, 3);
                         }
                         tad = YAPI._atoi(tads);
-                        oper = (recs[ii]).substr(66, llen-66);
+                        oper = (recs[ii_0]).substr(66, llen-66);
                     } else {
                         tad = -1;
                         oper = "";
@@ -6188,7 +6188,7 @@ var YCellular; // definition below
             line = lines[idx];
             cpos = (line).indexOf(":");
             if (cpos > 0) {
-                profno = YAPI._atoi((line).substr( 0, cpos));
+                profno = YAPI._atoi((line).substr(0, cpos));
                 if (profno > 1) {
                     res.push(line);
                 }

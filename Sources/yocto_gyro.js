@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_gyro.js 50689 2022-08-17 14:37:15Z mvuilleu $
+ * $Id: yocto_gyro.js 54314 2023-05-01 14:21:11Z seb $
  *
  * Implements the high-level API for Gyro functions
  *
@@ -835,7 +835,7 @@ var YGyro; // definition below
 
     function YGyro_invokeGyroCallbacks(qtIndex,qtValue)
     {
-        switch(qtIndex - 1) {
+        switch (qtIndex - 1) {
         case 0:
             this._w = qtValue;
             break;

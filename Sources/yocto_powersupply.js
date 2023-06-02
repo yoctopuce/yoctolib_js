@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_powersupply.js 50689 2022-08-17 14:37:15Z mvuilleu $
+ *  $Id: yocto_powersupply.js 54768 2023-05-26 06:46:41Z seb $
  *
  *  Implements the high-level API for PowerSupply functions
  *
@@ -45,16 +45,11 @@ if(typeof YAPI == "undefined") { if(typeof yAPI != "undefined") window["YAPI"]=y
 var Y_POWEROUTPUT_OFF               = 0;
 var Y_POWEROUTPUT_ON                = 1;
 var Y_POWEROUTPUT_INVALID           = -1;
-var Y_VOLTAGESENSE_INT              = 0;
-var Y_VOLTAGESENSE_EXT              = 1;
-var Y_VOLTAGESENSE_INVALID          = -1;
 var Y_VOLTAGESETPOINT_INVALID       = YAPI_INVALID_DOUBLE;
 var Y_CURRENTLIMIT_INVALID          = YAPI_INVALID_DOUBLE;
 var Y_MEASUREDVOLTAGE_INVALID       = YAPI_INVALID_DOUBLE;
 var Y_MEASUREDCURRENT_INVALID       = YAPI_INVALID_DOUBLE;
 var Y_INPUTVOLTAGE_INVALID          = YAPI_INVALID_DOUBLE;
-var Y_VINT_INVALID                  = YAPI_INVALID_DOUBLE;
-var Y_LDOTEMPERATURE_INVALID        = YAPI_INVALID_DOUBLE;
 var Y_VOLTAGETRANSITION_INVALID     = YAPI_INVALID_STRING;
 var Y_VOLTAGEATSTARTUP_INVALID      = YAPI_INVALID_DOUBLE;
 var Y_CURRENTATSTARTUP_INVALID      = YAPI_INVALID_DOUBLE;
@@ -84,12 +79,9 @@ var YPowerSupply; // definition below
         this._voltageSetPoint                = Y_VOLTAGESETPOINT_INVALID;  // MeasureVal
         this._currentLimit                   = Y_CURRENTLIMIT_INVALID;     // MeasureVal
         this._powerOutput                    = Y_POWEROUTPUT_INVALID;      // OnOff
-        this._voltageSense                   = Y_VOLTAGESENSE_INVALID;     // VoltageSense
         this._measuredVoltage                = Y_MEASUREDVOLTAGE_INVALID;  // MeasureVal
         this._measuredCurrent                = Y_MEASUREDCURRENT_INVALID;  // MeasureVal
         this._inputVoltage                   = Y_INPUTVOLTAGE_INVALID;     // MeasureVal
-        this._vInt                           = Y_VINT_INVALID;             // MeasureVal
-        this._ldoTemperature                 = Y_LDOTEMPERATURE_INVALID;   // MeasureVal
         this._voltageTransition              = Y_VOLTAGETRANSITION_INVALID; // AnyFloatTransition
         this._voltageAtStartUp               = Y_VOLTAGEATSTARTUP_INVALID; // MeasureVal
         this._currentAtStartUp               = Y_CURRENTATSTARTUP_INVALID; // MeasureVal
@@ -111,9 +103,6 @@ var YPowerSupply; // definition below
         case "powerOutput":
             this._powerOutput = parseInt(val);
             return 1;
-        case "voltageSense":
-            this._voltageSense = parseInt(val);
-            return 1;
         case "measuredVoltage":
             this._measuredVoltage = Math.round(val / 65.536) / 1000.0;
             return 1;
@@ -122,12 +111,6 @@ var YPowerSupply; // definition below
             return 1;
         case "inputVoltage":
             this._inputVoltage = Math.round(val / 65.536) / 1000.0;
-            return 1;
-        case "vInt":
-            this._vInt = Math.round(val / 65.536) / 1000.0;
-            return 1;
-        case "ldoTemperature":
-            this._ldoTemperature = Math.round(val / 65.536) / 1000.0;
             return 1;
         case "voltageTransition":
             this._voltageTransition = val;
@@ -347,75 +330,6 @@ var YPowerSupply; // definition below
     }
 
     /**
-     * Returns the output voltage control point.
-     *
-     * @return either YPowerSupply.VOLTAGESENSE_INT or YPowerSupply.VOLTAGESENSE_EXT, according to the
-     * output voltage control point
-     *
-     * On failure, throws an exception or returns YPowerSupply.VOLTAGESENSE_INVALID.
-     */
-    function YPowerSupply_get_voltageSense()
-    {
-        var res;                    // enumVOLTAGESENSE;
-        if (this._cacheExpiration <= YAPI.GetTickCount()) {
-            if (this.load(YAPI.defaultCacheValidity) != YAPI_SUCCESS) {
-                return Y_VOLTAGESENSE_INVALID;
-            }
-        }
-        res = this._voltageSense;
-        return res;
-    }
-
-    /**
-     * Gets the output voltage control point.
-     *
-     * @param callback : callback function that is invoked when the result is known.
-     *         The callback function receives three arguments:
-     *         - the user-specific context object
-     *         - the YPowerSupply object that invoked the callback
-     *         - the result:either YPowerSupply.VOLTAGESENSE_INT or YPowerSupply.VOLTAGESENSE_EXT, according to
-     *         the output voltage control point
-     * @param context : user-specific object that is passed as-is to the callback function
-     *
-     * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
-     *
-     * On failure, throws an exception or returns YPowerSupply.VOLTAGESENSE_INVALID.
-     */
-    function YPowerSupply_get_voltageSense_async(callback,context)
-    {
-        var res;                    // enumVOLTAGESENSE;
-        var loadcb;                 // func;
-        loadcb = function(ctx,obj,res) {
-            if (res != YAPI_SUCCESS) {
-                callback(context, obj, Y_VOLTAGESENSE_INVALID);
-            } else {
-                callback(context, obj, obj._voltageSense);
-            }
-        };
-        if (this._cacheExpiration <= YAPI.GetTickCount()) {
-            this.load_async(YAPI.defaultCacheValidity,loadcb,null);
-        } else {
-            loadcb(null, this, YAPI_SUCCESS);
-        }
-    }
-
-    /**
-     * Changes the voltage control point.
-     *
-     * @param newval : either YPowerSupply.VOLTAGESENSE_INT or YPowerSupply.VOLTAGESENSE_EXT, according to
-     * the voltage control point
-     *
-     * @return YAPI.SUCCESS if the call succeeds.
-     *
-     * On failure, throws an exception or returns a negative error code.
-     */
-    function YPowerSupply_set_voltageSense(newval)
-    {   var rest_val;
-        rest_val = String(newval);
-        return this._setAttr('voltageSense',rest_val);
-    }
-
-    /**
      * Returns the measured output voltage, in V.
      *
      * @return a floating point number corresponding to the measured output voltage, in V
@@ -559,108 +473,6 @@ var YPowerSupply; // definition below
                 callback(context, obj, Y_INPUTVOLTAGE_INVALID);
             } else {
                 callback(context, obj, obj._inputVoltage);
-            }
-        };
-        if (this._cacheExpiration <= YAPI.GetTickCount()) {
-            this.load_async(YAPI.defaultCacheValidity,loadcb,null);
-        } else {
-            loadcb(null, this, YAPI_SUCCESS);
-        }
-    }
-
-    /**
-     * Returns the internal voltage, in V.
-     *
-     * @return a floating point number corresponding to the internal voltage, in V
-     *
-     * On failure, throws an exception or returns YPowerSupply.VINT_INVALID.
-     */
-    function YPowerSupply_get_vInt()
-    {
-        var res;                    // double;
-        if (this._cacheExpiration <= YAPI.GetTickCount()) {
-            if (this.load(YAPI.defaultCacheValidity) != YAPI_SUCCESS) {
-                return Y_VINT_INVALID;
-            }
-        }
-        res = this._vInt;
-        return res;
-    }
-
-    /**
-     * Gets the internal voltage, in V.
-     *
-     * @param callback : callback function that is invoked when the result is known.
-     *         The callback function receives three arguments:
-     *         - the user-specific context object
-     *         - the YPowerSupply object that invoked the callback
-     *         - the result:a floating point number corresponding to the internal voltage, in V
-     * @param context : user-specific object that is passed as-is to the callback function
-     *
-     * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
-     *
-     * On failure, throws an exception or returns YPowerSupply.VINT_INVALID.
-     */
-    function YPowerSupply_get_vInt_async(callback,context)
-    {
-        var res;                    // double;
-        var loadcb;                 // func;
-        loadcb = function(ctx,obj,res) {
-            if (res != YAPI_SUCCESS) {
-                callback(context, obj, Y_VINT_INVALID);
-            } else {
-                callback(context, obj, obj._vInt);
-            }
-        };
-        if (this._cacheExpiration <= YAPI.GetTickCount()) {
-            this.load_async(YAPI.defaultCacheValidity,loadcb,null);
-        } else {
-            loadcb(null, this, YAPI_SUCCESS);
-        }
-    }
-
-    /**
-     * Returns the LDO temperature, in Celsius.
-     *
-     * @return a floating point number corresponding to the LDO temperature, in Celsius
-     *
-     * On failure, throws an exception or returns YPowerSupply.LDOTEMPERATURE_INVALID.
-     */
-    function YPowerSupply_get_ldoTemperature()
-    {
-        var res;                    // double;
-        if (this._cacheExpiration <= YAPI.GetTickCount()) {
-            if (this.load(YAPI.defaultCacheValidity) != YAPI_SUCCESS) {
-                return Y_LDOTEMPERATURE_INVALID;
-            }
-        }
-        res = this._ldoTemperature;
-        return res;
-    }
-
-    /**
-     * Gets the LDO temperature, in Celsius.
-     *
-     * @param callback : callback function that is invoked when the result is known.
-     *         The callback function receives three arguments:
-     *         - the user-specific context object
-     *         - the YPowerSupply object that invoked the callback
-     *         - the result:a floating point number corresponding to the LDO temperature, in Celsius
-     * @param context : user-specific object that is passed as-is to the callback function
-     *
-     * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
-     *
-     * On failure, throws an exception or returns YPowerSupply.LDOTEMPERATURE_INVALID.
-     */
-    function YPowerSupply_get_ldoTemperature_async(callback,context)
-    {
-        var res;                    // double;
-        var loadcb;                 // func;
-        loadcb = function(ctx,obj,res) {
-            if (res != YAPI_SUCCESS) {
-                callback(context, obj, Y_LDOTEMPERATURE_INVALID);
-            } else {
-                callback(context, obj, obj._ldoTemperature);
             }
         };
         if (this._cacheExpiration <= YAPI.GetTickCount()) {
@@ -1002,14 +814,9 @@ var YPowerSupply; // definition below
         POWEROUTPUT_OFF             : 0,
         POWEROUTPUT_ON              : 1,
         POWEROUTPUT_INVALID         : -1,
-        VOLTAGESENSE_INT            : 0,
-        VOLTAGESENSE_EXT            : 1,
-        VOLTAGESENSE_INVALID        : -1,
         MEASUREDVOLTAGE_INVALID     : YAPI_INVALID_DOUBLE,
         MEASUREDCURRENT_INVALID     : YAPI_INVALID_DOUBLE,
         INPUTVOLTAGE_INVALID        : YAPI_INVALID_DOUBLE,
-        VINT_INVALID                : YAPI_INVALID_DOUBLE,
-        LDOTEMPERATURE_INVALID      : YAPI_INVALID_DOUBLE,
         VOLTAGETRANSITION_INVALID   : YAPI_INVALID_STRING,
         VOLTAGEATSTARTUP_INVALID    : YAPI_INVALID_DOUBLE,
         CURRENTATSTARTUP_INVALID    : YAPI_INVALID_DOUBLE,
@@ -1038,12 +845,6 @@ var YPowerSupply; // definition below
         powerOutput_async           : YPowerSupply_get_powerOutput_async,
         set_powerOutput             : YPowerSupply_set_powerOutput,
         setPowerOutput              : YPowerSupply_set_powerOutput,
-        get_voltageSense            : YPowerSupply_get_voltageSense,
-        voltageSense                : YPowerSupply_get_voltageSense,
-        get_voltageSense_async      : YPowerSupply_get_voltageSense_async,
-        voltageSense_async          : YPowerSupply_get_voltageSense_async,
-        set_voltageSense            : YPowerSupply_set_voltageSense,
-        setVoltageSense             : YPowerSupply_set_voltageSense,
         get_measuredVoltage         : YPowerSupply_get_measuredVoltage,
         measuredVoltage             : YPowerSupply_get_measuredVoltage,
         get_measuredVoltage_async   : YPowerSupply_get_measuredVoltage_async,
@@ -1056,14 +857,6 @@ var YPowerSupply; // definition below
         inputVoltage                : YPowerSupply_get_inputVoltage,
         get_inputVoltage_async      : YPowerSupply_get_inputVoltage_async,
         inputVoltage_async          : YPowerSupply_get_inputVoltage_async,
-        get_vInt                    : YPowerSupply_get_vInt,
-        vInt                        : YPowerSupply_get_vInt,
-        get_vInt_async              : YPowerSupply_get_vInt_async,
-        vInt_async                  : YPowerSupply_get_vInt_async,
-        get_ldoTemperature          : YPowerSupply_get_ldoTemperature,
-        ldoTemperature              : YPowerSupply_get_ldoTemperature,
-        get_ldoTemperature_async    : YPowerSupply_get_ldoTemperature_async,
-        ldoTemperature_async        : YPowerSupply_get_ldoTemperature_async,
         get_voltageTransition       : YPowerSupply_get_voltageTransition,
         voltageTransition           : YPowerSupply_get_voltageTransition,
         get_voltageTransition_async : YPowerSupply_get_voltageTransition_async,

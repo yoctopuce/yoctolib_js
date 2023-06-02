@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_serialport.js 52892 2023-01-25 10:13:30Z seb $
+ * $Id: yocto_serialport.js 54314 2023-05-01 14:21:11Z seb $
  *
  * Implements the high-level API for SerialPort functions
  *
@@ -1265,7 +1265,7 @@ var YSerialPort; // definition below
         databin = this._download("rxcnt.bin?pos="+String(Math.round(this._rxptr)));
         availPosStr = databin;
         atPos = (availPosStr).indexOf("@");
-        res = YAPI._atoi((availPosStr).substr( 0, atPos));
+        res = YAPI._atoi((availPosStr).substr(0, atPos));
         return res;
     }
 
@@ -1279,7 +1279,7 @@ var YSerialPort; // definition below
         databin = this._download("rxcnt.bin?pos="+String(Math.round(this._rxptr)));
         availPosStr = databin;
         atPos = (availPosStr).indexOf("@");
-        res = YAPI._atoi((availPosStr).substr( atPos+1, (availPosStr).length-atPos-1));
+        res = YAPI._atoi((availPosStr).substr(atPos+1, (availPosStr).length-atPos-1));
         return res;
     }
 
@@ -1544,7 +1544,7 @@ var YSerialPort; // definition below
         buff = new Uint8Array(bufflen);
         idx = 0;
         while (idx < bufflen) {
-            hexb = parseInt((hexString).substr( 2 * idx, 2), 16);
+            hexb = parseInt((hexString).substr(2 * idx, 2), 16);
             buff[idx] = hexb;
             idx = idx + 1;
         }
@@ -1691,7 +1691,7 @@ var YSerialPort; // definition below
             bufflen = bufflen - 1;
         }
         this._rxptr = endpos;
-        res = (buff).substr( 0, bufflen);
+        res = (buff).substr(0, bufflen);
         return res;
     }
 

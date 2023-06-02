@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_arithmeticsensor.js 43619 2021-01-29 09:14:45Z mvuilleu $
+ *  $Id: yocto_arithmeticsensor.js 54314 2023-05-01 14:21:11Z seb $
  *
  *  Implements the high-level API for ArithmeticSensor functions
  *
@@ -263,7 +263,7 @@ var YArithmeticSensor; // definition below
         var diags;                  // str;
         var resval;                 // float;
         id = this.get_functionId();
-        id = (id).substr( 16, (id).length - 16);
+        id = (id).substr(16, (id).length - 16);
         fname = "arithmExpr"+id+".txt";
 
         content = "// "+descr+"\n"+expr;
@@ -272,7 +272,7 @@ var YArithmeticSensor; // definition below
         if (!((diags).substr(0, 8) == "Result: ")) {
             return this._throw(YAPI_INVALID_ARGUMENT,diags,YAPI_INVALID_DOUBLE);
         }
-        resval = parseFloat((diags).substr( 8, (diags).length-8));
+        resval = parseFloat((diags).substr(8, (diags).length-8));
         return resval;
     }
 
@@ -291,13 +291,13 @@ var YArithmeticSensor; // definition below
         var content;                // str;
         var idx;                    // int;
         id = this.get_functionId();
-        id = (id).substr( 16, (id).length - 16);
+        id = (id).substr(16, (id).length - 16);
         fname = "arithmExpr"+id+".txt";
 
         content = this._download(fname);
         idx = (content).indexOf("\n");
         if (idx > 0) {
-            content = (content).substr( idx+1, (content).length-(idx+1));
+            content = (content).substr(idx+1, (content).length-(idx+1));
         }
         return content;
     }

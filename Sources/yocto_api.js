@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_api.js 53258 2023-02-16 11:16:45Z seb $
+ * $Id: yocto_api.js 54314 2023-05-01 14:21:11Z seb $
  *
  * High-level programming interface, common to all modules
  *
@@ -2678,7 +2678,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
      */
     function YAPI_GetAPIVersion()
     {
-        return "1.10.54037";
+        return "1.10.54821";
     }
 
     /**
@@ -2699,7 +2699,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
      *
      * @return YAPI.SUCCESS when the call succeeds.
      *
-     * On failure, throws an exception or returns a negative error code.
+     * On failure returns a negative error code.
      */
     function YAPI_InitAPI(mode,errmsg)
     {
@@ -2753,8 +2753,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
      * Re-enables the use of exceptions for runtime error handling.
      * Be aware than when exceptions are enabled, every function that fails
      * triggers an exception. If the exception is not caught by the user code,
-     * it  either fires the debugger or aborts (i.e. crash) the program.
-     * On failure, throws an exception or returns a negative error code.
+     * it either fires the debugger or aborts (i.e. crash) the program.
      */
     function YAPI_EnableExceptions()
     {
@@ -2885,7 +2884,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
      *
      * @return YAPI.SUCCESS when the call succeeds.
      *
-     * On failure, throws an exception or returns a negative error code.
+     * On failure returns a negative error code.
      */
     function YAPI_RegisterHub(url,errmsg)
     {
@@ -3061,7 +3060,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
      *
      * @return YAPI.SUCCESS when the call succeeds.
      *
-     * On failure, throws an exception or returns a negative error code.
+     * On failure returns a negative error code.
      */
     function YAPI_PreregisterHub(url, errmsg)
     {
@@ -3124,7 +3123,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
      *
      * @return YAPI.SUCCESS when the call succeeds.
      *
-     * On failure, throws an exception or returns a negative error code.
+     * On failure returns a negative error code.
      */
     function YAPI_UpdateDeviceList(errmsg)
     {
@@ -3215,7 +3214,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
      *
      * @return YAPI.SUCCESS when the call succeeds.
      *
-     * On failure, throws an exception or returns a negative error code.
+     * On failure returns a negative error code.
      */
     function YAPI_HandleEvents(errmsg)
     {
@@ -3256,7 +3255,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
      *
      * @return YAPI.SUCCESS when the call succeeds.
      *
-     * On failure, throws an exception or returns a negative error code.
+     * On failure returns a negative error code.
      */
     function YAPI_Sleep(ms_duration, errmsg)
     {
@@ -3284,9 +3283,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
      *         callback function can be provided, if needed
      *         (not supported on Microsoft Internet Explorer).
      *
-     * @return YAPI.SUCCESS when the call succeeds.
-     *
-     * On failure, throws an exception or returns a negative error code.
+     * @return YAPI.SUCCESS
      */
     function YAPI_SetTimeout(callback, ms_timeout, args)
     {
@@ -5328,7 +5325,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
         leng = (err).length;
         if ((leng >= 6) && ("error:" == (err).substr(0, 6))) {
             this._progress = -1;
-            this._progress_msg = (err).substr( 6, leng - 6);
+            this._progress_msg = (err).substr(6, leng - 6);
         } else {
             this._progress = 0;
             this._progress_c = 0;
@@ -5438,7 +5435,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
             this._startTime = this._utcStamp + (ms_offset / 1000.0);
         } else {
             // legacy encoding subtract the measure interval form the UTC timestamp
-            this._startTime = this._utcStamp -  this._dataSamplesInterval;
+            this._startTime = this._utcStamp - this._dataSamplesInterval;
         }
         this._firstMeasureDuration = encoded[5];
         if (!(this._isAvg)) {
@@ -6053,34 +6050,34 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
         summaryStopMs = YAPI_MIN_DOUBLE;
 
         // Parse complete streams
-        for (ii in  this._streams) {
-            if(ii=='indexOf') continue; // IE8 Don'tEnum bug
-            streamStartTimeMs = Math.round( this._streams[ii].get_realStartTimeUTC() *1000);
-            streamDuration =  this._streams[ii].get_realDuration() ;
+        for (ii_0 in  this._streams) {
+            if(ii_0 =='indexOf') continue; // IE8 Don'tEnum bug
+            streamStartTimeMs = Math.round( this._streams[ii_0].get_realStartTimeUTC() * 1000);
+            streamDuration =  this._streams[ii_0].get_realDuration();
             streamEndTimeMs = streamStartTimeMs + Math.round(streamDuration * 1000);
             if ((streamStartTimeMs >= this._startTimeMs) && ((this._endTimeMs == 0) || (streamEndTimeMs <= this._endTimeMs))) {
                 // stream that are completely inside the dataset
-                previewMinVal =  this._streams[ii].get_minValue();
-                previewAvgVal =  this._streams[ii].get_averageValue();
-                previewMaxVal =  this._streams[ii].get_maxValue();
+                previewMinVal =  this._streams[ii_0].get_minValue();
+                previewAvgVal =  this._streams[ii_0].get_averageValue();
+                previewMaxVal =  this._streams[ii_0].get_maxValue();
                 previewStartMs = streamStartTimeMs;
                 previewStopMs = streamEndTimeMs;
                 previewDuration = streamDuration;
             } else {
                 // stream that are partially in the dataset
                 // we need to parse data to filter value outside the dataset
-                if (!( this._streams[ii]._wasLoaded())) {
-                    url =  this._streams[ii]._get_url();
+                if (!( this._streams[ii_0]._wasLoaded())) {
+                    url =  this._streams[ii_0]._get_url();
                     data = this._parent._download(url);
-                    this._streams[ii]._parseStream(data);
+                    this._streams[ii_0]._parseStream(data);
                 }
-                dataRows =  this._streams[ii].get_dataRows();
+                dataRows =  this._streams[ii_0].get_dataRows();
                 if (dataRows.length == 0) {
                     return this.get_progress();
                 }
                 tim = streamStartTimeMs;
-                fitv = Math.round( this._streams[ii].get_firstDataSamplesInterval() * 1000);
-                itv = Math.round( this._streams[ii].get_dataSamplesInterval() * 1000);
+                fitv = Math.round( this._streams[ii_0].get_firstDataSamplesInterval() * 1000);
+                itv = Math.round( this._streams[ii_0].get_dataSamplesInterval() * 1000);
                 nCols = dataRows[0].length;
                 minCol = 0;
                 if (nCols > 2) {
@@ -6101,7 +6098,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
                 previewMaxVal = YAPI_MIN_DOUBLE;
                 m_pos = 0;
                 while (m_pos < dataRows.length) {
-                    measure_data  = dataRows[m_pos];
+                    measure_data = dataRows[m_pos];
                     if (m_pos == 0) {
                         mitv = fitv;
                     } else {
@@ -6233,17 +6230,17 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
         }
 
         firstMeasure = true;
-        for (ii in dataRows) {
-            if(ii=='indexOf') continue; // IE8 Don'tEnum bug
+        for (ii_0 in dataRows) {
+            if(ii_0 =='indexOf') continue; // IE8 Don'tEnum bug
             if (firstMeasure) {
                 end_ = tim + fitv;
                 firstMeasure = false;
             } else {
                 end_ = tim + itv;
             }
-            avgv = dataRows[ii][avgCol];
+            avgv = dataRows[ii_0][avgCol];
             if ((end_ > this._startTimeMs) && ((this._endTimeMs == 0) || (tim < this._endTimeMs)) && !(isNaN(avgv))) {
-                this._measures.push(new YMeasure(tim / 1000, end_ / 1000, dataRows[ii][minCol], avgv, dataRows[ii][maxCol]));
+                this._measures.push(new YMeasure(tim / 1000, end_ / 1000, dataRows[ii_0][minCol], avgv, dataRows[ii_0][maxCol]));
             }
             tim = end_;
         }
@@ -6257,7 +6254,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
             url = stream._get_url();
             suffix = stream._get_urlsuffix();
             suffixes.push(suffix);
-            idx = this._progress+1;
+            idx = this._progress + 1;
             while ((idx < this._streams.length) && (suffixes.length < this._bulkLoad)) {
                 stream = this._streams[idx];
                 if (!(stream._wasLoaded()) && (stream._get_baseurl() == baseurl)) {
@@ -6422,7 +6419,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
                 url = ""+url+"&from="+String(Math.round(this.imm_get_startTimeUTC()));
             }
             if (this._endTimeMs != 0) {
-                url = ""+url+"&to="+String(Math.round(this.imm_get_endTimeUTC()+1));
+                url = ""+url+"&to="+String(Math.round(this.imm_get_endTimeUTC() + 1));
             }
         } else {
             if (this._progress >= this._streams.length) {
@@ -6515,10 +6512,10 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
 
         startUtcMs = measure.get_startTimeUTC() * 1000;
         stream = null;
-        for (ii in this._streams) {
-            if(ii=='indexOf') continue; // IE8 Don'tEnum bug
-            if (Math.round(this._streams[ii].get_realStartTimeUTC() *1000) == startUtcMs) {
-                stream = this._streams[ii];
+        for (ii_0 in this._streams) {
+            if(ii_0 =='indexOf') continue; // IE8 Don'tEnum bug
+            if (Math.round(this._streams[ii_0].get_realStartTimeUTC() *1000) == startUtcMs) {
+                stream = this._streams[ii_0];
             }
         }
         if (stream == null) {
@@ -6546,11 +6543,11 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
             maxCol = 0;
         }
 
-        for (ii in dataRows) {
-            if(ii=='indexOf') continue; // IE8 Don'tEnum bug
+        for (ii_1 in dataRows) {
+            if(ii_1 =='indexOf') continue; // IE8 Don'tEnum bug
             end_ = tim + itv;
             if ((end_ > this._startTimeMs) && ((this._endTimeMs == 0) || (tim < this._endTimeMs))) {
-                measures.push(new YMeasure(tim / 1000.0, end_ / 1000.0, dataRows[ii][minCol], dataRows[ii][avgCol], dataRows[ii][maxCol]));
+                measures.push(new YMeasure(tim / 1000.0, end_ / 1000.0, dataRows[ii_1][minCol], dataRows[ii_1][avgCol], dataRows[ii_1][maxCol]));
             }
             tim = end_;
         }
@@ -7798,7 +7795,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
         var res;                    // bin;
 
         res = this._download("api/dataLogger/recording?recording=1");
-        if (!((res).length>0)) {
+        if (!((res).length > 0)) {
             return this._throw(YAPI_IO_ERROR,"unable to start datalogger",YAPI_IO_ERROR);
         }
         return YAPI_SUCCESS;
@@ -7814,7 +7811,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
         var res;                    // bin;
 
         res = this._download("api/dataLogger/recording?recording=0");
-        if (!((res).length>0)) {
+        if (!((res).length > 0)) {
             return this._throw(YAPI_IO_ERROR,"unable to stop datalogger",YAPI_IO_ERROR);
         }
         return YAPI_SUCCESS;
@@ -7950,13 +7947,13 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
         }
         rawValues.length = 0;
         refValues.length = 0;
-        for (ii in this._calraw) {
-            if(ii=='indexOf') continue; // IE8 Don'tEnum bug
-            rawValues.push(this._calraw[ii]);
+        for (ii_0 in this._calraw) {
+            if(ii_0 =='indexOf') continue; // IE8 Don'tEnum bug
+            rawValues.push(this._calraw[ii_0]);
         }
-        for (ii in this._calref) {
-            if(ii=='indexOf') continue; // IE8 Don'tEnum bug
-            refValues.push(this._calref[ii]);
+        for (ii_1 in this._calref) {
+            if(ii_1 =='indexOf') continue; // IE8 Don'tEnum bug
+            refValues.push(this._calref[ii_1]);
         }
         return YAPI_SUCCESS;
     }
@@ -9085,10 +9082,10 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
 
         dslist = this._json_get_array(json);
         res.length = 0;
-        for (ii in dslist) {
-            if(ii=='indexOf') continue; // IE8 Don'tEnum bug
+        for (ii_0 in dslist) {
+            if(ii_0 =='indexOf') continue; // IE8 Don'tEnum bug
             dataset = new YDataSet(this);
-            dataset._parse(dslist[ii]);
+            dataset._parse(dslist[ii_0]);
             res.push(dataset);
         }
         return res;
@@ -10307,7 +10304,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
         prodname = this.get_productName();
         prodrel = this.get_productRelease();
         if (prodrel > 1) {
-            fullname = ""+prodname+" rev. "+String.fromCharCode(64+prodrel);
+            fullname = ""+prodname+" rev. "+String.fromCharCode(64 + prodrel);
         } else {
             fullname = prodname;
         }
@@ -10564,19 +10561,19 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
         ext_settings = ", \"extras\":[";
         templist = this.get_functionIds("Temperature");
         sep = "";
-        for (ii in  templist) {
-            if(ii=='indexOf') continue; // IE8 Don'tEnum bug
+        for (ii_0 in  templist) {
+            if(ii_0 =='indexOf') continue; // IE8 Don'tEnum bug
             if (YAPI._atoi(this.get_firmwareRelease()) > 9000) {
-                url = "api/"+ templist[ii]+"/sensorType";
+                url = "api/"+ templist[ii_0]+"/sensorType";
                 t_type = this._download(url);
                 if (t_type == "RES_NTC" || t_type == "RES_LINEAR") {
-                    id = ( templist[ii]).substr( 11, ( templist[ii]).length - 11);
+                    id = ( templist[ii_0]).substr(11, ( templist[ii_0]).length - 11);
                     if (id == "") {
                         id = "1";
                     }
                     temp_data_bin = this._download("extra.json?page="+id);
                     if ((temp_data_bin).length > 0) {
-                        item = ""+sep+"{\"fid\":\""+ templist[ii]+"\", \"json\":"+temp_data_bin+"}\n";
+                        item = ""+sep+"{\"fid\":\""+ templist[ii_0]+"\", \"json\":"+temp_data_bin+"}\n";
                         ext_settings = ext_settings + item;
                         sep = ",";
                     }
@@ -10591,9 +10588,9 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
             }
             filelist = this._json_get_array(json);
             sep = "";
-            for (ii in  filelist) {
-                if(ii=='indexOf') continue; // IE8 Don'tEnum bug
-                name = this._json_get_key( filelist[ii], "name");
+            for (ii_1 in  filelist) {
+                if(ii_1 =='indexOf') continue; // IE8 Don'tEnum bug
+                name = this._json_get_key( filelist[ii_1], "name");
                 if (((name).length > 0) && !(name == "startupConf.json")) {
                     file_data_bin = this._download(this._escapeAttr(name));
                     file_data = YAPI._bytesToHexStr(file_data_bin);
@@ -10639,11 +10636,11 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
         var functionId;             // str;
         var data;                   // str;
         extras = this._json_get_array(jsonExtra);
-        for (ii in  extras) {
-            if(ii=='indexOf') continue; // IE8 Don'tEnum bug
-            functionId = this._get_json_path( extras[ii], "fid");
+        for (ii_0 in  extras) {
+            if(ii_0 =='indexOf') continue; // IE8 Don'tEnum bug
+            functionId = this._get_json_path( extras[ii_0], "fid");
             functionId = this._decode_json_string(functionId);
-            data = this._get_json_path( extras[ii], "json");
+            data = this._get_json_path( extras[ii_0], "json");
             if (this.hasFunction(functionId)) {
                 this.loadThermistorExtra(functionId, data);
             }
@@ -10698,11 +10695,11 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
             }
             json_files = this._get_json_path(json, "files");
             files = this._json_get_array(json_files);
-            for (ii in  files) {
-                if(ii=='indexOf') continue; // IE8 Don'tEnum bug
-                name = this._get_json_path( files[ii], "name");
+            for (ii_0 in  files) {
+                if(ii_0 =='indexOf') continue; // IE8 Don'tEnum bug
+                name = this._get_json_path( files[ii_0], "name");
                 name = this._decode_json_string(name);
-                data = this._get_json_path( files[ii], "data");
+                data = this._get_json_path( files[ii_0], "data");
                 data = this._decode_json_string(data);
                 if (name == "") {
                     fuperror = fuperror + 1;
@@ -10904,9 +10901,9 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
             } else {
                 if (paramVer == 1) {
                     words_str = (param).split(',');
-                    for (ii in words_str) {
-                        if(ii=='indexOf') continue; // IE8 Don'tEnum bug
-                        words.push(YAPI._atoi(words_str[ii]));
+                    for (ii_0 in words_str) {
+                        if(ii_0 =='indexOf') continue; // IE8 Don'tEnum bug
+                        words.push(YAPI._atoi(words_str[ii_0]));
                     }
                     if (param == "" || (words[0] > 10)) {
                         paramScale = 0;
@@ -11083,9 +11080,9 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
         newval = "";
         old_json_flat = this._flattenJsonStruct(settings);
         old_dslist = this._json_get_array(old_json_flat);
-        for (ii in old_dslist) {
-            if(ii=='indexOf') continue; // IE8 Don'tEnum bug
-            each_str = this._json_get_string(old_dslist[ii]);
+        for (ii_0 in old_dslist) {
+            if(ii_0 =='indexOf') continue; // IE8 Don'tEnum bug
+            each_str = this._json_get_string(old_dslist[ii_0]);
             // split json path and attr
             leng = (each_str).length;
             eqpos = (each_str).indexOf("=");
@@ -11093,9 +11090,9 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
                 this._throw(YAPI_INVALID_ARGUMENT, "Invalid settings");
                 return YAPI_INVALID_ARGUMENT;
             }
-            jpath = (each_str).substr( 0, eqpos);
+            jpath = (each_str).substr(0, eqpos);
             eqpos = eqpos + 1;
-            value = (each_str).substr( eqpos, leng - eqpos);
+            value = (each_str).substr(eqpos, leng - eqpos);
             old_jpath.push(jpath);
             old_jpath_len.push((jpath).length);
             old_val_arr.push(value);
@@ -11110,10 +11107,10 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
         }
         actualSettings = this._flattenJsonStruct(actualSettings);
         new_dslist = this._json_get_array(actualSettings);
-        for (ii in new_dslist) {
-            if(ii=='indexOf') continue; // IE8 Don'tEnum bug
+        for (ii_1 in new_dslist) {
+            if(ii_1 =='indexOf') continue; // IE8 Don'tEnum bug
             // remove quotes
-            each_str = this._json_get_string(new_dslist[ii]);
+            each_str = this._json_get_string(new_dslist[ii_1]);
             // split json path and attr
             leng = (each_str).length;
             eqpos = (each_str).indexOf("=");
@@ -11121,9 +11118,9 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
                 this._throw(YAPI_INVALID_ARGUMENT, "Invalid settings");
                 return YAPI_INVALID_ARGUMENT;
             }
-            jpath = (each_str).substr( 0, eqpos);
+            jpath = (each_str).substr(0, eqpos);
             eqpos = eqpos + 1;
-            value = (each_str).substr( eqpos, leng - eqpos);
+            value = (each_str).substr(eqpos, leng - eqpos);
             new_jpath.push(jpath);
             new_jpath_len.push((jpath).length);
             new_val_arr.push(value);
@@ -11136,9 +11133,9 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
             if ((cpos < 0) || (leng == 0)) {
                 continue;
             }
-            fun = (njpath).substr( 0, cpos);
+            fun = (njpath).substr(0, cpos);
             cpos = cpos + 1;
-            attr = (njpath).substr( cpos, leng - cpos);
+            attr = (njpath).substr(cpos, leng - cpos);
             do_update = true;
             if (fun == "services") {
                 do_update = false;
@@ -11331,9 +11328,9 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
             }
             i = i + 1;
         }
-        for (ii in restoreLast) {
-            if(ii=='indexOf') continue; // IE8 Don'tEnum bug
-            subres = this._tryExec(restoreLast[ii]);
+        for (ii_2 in restoreLast) {
+            if(ii_2 =='indexOf') continue; // IE8 Don'tEnum bug
+            subres = this._tryExec(restoreLast[ii_2]);
             if ((res == YAPI_SUCCESS) && (subres != YAPI_SUCCESS)) {
                 res = subres;
             }
@@ -11691,7 +11688,7 @@ function yGetAPIVersion()
  *
  * @return YAPI.SUCCESS when the call succeeds.
  *
- * On failure, throws an exception or returns a negative error code.
+ * On failure returns a negative error code.
  */
 function yInitAPI(mode,errmsg)
 {
@@ -11738,8 +11735,7 @@ function yDisableExceptions()
  * Re-enables the use of exceptions for runtime error handling.
  * Be aware than when exceptions are enabled, every function that fails
  * triggers an exception. If the exception is not caught by the user code,
- * it  either fires the debugger or aborts (i.e. crash) the program.
- * On failure, throws an exception or returns a negative error code.
+ * it either fires the debugger or aborts (i.e. crash) the program.
  */
 function yEnableExceptions()
 {
@@ -11797,7 +11793,7 @@ function yEnableExceptions()
  *
  * @return YAPI.SUCCESS when the call succeeds.
  *
- * On failure, throws an exception or returns a negative error code.
+ * On failure returns a negative error code.
  */
 function yRegisterHub(url,errmsg)
 {
@@ -11818,7 +11814,7 @@ function yRegisterHub(url,errmsg)
  *
  * @return YAPI.SUCCESS when the call succeeds.
  *
- * On failure, throws an exception or returns a negative error code.
+ * On failure returns a negative error code.
  */
 function yPreregisterHub(url,errmsg)
 {
@@ -11852,7 +11848,7 @@ function yUnregisterHub(url)
  *
  * @return YAPI.SUCCESS when the call succeeds.
  *
- * On failure, throws an exception or returns a negative error code.
+ * On failure returns a negative error code.
  */
 function yUpdateDeviceList(errmsg)
 {
@@ -11901,7 +11897,7 @@ function yUpdateDeviceList_async(callback, context)
  *
  * @return YAPI.SUCCESS when the call succeeds.
  *
- * On failure, throws an exception or returns a negative error code.
+ * On failure returns a negative error code.
  */
 function yHandleEvents(errmsg)
 {
@@ -11925,7 +11921,7 @@ function yHandleEvents(errmsg)
  *
  * @return YAPI.SUCCESS when the call succeeds.
  *
- * On failure, throws an exception or returns a negative error code.
+ * On failure returns a negative error code.
  */
 function ySleep(ms_duration, errmsg)
 {
@@ -11948,9 +11944,7 @@ function ySleep(ms_duration, errmsg)
  *         callback function can be provided, if needed
  *         (not supported on Microsoft Internet Explorer).
  *
- * @return YAPI.SUCCESS when the call succeeds.
- *
- * On failure, throws an exception or returns a negative error code.
+ * @return YAPI.SUCCESS
  */
 function ySetTimeout(callback, ms_timeout, args)
 {
