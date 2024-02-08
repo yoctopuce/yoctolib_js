@@ -181,6 +181,9 @@ var YInputCaptureData; // definition below
         var ms;                     // int;
         var recSize;                // int;
         var count;                  // int;
+        var mult1;                  // int;
+        var mult2;                  // int;
+        var mult3;                  // int;
         var v;                      // float;
 
         buffSize = (sdata).length;
@@ -241,11 +244,31 @@ var YInputCaptureData; // definition below
                 recOfs = recOfs + 1;
             }
         }
+        if (((recOfs) & (1)) == 1) {
+            // align to next word
+            recOfs = recOfs + 1;
+        }
+        mult1 = 1;
+        mult2 = 1;
+        mult3 = 1;
+        if (recOfs < this._recOfs) {
+            // load optional value multiplier
+            mult1 = this._decodeU16(sdata, this._recOfs);
+            recOfs = recOfs + 2;
+            if (this._var2size > 0) {
+                mult2 = this._decodeU16(sdata, this._recOfs);
+                recOfs = recOfs + 2;
+            }
+            if (this._var3size > 0) {
+                mult3 = this._decodeU16(sdata, this._recOfs);
+                recOfs = recOfs + 2;
+            }
+        }
         recOfs = this._recOfs;
         count = this._nRecs;
         while ((count > 0) && (recOfs + this._var1size <= buffSize)) {
             v = this._decodeVal(sdata, recOfs, this._var1size) / 1000.0;
-            this._var1samples.push(v);
+            this._var1samples.push(v*mult1);
             recOfs = recOfs + recSize;
         }
         if (this._var2size > 0) {
@@ -253,7 +276,7 @@ var YInputCaptureData; // definition below
             count = this._nRecs;
             while ((count > 0) && (recOfs + this._var2size <= buffSize)) {
                 v = this._decodeVal(sdata, recOfs, this._var2size) / 1000.0;
-                this._var2samples.push(v);
+                this._var2samples.push(v*mult2);
                 recOfs = recOfs + recSize;
             }
         }
@@ -262,7 +285,7 @@ var YInputCaptureData; // definition below
             count = this._nRecs;
             while ((count > 0) && (recOfs + this._var3size <= buffSize)) {
                 v = this._decodeVal(sdata, recOfs, this._var3size) / 1000.0;
-                this._var3samples.push(v);
+                this._var3samples.push(v*mult3);
                 recOfs = recOfs + recSize;
             }
         }
@@ -489,7 +512,7 @@ var YInputCaptureData; // definition below
     YInputCaptureData.prototype.get_serie3Values            = YInputCaptureData_get_serie3Values;
     YInputCaptureData.prototype.serie3Values                = YInputCaptureData_get_serie3Values;
     //--- (end of generated code: YInputCaptureData initialization)
-    YInputCaptureData.prototype._throw = YAPI_throw;
+    YInputCaptureData.prototype._throw = YAPI._throw;
 })();
 
 //--- (generated code: YInputCapture class start)

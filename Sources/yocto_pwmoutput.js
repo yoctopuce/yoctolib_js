@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_pwmoutput.js 50689 2022-08-17 14:37:15Z mvuilleu $
+ *  $Id: yocto_pwmoutput.js 58892 2024-01-11 11:11:28Z mvuilleu $
  *
  *  Implements the high-level API for PwmOutput functions
  *
@@ -45,6 +45,9 @@ if(typeof YAPI == "undefined") { if(typeof yAPI != "undefined") window["YAPI"]=y
 var Y_ENABLED_FALSE                 = 0;
 var Y_ENABLED_TRUE                  = 1;
 var Y_ENABLED_INVALID               = -1;
+var Y_INVERTEDOUTPUT_FALSE          = 0;
+var Y_INVERTEDOUTPUT_TRUE           = 1;
+var Y_INVERTEDOUTPUT_INVALID        = -1;
 var Y_ENABLEDATPOWERON_FALSE        = 0;
 var Y_ENABLEDATPOWERON_TRUE         = 1;
 var Y_ENABLEDATPOWERON_INVALID      = -1;
@@ -82,6 +85,7 @@ var YPwmOutput; // definition below
         this._dutyCycle                      = Y_DUTYCYCLE_INVALID;        // MeasureVal
         this._pulseDuration                  = Y_PULSEDURATION_INVALID;    // MeasureVal
         this._pwmTransition                  = Y_PWMTRANSITION_INVALID;    // Text
+        this._invertedOutput                 = Y_INVERTEDOUTPUT_INVALID;   // Bool
         this._enabledAtPowerOn               = Y_ENABLEDATPOWERON_INVALID; // Bool
         this._dutyCycleAtPowerOn             = Y_DUTYCYCLEATPOWERON_INVALID; // MeasureVal
         //--- (end of YPwmOutput constructor)
@@ -109,6 +113,9 @@ var YPwmOutput; // definition below
             return 1;
         case "pwmTransition":
             this._pwmTransition = val;
+            return 1;
+        case "invertedOutput":
+            this._invertedOutput = parseInt(val);
             return 1;
         case "enabledAtPowerOn":
             this._enabledAtPowerOn = parseInt(val);
@@ -512,6 +519,77 @@ var YPwmOutput; // definition below
     }
 
     /**
+     * Returns true if the output signal is configured as inverted, and false otherwise.
+     *
+     * @return either YPwmOutput.INVERTEDOUTPUT_FALSE or YPwmOutput.INVERTEDOUTPUT_TRUE, according to true
+     * if the output signal is configured as inverted, and false otherwise
+     *
+     * On failure, throws an exception or returns YPwmOutput.INVERTEDOUTPUT_INVALID.
+     */
+    function YPwmOutput_get_invertedOutput()
+    {
+        var res;                    // enumBOOL;
+        if (this._cacheExpiration <= YAPI.GetTickCount()) {
+            if (this.load(YAPI.defaultCacheValidity) != YAPI_SUCCESS) {
+                return Y_INVERTEDOUTPUT_INVALID;
+            }
+        }
+        res = this._invertedOutput;
+        return res;
+    }
+
+    /**
+     * Gets true if the output signal is configured as inverted, and false otherwise.
+     *
+     * @param callback : callback function that is invoked when the result is known.
+     *         The callback function receives three arguments:
+     *         - the user-specific context object
+     *         - the YPwmOutput object that invoked the callback
+     *         - the result:either YPwmOutput.INVERTEDOUTPUT_FALSE or YPwmOutput.INVERTEDOUTPUT_TRUE, according to
+     *         true if the output signal is configured as inverted, and false otherwise
+     * @param context : user-specific object that is passed as-is to the callback function
+     *
+     * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
+     *
+     * On failure, throws an exception or returns YPwmOutput.INVERTEDOUTPUT_INVALID.
+     */
+    function YPwmOutput_get_invertedOutput_async(callback,context)
+    {
+        var res;                    // enumBOOL;
+        var loadcb;                 // func;
+        loadcb = function(ctx,obj,res) {
+            if (res != YAPI_SUCCESS) {
+                callback(context, obj, Y_INVERTEDOUTPUT_INVALID);
+            } else {
+                callback(context, obj, obj._invertedOutput);
+            }
+        };
+        if (this._cacheExpiration <= YAPI.GetTickCount()) {
+            this.load_async(YAPI.defaultCacheValidity,loadcb,null);
+        } else {
+            loadcb(null, this, YAPI_SUCCESS);
+        }
+    }
+
+    /**
+     * Changes the inversion mode of the output signal.
+     * Remember to call the matching module saveToFlash() method if you want
+     * the change to be kept after power cycle.
+     *
+     * @param newval : either YPwmOutput.INVERTEDOUTPUT_FALSE or YPwmOutput.INVERTEDOUTPUT_TRUE, according
+     * to the inversion mode of the output signal
+     *
+     * @return YAPI.SUCCESS if the call succeeds.
+     *
+     * On failure, throws an exception or returns a negative error code.
+     */
+    function YPwmOutput_set_invertedOutput(newval)
+    {   var rest_val;
+        rest_val = String(newval);
+        return this._setAttr('invertedOutput',rest_val);
+    }
+
+    /**
      * Returns the state of the PWM at device power on.
      *
      * @return either YPwmOutput.ENABLEDATPOWERON_FALSE or YPwmOutput.ENABLEDATPOWERON_TRUE, according to
@@ -903,6 +981,9 @@ var YPwmOutput; // definition below
         DUTYCYCLE_INVALID           : YAPI_INVALID_DOUBLE,
         PULSEDURATION_INVALID       : YAPI_INVALID_DOUBLE,
         PWMTRANSITION_INVALID       : YAPI_INVALID_STRING,
+        INVERTEDOUTPUT_FALSE        : 0,
+        INVERTEDOUTPUT_TRUE         : 1,
+        INVERTEDOUTPUT_INVALID      : -1,
         ENABLEDATPOWERON_FALSE      : 0,
         ENABLEDATPOWERON_TRUE       : 1,
         ENABLEDATPOWERON_INVALID    : -1,
@@ -949,6 +1030,12 @@ var YPwmOutput; // definition below
         pwmTransition_async         : YPwmOutput_get_pwmTransition_async,
         set_pwmTransition           : YPwmOutput_set_pwmTransition,
         setPwmTransition            : YPwmOutput_set_pwmTransition,
+        get_invertedOutput          : YPwmOutput_get_invertedOutput,
+        invertedOutput              : YPwmOutput_get_invertedOutput,
+        get_invertedOutput_async    : YPwmOutput_get_invertedOutput_async,
+        invertedOutput_async        : YPwmOutput_get_invertedOutput_async,
+        set_invertedOutput          : YPwmOutput_set_invertedOutput,
+        setInvertedOutput           : YPwmOutput_set_invertedOutput,
         get_enabledAtPowerOn        : YPwmOutput_get_enabledAtPowerOn,
         enabledAtPowerOn            : YPwmOutput_get_enabledAtPowerOn,
         get_enabledAtPowerOn_async  : YPwmOutput_get_enabledAtPowerOn_async,

@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_messagebox.js 54314 2023-05-01 14:21:11Z seb $
+ * $Id: yocto_messagebox.js 55576 2023-07-25 06:26:34Z mvuilleu $
  *
  * Implements the high-level API for MessageBox functions
  *
@@ -1401,6 +1401,7 @@ var Y_SLOTSCOUNT_INVALID            = YAPI_INVALID_UINT;
 var Y_SLOTSBITMAP_INVALID           = YAPI_INVALID_STRING;
 var Y_PDUSENT_INVALID               = YAPI_INVALID_UINT;
 var Y_PDURECEIVED_INVALID           = YAPI_INVALID_UINT;
+var Y_OBEY_INVALID                  = YAPI_INVALID_STRING;
 var Y_COMMAND_INVALID               = YAPI_INVALID_STRING;
 //--- (end of generated code: YMessageBox definitions)
 
@@ -1429,6 +1430,7 @@ var YMessageBox; // definition below
         this._slotsBitmap                    = Y_SLOTSBITMAP_INVALID;      // BinaryBuffer
         this._pduSent                        = Y_PDUSENT_INVALID;          // UInt31
         this._pduReceived                    = Y_PDURECEIVED_INVALID;      // UInt31
+        this._obey                           = Y_OBEY_INVALID;             // Text
         this._command                        = Y_COMMAND_INVALID;          // Text
         this._nextMsgRef                     = 0;                          // int
         this._prevBitmapStr                  = "";                         // str
@@ -1459,6 +1461,9 @@ var YMessageBox; // definition below
             return 1;
         case "pduReceived":
             this._pduReceived = parseInt(val);
+            return 1;
+        case "obey":
+            this._obey = val;
             return 1;
         case "command":
             this._command = val;
@@ -1740,6 +1745,91 @@ var YMessageBox; // definition below
     {   var rest_val;
         rest_val = String(newval);
         return this._setAttr('pduReceived',rest_val);
+    }
+
+    /**
+     * Returns the phone number authorized to send remote management commands.
+     * When a phone number is specified, the hub will take contre of all incoming
+     * SMS messages: it will execute commands coming from the authorized number,
+     * and delete all messages once received (whether authorized or not).
+     * If you need to receive SMS messages using your own software, leave this
+     * attribute empty.
+     *
+     * @return a string corresponding to the phone number authorized to send remote management commands
+     *
+     * On failure, throws an exception or returns YMessageBox.OBEY_INVALID.
+     */
+    function YMessageBox_get_obey()
+    {
+        var res;                    // string;
+        if (this._cacheExpiration <= YAPI.GetTickCount()) {
+            if (this.load(YAPI.defaultCacheValidity) != YAPI_SUCCESS) {
+                return Y_OBEY_INVALID;
+            }
+        }
+        res = this._obey;
+        return res;
+    }
+
+    /**
+     * Gets the phone number authorized to send remote management commands.
+     * When a phone number is specified, the hub will take contre of all incoming
+     * SMS messages: it will execute commands coming from the authorized number,
+     * and delete all messages once received (whether authorized or not).
+     * If you need to receive SMS messages using your own software, leave this
+     * attribute empty.
+     *
+     * @param callback : callback function that is invoked when the result is known.
+     *         The callback function receives three arguments:
+     *         - the user-specific context object
+     *         - the YMessageBox object that invoked the callback
+     *         - the result:a string corresponding to the phone number authorized to send remote management commands
+     * @param context : user-specific object that is passed as-is to the callback function
+     *
+     * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
+     *
+     * On failure, throws an exception or returns YMessageBox.OBEY_INVALID.
+     */
+    function YMessageBox_get_obey_async(callback,context)
+    {
+        var res;                    // string;
+        var loadcb;                 // func;
+        loadcb = function(ctx,obj,res) {
+            if (res != YAPI_SUCCESS) {
+                callback(context, obj, Y_OBEY_INVALID);
+            } else {
+                callback(context, obj, obj._obey);
+            }
+        };
+        if (this._cacheExpiration <= YAPI.GetTickCount()) {
+            this.load_async(YAPI.defaultCacheValidity,loadcb,null);
+        } else {
+            loadcb(null, this, YAPI_SUCCESS);
+        }
+    }
+
+    /**
+     * Changes the phone number authorized to send remote management commands.
+     * The phone number usually starts with a '+' and does not include spacers.
+     * When a phone number is specified, the hub will take contre of all incoming
+     * SMS messages: it will execute commands coming from the authorized number,
+     * and delete all messages once received (whether authorized or not).
+     * If you need to receive SMS messages using your own software, leave this
+     * attribute empty. Remember to call the saveToFlash() method of the
+     * module if the modification must be kept.
+     *
+     * This feature is only available since YoctoHub-GSM-4G.
+     *
+     * @param newval : a string corresponding to the phone number authorized to send remote management commands
+     *
+     * @return YAPI.SUCCESS if the call succeeds.
+     *
+     * On failure, throws an exception or returns a negative error code.
+     */
+    function YMessageBox_set_obey(newval)
+    {   var rest_val;
+        rest_val = newval;
+        return this._setAttr('obey',rest_val);
     }
 
     function YMessageBox_get_command()
@@ -2562,6 +2652,7 @@ var YMessageBox; // definition below
         SLOTSBITMAP_INVALID         : YAPI_INVALID_STRING,
         PDUSENT_INVALID             : YAPI_INVALID_UINT,
         PDURECEIVED_INVALID         : YAPI_INVALID_UINT,
+        OBEY_INVALID                : YAPI_INVALID_STRING,
         COMMAND_INVALID             : YAPI_INVALID_STRING
     }, {
         // Class methods
@@ -2593,6 +2684,12 @@ var YMessageBox; // definition below
         pduReceived_async           : YMessageBox_get_pduReceived_async,
         set_pduReceived             : YMessageBox_set_pduReceived,
         setPduReceived              : YMessageBox_set_pduReceived,
+        get_obey                    : YMessageBox_get_obey,
+        obey                        : YMessageBox_get_obey,
+        get_obey_async              : YMessageBox_get_obey_async,
+        obey_async                  : YMessageBox_get_obey_async,
+        set_obey                    : YMessageBox_set_obey,
+        setObey                     : YMessageBox_set_obey,
         get_command                 : YMessageBox_get_command,
         command                     : YMessageBox_get_command,
         get_command_async           : YMessageBox_get_command_async,

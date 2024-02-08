@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_api.js 54314 2023-05-01 14:21:11Z seb $
+ * $Id: yocto_api.js 59221 2024-02-05 15:46:32Z seb $
  *
  * High-level programming interface, common to all modules
  *
@@ -55,6 +55,9 @@ var YAPI_UNAUTHORIZED               = -12;     // unauthorized access to passwor
 var YAPI_RTC_NOT_READY              = -13;     // real-time clock has not been initialized (or time was lost)
 var YAPI_FILE_NOT_FOUND             = -14;     // the file is not found
 var YAPI_SSL_ERROR                  = -15;     // Error reported by mbedSSL
+var YAPI_RFID_SOFT_ERROR            = -16;     // Recoverable error with RFID tag (eg. tag out of reach), check YRfidStatus for details
+var YAPI_RFID_HARD_ERROR            = -17;     // Serious RFID error (eg. write-protected, out-of-boundary), check YRfidStatus for details
+var YAPI_BUFFER_TOO_SMALL           = -18;     // The buffer provided is too small
 
 var YAPI_INVALID_INT                = 0x7fffffff;
 var YAPI_INVALID_UINT               = -1;
@@ -1838,6 +1841,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
     // Remove a device from YAPI after an unplug detected by device refresh
     function YAPI_forgetDevice(obj_dev)
     {
+        if(!obj_dev) return;
         var rootUrl = obj_dev.getRootUrl();
         var serial = obj_dev.getSerialNumber();
         var lname = obj_dev.getLogicalName();
@@ -2678,7 +2682,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
      */
     function YAPI_GetAPIVersion()
     {
-        return "1.10.54852";
+        return "1.10.59271";
     }
 
     /**
@@ -3660,6 +3664,9 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
     _YAPI.prototype.RTC_NOT_READY         = -13;     // real-time clock has not been initialized (or time was lost)
     _YAPI.prototype.FILE_NOT_FOUND        = -14;     // the file is not found
     _YAPI.prototype.SSL_ERROR             = -15;     // Error reported by mbedSSL
+    _YAPI.prototype.RFID_SOFT_ERROR       = -16;     // Recoverable error with RFID tag (eg. tag out of reach), check YRfidStatus for details
+    _YAPI.prototype.RFID_HARD_ERROR       = -17;     // Serious RFID error (eg. write-protected, out-of-boundary), check YRfidStatus for details
+    _YAPI.prototype.BUFFER_TOO_SMALL      = -18;     // The buffer provided is too small
 //--- (end of generated code: YFunction return codes)
 
     _YAPI.prototype.INVALID_INT           = YAPI_INVALID_INT;
@@ -7936,7 +7943,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
         rawValues.length = 0;
         refValues.length = 0;
         // Load function parameters if not yet loaded
-        if (this._scale == 0) {
+        if ((this._scale == 0) || (this._cacheExpiration <= YAPI.GetTickCount())) {
             if (this.load(YAPI.defaultCacheValidity) != YAPI_SUCCESS) {
                 return YAPI_DEVICE_NOT_FOUND;
             }
@@ -9316,12 +9323,13 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
     }
 
     /**
-     * Retrieves the type of the <i>n</i>th function on the module.
+     * Retrieves the type of the <i>n</i>th function on the module. Yoctopuce functions type names match
+     * their class names without the <i>Y</i> prefix, for instance <i>Relay</i>, <i>Temperature</i> etc..
      *
      * @param functionIndex : the index of the function for which the information is desired, starting at
      * 0 for the first function.
      *
-     * @return a string corresponding to the type of the function
+     * @return a string corresponding to the type of the function.
      *
      * On failure, throws an exception or returns an empty string.
      */

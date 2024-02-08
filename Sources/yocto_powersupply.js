@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_powersupply.js 54768 2023-05-26 06:46:41Z seb $
+ *  $Id: yocto_powersupply.js 55576 2023-07-25 06:26:34Z mvuilleu $
  *
  *  Implements the high-level API for PowerSupply functions
  *
@@ -45,14 +45,17 @@ if(typeof YAPI == "undefined") { if(typeof yAPI != "undefined") window["YAPI"]=y
 var Y_POWEROUTPUT_OFF               = 0;
 var Y_POWEROUTPUT_ON                = 1;
 var Y_POWEROUTPUT_INVALID           = -1;
-var Y_VOLTAGESETPOINT_INVALID       = YAPI_INVALID_DOUBLE;
+var Y_POWEROUTPUTATSTARTUP_OFF      = 0;
+var Y_POWEROUTPUTATSTARTUP_ON       = 1;
+var Y_POWEROUTPUTATSTARTUP_INVALID  = -1;
+var Y_VOLTAGELIMIT_INVALID          = YAPI_INVALID_DOUBLE;
 var Y_CURRENTLIMIT_INVALID          = YAPI_INVALID_DOUBLE;
 var Y_MEASUREDVOLTAGE_INVALID       = YAPI_INVALID_DOUBLE;
 var Y_MEASUREDCURRENT_INVALID       = YAPI_INVALID_DOUBLE;
 var Y_INPUTVOLTAGE_INVALID          = YAPI_INVALID_DOUBLE;
 var Y_VOLTAGETRANSITION_INVALID     = YAPI_INVALID_STRING;
-var Y_VOLTAGEATSTARTUP_INVALID      = YAPI_INVALID_DOUBLE;
-var Y_CURRENTATSTARTUP_INVALID      = YAPI_INVALID_DOUBLE;
+var Y_VOLTAGELIMITATSTARTUP_INVALID = YAPI_INVALID_DOUBLE;
+var Y_CURRENTLIMITATSTARTUP_INVALID = YAPI_INVALID_DOUBLE;
 var Y_COMMAND_INVALID               = YAPI_INVALID_STRING;
 //--- (end of YPowerSupply definitions)
 
@@ -61,8 +64,8 @@ var Y_COMMAND_INVALID               = YAPI_INVALID_STRING;
  * YPowerSupply Class: regulated power supply control interface
  *
  * The YPowerSupply class allows you to drive a Yoctopuce power supply.
- * It can be use to change the voltage set point,
- * the current limit and the enable/disable the output.
+ * It can be use to change the voltage and current limits, and to enable/disable
+ * the output.
  */
 //--- (end of YPowerSupply class start)
 
@@ -76,15 +79,16 @@ var YPowerSupply; // definition below
         YFunction.call(this, str_func);
         this._className = 'PowerSupply';
 
-        this._voltageSetPoint                = Y_VOLTAGESETPOINT_INVALID;  // MeasureVal
+        this._voltageLimit                   = Y_VOLTAGELIMIT_INVALID;     // MeasureVal
         this._currentLimit                   = Y_CURRENTLIMIT_INVALID;     // MeasureVal
         this._powerOutput                    = Y_POWEROUTPUT_INVALID;      // OnOff
         this._measuredVoltage                = Y_MEASUREDVOLTAGE_INVALID;  // MeasureVal
         this._measuredCurrent                = Y_MEASUREDCURRENT_INVALID;  // MeasureVal
         this._inputVoltage                   = Y_INPUTVOLTAGE_INVALID;     // MeasureVal
         this._voltageTransition              = Y_VOLTAGETRANSITION_INVALID; // AnyFloatTransition
-        this._voltageAtStartUp               = Y_VOLTAGEATSTARTUP_INVALID; // MeasureVal
-        this._currentAtStartUp               = Y_CURRENTATSTARTUP_INVALID; // MeasureVal
+        this._voltageLimitAtStartUp          = Y_VOLTAGELIMITATSTARTUP_INVALID; // MeasureVal
+        this._currentLimitAtStartUp          = Y_CURRENTLIMITATSTARTUP_INVALID; // MeasureVal
+        this._powerOutputAtStartUp           = Y_POWEROUTPUTATSTARTUP_INVALID; // OnOff
         this._command                        = Y_COMMAND_INVALID;          // Text
         //--- (end of YPowerSupply constructor)
     }
@@ -94,8 +98,8 @@ var YPowerSupply; // definition below
     function YPowerSupply_parseAttr(name, val, _super)
     {
         switch(name) {
-        case "voltageSetPoint":
-            this._voltageSetPoint = Math.round(val / 65.536) / 1000.0;
+        case "voltageLimit":
+            this._voltageLimit = Math.round(val / 65.536) / 1000.0;
             return 1;
         case "currentLimit":
             this._currentLimit = Math.round(val / 65.536) / 1000.0;
@@ -115,11 +119,14 @@ var YPowerSupply; // definition below
         case "voltageTransition":
             this._voltageTransition = val;
             return 1;
-        case "voltageAtStartUp":
-            this._voltageAtStartUp = Math.round(val / 65.536) / 1000.0;
+        case "voltageLimitAtStartUp":
+            this._voltageLimitAtStartUp = Math.round(val / 65.536) / 1000.0;
             return 1;
-        case "currentAtStartUp":
-            this._currentAtStartUp = Math.round(val / 65.536) / 1000.0;
+        case "currentLimitAtStartUp":
+            this._currentLimitAtStartUp = Math.round(val / 65.536) / 1000.0;
+            return 1;
+        case "powerOutputAtStartUp":
+            this._powerOutputAtStartUp = parseInt(val);
             return 1;
         case "command":
             this._command = val;
@@ -129,62 +136,62 @@ var YPowerSupply; // definition below
     }
 
     /**
-     * Changes the voltage set point, in V.
+     * Changes the voltage limit, in V.
      *
-     * @param newval : a floating point number corresponding to the voltage set point, in V
+     * @param newval : a floating point number corresponding to the voltage limit, in V
      *
      * @return YAPI.SUCCESS if the call succeeds.
      *
      * On failure, throws an exception or returns a negative error code.
      */
-    function YPowerSupply_set_voltageSetPoint(newval)
+    function YPowerSupply_set_voltageLimit(newval)
     {   var rest_val;
         rest_val = String(Math.round(newval * 65536.0));
-        return this._setAttr('voltageSetPoint',rest_val);
+        return this._setAttr('voltageLimit',rest_val);
     }
 
     /**
-     * Returns the voltage set point, in V.
+     * Returns the voltage limit, in V.
      *
-     * @return a floating point number corresponding to the voltage set point, in V
+     * @return a floating point number corresponding to the voltage limit, in V
      *
-     * On failure, throws an exception or returns YPowerSupply.VOLTAGESETPOINT_INVALID.
+     * On failure, throws an exception or returns YPowerSupply.VOLTAGELIMIT_INVALID.
      */
-    function YPowerSupply_get_voltageSetPoint()
+    function YPowerSupply_get_voltageLimit()
     {
         var res;                    // double;
         if (this._cacheExpiration <= YAPI.GetTickCount()) {
             if (this.load(YAPI.defaultCacheValidity) != YAPI_SUCCESS) {
-                return Y_VOLTAGESETPOINT_INVALID;
+                return Y_VOLTAGELIMIT_INVALID;
             }
         }
-        res = this._voltageSetPoint;
+        res = this._voltageLimit;
         return res;
     }
 
     /**
-     * Gets the voltage set point, in V.
+     * Gets the voltage limit, in V.
      *
      * @param callback : callback function that is invoked when the result is known.
      *         The callback function receives three arguments:
      *         - the user-specific context object
      *         - the YPowerSupply object that invoked the callback
-     *         - the result:a floating point number corresponding to the voltage set point, in V
+     *         - the result:a floating point number corresponding to the voltage limit, in V
      * @param context : user-specific object that is passed as-is to the callback function
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      *
-     * On failure, throws an exception or returns YPowerSupply.VOLTAGESETPOINT_INVALID.
+     * On failure, throws an exception or returns YPowerSupply.VOLTAGELIMIT_INVALID.
      */
-    function YPowerSupply_get_voltageSetPoint_async(callback,context)
+    function YPowerSupply_get_voltageLimit_async(callback,context)
     {
         var res;                    // double;
         var loadcb;                 // func;
         loadcb = function(ctx,obj,res) {
             if (res != YAPI_SUCCESS) {
-                callback(context, obj, Y_VOLTAGESETPOINT_INVALID);
+                callback(context, obj, Y_VOLTAGELIMIT_INVALID);
             } else {
-                callback(context, obj, obj._voltageSetPoint);
+                callback(context, obj, obj._voltageLimit);
             }
         };
         if (this._cacheExpiration <= YAPI.GetTickCount()) {
@@ -539,54 +546,54 @@ var YPowerSupply; // definition below
      *
      * On failure, throws an exception or returns a negative error code.
      */
-    function YPowerSupply_set_voltageAtStartUp(newval)
+    function YPowerSupply_set_voltageLimitAtStartUp(newval)
     {   var rest_val;
         rest_val = String(Math.round(newval * 65536.0));
-        return this._setAttr('voltageAtStartUp',rest_val);
+        return this._setAttr('voltageLimitAtStartUp',rest_val);
     }
 
     /**
-     * Returns the selected voltage set point at device startup, in V.
+     * Returns the selected voltage limit at device startup, in V.
      *
-     * @return a floating point number corresponding to the selected voltage set point at device startup, in V
+     * @return a floating point number corresponding to the selected voltage limit at device startup, in V
      *
-     * On failure, throws an exception or returns YPowerSupply.VOLTAGEATSTARTUP_INVALID.
+     * On failure, throws an exception or returns YPowerSupply.VOLTAGELIMITATSTARTUP_INVALID.
      */
-    function YPowerSupply_get_voltageAtStartUp()
+    function YPowerSupply_get_voltageLimitAtStartUp()
     {
         var res;                    // double;
         if (this._cacheExpiration <= YAPI.GetTickCount()) {
             if (this.load(YAPI.defaultCacheValidity) != YAPI_SUCCESS) {
-                return Y_VOLTAGEATSTARTUP_INVALID;
+                return Y_VOLTAGELIMITATSTARTUP_INVALID;
             }
         }
-        res = this._voltageAtStartUp;
+        res = this._voltageLimitAtStartUp;
         return res;
     }
 
     /**
-     * Gets the selected voltage set point at device startup, in V.
+     * Gets the selected voltage limit at device startup, in V.
      *
      * @param callback : callback function that is invoked when the result is known.
      *         The callback function receives three arguments:
      *         - the user-specific context object
      *         - the YPowerSupply object that invoked the callback
-     *         - the result:a floating point number corresponding to the selected voltage set point at device startup, in V
+     *         - the result:a floating point number corresponding to the selected voltage limit at device startup, in V
      * @param context : user-specific object that is passed as-is to the callback function
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      *
-     * On failure, throws an exception or returns YPowerSupply.VOLTAGEATSTARTUP_INVALID.
+     * On failure, throws an exception or returns YPowerSupply.VOLTAGELIMITATSTARTUP_INVALID.
      */
-    function YPowerSupply_get_voltageAtStartUp_async(callback,context)
+    function YPowerSupply_get_voltageLimitAtStartUp_async(callback,context)
     {
         var res;                    // double;
         var loadcb;                 // func;
         loadcb = function(ctx,obj,res) {
             if (res != YAPI_SUCCESS) {
-                callback(context, obj, Y_VOLTAGEATSTARTUP_INVALID);
+                callback(context, obj, Y_VOLTAGELIMITATSTARTUP_INVALID);
             } else {
-                callback(context, obj, obj._voltageAtStartUp);
+                callback(context, obj, obj._voltageLimitAtStartUp);
             }
         };
         if (this._cacheExpiration <= YAPI.GetTickCount()) {
@@ -606,10 +613,10 @@ var YPowerSupply; // definition below
      *
      * On failure, throws an exception or returns a negative error code.
      */
-    function YPowerSupply_set_currentAtStartUp(newval)
+    function YPowerSupply_set_currentLimitAtStartUp(newval)
     {   var rest_val;
         rest_val = String(Math.round(newval * 65536.0));
-        return this._setAttr('currentAtStartUp',rest_val);
+        return this._setAttr('currentLimitAtStartUp',rest_val);
     }
 
     /**
@@ -617,17 +624,17 @@ var YPowerSupply; // definition below
      *
      * @return a floating point number corresponding to the selected current limit at device startup, in mA
      *
-     * On failure, throws an exception or returns YPowerSupply.CURRENTATSTARTUP_INVALID.
+     * On failure, throws an exception or returns YPowerSupply.CURRENTLIMITATSTARTUP_INVALID.
      */
-    function YPowerSupply_get_currentAtStartUp()
+    function YPowerSupply_get_currentLimitAtStartUp()
     {
         var res;                    // double;
         if (this._cacheExpiration <= YAPI.GetTickCount()) {
             if (this.load(YAPI.defaultCacheValidity) != YAPI_SUCCESS) {
-                return Y_CURRENTATSTARTUP_INVALID;
+                return Y_CURRENTLIMITATSTARTUP_INVALID;
             }
         }
-        res = this._currentAtStartUp;
+        res = this._currentLimitAtStartUp;
         return res;
     }
 
@@ -643,17 +650,17 @@ var YPowerSupply; // definition below
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      *
-     * On failure, throws an exception or returns YPowerSupply.CURRENTATSTARTUP_INVALID.
+     * On failure, throws an exception or returns YPowerSupply.CURRENTLIMITATSTARTUP_INVALID.
      */
-    function YPowerSupply_get_currentAtStartUp_async(callback,context)
+    function YPowerSupply_get_currentLimitAtStartUp_async(callback,context)
     {
         var res;                    // double;
         var loadcb;                 // func;
         loadcb = function(ctx,obj,res) {
             if (res != YAPI_SUCCESS) {
-                callback(context, obj, Y_CURRENTATSTARTUP_INVALID);
+                callback(context, obj, Y_CURRENTLIMITATSTARTUP_INVALID);
             } else {
-                callback(context, obj, obj._currentAtStartUp);
+                callback(context, obj, obj._currentLimitAtStartUp);
             }
         };
         if (this._cacheExpiration <= YAPI.GetTickCount()) {
@@ -661,6 +668,76 @@ var YPowerSupply; // definition below
         } else {
             loadcb(null, this, YAPI_SUCCESS);
         }
+    }
+
+    /**
+     * Returns the power supply output switch state.
+     *
+     * @return either YPowerSupply.POWEROUTPUTATSTARTUP_OFF or YPowerSupply.POWEROUTPUTATSTARTUP_ON,
+     * according to the power supply output switch state
+     *
+     * On failure, throws an exception or returns YPowerSupply.POWEROUTPUTATSTARTUP_INVALID.
+     */
+    function YPowerSupply_get_powerOutputAtStartUp()
+    {
+        var res;                    // enumONOFF;
+        if (this._cacheExpiration <= YAPI.GetTickCount()) {
+            if (this.load(YAPI.defaultCacheValidity) != YAPI_SUCCESS) {
+                return Y_POWEROUTPUTATSTARTUP_INVALID;
+            }
+        }
+        res = this._powerOutputAtStartUp;
+        return res;
+    }
+
+    /**
+     * Gets the power supply output switch state.
+     *
+     * @param callback : callback function that is invoked when the result is known.
+     *         The callback function receives three arguments:
+     *         - the user-specific context object
+     *         - the YPowerSupply object that invoked the callback
+     *         - the result:either YPowerSupply.POWEROUTPUTATSTARTUP_OFF or YPowerSupply.POWEROUTPUTATSTARTUP_ON,
+     *         according to the power supply output switch state
+     * @param context : user-specific object that is passed as-is to the callback function
+     *
+     * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
+     *
+     * On failure, throws an exception or returns YPowerSupply.POWEROUTPUTATSTARTUP_INVALID.
+     */
+    function YPowerSupply_get_powerOutputAtStartUp_async(callback,context)
+    {
+        var res;                    // enumONOFF;
+        var loadcb;                 // func;
+        loadcb = function(ctx,obj,res) {
+            if (res != YAPI_SUCCESS) {
+                callback(context, obj, Y_POWEROUTPUTATSTARTUP_INVALID);
+            } else {
+                callback(context, obj, obj._powerOutputAtStartUp);
+            }
+        };
+        if (this._cacheExpiration <= YAPI.GetTickCount()) {
+            this.load_async(YAPI.defaultCacheValidity,loadcb,null);
+        } else {
+            loadcb(null, this, YAPI_SUCCESS);
+        }
+    }
+
+    /**
+     * Changes the power supply output switch state at device start up. Remember to call the matching
+     * module saveToFlash() method, otherwise this call has no effect.
+     *
+     * @param newval : either YPowerSupply.POWEROUTPUTATSTARTUP_OFF or
+     * YPowerSupply.POWEROUTPUTATSTARTUP_ON, according to the power supply output switch state at device start up
+     *
+     * @return YAPI.SUCCESS if the call succeeds.
+     *
+     * On failure, throws an exception or returns a negative error code.
+     */
+    function YPowerSupply_set_powerOutputAtStartUp(newval)
+    {   var rest_val;
+        rest_val = String(newval);
+        return this._setAttr('powerOutputAtStartUp',rest_val);
     }
 
     function YPowerSupply_get_command()
@@ -809,7 +886,7 @@ var YPowerSupply; // definition below
     //--- (YPowerSupply initialization)
     YPowerSupply = YFunction._Subclass(_YPowerSupply, {
         // Constants
-        VOLTAGESETPOINT_INVALID     : YAPI_INVALID_DOUBLE,
+        VOLTAGELIMIT_INVALID        : YAPI_INVALID_DOUBLE,
         CURRENTLIMIT_INVALID        : YAPI_INVALID_DOUBLE,
         POWEROUTPUT_OFF             : 0,
         POWEROUTPUT_ON              : 1,
@@ -818,8 +895,11 @@ var YPowerSupply; // definition below
         MEASUREDCURRENT_INVALID     : YAPI_INVALID_DOUBLE,
         INPUTVOLTAGE_INVALID        : YAPI_INVALID_DOUBLE,
         VOLTAGETRANSITION_INVALID   : YAPI_INVALID_STRING,
-        VOLTAGEATSTARTUP_INVALID    : YAPI_INVALID_DOUBLE,
-        CURRENTATSTARTUP_INVALID    : YAPI_INVALID_DOUBLE,
+        VOLTAGELIMITATSTARTUP_INVALID : YAPI_INVALID_DOUBLE,
+        CURRENTLIMITATSTARTUP_INVALID : YAPI_INVALID_DOUBLE,
+        POWEROUTPUTATSTARTUP_OFF    : 0,
+        POWEROUTPUTATSTARTUP_ON     : 1,
+        POWEROUTPUTATSTARTUP_INVALID : -1,
         COMMAND_INVALID             : YAPI_INVALID_STRING
     }, {
         // Class methods
@@ -827,12 +907,12 @@ var YPowerSupply; // definition below
         FirstPowerSupply            : YPowerSupply_FirstPowerSupply
     }, {
         // Methods
-        set_voltageSetPoint         : YPowerSupply_set_voltageSetPoint,
-        setVoltageSetPoint          : YPowerSupply_set_voltageSetPoint,
-        get_voltageSetPoint         : YPowerSupply_get_voltageSetPoint,
-        voltageSetPoint             : YPowerSupply_get_voltageSetPoint,
-        get_voltageSetPoint_async   : YPowerSupply_get_voltageSetPoint_async,
-        voltageSetPoint_async       : YPowerSupply_get_voltageSetPoint_async,
+        set_voltageLimit            : YPowerSupply_set_voltageLimit,
+        setVoltageLimit             : YPowerSupply_set_voltageLimit,
+        get_voltageLimit            : YPowerSupply_get_voltageLimit,
+        voltageLimit                : YPowerSupply_get_voltageLimit,
+        get_voltageLimit_async      : YPowerSupply_get_voltageLimit_async,
+        voltageLimit_async          : YPowerSupply_get_voltageLimit_async,
         set_currentLimit            : YPowerSupply_set_currentLimit,
         setCurrentLimit             : YPowerSupply_set_currentLimit,
         get_currentLimit            : YPowerSupply_get_currentLimit,
@@ -863,18 +943,24 @@ var YPowerSupply; // definition below
         voltageTransition_async     : YPowerSupply_get_voltageTransition_async,
         set_voltageTransition       : YPowerSupply_set_voltageTransition,
         setVoltageTransition        : YPowerSupply_set_voltageTransition,
-        set_voltageAtStartUp        : YPowerSupply_set_voltageAtStartUp,
-        setVoltageAtStartUp         : YPowerSupply_set_voltageAtStartUp,
-        get_voltageAtStartUp        : YPowerSupply_get_voltageAtStartUp,
-        voltageAtStartUp            : YPowerSupply_get_voltageAtStartUp,
-        get_voltageAtStartUp_async  : YPowerSupply_get_voltageAtStartUp_async,
-        voltageAtStartUp_async      : YPowerSupply_get_voltageAtStartUp_async,
-        set_currentAtStartUp        : YPowerSupply_set_currentAtStartUp,
-        setCurrentAtStartUp         : YPowerSupply_set_currentAtStartUp,
-        get_currentAtStartUp        : YPowerSupply_get_currentAtStartUp,
-        currentAtStartUp            : YPowerSupply_get_currentAtStartUp,
-        get_currentAtStartUp_async  : YPowerSupply_get_currentAtStartUp_async,
-        currentAtStartUp_async      : YPowerSupply_get_currentAtStartUp_async,
+        set_voltageLimitAtStartUp   : YPowerSupply_set_voltageLimitAtStartUp,
+        setVoltageLimitAtStartUp    : YPowerSupply_set_voltageLimitAtStartUp,
+        get_voltageLimitAtStartUp   : YPowerSupply_get_voltageLimitAtStartUp,
+        voltageLimitAtStartUp       : YPowerSupply_get_voltageLimitAtStartUp,
+        get_voltageLimitAtStartUp_async : YPowerSupply_get_voltageLimitAtStartUp_async,
+        voltageLimitAtStartUp_async : YPowerSupply_get_voltageLimitAtStartUp_async,
+        set_currentLimitAtStartUp   : YPowerSupply_set_currentLimitAtStartUp,
+        setCurrentLimitAtStartUp    : YPowerSupply_set_currentLimitAtStartUp,
+        get_currentLimitAtStartUp   : YPowerSupply_get_currentLimitAtStartUp,
+        currentLimitAtStartUp       : YPowerSupply_get_currentLimitAtStartUp,
+        get_currentLimitAtStartUp_async : YPowerSupply_get_currentLimitAtStartUp_async,
+        currentLimitAtStartUp_async : YPowerSupply_get_currentLimitAtStartUp_async,
+        get_powerOutputAtStartUp    : YPowerSupply_get_powerOutputAtStartUp,
+        powerOutputAtStartUp        : YPowerSupply_get_powerOutputAtStartUp,
+        get_powerOutputAtStartUp_async : YPowerSupply_get_powerOutputAtStartUp_async,
+        powerOutputAtStartUp_async  : YPowerSupply_get_powerOutputAtStartUp_async,
+        set_powerOutputAtStartUp    : YPowerSupply_set_powerOutputAtStartUp,
+        setPowerOutputAtStartUp     : YPowerSupply_set_powerOutputAtStartUp,
         get_command                 : YPowerSupply_get_command,
         command                     : YPowerSupply_get_command,
         get_command_async           : YPowerSupply_get_command_async,

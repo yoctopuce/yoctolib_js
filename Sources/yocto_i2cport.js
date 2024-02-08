@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_i2cport.js 54314 2023-05-01 14:21:11Z seb $
+ *  $Id: yocto_i2cport.js 58898 2024-01-11 14:07:07Z mvuilleu $
  *
  *  Implements the high-level API for I2cPort functions
  *
@@ -79,12 +79,14 @@ var YI2cSnoopingRecord; // definition below
     {
         //--- (generated code: YI2cSnoopingRecord constructor)
         this._tim                            = 0;                          // int
+        this._pos                            = 0;                          // int
         this._dir                            = 0;                          // int
         this._msg                            = "";                         // str
         //--- (end of generated code: YI2cSnoopingRecord constructor)
 
         var loadval = JSON.parse(str_json);
         this._tim = loadval.t;
+        this._pos = loadval.p;
         this._dir = (loadval.m[0] == '<' ? 1 : 0);
         this._msg = loadval.m.slice(1);
 
@@ -100,6 +102,16 @@ var YI2cSnoopingRecord; // definition below
     function YI2cSnoopingRecord_get_time()
     {
         return this._tim;
+    }
+
+    /**
+     * Returns the absolute position of the message end.
+     *
+     * @return the absolute position of the message end.
+     */
+    function YI2cSnoopingRecord_get_pos()
+    {
+        return this._pos;
     }
 
     /**
@@ -129,6 +141,8 @@ var YI2cSnoopingRecord; // definition below
     // Methods
     YI2cSnoopingRecord.prototype.get_time                    = YI2cSnoopingRecord_get_time;
     YI2cSnoopingRecord.prototype.time                        = YI2cSnoopingRecord_get_time;
+    YI2cSnoopingRecord.prototype.get_pos                     = YI2cSnoopingRecord_get_pos;
+    YI2cSnoopingRecord.prototype.pos                         = YI2cSnoopingRecord_get_pos;
     YI2cSnoopingRecord.prototype.get_direction               = YI2cSnoopingRecord_get_direction;
     YI2cSnoopingRecord.prototype.direction                   = YI2cSnoopingRecord_get_direction;
     YI2cSnoopingRecord.prototype.get_message                 = YI2cSnoopingRecord_get_message;

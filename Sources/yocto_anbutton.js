@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_anbutton.js 43619 2021-01-29 09:14:45Z mvuilleu $
+ *  $Id: yocto_anbutton.js 56268 2023-08-25 17:43:56Z mvuilleu $
  *
  *  Implements the high-level API for AnButton functions
  *
@@ -51,6 +51,7 @@ var Y_ISPRESSED_INVALID             = -1;
 var Y_INPUTTYPE_ANALOG_FAST         = 0;
 var Y_INPUTTYPE_DIGITAL4            = 1;
 var Y_INPUTTYPE_ANALOG_SMOOTH       = 2;
+var Y_INPUTTYPE_DIGITAL_FAST        = 3;
 var Y_INPUTTYPE_INVALID             = -1;
 var Y_CALIBRATEDVALUE_INVALID       = YAPI_INVALID_UINT;
 var Y_RAWVALUE_INVALID              = YAPI_INVALID_UINT;
@@ -817,9 +818,9 @@ var YAnButton; // definition below
     /**
      * Returns the decoding method applied to the input (analog or multiplexed binary switches).
      *
-     * @return a value among YAnButton.INPUTTYPE_ANALOG_FAST, YAnButton.INPUTTYPE_DIGITAL4 and
-     * YAnButton.INPUTTYPE_ANALOG_SMOOTH corresponding to the decoding method applied to the input (analog
-     * or multiplexed binary switches)
+     * @return a value among YAnButton.INPUTTYPE_ANALOG_FAST, YAnButton.INPUTTYPE_DIGITAL4,
+     * YAnButton.INPUTTYPE_ANALOG_SMOOTH and YAnButton.INPUTTYPE_DIGITAL_FAST corresponding to the
+     * decoding method applied to the input (analog or multiplexed binary switches)
      *
      * On failure, throws an exception or returns YAnButton.INPUTTYPE_INVALID.
      */
@@ -842,9 +843,9 @@ var YAnButton; // definition below
      *         The callback function receives three arguments:
      *         - the user-specific context object
      *         - the YAnButton object that invoked the callback
-     *         - the result:a value among YAnButton.INPUTTYPE_ANALOG_FAST, YAnButton.INPUTTYPE_DIGITAL4 and
-     *         YAnButton.INPUTTYPE_ANALOG_SMOOTH corresponding to the decoding method applied to the input (analog
-     *         or multiplexed binary switches)
+     *         - the result:a value among YAnButton.INPUTTYPE_ANALOG_FAST, YAnButton.INPUTTYPE_DIGITAL4,
+     *         YAnButton.INPUTTYPE_ANALOG_SMOOTH and YAnButton.INPUTTYPE_DIGITAL_FAST corresponding to the
+     *         decoding method applied to the input (analog or multiplexed binary switches)
      * @param context : user-specific object that is passed as-is to the callback function
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
@@ -873,9 +874,9 @@ var YAnButton; // definition below
      * Changes the decoding method applied to the input (analog or multiplexed binary switches).
      * Remember to call the saveToFlash() method of the module if the modification must be kept.
      *
-     * @param newval : a value among YAnButton.INPUTTYPE_ANALOG_FAST, YAnButton.INPUTTYPE_DIGITAL4 and
-     * YAnButton.INPUTTYPE_ANALOG_SMOOTH corresponding to the decoding method applied to the input (analog
-     * or multiplexed binary switches)
+     * @param newval : a value among YAnButton.INPUTTYPE_ANALOG_FAST, YAnButton.INPUTTYPE_DIGITAL4,
+     * YAnButton.INPUTTYPE_ANALOG_SMOOTH and YAnButton.INPUTTYPE_DIGITAL_FAST corresponding to the
+     * decoding method applied to the input (analog or multiplexed binary switches)
      *
      * @return YAPI.SUCCESS if the call succeeds.
      *
@@ -995,6 +996,7 @@ var YAnButton; // definition below
         INPUTTYPE_ANALOG_FAST       : 0,
         INPUTTYPE_DIGITAL4          : 1,
         INPUTTYPE_ANALOG_SMOOTH     : 2,
+        INPUTTYPE_DIGITAL_FAST      : 3,
         INPUTTYPE_INVALID           : -1
     }, {
         // Class methods

@@ -1,8 +1,8 @@
 /*********************************************************************
  *
- *  $Id: yocto_spiport.js 58898 2024-01-11 14:07:07Z mvuilleu $
+ *  $Id: yocto_sdi12port.js 54314 2023-05-01 14:21:11Z seb $
  *
- *  Implements the high-level API for SpiPort functions
+ *  Implements the high-level API for Sdi12Port functions
  *
  *  - - - - - - - - - License information: - - - - - - - - -
  *
@@ -39,9 +39,9 @@
 
 if(typeof YAPI == "undefined") { if(typeof yAPI != "undefined") window["YAPI"]=yAPI; else throw "YAPI is not defined, please include yocto_api.js first"; }
 
-//--- (generated code: YSpiPort return codes)
-//--- (end of generated code: YSpiPort return codes)
-//--- (generated code: YSpiPort definitions)
+//--- (generated code: YSdi12Port return codes)
+//--- (end of generated code: YSdi12Port return codes)
+//--- (generated code: YSdi12Port definitions)
 var Y_VOLTAGELEVEL_OFF              = 0;
 var Y_VOLTAGELEVEL_TTL3V            = 1;
 var Y_VOLTAGELEVEL_TTL3VR           = 2;
@@ -52,12 +52,6 @@ var Y_VOLTAGELEVEL_RS485            = 6;
 var Y_VOLTAGELEVEL_TTL1V8           = 7;
 var Y_VOLTAGELEVEL_SDI12            = 8;
 var Y_VOLTAGELEVEL_INVALID          = -1;
-var Y_SSPOLARITY_ACTIVE_LOW         = 0;
-var Y_SSPOLARITY_ACTIVE_HIGH        = 1;
-var Y_SSPOLARITY_INVALID            = -1;
-var Y_SHIFTSAMPLING_OFF             = 0;
-var Y_SHIFTSAMPLING_ON              = 1;
-var Y_SHIFTSAMPLING_INVALID         = -1;
 var Y_RXCOUNT_INVALID               = YAPI_INVALID_UINT;
 var Y_TXCOUNT_INVALID               = YAPI_INVALID_UINT;
 var Y_ERRCOUNT_INVALID              = YAPI_INVALID_UINT;
@@ -70,31 +64,31 @@ var Y_JOBMAXTASK_INVALID            = YAPI_INVALID_UINT;
 var Y_JOBMAXSIZE_INVALID            = YAPI_INVALID_UINT;
 var Y_COMMAND_INVALID               = YAPI_INVALID_STRING;
 var Y_PROTOCOL_INVALID              = YAPI_INVALID_STRING;
-var Y_SPIMODE_INVALID               = YAPI_INVALID_STRING;
-//--- (end of generated code: YSpiPort definitions)
+var Y_SERIALMODE_INVALID            = YAPI_INVALID_STRING;
+//--- (end of generated code: YSdi12Port definitions)
 
-//--- (generated code: YSpiSnoopingRecord definitions)
-//--- (end of generated code: YSpiSnoopingRecord definitions)
+//--- (generated code: YSdi12SnoopingRecord definitions)
+//--- (end of generated code: YSdi12SnoopingRecord definitions)
 
-//--- (generated code: YSpiSnoopingRecord class start)
+//--- (generated code: YSdi12SnoopingRecord class start)
 /**
- * YSpiSnoopingRecord Class: Intercepted SPI message description, returned by spiPort.snoopMessages method
+ * YSdi12SnoopingRecord Class: Intercepted SDI12 message description, returned by sdi12Port.snoopMessages method
  *
  *
  */
-//--- (end of generated code: YSpiSnoopingRecord class start)
+//--- (end of generated code: YSdi12SnoopingRecord class start)
 
-var YSpiSnoopingRecord; // definition below
+var YSdi12SnoopingRecord; // definition below
 (function()
 {
-    function _YSpiSnoopingRecord(str_json)
+    function _YSdi12SnoopingRecord(str_json)
     {
-        //--- (generated code: YSpiSnoopingRecord constructor)
+        //--- (generated code: YSdi12SnoopingRecord constructor)
         this._tim                            = 0;                          // int
         this._pos                            = 0;                          // int
         this._dir                            = 0;                          // int
         this._msg                            = "";                         // str
-        //--- (end of generated code: YSpiSnoopingRecord constructor)
+        //--- (end of generated code: YSdi12SnoopingRecord constructor)
 
         var loadval = JSON.parse(str_json);
         this._tim = loadval.t;
@@ -104,14 +98,14 @@ var YSpiSnoopingRecord; // definition below
 
     }
 
-    //--- (generated code: YSpiSnoopingRecord implementation)
+    //--- (generated code: YSdi12SnoopingRecord implementation)
 
     /**
      * Returns the elapsed time, in ms, since the beginning of the preceding message.
      *
      * @return the elapsed time, in ms, since the beginning of the preceding message.
      */
-    function YSpiSnoopingRecord_get_time()
+    function YSdi12SnoopingRecord_get_time()
     {
         return this._tim;
     }
@@ -121,7 +115,7 @@ var YSpiSnoopingRecord; // definition below
      *
      * @return the absolute position of the message end.
      */
-    function YSpiSnoopingRecord_get_pos()
+    function YSdi12SnoopingRecord_get_pos()
     {
         return this._pos;
     }
@@ -131,7 +125,7 @@ var YSpiSnoopingRecord; // definition below
      *
      * @return the message direction (RX=0, TX=1).
      */
-    function YSpiSnoopingRecord_get_direction()
+    function YSdi12SnoopingRecord_get_direction()
     {
         return this._dir;
     }
@@ -141,48 +135,316 @@ var YSpiSnoopingRecord; // definition below
      *
      * @return the message content.
      */
-    function YSpiSnoopingRecord_get_message()
+    function YSdi12SnoopingRecord_get_message()
     {
         return this._msg;
     }
 
-    //--- (end of generated code: YSpiSnoopingRecord implementation)
+    //--- (end of generated code: YSdi12SnoopingRecord implementation)
 
-    //--- (generated code: YSpiSnoopingRecord initialization)
-    YSpiSnoopingRecord = _YSpiSnoopingRecord;
+    //--- (generated code: YSdi12SnoopingRecord initialization)
+    YSdi12SnoopingRecord = _YSdi12SnoopingRecord;
     // Methods
-    YSpiSnoopingRecord.prototype.get_time                    = YSpiSnoopingRecord_get_time;
-    YSpiSnoopingRecord.prototype.time                        = YSpiSnoopingRecord_get_time;
-    YSpiSnoopingRecord.prototype.get_pos                     = YSpiSnoopingRecord_get_pos;
-    YSpiSnoopingRecord.prototype.pos                         = YSpiSnoopingRecord_get_pos;
-    YSpiSnoopingRecord.prototype.get_direction               = YSpiSnoopingRecord_get_direction;
-    YSpiSnoopingRecord.prototype.direction                   = YSpiSnoopingRecord_get_direction;
-    YSpiSnoopingRecord.prototype.get_message                 = YSpiSnoopingRecord_get_message;
-    YSpiSnoopingRecord.prototype.message                     = YSpiSnoopingRecord_get_message;
-    //--- (end of generated code: YSpiSnoopingRecord initialization)
+    YSdi12SnoopingRecord.prototype.get_time                    = YSdi12SnoopingRecord_get_time;
+    YSdi12SnoopingRecord.prototype.time                        = YSdi12SnoopingRecord_get_time;
+    YSdi12SnoopingRecord.prototype.get_pos                     = YSdi12SnoopingRecord_get_pos;
+    YSdi12SnoopingRecord.prototype.pos                         = YSdi12SnoopingRecord_get_pos;
+    YSdi12SnoopingRecord.prototype.get_direction               = YSdi12SnoopingRecord_get_direction;
+    YSdi12SnoopingRecord.prototype.direction                   = YSdi12SnoopingRecord_get_direction;
+    YSdi12SnoopingRecord.prototype.get_message                 = YSdi12SnoopingRecord_get_message;
+    YSdi12SnoopingRecord.prototype.message                     = YSdi12SnoopingRecord_get_message;
+    //--- (end of generated code: YSdi12SnoopingRecord initialization)
 })();
 
-//--- (generated code: YSpiPort class start)
-/**
- * YSpiPort Class: SPI port control interface, available for instance in the Yocto-SPI
- *
- * The YSpiPort class allows you to fully drive a Yoctopuce SPI port.
- * It can be used to send and receive data, and to configure communication
- * parameters (baud rate, bit count, parity, flow control and protocol).
- * Note that Yoctopuce SPI ports are not exposed as virtual COM ports.
- * They are meant to be used in the same way as all Yoctopuce devices.
- */
-//--- (end of generated code: YSpiPort class start)
-
-var YSpiPort; // definition below
+var YSdi12Sensor; // definition below
 (function()
 {
-    function _YSpiPort(str_func)
+    function _YSdi12Sensor(sdi12Port,str_json)
     {
-        //--- (generated code: YSpiPort constructor)
+        //--- (generated code: YSdi12Sensor constructor)
+        this._sdi12Port                      = null;                       // YSdi12Port
+        this._addr                           = "";                         // str
+        this._proto                          = "";                         // str
+        this._mfg                            = "";                         // str
+        this._model                          = "";                         // str
+        this._ver                            = "";                         // str
+        this._sn                             = "";                         // str
+        this._valuesDesc                     = [];                         // strArrArr
+        //--- (end of generated code: YSdi12Sensor constructor)
+
+        this._sdi12Port = sdi12Port;
+        this._parseInfoStr(str_json);
+    }
+
+    //--- (generated code: YSdi12Sensor implementation)
+
+    /**
+     * Returns the sensor address.
+     *
+     * @return the sensor address.
+     */
+    function YSdi12Sensor_get_sensorAddress()
+    {
+        return this._addr;
+    }
+
+    /**
+     * Returns the compatible SDI-12 version of the sensor.
+     *
+     * @return the compatible SDI-12 version of the sensor.
+     */
+    function YSdi12Sensor_get_sensorProtocol()
+    {
+        return this._proto;
+    }
+
+    /**
+     * Returns the sensor vendor identification.
+     *
+     * @return the sensor vendor identification.
+     */
+    function YSdi12Sensor_get_sensorVendor()
+    {
+        return this._mfg;
+    }
+
+    /**
+     * Returns the sensor model number.
+     *
+     * @return the sensor model number.
+     */
+    function YSdi12Sensor_get_sensorModel()
+    {
+        return this._model;
+    }
+
+    /**
+     * Returns the sensor version.
+     *
+     * @return the sensor version.
+     */
+    function YSdi12Sensor_get_sensorVersion()
+    {
+        return this._ver;
+    }
+
+    /**
+     * Returns the sensor serial number.
+     *
+     * @return the sensor serial number.
+     */
+    function YSdi12Sensor_get_sensorSerial()
+    {
+        return this._sn;
+    }
+
+    /**
+     * Returns the number of sensor measurements.
+     *
+     * @return the number of sensor measurements.
+     */
+    function YSdi12Sensor_get_measureCount()
+    {
+        return this._valuesDesc.length;
+    }
+
+    /**
+     * Returns the sensor measurement command.
+     *
+     * @param measureIndex : measurement index
+     *
+     * @return the sensor measurement command.
+     */
+    function YSdi12Sensor_get_measureCommand(measureIndex)
+    {
+        return this._valuesDesc[measureIndex][0];
+    }
+
+    /**
+     * Returns sensor measurement position.
+     *
+     * @param measureIndex : measurement index
+     *
+     * @return the sensor measurement command.
+     */
+    function YSdi12Sensor_get_measurePosition(measureIndex)
+    {
+        return YAPI._atoi(this._valuesDesc[measureIndex][2]);
+    }
+
+    /**
+     * Returns the measured value symbol.
+     *
+     * @param measureIndex : measurement index
+     *
+     * @return the sensor measurement command.
+     */
+    function YSdi12Sensor_get_measureSymbol(measureIndex)
+    {
+        return this._valuesDesc[measureIndex][3];
+    }
+
+    /**
+     * Returns the unit of the measured value.
+     *
+     * @param measureIndex : measurement index
+     *
+     * @return the sensor measurement command.
+     */
+    function YSdi12Sensor_get_measureUnit(measureIndex)
+    {
+        return this._valuesDesc[measureIndex][4];
+    }
+
+    /**
+     * Returns the description of the measured value.
+     *
+     * @param measureIndex : measurement index
+     *
+     * @return the sensor measurement command.
+     */
+    function YSdi12Sensor_get_measureDescription(measureIndex)
+    {
+        return this._valuesDesc[measureIndex][5];
+    }
+
+    function YSdi12Sensor_get_typeMeasure()
+    {
+        return this._valuesDesc;
+    }
+
+    function YSdi12Sensor_parseInfoStr(infoStr)
+    {
+        var errmsg;                 // str;
+
+        if ((infoStr).length > 1) {
+            if ((infoStr).substr(0, 2) == "ER") {
+                errmsg = (infoStr).substr(2, (infoStr).length-2);
+                this._addr = errmsg;
+                this._proto = errmsg;
+                this._mfg = errmsg;
+                this._model = errmsg;
+                this._ver = errmsg;
+                this._sn = errmsg;
+            } else {
+                this._addr = (infoStr).substr(0, 1);
+                this._proto = (infoStr).substr(1, 2);
+                this._mfg = (infoStr).substr(3, 8);
+                this._model = (infoStr).substr(11, 6);
+                this._ver = (infoStr).substr(17, 3);
+                this._sn = (infoStr).substr(20, (infoStr).length-20);
+            }
+        }
+    }
+
+    function YSdi12Sensor_queryValueInfo()
+    {
+        var val = [];               // strArrArr;
+        var data = [];              // strArr;
+        var infoNbVal;              // str;
+        var cmd;                    // str;
+        var infoVal;                // str;
+        var value;                  // str;
+        var nbVal;                  // int;
+        var k;                      // int;
+        var i;                      // int;
+        var j;                      // int;
+        var listVal = [];           // strArr;
+        var size;                   // int;
+
+        k = 0;
+        size = 4;
+        while (k < 10) {
+            infoNbVal = this._sdi12Port.querySdi12(this._addr, "IM"+String(Math.round(k)), 5000);
+            if ((infoNbVal).length > 1) {
+                value = (infoNbVal).substr(4, (infoNbVal).length-4);
+                nbVal = YAPI._atoi(value);
+                if (nbVal != 0) {
+                    val.length = 0;
+                    i = 0;
+                    while (i < nbVal) {
+                        cmd = "IM"+String(Math.round(k))+"_00"+String(Math.round(i+1));
+                        infoVal = this._sdi12Port.querySdi12(this._addr, cmd, 5000);
+                        data = (infoVal).split(';');
+                        data = (data[0]).split(',');
+                        listVal.length = 0;
+                        listVal.push("M"+String(Math.round(k)));
+                        listVal.push(i+1);
+                        j = 0;
+                        while (data.length < size) {
+                            data.push("");
+                        }
+                        while (j < data.length) {
+                            listVal.push(data[j]);
+                            j = j + 1;
+                        }
+                        val.push(listVal.slice());
+                        i = i + 1;
+                    }
+                }
+            }
+            k = k + 1;
+        }
+        this._valuesDesc = val;
+    }
+
+    //--- (end of generated code: YSdi12Sensor implementation)
+
+    //--- (generated code: YSdi12Sensor initialization)
+    YSdi12Sensor = _YSdi12Sensor;
+    // Methods
+    YSdi12Sensor.prototype.get_sensorAddress           = YSdi12Sensor_get_sensorAddress;
+    YSdi12Sensor.prototype.sensorAddress               = YSdi12Sensor_get_sensorAddress;
+    YSdi12Sensor.prototype.get_sensorProtocol          = YSdi12Sensor_get_sensorProtocol;
+    YSdi12Sensor.prototype.sensorProtocol              = YSdi12Sensor_get_sensorProtocol;
+    YSdi12Sensor.prototype.get_sensorVendor            = YSdi12Sensor_get_sensorVendor;
+    YSdi12Sensor.prototype.sensorVendor                = YSdi12Sensor_get_sensorVendor;
+    YSdi12Sensor.prototype.get_sensorModel             = YSdi12Sensor_get_sensorModel;
+    YSdi12Sensor.prototype.sensorModel                 = YSdi12Sensor_get_sensorModel;
+    YSdi12Sensor.prototype.get_sensorVersion           = YSdi12Sensor_get_sensorVersion;
+    YSdi12Sensor.prototype.sensorVersion               = YSdi12Sensor_get_sensorVersion;
+    YSdi12Sensor.prototype.get_sensorSerial            = YSdi12Sensor_get_sensorSerial;
+    YSdi12Sensor.prototype.sensorSerial                = YSdi12Sensor_get_sensorSerial;
+    YSdi12Sensor.prototype.get_measureCount            = YSdi12Sensor_get_measureCount;
+    YSdi12Sensor.prototype.measureCount                = YSdi12Sensor_get_measureCount;
+    YSdi12Sensor.prototype.get_measureCommand          = YSdi12Sensor_get_measureCommand;
+    YSdi12Sensor.prototype.measureCommand              = YSdi12Sensor_get_measureCommand;
+    YSdi12Sensor.prototype.get_measurePosition         = YSdi12Sensor_get_measurePosition;
+    YSdi12Sensor.prototype.measurePosition             = YSdi12Sensor_get_measurePosition;
+    YSdi12Sensor.prototype.get_measureSymbol           = YSdi12Sensor_get_measureSymbol;
+    YSdi12Sensor.prototype.measureSymbol               = YSdi12Sensor_get_measureSymbol;
+    YSdi12Sensor.prototype.get_measureUnit             = YSdi12Sensor_get_measureUnit;
+    YSdi12Sensor.prototype.measureUnit                 = YSdi12Sensor_get_measureUnit;
+    YSdi12Sensor.prototype.get_measureDescription      = YSdi12Sensor_get_measureDescription;
+    YSdi12Sensor.prototype.measureDescription          = YSdi12Sensor_get_measureDescription;
+    YSdi12Sensor.prototype.get_typeMeasure             = YSdi12Sensor_get_typeMeasure;
+    YSdi12Sensor.prototype.typeMeasure                 = YSdi12Sensor_get_typeMeasure;
+    YSdi12Sensor.prototype._parseInfoStr               = YSdi12Sensor_parseInfoStr;
+    YSdi12Sensor.prototype._queryValueInfo             = YSdi12Sensor_queryValueInfo;
+    //--- (end of generated code: YSdi12Sensor initialization)
+})();
+
+//--- (generated code: YSdi12Port class start)
+/**
+ * YSdi12Port Class: SDI12 port control interface
+ *
+ * The YSdi12Port class allows you to fully drive a Yoctopuce SDI12 port.
+ * It can be used to send and receive data, and to configure communication
+ * parameters (baud rate, bit count, parity, flow control and protocol).
+ * Note that Yoctopuce SDI12 ports are not exposed as virtual COM ports.
+ * They are meant to be used in the same way as all Yoctopuce devices.
+ */
+//--- (end of generated code: YSdi12Port class start)
+
+var YSdi12Port; // definition below
+(function()
+{
+    function _YSdi12Port(str_func)
+    {
+        //--- (generated code: YSdi12Port constructor)
         // inherit from YFunction
         YFunction.call(this, str_func);
-        this._className = 'SpiPort';
+        this._className = 'Sdi12Port';
 
         this._rxCount                        = Y_RXCOUNT_INVALID;          // UInt31
         this._txCount                        = Y_TXCOUNT_INVALID;          // UInt31
@@ -197,19 +459,17 @@ var YSpiPort; // definition below
         this._command                        = Y_COMMAND_INVALID;          // Text
         this._protocol                       = Y_PROTOCOL_INVALID;         // Protocol
         this._voltageLevel                   = Y_VOLTAGELEVEL_INVALID;     // SerialVoltageLevel
-        this._spiMode                        = Y_SPIMODE_INVALID;          // SpiMode
-        this._ssPolarity                     = Y_SSPOLARITY_INVALID;       // Polarity
-        this._shiftSampling                  = Y_SHIFTSAMPLING_INVALID;    // OnOff
+        this._serialMode                     = Y_SERIALMODE_INVALID;       // SerialMode
         this._rxptr                          = 0;                          // int
         this._rxbuff                         = "";                         // bin
         this._rxbuffptr                      = 0;                          // int
         this._eventPos                       = 0;                          // int
-        //--- (end of generated code: YSpiPort constructor)
+        //--- (end of generated code: YSdi12Port constructor)
     }
 
-    //--- (generated code: YSpiPort implementation)
+    //--- (generated code: YSdi12Port implementation)
 
-    function YSpiPort_parseAttr(name, val, _super)
+    function YSdi12Port_parseAttr(name, val, _super)
     {
         switch(name) {
         case "rxCount":
@@ -251,14 +511,8 @@ var YSpiPort; // definition below
         case "voltageLevel":
             this._voltageLevel = parseInt(val);
             return 1;
-        case "spiMode":
-            this._spiMode = val;
-            return 1;
-        case "ssPolarity":
-            this._ssPolarity = parseInt(val);
-            return 1;
-        case "shiftSampling":
-            this._shiftSampling = parseInt(val);
+        case "serialMode":
+            this._serialMode = val;
             return 1;
         }
         return _super._parseAttr.call(this, name, val, _super._super);
@@ -269,9 +523,9 @@ var YSpiPort; // definition below
      *
      * @return an integer corresponding to the total number of bytes received since last reset
      *
-     * On failure, throws an exception or returns YSpiPort.RXCOUNT_INVALID.
+     * On failure, throws an exception or returns YSdi12Port.RXCOUNT_INVALID.
      */
-    function YSpiPort_get_rxCount()
+    function YSdi12Port_get_rxCount()
     {
         var res;                    // int;
         if (this._cacheExpiration <= YAPI.GetTickCount()) {
@@ -289,15 +543,15 @@ var YSpiPort; // definition below
      * @param callback : callback function that is invoked when the result is known.
      *         The callback function receives three arguments:
      *         - the user-specific context object
-     *         - the YSpiPort object that invoked the callback
+     *         - the YSdi12Port object that invoked the callback
      *         - the result:an integer corresponding to the total number of bytes received since last reset
      * @param context : user-specific object that is passed as-is to the callback function
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      *
-     * On failure, throws an exception or returns YSpiPort.RXCOUNT_INVALID.
+     * On failure, throws an exception or returns YSdi12Port.RXCOUNT_INVALID.
      */
-    function YSpiPort_get_rxCount_async(callback,context)
+    function YSdi12Port_get_rxCount_async(callback,context)
     {
         var res;                    // int;
         var loadcb;                 // func;
@@ -320,9 +574,9 @@ var YSpiPort; // definition below
      *
      * @return an integer corresponding to the total number of bytes transmitted since last reset
      *
-     * On failure, throws an exception or returns YSpiPort.TXCOUNT_INVALID.
+     * On failure, throws an exception or returns YSdi12Port.TXCOUNT_INVALID.
      */
-    function YSpiPort_get_txCount()
+    function YSdi12Port_get_txCount()
     {
         var res;                    // int;
         if (this._cacheExpiration <= YAPI.GetTickCount()) {
@@ -340,15 +594,15 @@ var YSpiPort; // definition below
      * @param callback : callback function that is invoked when the result is known.
      *         The callback function receives three arguments:
      *         - the user-specific context object
-     *         - the YSpiPort object that invoked the callback
+     *         - the YSdi12Port object that invoked the callback
      *         - the result:an integer corresponding to the total number of bytes transmitted since last reset
      * @param context : user-specific object that is passed as-is to the callback function
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      *
-     * On failure, throws an exception or returns YSpiPort.TXCOUNT_INVALID.
+     * On failure, throws an exception or returns YSdi12Port.TXCOUNT_INVALID.
      */
-    function YSpiPort_get_txCount_async(callback,context)
+    function YSdi12Port_get_txCount_async(callback,context)
     {
         var res;                    // int;
         var loadcb;                 // func;
@@ -371,9 +625,9 @@ var YSpiPort; // definition below
      *
      * @return an integer corresponding to the total number of communication errors detected since last reset
      *
-     * On failure, throws an exception or returns YSpiPort.ERRCOUNT_INVALID.
+     * On failure, throws an exception or returns YSdi12Port.ERRCOUNT_INVALID.
      */
-    function YSpiPort_get_errCount()
+    function YSdi12Port_get_errCount()
     {
         var res;                    // int;
         if (this._cacheExpiration <= YAPI.GetTickCount()) {
@@ -391,15 +645,15 @@ var YSpiPort; // definition below
      * @param callback : callback function that is invoked when the result is known.
      *         The callback function receives three arguments:
      *         - the user-specific context object
-     *         - the YSpiPort object that invoked the callback
+     *         - the YSdi12Port object that invoked the callback
      *         - the result:an integer corresponding to the total number of communication errors detected since last reset
      * @param context : user-specific object that is passed as-is to the callback function
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      *
-     * On failure, throws an exception or returns YSpiPort.ERRCOUNT_INVALID.
+     * On failure, throws an exception or returns YSdi12Port.ERRCOUNT_INVALID.
      */
-    function YSpiPort_get_errCount_async(callback,context)
+    function YSdi12Port_get_errCount_async(callback,context)
     {
         var res;                    // int;
         var loadcb;                 // func;
@@ -422,9 +676,9 @@ var YSpiPort; // definition below
      *
      * @return an integer corresponding to the total number of messages received since last reset
      *
-     * On failure, throws an exception or returns YSpiPort.RXMSGCOUNT_INVALID.
+     * On failure, throws an exception or returns YSdi12Port.RXMSGCOUNT_INVALID.
      */
-    function YSpiPort_get_rxMsgCount()
+    function YSdi12Port_get_rxMsgCount()
     {
         var res;                    // int;
         if (this._cacheExpiration <= YAPI.GetTickCount()) {
@@ -442,15 +696,15 @@ var YSpiPort; // definition below
      * @param callback : callback function that is invoked when the result is known.
      *         The callback function receives three arguments:
      *         - the user-specific context object
-     *         - the YSpiPort object that invoked the callback
+     *         - the YSdi12Port object that invoked the callback
      *         - the result:an integer corresponding to the total number of messages received since last reset
      * @param context : user-specific object that is passed as-is to the callback function
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      *
-     * On failure, throws an exception or returns YSpiPort.RXMSGCOUNT_INVALID.
+     * On failure, throws an exception or returns YSdi12Port.RXMSGCOUNT_INVALID.
      */
-    function YSpiPort_get_rxMsgCount_async(callback,context)
+    function YSdi12Port_get_rxMsgCount_async(callback,context)
     {
         var res;                    // int;
         var loadcb;                 // func;
@@ -473,9 +727,9 @@ var YSpiPort; // definition below
      *
      * @return an integer corresponding to the total number of messages send since last reset
      *
-     * On failure, throws an exception or returns YSpiPort.TXMSGCOUNT_INVALID.
+     * On failure, throws an exception or returns YSdi12Port.TXMSGCOUNT_INVALID.
      */
-    function YSpiPort_get_txMsgCount()
+    function YSdi12Port_get_txMsgCount()
     {
         var res;                    // int;
         if (this._cacheExpiration <= YAPI.GetTickCount()) {
@@ -493,15 +747,15 @@ var YSpiPort; // definition below
      * @param callback : callback function that is invoked when the result is known.
      *         The callback function receives three arguments:
      *         - the user-specific context object
-     *         - the YSpiPort object that invoked the callback
+     *         - the YSdi12Port object that invoked the callback
      *         - the result:an integer corresponding to the total number of messages send since last reset
      * @param context : user-specific object that is passed as-is to the callback function
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      *
-     * On failure, throws an exception or returns YSpiPort.TXMSGCOUNT_INVALID.
+     * On failure, throws an exception or returns YSdi12Port.TXMSGCOUNT_INVALID.
      */
-    function YSpiPort_get_txMsgCount_async(callback,context)
+    function YSdi12Port_get_txMsgCount_async(callback,context)
     {
         var res;                    // int;
         var loadcb;                 // func;
@@ -520,13 +774,13 @@ var YSpiPort; // definition below
     }
 
     /**
-     * Returns the latest message fully received (for Line and Frame protocols).
+     * Returns the latest message fully received.
      *
-     * @return a string corresponding to the latest message fully received (for Line and Frame protocols)
+     * @return a string corresponding to the latest message fully received
      *
-     * On failure, throws an exception or returns YSpiPort.LASTMSG_INVALID.
+     * On failure, throws an exception or returns YSdi12Port.LASTMSG_INVALID.
      */
-    function YSpiPort_get_lastMsg()
+    function YSdi12Port_get_lastMsg()
     {
         var res;                    // string;
         if (this._cacheExpiration <= YAPI.GetTickCount()) {
@@ -539,20 +793,20 @@ var YSpiPort; // definition below
     }
 
     /**
-     * Gets the latest message fully received (for Line and Frame protocols).
+     * Gets the latest message fully received.
      *
      * @param callback : callback function that is invoked when the result is known.
      *         The callback function receives three arguments:
      *         - the user-specific context object
-     *         - the YSpiPort object that invoked the callback
-     *         - the result:a string corresponding to the latest message fully received (for Line and Frame protocols)
+     *         - the YSdi12Port object that invoked the callback
+     *         - the result:a string corresponding to the latest message fully received
      * @param context : user-specific object that is passed as-is to the callback function
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      *
-     * On failure, throws an exception or returns YSpiPort.LASTMSG_INVALID.
+     * On failure, throws an exception or returns YSdi12Port.LASTMSG_INVALID.
      */
-    function YSpiPort_get_lastMsg_async(callback,context)
+    function YSdi12Port_get_lastMsg_async(callback,context)
     {
         var res;                    // string;
         var loadcb;                 // func;
@@ -575,9 +829,9 @@ var YSpiPort; // definition below
      *
      * @return a string corresponding to the name of the job file currently in use
      *
-     * On failure, throws an exception or returns YSpiPort.CURRENTJOB_INVALID.
+     * On failure, throws an exception or returns YSdi12Port.CURRENTJOB_INVALID.
      */
-    function YSpiPort_get_currentJob()
+    function YSdi12Port_get_currentJob()
     {
         var res;                    // string;
         if (this._cacheExpiration <= YAPI.GetTickCount()) {
@@ -595,15 +849,15 @@ var YSpiPort; // definition below
      * @param callback : callback function that is invoked when the result is known.
      *         The callback function receives three arguments:
      *         - the user-specific context object
-     *         - the YSpiPort object that invoked the callback
+     *         - the YSdi12Port object that invoked the callback
      *         - the result:a string corresponding to the name of the job file currently in use
      * @param context : user-specific object that is passed as-is to the callback function
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      *
-     * On failure, throws an exception or returns YSpiPort.CURRENTJOB_INVALID.
+     * On failure, throws an exception or returns YSdi12Port.CURRENTJOB_INVALID.
      */
-    function YSpiPort_get_currentJob_async(callback,context)
+    function YSdi12Port_get_currentJob_async(callback,context)
     {
         var res;                    // string;
         var loadcb;                 // func;
@@ -631,7 +885,7 @@ var YSpiPort; // definition below
      *
      * On failure, throws an exception or returns a negative error code.
      */
-    function YSpiPort_set_currentJob(newval)
+    function YSdi12Port_set_currentJob(newval)
     {   var rest_val;
         rest_val = newval;
         return this._setAttr('currentJob',rest_val);
@@ -642,9 +896,9 @@ var YSpiPort; // definition below
      *
      * @return a string corresponding to the job file to use when the device is powered on
      *
-     * On failure, throws an exception or returns YSpiPort.STARTUPJOB_INVALID.
+     * On failure, throws an exception or returns YSdi12Port.STARTUPJOB_INVALID.
      */
-    function YSpiPort_get_startupJob()
+    function YSdi12Port_get_startupJob()
     {
         var res;                    // string;
         if (this._cacheExpiration <= YAPI.GetTickCount()) {
@@ -662,15 +916,15 @@ var YSpiPort; // definition below
      * @param callback : callback function that is invoked when the result is known.
      *         The callback function receives three arguments:
      *         - the user-specific context object
-     *         - the YSpiPort object that invoked the callback
+     *         - the YSdi12Port object that invoked the callback
      *         - the result:a string corresponding to the job file to use when the device is powered on
      * @param context : user-specific object that is passed as-is to the callback function
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      *
-     * On failure, throws an exception or returns YSpiPort.STARTUPJOB_INVALID.
+     * On failure, throws an exception or returns YSdi12Port.STARTUPJOB_INVALID.
      */
-    function YSpiPort_get_startupJob_async(callback,context)
+    function YSdi12Port_get_startupJob_async(callback,context)
     {
         var res;                    // string;
         var loadcb;                 // func;
@@ -699,7 +953,7 @@ var YSpiPort; // definition below
      *
      * On failure, throws an exception or returns a negative error code.
      */
-    function YSpiPort_set_startupJob(newval)
+    function YSdi12Port_set_startupJob(newval)
     {   var rest_val;
         rest_val = newval;
         return this._setAttr('startupJob',rest_val);
@@ -710,9 +964,9 @@ var YSpiPort; // definition below
      *
      * @return an integer corresponding to the maximum number of tasks in a job that the device can handle
      *
-     * On failure, throws an exception or returns YSpiPort.JOBMAXTASK_INVALID.
+     * On failure, throws an exception or returns YSdi12Port.JOBMAXTASK_INVALID.
      */
-    function YSpiPort_get_jobMaxTask()
+    function YSdi12Port_get_jobMaxTask()
     {
         var res;                    // int;
         if (this._cacheExpiration == 0) {
@@ -730,15 +984,15 @@ var YSpiPort; // definition below
      * @param callback : callback function that is invoked when the result is known.
      *         The callback function receives three arguments:
      *         - the user-specific context object
-     *         - the YSpiPort object that invoked the callback
+     *         - the YSdi12Port object that invoked the callback
      *         - the result:an integer corresponding to the maximum number of tasks in a job that the device can handle
      * @param context : user-specific object that is passed as-is to the callback function
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      *
-     * On failure, throws an exception or returns YSpiPort.JOBMAXTASK_INVALID.
+     * On failure, throws an exception or returns YSdi12Port.JOBMAXTASK_INVALID.
      */
-    function YSpiPort_get_jobMaxTask_async(callback,context)
+    function YSdi12Port_get_jobMaxTask_async(callback,context)
     {
         var res;                    // int;
         var loadcb;                 // func;
@@ -761,9 +1015,9 @@ var YSpiPort; // definition below
      *
      * @return an integer corresponding to maximum size allowed for job files
      *
-     * On failure, throws an exception or returns YSpiPort.JOBMAXSIZE_INVALID.
+     * On failure, throws an exception or returns YSdi12Port.JOBMAXSIZE_INVALID.
      */
-    function YSpiPort_get_jobMaxSize()
+    function YSdi12Port_get_jobMaxSize()
     {
         var res;                    // int;
         if (this._cacheExpiration == 0) {
@@ -781,15 +1035,15 @@ var YSpiPort; // definition below
      * @param callback : callback function that is invoked when the result is known.
      *         The callback function receives three arguments:
      *         - the user-specific context object
-     *         - the YSpiPort object that invoked the callback
+     *         - the YSdi12Port object that invoked the callback
      *         - the result:an integer corresponding to maximum size allowed for job files
      * @param context : user-specific object that is passed as-is to the callback function
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      *
-     * On failure, throws an exception or returns YSpiPort.JOBMAXSIZE_INVALID.
+     * On failure, throws an exception or returns YSdi12Port.JOBMAXSIZE_INVALID.
      */
-    function YSpiPort_get_jobMaxSize_async(callback,context)
+    function YSdi12Port_get_jobMaxSize_async(callback,context)
     {
         var res;                    // int;
         var loadcb;                 // func;
@@ -807,7 +1061,7 @@ var YSpiPort; // definition below
         }
     }
 
-    function YSpiPort_get_command()
+    function YSdi12Port_get_command()
     {
         var res;                    // string;
         if (this._cacheExpiration <= YAPI.GetTickCount()) {
@@ -824,13 +1078,13 @@ var YSpiPort; // definition below
      * @param callback : callback function that is invoked when the result is known.
      *         The callback function receives three arguments:
      *         - the user-specific context object
-     *         - the YSpiPort object that invoked the callback
+     *         - the YSdi12Port object that invoked the callback
      *         - the result:
      * @param context : user-specific object that is passed as-is to the callback function
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      */
-    function YSpiPort_get_command_async(callback,context)
+    function YSdi12Port_get_command_async(callback,context)
     {
         var res;                    // string;
         var loadcb;                 // func;
@@ -848,7 +1102,7 @@ var YSpiPort; // definition below
         }
     }
 
-    function YSpiPort_set_command(newval)
+    function YSdi12Port_set_command(newval)
     {   var rest_val;
         rest_val = newval;
         return this._setAttr('command',rest_val);
@@ -863,9 +1117,9 @@ var YSpiPort; // definition below
      *
      * @return a string corresponding to the type of protocol used over the serial line, as a string
      *
-     * On failure, throws an exception or returns YSpiPort.PROTOCOL_INVALID.
+     * On failure, throws an exception or returns YSdi12Port.PROTOCOL_INVALID.
      */
-    function YSpiPort_get_protocol()
+    function YSdi12Port_get_protocol()
     {
         var res;                    // string;
         if (this._cacheExpiration <= YAPI.GetTickCount()) {
@@ -887,15 +1141,15 @@ var YSpiPort; // definition below
      * @param callback : callback function that is invoked when the result is known.
      *         The callback function receives three arguments:
      *         - the user-specific context object
-     *         - the YSpiPort object that invoked the callback
+     *         - the YSdi12Port object that invoked the callback
      *         - the result:a string corresponding to the type of protocol used over the serial line, as a string
      * @param context : user-specific object that is passed as-is to the callback function
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      *
-     * On failure, throws an exception or returns YSpiPort.PROTOCOL_INVALID.
+     * On failure, throws an exception or returns YSdi12Port.PROTOCOL_INVALID.
      */
-    function YSpiPort_get_protocol_async(callback,context)
+    function YSdi12Port_get_protocol_async(callback,context)
     {
         var res;                    // string;
         var loadcb;                 // func;
@@ -930,7 +1184,7 @@ var YSpiPort; // definition below
      *
      * On failure, throws an exception or returns a negative error code.
      */
-    function YSpiPort_set_protocol(newval)
+    function YSdi12Port_set_protocol(newval)
     {   var rest_val;
         rest_val = newval;
         return this._setAttr('protocol',rest_val);
@@ -939,14 +1193,14 @@ var YSpiPort; // definition below
     /**
      * Returns the voltage level used on the serial line.
      *
-     * @return a value among YSpiPort.VOLTAGELEVEL_OFF, YSpiPort.VOLTAGELEVEL_TTL3V,
-     * YSpiPort.VOLTAGELEVEL_TTL3VR, YSpiPort.VOLTAGELEVEL_TTL5V, YSpiPort.VOLTAGELEVEL_TTL5VR,
-     * YSpiPort.VOLTAGELEVEL_RS232, YSpiPort.VOLTAGELEVEL_RS485, YSpiPort.VOLTAGELEVEL_TTL1V8 and
-     * YSpiPort.VOLTAGELEVEL_SDI12 corresponding to the voltage level used on the serial line
+     * @return a value among YSdi12Port.VOLTAGELEVEL_OFF, YSdi12Port.VOLTAGELEVEL_TTL3V,
+     * YSdi12Port.VOLTAGELEVEL_TTL3VR, YSdi12Port.VOLTAGELEVEL_TTL5V, YSdi12Port.VOLTAGELEVEL_TTL5VR,
+     * YSdi12Port.VOLTAGELEVEL_RS232, YSdi12Port.VOLTAGELEVEL_RS485, YSdi12Port.VOLTAGELEVEL_TTL1V8 and
+     * YSdi12Port.VOLTAGELEVEL_SDI12 corresponding to the voltage level used on the serial line
      *
-     * On failure, throws an exception or returns YSpiPort.VOLTAGELEVEL_INVALID.
+     * On failure, throws an exception or returns YSdi12Port.VOLTAGELEVEL_INVALID.
      */
-    function YSpiPort_get_voltageLevel()
+    function YSdi12Port_get_voltageLevel()
     {
         var res;                    // enumSERIALVOLTAGELEVEL;
         if (this._cacheExpiration <= YAPI.GetTickCount()) {
@@ -964,18 +1218,18 @@ var YSpiPort; // definition below
      * @param callback : callback function that is invoked when the result is known.
      *         The callback function receives three arguments:
      *         - the user-specific context object
-     *         - the YSpiPort object that invoked the callback
-     *         - the result:a value among YSpiPort.VOLTAGELEVEL_OFF, YSpiPort.VOLTAGELEVEL_TTL3V,
-     *         YSpiPort.VOLTAGELEVEL_TTL3VR, YSpiPort.VOLTAGELEVEL_TTL5V, YSpiPort.VOLTAGELEVEL_TTL5VR,
-     *         YSpiPort.VOLTAGELEVEL_RS232, YSpiPort.VOLTAGELEVEL_RS485, YSpiPort.VOLTAGELEVEL_TTL1V8 and
-     *         YSpiPort.VOLTAGELEVEL_SDI12 corresponding to the voltage level used on the serial line
+     *         - the YSdi12Port object that invoked the callback
+     *         - the result:a value among YSdi12Port.VOLTAGELEVEL_OFF, YSdi12Port.VOLTAGELEVEL_TTL3V,
+     *         YSdi12Port.VOLTAGELEVEL_TTL3VR, YSdi12Port.VOLTAGELEVEL_TTL5V, YSdi12Port.VOLTAGELEVEL_TTL5VR,
+     *         YSdi12Port.VOLTAGELEVEL_RS232, YSdi12Port.VOLTAGELEVEL_RS485, YSdi12Port.VOLTAGELEVEL_TTL1V8 and
+     *         YSdi12Port.VOLTAGELEVEL_SDI12 corresponding to the voltage level used on the serial line
      * @param context : user-specific object that is passed as-is to the callback function
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      *
-     * On failure, throws an exception or returns YSpiPort.VOLTAGELEVEL_INVALID.
+     * On failure, throws an exception or returns YSdi12Port.VOLTAGELEVEL_INVALID.
      */
-    function YSpiPort_get_voltageLevel_async(callback,context)
+    function YSdi12Port_get_voltageLevel_async(callback,context)
     {
         var res;                    // enumSERIALVOLTAGELEVEL;
         var loadcb;                 // func;
@@ -1002,69 +1256,73 @@ var YSpiPort; // definition below
      * Remember to call the saveToFlash() method of the module if the
      * modification must be kept.
      *
-     * @param newval : a value among YSpiPort.VOLTAGELEVEL_OFF, YSpiPort.VOLTAGELEVEL_TTL3V,
-     * YSpiPort.VOLTAGELEVEL_TTL3VR, YSpiPort.VOLTAGELEVEL_TTL5V, YSpiPort.VOLTAGELEVEL_TTL5VR,
-     * YSpiPort.VOLTAGELEVEL_RS232, YSpiPort.VOLTAGELEVEL_RS485, YSpiPort.VOLTAGELEVEL_TTL1V8 and
-     * YSpiPort.VOLTAGELEVEL_SDI12 corresponding to the voltage type used on the serial line
+     * @param newval : a value among YSdi12Port.VOLTAGELEVEL_OFF, YSdi12Port.VOLTAGELEVEL_TTL3V,
+     * YSdi12Port.VOLTAGELEVEL_TTL3VR, YSdi12Port.VOLTAGELEVEL_TTL5V, YSdi12Port.VOLTAGELEVEL_TTL5VR,
+     * YSdi12Port.VOLTAGELEVEL_RS232, YSdi12Port.VOLTAGELEVEL_RS485, YSdi12Port.VOLTAGELEVEL_TTL1V8 and
+     * YSdi12Port.VOLTAGELEVEL_SDI12 corresponding to the voltage type used on the serial line
      *
      * @return YAPI.SUCCESS if the call succeeds.
      *
      * On failure, throws an exception or returns a negative error code.
      */
-    function YSpiPort_set_voltageLevel(newval)
+    function YSdi12Port_set_voltageLevel(newval)
     {   var rest_val;
         rest_val = String(newval);
         return this._setAttr('voltageLevel',rest_val);
     }
 
     /**
-     * Returns the SPI port communication parameters, as a string such as
-     * "125000,0,msb". The string includes the baud rate, the SPI mode (between
-     * 0 and 3) and the bit order.
+     * Returns the serial port communication parameters, as a string such as
+     * "1200,7E1,Simplex". The string includes the baud rate, the number of data bits,
+     * the parity, and the number of stop bits. The suffix "Simplex" denotes
+     * the fact that transmission in both directions is multiplexed on the
+     * same transmission line.
      *
-     * @return a string corresponding to the SPI port communication parameters, as a string such as
-     *         "125000,0,msb"
+     * @return a string corresponding to the serial port communication parameters, as a string such as
+     *         "1200,7E1,Simplex"
      *
-     * On failure, throws an exception or returns YSpiPort.SPIMODE_INVALID.
+     * On failure, throws an exception or returns YSdi12Port.SERIALMODE_INVALID.
      */
-    function YSpiPort_get_spiMode()
+    function YSdi12Port_get_serialMode()
     {
         var res;                    // string;
         if (this._cacheExpiration <= YAPI.GetTickCount()) {
             if (this.load(YAPI.defaultCacheValidity) != YAPI_SUCCESS) {
-                return Y_SPIMODE_INVALID;
+                return Y_SERIALMODE_INVALID;
             }
         }
-        res = this._spiMode;
+        res = this._serialMode;
         return res;
     }
 
     /**
-     * Gets the SPI port communication parameters, as a string such as
-     * "125000,0,msb". The string includes the baud rate, the SPI mode (between
-     * 0 and 3) and the bit order.
+     * Gets the serial port communication parameters, as a string such as
+     * "1200,7E1,Simplex". The string includes the baud rate, the number of data bits,
+     * the parity, and the number of stop bits. The suffix "Simplex" denotes
+     * the fact that transmission in both directions is multiplexed on the
+     * same transmission line.
      *
      * @param callback : callback function that is invoked when the result is known.
      *         The callback function receives three arguments:
      *         - the user-specific context object
-     *         - the YSpiPort object that invoked the callback
-     *         - the result:a string corresponding to the SPI port communication parameters, as a string such as
-     *         "125000,0,msb"
+     *         - the YSdi12Port object that invoked the callback
+     *         - the result:a string corresponding to the serial port communication parameters, as a string such as
+     *         "1200,7E1,Simplex"
      * @param context : user-specific object that is passed as-is to the callback function
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
      *
-     * On failure, throws an exception or returns YSpiPort.SPIMODE_INVALID.
+     * On failure, throws an exception or returns YSdi12Port.SERIALMODE_INVALID.
      */
-    function YSpiPort_get_spiMode_async(callback,context)
+    function YSdi12Port_get_serialMode_async(callback,context)
     {
         var res;                    // string;
         var loadcb;                 // func;
         loadcb = function(ctx,obj,res) {
             if (res != YAPI_SUCCESS) {
-                callback(context, obj, Y_SPIMODE_INVALID);
+                callback(context, obj, Y_SERIALMODE_INVALID);
             } else {
-                callback(context, obj, obj._spiMode);
+                callback(context, obj, obj._serialMode);
             }
         };
         if (this._cacheExpiration <= YAPI.GetTickCount()) {
@@ -1075,171 +1333,29 @@ var YSpiPort; // definition below
     }
 
     /**
-     * Changes the SPI port communication parameters, with a string such as
-     * "125000,0,msb". The string includes the baud rate, the SPI mode (between
-     * 0 and 3) and the bit order.
+     * Changes the serial port communication parameters, with a string such as
+     * "1200,7E1,Simplex". The string includes the baud rate, the number of data bits,
+     * the parity, and the number of stop bits. The suffix "Simplex" denotes
+     * the fact that transmission in both directions is multiplexed on the
+     * same transmission line.
      * Remember to call the saveToFlash() method of the module if the
      * modification must be kept.
      *
-     * @param newval : a string corresponding to the SPI port communication parameters, with a string such as
-     *         "125000,0,msb"
+     * @param newval : a string corresponding to the serial port communication parameters, with a string such as
+     *         "1200,7E1,Simplex"
      *
      * @return YAPI.SUCCESS if the call succeeds.
      *
      * On failure, throws an exception or returns a negative error code.
      */
-    function YSpiPort_set_spiMode(newval)
+    function YSdi12Port_set_serialMode(newval)
     {   var rest_val;
         rest_val = newval;
-        return this._setAttr('spiMode',rest_val);
+        return this._setAttr('serialMode',rest_val);
     }
 
     /**
-     * Returns the SS line polarity.
-     *
-     * @return either YSpiPort.SSPOLARITY_ACTIVE_LOW or YSpiPort.SSPOLARITY_ACTIVE_HIGH, according to the
-     * SS line polarity
-     *
-     * On failure, throws an exception or returns YSpiPort.SSPOLARITY_INVALID.
-     */
-    function YSpiPort_get_ssPolarity()
-    {
-        var res;                    // enumPOLARITY;
-        if (this._cacheExpiration <= YAPI.GetTickCount()) {
-            if (this.load(YAPI.defaultCacheValidity) != YAPI_SUCCESS) {
-                return Y_SSPOLARITY_INVALID;
-            }
-        }
-        res = this._ssPolarity;
-        return res;
-    }
-
-    /**
-     * Gets the SS line polarity.
-     *
-     * @param callback : callback function that is invoked when the result is known.
-     *         The callback function receives three arguments:
-     *         - the user-specific context object
-     *         - the YSpiPort object that invoked the callback
-     *         - the result:either YSpiPort.SSPOLARITY_ACTIVE_LOW or YSpiPort.SSPOLARITY_ACTIVE_HIGH, according to
-     *         the SS line polarity
-     * @param context : user-specific object that is passed as-is to the callback function
-     *
-     * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
-     *
-     * On failure, throws an exception or returns YSpiPort.SSPOLARITY_INVALID.
-     */
-    function YSpiPort_get_ssPolarity_async(callback,context)
-    {
-        var res;                    // enumPOLARITY;
-        var loadcb;                 // func;
-        loadcb = function(ctx,obj,res) {
-            if (res != YAPI_SUCCESS) {
-                callback(context, obj, Y_SSPOLARITY_INVALID);
-            } else {
-                callback(context, obj, obj._ssPolarity);
-            }
-        };
-        if (this._cacheExpiration <= YAPI.GetTickCount()) {
-            this.load_async(YAPI.defaultCacheValidity,loadcb,null);
-        } else {
-            loadcb(null, this, YAPI_SUCCESS);
-        }
-    }
-
-    /**
-     * Changes the SS line polarity.
-     * Remember to call the saveToFlash() method of the module if the
-     * modification must be kept.
-     *
-     * @param newval : either YSpiPort.SSPOLARITY_ACTIVE_LOW or YSpiPort.SSPOLARITY_ACTIVE_HIGH, according
-     * to the SS line polarity
-     *
-     * @return YAPI.SUCCESS if the call succeeds.
-     *
-     * On failure, throws an exception or returns a negative error code.
-     */
-    function YSpiPort_set_ssPolarity(newval)
-    {   var rest_val;
-        rest_val = String(newval);
-        return this._setAttr('ssPolarity',rest_val);
-    }
-
-    /**
-     * Returns true when the SDI line phase is shifted with regards to the SDO line.
-     *
-     * @return either YSpiPort.SHIFTSAMPLING_OFF or YSpiPort.SHIFTSAMPLING_ON, according to true when the
-     * SDI line phase is shifted with regards to the SDO line
-     *
-     * On failure, throws an exception or returns YSpiPort.SHIFTSAMPLING_INVALID.
-     */
-    function YSpiPort_get_shiftSampling()
-    {
-        var res;                    // enumONOFF;
-        if (this._cacheExpiration <= YAPI.GetTickCount()) {
-            if (this.load(YAPI.defaultCacheValidity) != YAPI_SUCCESS) {
-                return Y_SHIFTSAMPLING_INVALID;
-            }
-        }
-        res = this._shiftSampling;
-        return res;
-    }
-
-    /**
-     * Gets true when the SDI line phase is shifted with regards to the SDO line.
-     *
-     * @param callback : callback function that is invoked when the result is known.
-     *         The callback function receives three arguments:
-     *         - the user-specific context object
-     *         - the YSpiPort object that invoked the callback
-     *         - the result:either YSpiPort.SHIFTSAMPLING_OFF or YSpiPort.SHIFTSAMPLING_ON, according to true when
-     *         the SDI line phase is shifted with regards to the SDO line
-     * @param context : user-specific object that is passed as-is to the callback function
-     *
-     * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
-     *
-     * On failure, throws an exception or returns YSpiPort.SHIFTSAMPLING_INVALID.
-     */
-    function YSpiPort_get_shiftSampling_async(callback,context)
-    {
-        var res;                    // enumONOFF;
-        var loadcb;                 // func;
-        loadcb = function(ctx,obj,res) {
-            if (res != YAPI_SUCCESS) {
-                callback(context, obj, Y_SHIFTSAMPLING_INVALID);
-            } else {
-                callback(context, obj, obj._shiftSampling);
-            }
-        };
-        if (this._cacheExpiration <= YAPI.GetTickCount()) {
-            this.load_async(YAPI.defaultCacheValidity,loadcb,null);
-        } else {
-            loadcb(null, this, YAPI_SUCCESS);
-        }
-    }
-
-    /**
-     * Changes the SDI line sampling shift. When disabled, SDI line is
-     * sampled in the middle of data output time. When enabled, SDI line is
-     * samples at the end of data output time.
-     * Remember to call the saveToFlash() method of the module if the
-     * modification must be kept.
-     *
-     * @param newval : either YSpiPort.SHIFTSAMPLING_OFF or YSpiPort.SHIFTSAMPLING_ON, according to the
-     * SDI line sampling shift
-     *
-     * @return YAPI.SUCCESS if the call succeeds.
-     *
-     * On failure, throws an exception or returns a negative error code.
-     */
-    function YSpiPort_set_shiftSampling(newval)
-    {   var rest_val;
-        rest_val = String(newval);
-        return this._setAttr('shiftSampling',rest_val);
-    }
-
-    /**
-     * Retrieves a SPI port for a given identifier.
+     * Retrieves a SDI12 port for a given identifier.
      * The identifier can be specified using several formats:
      * <ul>
      * <li>FunctionLogicalName</li>
@@ -1249,11 +1365,11 @@ var YSpiPort; // definition below
      * <li>ModuleLogicalName.FunctionLogicalName</li>
      * </ul>
      *
-     * This function does not require that the SPI port is online at the time
+     * This function does not require that the SDI12 port is online at the time
      * it is invoked. The returned object is nevertheless valid.
-     * Use the method YSpiPort.isOnline() to test if the SPI port is
+     * Use the method YSdi12Port.isOnline() to test if the SDI12 port is
      * indeed online at a given time. In case of ambiguity when looking for
-     * a SPI port by logical name, no error is notified: the first instance
+     * a SDI12 port by logical name, no error is notified: the first instance
      * found is returned. The search is performed first by hardware name,
      * then by logical name.
      *
@@ -1261,23 +1377,23 @@ var YSpiPort; // definition below
      * you are certain that the matching device is plugged, make sure that you did
      * call registerHub() at application initialization time.
      *
-     * @param func : a string that uniquely characterizes the SPI port, for instance
-     *         YSPIMK01.spiPort.
+     * @param func : a string that uniquely characterizes the SDI12 port, for instance
+     *         MyDevice.sdi12Port.
      *
-     * @return a YSpiPort object allowing you to drive the SPI port.
+     * @return a YSdi12Port object allowing you to drive the SDI12 port.
      */
-    function YSpiPort_FindSpiPort(func)                         // class method
+    function YSdi12Port_FindSdi12Port(func)                     // class method
     {
-        var obj;                    // YSpiPort;
-        obj = YFunction._FindFromCache("SpiPort", func);
+        var obj;                    // YSdi12Port;
+        obj = YFunction._FindFromCache("Sdi12Port", func);
         if (obj == null) {
-            obj = new YSpiPort(func);
-            YFunction._AddToCache("SpiPort", func, obj);
+            obj = new YSdi12Port(func);
+            YFunction._AddToCache("Sdi12Port", func, obj);
         }
         return obj;
     }
 
-    function YSpiPort_sendCommand(text)
+    function YSdi12Port_sendCommand(text)
     {
         return this.set_command(text);
     }
@@ -1295,7 +1411,7 @@ var YSpiPort; // definition below
      *
      * On failure, throws an exception or returns a negative error code.
      */
-    function YSpiPort_readLine()
+    function YSdi12Port_readLine()
     {
         var url;                    // str;
         var msgbin;                 // bin;
@@ -1341,7 +1457,7 @@ var YSpiPort; // definition below
      *
      * On failure, throws an exception or returns an empty array.
      */
-    function YSpiPort_readMessages(pattern,maxWait)
+    function YSdi12Port_readMessages(pattern,maxWait)
     {
         var url;                    // str;
         var msgbin;                 // bin;
@@ -1377,7 +1493,7 @@ var YSpiPort; // definition below
      *
      * @return nothing.
      */
-    function YSpiPort_read_seek(absPos)
+    function YSdi12Port_read_seek(absPos)
     {
         this._rxptr = absPos;
         return YAPI_SUCCESS;
@@ -1388,7 +1504,7 @@ var YSpiPort; // definition below
      *
      * @return the absolute position index for next read operations.
      */
-    function YSpiPort_read_tell()
+    function YSdi12Port_read_tell()
     {
         return this._rxptr;
     }
@@ -1399,7 +1515,7 @@ var YSpiPort; // definition below
      *
      * @return the number of bytes available to read
      */
-    function YSpiPort_read_avail()
+    function YSdi12Port_read_avail()
     {
         var availPosStr;            // str;
         var atPos;                  // int;
@@ -1413,7 +1529,7 @@ var YSpiPort; // definition below
         return res;
     }
 
-    function YSpiPort_end_tell()
+    function YSdi12Port_end_tell()
     {
         var availPosStr;            // str;
         var atPos;                  // int;
@@ -1439,7 +1555,7 @@ var YSpiPort; // definition below
      *
      * On failure, throws an exception or returns an empty string.
      */
-    function YSpiPort_queryLine(query,maxWait)
+    function YSdi12Port_queryLine(query,maxWait)
     {
         var prevpos;                // int;
         var url;                    // str;
@@ -1486,7 +1602,7 @@ var YSpiPort; // definition below
      *
      * On failure, throws an exception or returns an empty string.
      */
-    function YSpiPort_queryHex(hexString,maxWait)
+    function YSdi12Port_queryHex(hexString,maxWait)
     {
         var prevpos;                // int;
         var url;                    // str;
@@ -1531,7 +1647,7 @@ var YSpiPort; // definition below
      *
      * On failure, throws an exception or returns a negative error code.
      */
-    function YSpiPort_uploadJob(jobfile,jsonDef)
+    function YSdi12Port_uploadJob(jobfile,jsonDef)
     {
         this._upload(jobfile, jsonDef);
         return YAPI_SUCCESS;
@@ -1548,7 +1664,7 @@ var YSpiPort; // definition below
      *
      * On failure, throws an exception or returns a negative error code.
      */
-    function YSpiPort_selectJob(jobfile)
+    function YSdi12Port_selectJob(jobfile)
     {
         return this.set_currentJob(jobfile);
     }
@@ -1560,7 +1676,7 @@ var YSpiPort; // definition below
      *
      * On failure, throws an exception or returns a negative error code.
      */
-    function YSpiPort_reset()
+    function YSdi12Port_reset()
     {
         this._eventPos = 0;
         this._rxptr = 0;
@@ -1579,7 +1695,7 @@ var YSpiPort; // definition below
      *
      * On failure, throws an exception or returns a negative error code.
      */
-    function YSpiPort_writeByte(code)
+    function YSdi12Port_writeByte(code)
     {
         return this.sendCommand("$"+('00'+(code).toString(16)).slice(-2).toUpperCase());
     }
@@ -1593,7 +1709,7 @@ var YSpiPort; // definition below
      *
      * On failure, throws an exception or returns a negative error code.
      */
-    function YSpiPort_writeStr(text)
+    function YSdi12Port_writeStr(text)
     {
         var buff;                   // bin;
         var bufflen;                // int;
@@ -1630,7 +1746,7 @@ var YSpiPort; // definition below
      *
      * On failure, throws an exception or returns a negative error code.
      */
-    function YSpiPort_writeBin(buff)
+    function YSdi12Port_writeBin(buff)
     {
         return this._upload("txdata", buff);
     }
@@ -1644,7 +1760,7 @@ var YSpiPort; // definition below
      *
      * On failure, throws an exception or returns a negative error code.
      */
-    function YSpiPort_writeArray(byteList)
+    function YSdi12Port_writeArray(byteList)
     {
         var buff;                   // bin;
         var bufflen;                // int;
@@ -1673,7 +1789,7 @@ var YSpiPort; // definition below
      *
      * On failure, throws an exception or returns a negative error code.
      */
-    function YSpiPort_writeHex(hexString)
+    function YSdi12Port_writeHex(hexString)
     {
         var buff;                   // bin;
         var bufflen;                // int;
@@ -1706,7 +1822,7 @@ var YSpiPort; // definition below
      *
      * On failure, throws an exception or returns a negative error code.
      */
-    function YSpiPort_writeLine(text)
+    function YSdi12Port_writeLine(text)
     {
         var buff;                   // bin;
         var bufflen;                // int;
@@ -1743,7 +1859,7 @@ var YSpiPort; // definition below
      *
      * On failure, throws an exception or returns a negative error code.
      */
-    function YSpiPort_readByte()
+    function YSdi12Port_readByte()
     {
         var currpos;                // int;
         var reqlen;                 // int;
@@ -1814,7 +1930,7 @@ var YSpiPort; // definition below
      *
      * On failure, throws an exception or returns a negative error code.
      */
-    function YSpiPort_readStr(nChars)
+    function YSdi12Port_readStr(nChars)
     {
         var buff;                   // bin;
         var bufflen;                // int;
@@ -1850,7 +1966,7 @@ var YSpiPort; // definition below
      *
      * On failure, throws an exception or returns a negative error code.
      */
-    function YSpiPort_readBin(nChars)
+    function YSdi12Port_readBin(nChars)
     {
         var buff;                   // bin;
         var bufflen;                // int;
@@ -1892,7 +2008,7 @@ var YSpiPort; // definition below
      *
      * On failure, throws an exception or returns an empty array.
      */
-    function YSpiPort_readArray(nChars)
+    function YSdi12Port_readArray(nChars)
     {
         var buff;                   // bin;
         var bufflen;                // int;
@@ -1936,7 +2052,7 @@ var YSpiPort; // definition below
      *
      * On failure, throws an exception or returns a negative error code.
      */
-    function YSpiPort_readHex(nBytes)
+    function YSdi12Port_readHex(nBytes)
     {
         var buff;                   // bin;
         var bufflen;                // int;
@@ -1972,22 +2088,267 @@ var YSpiPort; // definition below
     }
 
     /**
-     * Manually sets the state of the SS line. This function has no effect when
-     * the SS line is handled automatically.
+     * Sends a SDI-12 query to the bus, and reads the sensor immediate reply.
+     * This function is intended to be used when the serial port is configured for 'SDI-12' protocol.
      *
-     * @param val : 1 to turn SS active, 0 to release SS.
+     * @param sensorAddr : the sensor address, as a string
+     * @param cmd : the SDI12 query to send (without address and exclamation point)
+     * @param maxWait : the maximum timeout to wait for a reply from sensor, in millisecond
      *
-     * @return YAPI.SUCCESS if the call succeeds.
+     * @return the reply returned by the sensor, without newline, as a string.
      *
-     * On failure, throws an exception or returns a negative error code.
+     * On failure, throws an exception or returns an empty string.
      */
-    function YSpiPort_set_SS(val)
+    function YSdi12Port_querySdi12(sensorAddr,cmd,maxWait)
     {
-        return this.sendCommand("S"+String(Math.round(val)));
+        var fullCmd;                // str;
+        var cmdChar;                // str;
+        var pattern;                // str;
+        var url;                    // str;
+        var msgbin;                 // bin;
+        var msgarr = [];            // strArr;
+        var msglen;                 // int;
+        var res;                    // str;
+        cmdChar  = "";
+
+        pattern = sensorAddr;
+        if ((cmd).length > 0) {
+            cmdChar = (cmd).substr(0, 1);
+        }
+        if (sensorAddr == "?") {
+            pattern = ".*";
+        } else {
+            if (cmdChar == "M" || cmdChar == "D") {
+                pattern = ""+sensorAddr+":.*";
+            } else {
+                pattern = ""+sensorAddr+".*";
+            }
+        }
+        pattern = this._escapeAttr(pattern);
+        fullCmd = this._escapeAttr("+"+sensorAddr+""+cmd+"!");
+        url = "rxmsg.json?len=1&maxw="+String(Math.round(maxWait))+"&cmd="+fullCmd+"&pat="+pattern;
+
+        msgbin = this._download(url);
+        if ((msgbin).length<2) {
+            return "";
+        }
+        msgarr = this._json_get_array(msgbin);
+        msglen = msgarr.length;
+        if (msglen == 0) {
+            return "";
+        }
+        // last element of array is the new position
+        msglen = msglen - 1;
+        this._rxptr = YAPI._atoi(msgarr[msglen]);
+        if (msglen == 0) {
+            return "";
+        }
+        res = this._json_get_string(msgarr[0]);
+        return res;
     }
 
     /**
-     * Retrieves messages (both direction) in the SPI port buffer, starting at current position.
+     * Sends a discovery command to the bus, and reads the sensor information reply.
+     * This function is intended to be used when the serial port is configured for 'SDI-12' protocol.
+     * This function work when only one sensor is connected.
+     *
+     * @return the reply returned by the sensor, as a YSdi12Sensor object.
+     *
+     * On failure, throws an exception or returns an empty string.
+     */
+    function YSdi12Port_discoverSingleSensor()
+    {
+        var resStr;                 // str;
+
+        resStr = this.querySdi12("?","",5000);
+        if (resStr == "") {
+            return new YSdi12Sensor(this, "ERSensor Not Found");
+        }
+
+        return this.getSensorInformation(resStr);
+    }
+
+    /**
+     * Sends a discovery command to the bus, and reads all sensors information reply.
+     * This function is intended to be used when the serial port is configured for 'SDI-12' protocol.
+     *
+     * @return all the information from every connected sensor, as an array of YSdi12Sensor object.
+     *
+     * On failure, throws an exception or returns an empty string.
+     */
+    function YSdi12Port_discoverAllSensors()
+    {
+        var sensors = [];           // YSdi12SensorArr;
+        var idSens = [];            // strArr;
+        var res;                    // str;
+        var i;                      // int;
+        var lettreMin;              // str;
+        var lettreMaj;              // str;
+
+        // 1. Search for sensors present
+        idSens.length = 0;
+        i = 0 ;
+        while (i < 10) {
+            res = this.querySdi12(i,"!",500);
+            if ((res).length >= 1) {
+                idSens.push(res);
+            }
+            i = i+1;
+        }
+        lettreMin = "abcdefghijklmnopqrstuvwxyz";
+        lettreMaj = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        i = 0;
+        while (i<26) {
+            res = this.querySdi12((lettreMin).substr(i, 1),"!",500);
+            if ((res).length >= 1) {
+                idSens.push(res);
+            }
+            i = i +1;
+        }
+        while (i<26) {
+            res = this.querySdi12((lettreMaj).substr(i, 1),"!",500);
+            if ((res).length >= 1) {
+                idSens.push(res);
+            }
+            i = i +1;
+        }
+        // 2. Query existing sensors information
+        i = 0;
+        sensors.length = 0;
+        while (i < idSens.length) {
+            sensors.push(this.getSensorInformation(idSens[i]));
+            i = i + 1;
+        }
+        return sensors;
+    }
+
+    /**
+     * Sends a mesurement command to the SDI-12 bus, and reads the sensor immediate reply.
+     * The supported commands are:
+     * M: Measurement start control
+     * M1...M9: Additional measurement start command
+     * D: Measurement reading control
+     * This function is intended to be used when the serial port is configured for 'SDI-12' protocol.
+     *
+     * @param sensorAddr : the sensor address, as a string
+     * @param measCmd : the SDI12 query to send (without address and exclamation point)
+     * @param maxWait : the maximum timeout to wait for a reply from sensor, in millisecond
+     *
+     * @return the reply returned by the sensor, without newline, as a list of float.
+     *
+     * On failure, throws an exception or returns an empty string.
+     */
+    function YSdi12Port_readSensor(sensorAddr,measCmd,maxWait)
+    {
+        var resStr;                 // str;
+        var res = [];               // floatArr;
+        var tab = [];               // strArr;
+        var split = [];             // strArr;
+        var i;                      // int;
+        var valdouble;              // float;
+
+        resStr = this.querySdi12(sensorAddr,measCmd,maxWait);
+        tab = (resStr).split(',');
+        split = (tab[0]).split(':');
+        if (split.length < 2) {
+            return res;
+        }
+        valdouble = parseFloat(split[1]);
+        res.push(valdouble);
+        i = 1;
+        while (i < tab.length) {
+            valdouble = parseFloat(tab[i]);
+            res.push(valdouble);
+            i = i + 1;
+        }
+        return res;
+    }
+
+    /**
+     * Changes the address of the selected sensor, and returns the sensor information with the new address.
+     * This function is intended to be used when the serial port is configured for 'SDI-12' protocol.
+     *
+     * @param oldAddress : Actual sensor address, as a string
+     * @param newAddress : New sensor address, as a string
+     *
+     * @return the sensor address and information , as a YSdi12Sensor object.
+     *
+     * On failure, throws an exception or returns an empty string.
+     */
+    function YSdi12Port_changeAddress(oldAddress,newAddress)
+    {
+        var addr;                   // YSdi12Sensor;
+
+        this.querySdi12(oldAddress, "A" + newAddress,1000);
+        addr = this.getSensorInformation(newAddress);
+        return addr;
+    }
+
+    /**
+     * Sends a information command to the bus, and reads sensors information selected.
+     * This function is intended to be used when the serial port is configured for 'SDI-12' protocol.
+     *
+     * @param sensorAddr : Sensor address, as a string
+     *
+     * @return the reply returned by the sensor, as a YSdi12Port object.
+     *
+     * On failure, throws an exception or returns an empty string.
+     */
+    function YSdi12Port_getSensorInformation(sensorAddr)
+    {
+        var res;                    // str;
+        var sensor;                 // YSdi12Sensor;
+
+        res = this.querySdi12(sensorAddr,"I",1000);
+        if (res == "") {
+            return new YSdi12Sensor(this, "ERSensor Not Found");
+        }
+        sensor = new YSdi12Sensor(this, res);
+        sensor._queryValueInfo();
+        return sensor;
+    }
+
+    /**
+     * Sends a information command to the bus, and reads sensors information selected.
+     * This function is intended to be used when the serial port is configured for 'SDI-12' protocol.
+     *
+     * @param sensorAddr : Sensor address, as a string
+     *
+     * @return the reply returned by the sensor, as a YSdi12Port object.
+     *
+     * On failure, throws an exception or returns an empty string.
+     */
+    function YSdi12Port_readConcurrentMeasurements(sensorAddr)
+    {
+        var res = [];               // floatArr;
+
+        res= this.readSensor(sensorAddr,"D",1000);
+        return res;
+    }
+
+    /**
+     * Sends a information command to the bus, and reads sensors information selected.
+     * This function is intended to be used when the serial port is configured for 'SDI-12' protocol.
+     *
+     * @param sensorAddr : Sensor address, as a string
+     *
+     * @return the reply returned by the sensor, as a YSdi12Port object.
+     *
+     * On failure, throws an exception or returns an empty string.
+     */
+    function YSdi12Port_requestConcurrentMeasurements(sensorAddr)
+    {
+        var timewait;               // int;
+        var wait;                   // str;
+
+        wait = this.querySdi12(sensorAddr,"C",1000);
+        wait = (wait).substr(1, 3);
+        timewait = YAPI._atoi(wait) * 1000;
+        return timewait;
+    }
+
+    /**
+     * Retrieves messages (both direction) in the SDI12 port buffer, starting at current position.
      *
      * If no message is found, the search waits for one up to the specified maximum timeout
      * (in milliseconds).
@@ -1995,17 +2356,17 @@ var YSpiPort; // definition below
      * @param maxWait : the maximum number of milliseconds to wait for a message if none is found
      *         in the receive buffer.
      *
-     * @return an array of YSpiSnoopingRecord objects containing the messages found, if any.
+     * @return an array of YSdi12SnoopingRecord objects containing the messages found, if any.
      *
      * On failure, throws an exception or returns an empty array.
      */
-    function YSpiPort_snoopMessages(maxWait)
+    function YSdi12Port_snoopMessages(maxWait)
     {
         var url;                    // str;
         var msgbin;                 // bin;
         var msgarr = [];            // strArr;
         var msglen;                 // int;
-        var res = [];               // YSpiSnoopingRecordArr;
+        var res = [];               // YSdi12SnoopingRecordArr;
         var idx;                    // int;
 
         url = "rxmsg.json?pos="+String(Math.round(this._rxptr))+"&maxw="+String(Math.round(maxWait))+"&t=0";
@@ -2020,50 +2381,50 @@ var YSpiPort; // definition below
         this._rxptr = YAPI._atoi(msgarr[msglen]);
         idx = 0;
         while (idx < msglen) {
-            res.push(new YSpiSnoopingRecord(msgarr[idx]));
+            res.push(new YSdi12SnoopingRecord(msgarr[idx]));
             idx = idx + 1;
         }
         return res;
     }
 
     /**
-     * Continues the enumeration of SPI ports started using yFirstSpiPort().
-     * Caution: You can't make any assumption about the returned SPI ports order.
-     * If you want to find a specific a SPI port, use SpiPort.findSpiPort()
+     * Continues the enumeration of SDI12 ports started using yFirstSdi12Port().
+     * Caution: You can't make any assumption about the returned SDI12 ports order.
+     * If you want to find a specific a SDI12 port, use Sdi12Port.findSdi12Port()
      * and a hardwareID or a logical name.
      *
-     * @return a pointer to a YSpiPort object, corresponding to
-     *         a SPI port currently online, or a null pointer
-     *         if there are no more SPI ports to enumerate.
+     * @return a pointer to a YSdi12Port object, corresponding to
+     *         a SDI12 port currently online, or a null pointer
+     *         if there are no more SDI12 ports to enumerate.
      */
-    function YSpiPort_nextSpiPort()
+    function YSdi12Port_nextSdi12Port()
     {   var resolve = YAPI.resolveFunction(this._className, this._func);
         if(resolve.errorType != YAPI_SUCCESS) return null;
         var next_hwid = YAPI.getNextHardwareId(this._className, resolve.result);
         if(next_hwid == null) return null;
-        return YSpiPort.FindSpiPort(next_hwid);
+        return YSdi12Port.FindSdi12Port(next_hwid);
     }
 
     /**
-     * Starts the enumeration of SPI ports currently accessible.
-     * Use the method YSpiPort.nextSpiPort() to iterate on
-     * next SPI ports.
+     * Starts the enumeration of SDI12 ports currently accessible.
+     * Use the method YSdi12Port.nextSdi12Port() to iterate on
+     * next SDI12 ports.
      *
-     * @return a pointer to a YSpiPort object, corresponding to
-     *         the first SPI port currently online, or a null pointer
+     * @return a pointer to a YSdi12Port object, corresponding to
+     *         the first SDI12 port currently online, or a null pointer
      *         if there are none.
      */
-    function YSpiPort_FirstSpiPort()
+    function YSdi12Port_FirstSdi12Port()
     {
-        var next_hwid = YAPI.getFirstHardwareId('SpiPort');
+        var next_hwid = YAPI.getFirstHardwareId('Sdi12Port');
         if(next_hwid == null) return null;
-        return YSpiPort.FindSpiPort(next_hwid);
+        return YSdi12Port.FindSdi12Port(next_hwid);
     }
 
-    //--- (end of generated code: YSpiPort implementation)
+    //--- (end of generated code: YSdi12Port implementation)
 
-    //--- (generated code: YSpiPort initialization)
-    YSpiPort = YFunction._Subclass(_YSpiPort, {
+    //--- (generated code: YSdi12Port initialization)
+    YSdi12Port = YFunction._Subclass(_YSdi12Port, {
         // Constants
         RXCOUNT_INVALID             : YAPI_INVALID_UINT,
         TXCOUNT_INVALID             : YAPI_INVALID_UINT,
@@ -2087,135 +2448,123 @@ var YSpiPort; // definition below
         VOLTAGELEVEL_TTL1V8         : 7,
         VOLTAGELEVEL_SDI12          : 8,
         VOLTAGELEVEL_INVALID        : -1,
-        SPIMODE_INVALID             : YAPI_INVALID_STRING,
-        SSPOLARITY_ACTIVE_LOW       : 0,
-        SSPOLARITY_ACTIVE_HIGH      : 1,
-        SSPOLARITY_INVALID          : -1,
-        SHIFTSAMPLING_OFF           : 0,
-        SHIFTSAMPLING_ON            : 1,
-        SHIFTSAMPLING_INVALID       : -1
+        SERIALMODE_INVALID          : YAPI_INVALID_STRING
     }, {
         // Class methods
-        FindSpiPort                 : YSpiPort_FindSpiPort,
-        FirstSpiPort                : YSpiPort_FirstSpiPort
+        FindSdi12Port               : YSdi12Port_FindSdi12Port,
+        FirstSdi12Port              : YSdi12Port_FirstSdi12Port
     }, {
         // Methods
-        get_rxCount                 : YSpiPort_get_rxCount,
-        rxCount                     : YSpiPort_get_rxCount,
-        get_rxCount_async           : YSpiPort_get_rxCount_async,
-        rxCount_async               : YSpiPort_get_rxCount_async,
-        get_txCount                 : YSpiPort_get_txCount,
-        txCount                     : YSpiPort_get_txCount,
-        get_txCount_async           : YSpiPort_get_txCount_async,
-        txCount_async               : YSpiPort_get_txCount_async,
-        get_errCount                : YSpiPort_get_errCount,
-        errCount                    : YSpiPort_get_errCount,
-        get_errCount_async          : YSpiPort_get_errCount_async,
-        errCount_async              : YSpiPort_get_errCount_async,
-        get_rxMsgCount              : YSpiPort_get_rxMsgCount,
-        rxMsgCount                  : YSpiPort_get_rxMsgCount,
-        get_rxMsgCount_async        : YSpiPort_get_rxMsgCount_async,
-        rxMsgCount_async            : YSpiPort_get_rxMsgCount_async,
-        get_txMsgCount              : YSpiPort_get_txMsgCount,
-        txMsgCount                  : YSpiPort_get_txMsgCount,
-        get_txMsgCount_async        : YSpiPort_get_txMsgCount_async,
-        txMsgCount_async            : YSpiPort_get_txMsgCount_async,
-        get_lastMsg                 : YSpiPort_get_lastMsg,
-        lastMsg                     : YSpiPort_get_lastMsg,
-        get_lastMsg_async           : YSpiPort_get_lastMsg_async,
-        lastMsg_async               : YSpiPort_get_lastMsg_async,
-        get_currentJob              : YSpiPort_get_currentJob,
-        currentJob                  : YSpiPort_get_currentJob,
-        get_currentJob_async        : YSpiPort_get_currentJob_async,
-        currentJob_async            : YSpiPort_get_currentJob_async,
-        set_currentJob              : YSpiPort_set_currentJob,
-        setCurrentJob               : YSpiPort_set_currentJob,
-        get_startupJob              : YSpiPort_get_startupJob,
-        startupJob                  : YSpiPort_get_startupJob,
-        get_startupJob_async        : YSpiPort_get_startupJob_async,
-        startupJob_async            : YSpiPort_get_startupJob_async,
-        set_startupJob              : YSpiPort_set_startupJob,
-        setStartupJob               : YSpiPort_set_startupJob,
-        get_jobMaxTask              : YSpiPort_get_jobMaxTask,
-        jobMaxTask                  : YSpiPort_get_jobMaxTask,
-        get_jobMaxTask_async        : YSpiPort_get_jobMaxTask_async,
-        jobMaxTask_async            : YSpiPort_get_jobMaxTask_async,
-        get_jobMaxSize              : YSpiPort_get_jobMaxSize,
-        jobMaxSize                  : YSpiPort_get_jobMaxSize,
-        get_jobMaxSize_async        : YSpiPort_get_jobMaxSize_async,
-        jobMaxSize_async            : YSpiPort_get_jobMaxSize_async,
-        get_command                 : YSpiPort_get_command,
-        command                     : YSpiPort_get_command,
-        get_command_async           : YSpiPort_get_command_async,
-        command_async               : YSpiPort_get_command_async,
-        set_command                 : YSpiPort_set_command,
-        setCommand                  : YSpiPort_set_command,
-        get_protocol                : YSpiPort_get_protocol,
-        protocol                    : YSpiPort_get_protocol,
-        get_protocol_async          : YSpiPort_get_protocol_async,
-        protocol_async              : YSpiPort_get_protocol_async,
-        set_protocol                : YSpiPort_set_protocol,
-        setProtocol                 : YSpiPort_set_protocol,
-        get_voltageLevel            : YSpiPort_get_voltageLevel,
-        voltageLevel                : YSpiPort_get_voltageLevel,
-        get_voltageLevel_async      : YSpiPort_get_voltageLevel_async,
-        voltageLevel_async          : YSpiPort_get_voltageLevel_async,
-        set_voltageLevel            : YSpiPort_set_voltageLevel,
-        setVoltageLevel             : YSpiPort_set_voltageLevel,
-        get_spiMode                 : YSpiPort_get_spiMode,
-        spiMode                     : YSpiPort_get_spiMode,
-        get_spiMode_async           : YSpiPort_get_spiMode_async,
-        spiMode_async               : YSpiPort_get_spiMode_async,
-        set_spiMode                 : YSpiPort_set_spiMode,
-        setSpiMode                  : YSpiPort_set_spiMode,
-        get_ssPolarity              : YSpiPort_get_ssPolarity,
-        ssPolarity                  : YSpiPort_get_ssPolarity,
-        get_ssPolarity_async        : YSpiPort_get_ssPolarity_async,
-        ssPolarity_async            : YSpiPort_get_ssPolarity_async,
-        set_ssPolarity              : YSpiPort_set_ssPolarity,
-        setSsPolarity               : YSpiPort_set_ssPolarity,
-        get_shiftSampling           : YSpiPort_get_shiftSampling,
-        shiftSampling               : YSpiPort_get_shiftSampling,
-        get_shiftSampling_async     : YSpiPort_get_shiftSampling_async,
-        shiftSampling_async         : YSpiPort_get_shiftSampling_async,
-        set_shiftSampling           : YSpiPort_set_shiftSampling,
-        setShiftSampling            : YSpiPort_set_shiftSampling,
-        sendCommand                 : YSpiPort_sendCommand,
-        readLine                    : YSpiPort_readLine,
-        readMessages                : YSpiPort_readMessages,
-        read_seek                   : YSpiPort_read_seek,
-        read_tell                   : YSpiPort_read_tell,
-        read_avail                  : YSpiPort_read_avail,
-        end_tell                    : YSpiPort_end_tell,
-        queryLine                   : YSpiPort_queryLine,
-        queryHex                    : YSpiPort_queryHex,
-        uploadJob                   : YSpiPort_uploadJob,
-        selectJob                   : YSpiPort_selectJob,
-        reset                       : YSpiPort_reset,
-        writeByte                   : YSpiPort_writeByte,
-        writeStr                    : YSpiPort_writeStr,
-        writeBin                    : YSpiPort_writeBin,
-        writeArray                  : YSpiPort_writeArray,
-        writeHex                    : YSpiPort_writeHex,
-        writeLine                   : YSpiPort_writeLine,
-        readByte                    : YSpiPort_readByte,
-        readStr                     : YSpiPort_readStr,
-        readBin                     : YSpiPort_readBin,
-        readArray                   : YSpiPort_readArray,
-        readHex                     : YSpiPort_readHex,
-        set_SS                      : YSpiPort_set_SS,
-        setSS                       : YSpiPort_set_SS,
-        snoopMessages               : YSpiPort_snoopMessages,
-        nextSpiPort                 : YSpiPort_nextSpiPort,
-        _parseAttr                  : YSpiPort_parseAttr
+        get_rxCount                 : YSdi12Port_get_rxCount,
+        rxCount                     : YSdi12Port_get_rxCount,
+        get_rxCount_async           : YSdi12Port_get_rxCount_async,
+        rxCount_async               : YSdi12Port_get_rxCount_async,
+        get_txCount                 : YSdi12Port_get_txCount,
+        txCount                     : YSdi12Port_get_txCount,
+        get_txCount_async           : YSdi12Port_get_txCount_async,
+        txCount_async               : YSdi12Port_get_txCount_async,
+        get_errCount                : YSdi12Port_get_errCount,
+        errCount                    : YSdi12Port_get_errCount,
+        get_errCount_async          : YSdi12Port_get_errCount_async,
+        errCount_async              : YSdi12Port_get_errCount_async,
+        get_rxMsgCount              : YSdi12Port_get_rxMsgCount,
+        rxMsgCount                  : YSdi12Port_get_rxMsgCount,
+        get_rxMsgCount_async        : YSdi12Port_get_rxMsgCount_async,
+        rxMsgCount_async            : YSdi12Port_get_rxMsgCount_async,
+        get_txMsgCount              : YSdi12Port_get_txMsgCount,
+        txMsgCount                  : YSdi12Port_get_txMsgCount,
+        get_txMsgCount_async        : YSdi12Port_get_txMsgCount_async,
+        txMsgCount_async            : YSdi12Port_get_txMsgCount_async,
+        get_lastMsg                 : YSdi12Port_get_lastMsg,
+        lastMsg                     : YSdi12Port_get_lastMsg,
+        get_lastMsg_async           : YSdi12Port_get_lastMsg_async,
+        lastMsg_async               : YSdi12Port_get_lastMsg_async,
+        get_currentJob              : YSdi12Port_get_currentJob,
+        currentJob                  : YSdi12Port_get_currentJob,
+        get_currentJob_async        : YSdi12Port_get_currentJob_async,
+        currentJob_async            : YSdi12Port_get_currentJob_async,
+        set_currentJob              : YSdi12Port_set_currentJob,
+        setCurrentJob               : YSdi12Port_set_currentJob,
+        get_startupJob              : YSdi12Port_get_startupJob,
+        startupJob                  : YSdi12Port_get_startupJob,
+        get_startupJob_async        : YSdi12Port_get_startupJob_async,
+        startupJob_async            : YSdi12Port_get_startupJob_async,
+        set_startupJob              : YSdi12Port_set_startupJob,
+        setStartupJob               : YSdi12Port_set_startupJob,
+        get_jobMaxTask              : YSdi12Port_get_jobMaxTask,
+        jobMaxTask                  : YSdi12Port_get_jobMaxTask,
+        get_jobMaxTask_async        : YSdi12Port_get_jobMaxTask_async,
+        jobMaxTask_async            : YSdi12Port_get_jobMaxTask_async,
+        get_jobMaxSize              : YSdi12Port_get_jobMaxSize,
+        jobMaxSize                  : YSdi12Port_get_jobMaxSize,
+        get_jobMaxSize_async        : YSdi12Port_get_jobMaxSize_async,
+        jobMaxSize_async            : YSdi12Port_get_jobMaxSize_async,
+        get_command                 : YSdi12Port_get_command,
+        command                     : YSdi12Port_get_command,
+        get_command_async           : YSdi12Port_get_command_async,
+        command_async               : YSdi12Port_get_command_async,
+        set_command                 : YSdi12Port_set_command,
+        setCommand                  : YSdi12Port_set_command,
+        get_protocol                : YSdi12Port_get_protocol,
+        protocol                    : YSdi12Port_get_protocol,
+        get_protocol_async          : YSdi12Port_get_protocol_async,
+        protocol_async              : YSdi12Port_get_protocol_async,
+        set_protocol                : YSdi12Port_set_protocol,
+        setProtocol                 : YSdi12Port_set_protocol,
+        get_voltageLevel            : YSdi12Port_get_voltageLevel,
+        voltageLevel                : YSdi12Port_get_voltageLevel,
+        get_voltageLevel_async      : YSdi12Port_get_voltageLevel_async,
+        voltageLevel_async          : YSdi12Port_get_voltageLevel_async,
+        set_voltageLevel            : YSdi12Port_set_voltageLevel,
+        setVoltageLevel             : YSdi12Port_set_voltageLevel,
+        get_serialMode              : YSdi12Port_get_serialMode,
+        serialMode                  : YSdi12Port_get_serialMode,
+        get_serialMode_async        : YSdi12Port_get_serialMode_async,
+        serialMode_async            : YSdi12Port_get_serialMode_async,
+        set_serialMode              : YSdi12Port_set_serialMode,
+        setSerialMode               : YSdi12Port_set_serialMode,
+        sendCommand                 : YSdi12Port_sendCommand,
+        readLine                    : YSdi12Port_readLine,
+        readMessages                : YSdi12Port_readMessages,
+        read_seek                   : YSdi12Port_read_seek,
+        read_tell                   : YSdi12Port_read_tell,
+        read_avail                  : YSdi12Port_read_avail,
+        end_tell                    : YSdi12Port_end_tell,
+        queryLine                   : YSdi12Port_queryLine,
+        queryHex                    : YSdi12Port_queryHex,
+        uploadJob                   : YSdi12Port_uploadJob,
+        selectJob                   : YSdi12Port_selectJob,
+        reset                       : YSdi12Port_reset,
+        writeByte                   : YSdi12Port_writeByte,
+        writeStr                    : YSdi12Port_writeStr,
+        writeBin                    : YSdi12Port_writeBin,
+        writeArray                  : YSdi12Port_writeArray,
+        writeHex                    : YSdi12Port_writeHex,
+        writeLine                   : YSdi12Port_writeLine,
+        readByte                    : YSdi12Port_readByte,
+        readStr                     : YSdi12Port_readStr,
+        readBin                     : YSdi12Port_readBin,
+        readArray                   : YSdi12Port_readArray,
+        readHex                     : YSdi12Port_readHex,
+        querySdi12                  : YSdi12Port_querySdi12,
+        discoverSingleSensor        : YSdi12Port_discoverSingleSensor,
+        discoverAllSensors          : YSdi12Port_discoverAllSensors,
+        readSensor                  : YSdi12Port_readSensor,
+        changeAddress               : YSdi12Port_changeAddress,
+        getSensorInformation        : YSdi12Port_getSensorInformation,
+        readConcurrentMeasurements  : YSdi12Port_readConcurrentMeasurements,
+        requestConcurrentMeasurements : YSdi12Port_requestConcurrentMeasurements,
+        snoopMessages               : YSdi12Port_snoopMessages,
+        nextSdi12Port               : YSdi12Port_nextSdi12Port,
+        _parseAttr                  : YSdi12Port_parseAttr
     });
-    //--- (end of generated code: YSpiPort initialization)
+    //--- (end of generated code: YSdi12Port initialization)
 })();
 
-//--- (generated code: YSpiPort functions)
+//--- (generated code: YSdi12Port functions)
 
 /**
- * Retrieves a SPI port for a given identifier.
+ * Retrieves a SDI12 port for a given identifier.
  * The identifier can be specified using several formats:
  * <ul>
  * <li>FunctionLogicalName</li>
@@ -2225,11 +2574,11 @@ var YSpiPort; // definition below
  * <li>ModuleLogicalName.FunctionLogicalName</li>
  * </ul>
  *
- * This function does not require that the SPI port is online at the time
+ * This function does not require that the SDI12 port is online at the time
  * it is invoked. The returned object is nevertheless valid.
- * Use the method YSpiPort.isOnline() to test if the SPI port is
+ * Use the method YSdi12Port.isOnline() to test if the SDI12 port is
  * indeed online at a given time. In case of ambiguity when looking for
- * a SPI port by logical name, no error is notified: the first instance
+ * a SDI12 port by logical name, no error is notified: the first instance
  * found is returned. The search is performed first by hardware name,
  * then by logical name.
  *
@@ -2237,28 +2586,28 @@ var YSpiPort; // definition below
  * you are certain that the matching device is plugged, make sure that you did
  * call registerHub() at application initialization time.
  *
- * @param func : a string that uniquely characterizes the SPI port, for instance
- *         YSPIMK01.spiPort.
+ * @param func : a string that uniquely characterizes the SDI12 port, for instance
+ *         MyDevice.sdi12Port.
  *
- * @return a YSpiPort object allowing you to drive the SPI port.
+ * @return a YSdi12Port object allowing you to drive the SDI12 port.
  */
-function yFindSpiPort(func)
+function yFindSdi12Port(func)
 {
-    return YSpiPort.FindSpiPort(func);
+    return YSdi12Port.FindSdi12Port(func);
 }
 
 /**
- * Starts the enumeration of SPI ports currently accessible.
- * Use the method YSpiPort.nextSpiPort() to iterate on
- * next SPI ports.
+ * Starts the enumeration of SDI12 ports currently accessible.
+ * Use the method YSdi12Port.nextSdi12Port() to iterate on
+ * next SDI12 ports.
  *
- * @return a pointer to a YSpiPort object, corresponding to
- *         the first SPI port currently online, or a null pointer
+ * @return a pointer to a YSdi12Port object, corresponding to
+ *         the first SDI12 port currently online, or a null pointer
  *         if there are none.
  */
-function yFirstSpiPort()
+function yFirstSdi12Port()
 {
-    return YSpiPort.FirstSpiPort();
+    return YSdi12Port.FirstSdi12Port();
 }
 
-//--- (end of generated code: YSpiPort functions)
+//--- (end of generated code: YSdi12Port functions)

@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_serialport.js 54314 2023-05-01 14:21:11Z seb $
+ * $Id: yocto_serialport.js 58898 2024-01-11 14:07:07Z mvuilleu $
  *
  * Implements the high-level API for SerialPort functions
  *
@@ -86,12 +86,14 @@ var YSnoopingRecord; // definition below
     {
         //--- (generated code: YSnoopingRecord constructor)
         this._tim                            = 0;                          // int
+        this._pos                            = 0;                          // int
         this._dir                            = 0;                          // int
         this._msg                            = "";                         // str
         //--- (end of generated code: YSnoopingRecord constructor)
 
         var loadval = JSON.parse(str_json);
         this._tim = loadval.t;
+        this._pos = loadval.p;
         this._dir = (loadval.m[0] == '<' ? 1 : 0);
         this._msg = loadval.m.slice(1);
 
@@ -107,6 +109,16 @@ var YSnoopingRecord; // definition below
     function YSnoopingRecord_get_time()
     {
         return this._tim;
+    }
+
+    /**
+     * Returns the absolute position of the message end.
+     *
+     * @return the absolute position of the message end.
+     */
+    function YSnoopingRecord_get_pos()
+    {
+        return this._pos;
     }
 
     /**
@@ -136,6 +148,8 @@ var YSnoopingRecord; // definition below
     // Methods
     YSnoopingRecord.prototype.get_time                    = YSnoopingRecord_get_time;
     YSnoopingRecord.prototype.time                        = YSnoopingRecord_get_time;
+    YSnoopingRecord.prototype.get_pos                     = YSnoopingRecord_get_pos;
+    YSnoopingRecord.prototype.pos                         = YSnoopingRecord_get_pos;
     YSnoopingRecord.prototype.get_direction               = YSnoopingRecord_get_direction;
     YSnoopingRecord.prototype.direction                   = YSnoopingRecord_get_direction;
     YSnoopingRecord.prototype.get_message                 = YSnoopingRecord_get_message;

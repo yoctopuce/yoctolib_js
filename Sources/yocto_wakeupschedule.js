@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_wakeupschedule.js 48183 2022-01-20 10:26:11Z mvuilleu $
+ *  $Id: yocto_wakeupschedule.js 56230 2023-08-21 15:20:59Z mvuilleu $
  *
  *  Implements the high-level API for WakeUpSchedule functions
  *
@@ -48,6 +48,7 @@ var Y_HOURS_INVALID                 = YAPI_INVALID_UINT;
 var Y_WEEKDAYS_INVALID              = YAPI_INVALID_UINT;
 var Y_MONTHDAYS_INVALID             = YAPI_INVALID_UINT;
 var Y_MONTHS_INVALID                = YAPI_INVALID_UINT;
+var Y_SECONDSBEFORE_INVALID         = YAPI_INVALID_UINT;
 var Y_NEXTOCCURENCE_INVALID         = YAPI_INVALID_LONG;
 //--- (end of YWakeUpSchedule definitions)
 
@@ -78,6 +79,7 @@ var YWakeUpSchedule; // definition below
         this._weekDays                       = Y_WEEKDAYS_INVALID;         // DaysOfWeekBits
         this._monthDays                      = Y_MONTHDAYS_INVALID;        // DaysOfMonthBits
         this._months                         = Y_MONTHS_INVALID;           // MonthsOfYearBits
+        this._secondsBefore                  = Y_SECONDSBEFORE_INVALID;    // UInt31
         this._nextOccurence                  = Y_NEXTOCCURENCE_INVALID;    // UTCTime
         //--- (end of YWakeUpSchedule constructor)
     }
@@ -104,6 +106,9 @@ var YWakeUpSchedule; // definition below
             return 1;
         case "months":
             this._months = parseInt(val);
+            return 1;
+        case "secondsBefore":
+            this._secondsBefore = parseInt(val);
             return 1;
         case "nextOccurence":
             this._nextOccurence = parseInt(val);
@@ -521,6 +526,80 @@ var YWakeUpSchedule; // definition below
     }
 
     /**
+     * Returns the number of seconds to anticipate wake-up time to allow
+     * the system to power-up.
+     *
+     * @return an integer corresponding to the number of seconds to anticipate wake-up time to allow
+     *         the system to power-up
+     *
+     * On failure, throws an exception or returns YWakeUpSchedule.SECONDSBEFORE_INVALID.
+     */
+    function YWakeUpSchedule_get_secondsBefore()
+    {
+        var res;                    // int;
+        if (this._cacheExpiration <= YAPI.GetTickCount()) {
+            if (this.load(YAPI.defaultCacheValidity) != YAPI_SUCCESS) {
+                return Y_SECONDSBEFORE_INVALID;
+            }
+        }
+        res = this._secondsBefore;
+        return res;
+    }
+
+    /**
+     * Gets the number of seconds to anticipate wake-up time to allow
+     * the system to power-up.
+     *
+     * @param callback : callback function that is invoked when the result is known.
+     *         The callback function receives three arguments:
+     *         - the user-specific context object
+     *         - the YWakeUpSchedule object that invoked the callback
+     *         - the result:an integer corresponding to the number of seconds to anticipate wake-up time to allow
+     *         the system to power-up
+     * @param context : user-specific object that is passed as-is to the callback function
+     *
+     * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
+     *
+     * On failure, throws an exception or returns YWakeUpSchedule.SECONDSBEFORE_INVALID.
+     */
+    function YWakeUpSchedule_get_secondsBefore_async(callback,context)
+    {
+        var res;                    // int;
+        var loadcb;                 // func;
+        loadcb = function(ctx,obj,res) {
+            if (res != YAPI_SUCCESS) {
+                callback(context, obj, Y_SECONDSBEFORE_INVALID);
+            } else {
+                callback(context, obj, obj._secondsBefore);
+            }
+        };
+        if (this._cacheExpiration <= YAPI.GetTickCount()) {
+            this.load_async(YAPI.defaultCacheValidity,loadcb,null);
+        } else {
+            loadcb(null, this, YAPI_SUCCESS);
+        }
+    }
+
+    /**
+     * Changes the number of seconds to anticipate wake-up time to allow
+     * the system to power-up.
+     * Remember to call the saveToFlash() method of the module if the
+     * modification must be kept.
+     *
+     * @param newval : an integer corresponding to the number of seconds to anticipate wake-up time to allow
+     *         the system to power-up
+     *
+     * @return YAPI.SUCCESS if the call succeeds.
+     *
+     * On failure, throws an exception or returns a negative error code.
+     */
+    function YWakeUpSchedule_set_secondsBefore(newval)
+    {   var rest_val;
+        rest_val = String(newval);
+        return this._setAttr('secondsBefore',rest_val);
+    }
+
+    /**
      * Returns the date/time (seconds) of the next wake up occurrence.
      *
      * @return an integer corresponding to the date/time (seconds) of the next wake up occurrence
@@ -684,6 +763,7 @@ var YWakeUpSchedule; // definition below
         WEEKDAYS_INVALID            : YAPI_INVALID_UINT,
         MONTHDAYS_INVALID           : YAPI_INVALID_UINT,
         MONTHS_INVALID              : YAPI_INVALID_UINT,
+        SECONDSBEFORE_INVALID       : YAPI_INVALID_UINT,
         NEXTOCCURENCE_INVALID       : YAPI_INVALID_LONG
     }, {
         // Class methods
@@ -727,6 +807,12 @@ var YWakeUpSchedule; // definition below
         months_async                : YWakeUpSchedule_get_months_async,
         set_months                  : YWakeUpSchedule_set_months,
         setMonths                   : YWakeUpSchedule_set_months,
+        get_secondsBefore           : YWakeUpSchedule_get_secondsBefore,
+        secondsBefore               : YWakeUpSchedule_get_secondsBefore,
+        get_secondsBefore_async     : YWakeUpSchedule_get_secondsBefore_async,
+        secondsBefore_async         : YWakeUpSchedule_get_secondsBefore_async,
+        set_secondsBefore           : YWakeUpSchedule_set_secondsBefore,
+        setSecondsBefore            : YWakeUpSchedule_set_secondsBefore,
         get_nextOccurence           : YWakeUpSchedule_get_nextOccurence,
         nextOccurence               : YWakeUpSchedule_get_nextOccurence,
         get_nextOccurence_async     : YWakeUpSchedule_get_nextOccurence_async,

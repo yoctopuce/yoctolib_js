@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_colorled.js 43619 2021-01-29 09:14:45Z mvuilleu $
+ *  $Id: yocto_colorled.js 56017 2023-08-14 08:47:38Z mvuilleu $
  *
  *  Implements the high-level API for ColorLed functions
  *
@@ -243,9 +243,9 @@ var YColorLed; // definition below
     }
 
     /**
-     * Changes the current color of the LED, using a color HSL. Encoding is done as follows: 0xHHSSLL.
+     * Changes the current color of the LED, using a specific HSL color. Encoding is done as follows: 0xHHSSLL.
      *
-     * @param newval : an integer corresponding to the current color of the LED, using a color HSL
+     * @param newval : an integer corresponding to the current color of the LED, using a specific HSL color
      *
      * @return YAPI.SUCCESS if the call succeeds.
      *
@@ -555,12 +555,12 @@ var YColorLed; // definition below
     }
 
     /**
-     * Return the blinking sequence signature. Since blinking
+     * Returns the blinking sequence signature. Since blinking
      * sequences cannot be read from the device, this can be used
      * to detect if a specific blinking sequence is already
      * programmed.
      *
-     * @return an integer
+     * @return an integer corresponding to the blinking sequence signature
      *
      * On failure, throws an exception or returns YColorLed.BLINKSEQSIGNATURE_INVALID.
      */
@@ -577,7 +577,7 @@ var YColorLed; // definition below
     }
 
     /**
-     * Return the blinking sequence signature. Since blinking
+     * Gets the blinking sequence signature. Since blinking
      * sequences cannot be read from the device, this can be used
      * to detect if a specific blinking sequence is already
      * programmed.
@@ -586,7 +586,7 @@ var YColorLed; // definition below
      *         The callback function receives three arguments:
      *         - the user-specific context object
      *         - the YColorLed object that invoked the callback
-     *         - the result:an integer
+     *         - the result:an integer corresponding to the blinking sequence signature
      * @param context : user-specific object that is passed as-is to the callback function
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value

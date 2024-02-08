@@ -1,0 +1,70 @@
+<HTML>
+<HEAD>
+ <TITLE> Hello World</TITLE>
+ <SCRIPT type="text/javascript" src="../../Sources/yocto_api.js"></SCRIPT>
+ <SCRIPT type="text/javascript" src="../../Sources/yocto_sdi12port.js"></SCRIPT>
+ <SCRIPT language='javascript1.5'  type='text/JavaScript'>
+ <!--
+
+ // Setup the API to use the VirtualHub on local machine
+ if(yRegisterHub('http://127.0.0.1:4444/') != YAPI_SUCCESS) {
+     alert("Cannot contact VirtualHub on 127.0.0.1");
+ }
+
+ function refresh()
+ { 
+     var serial = document.getElementById('serial').value;
+
+     if(serial == '') {
+         // or use any conected module suitable for the demo
+         sdi12Port = yFirstSdi12Port();
+         if(sdi12Port) {
+             serial = sdi12Port.module().get_serialNumber();
+             document.getElementById('serial').value = serial;
+         }
+     }
+
+     sdi12Port  = yFindSdi12Port(serial+".sdi12Port");   
+     if (sdi12Port.isOnline()) {
+        var info = '';
+        var singleSensor = sdi12Port.discoverSingleSensor();
+        info = '';
+        info += 'Sensor address : ' + singleSensor.get_sensorAddress() + '\n';
+        info += 'Sensor SDI-12 compatibility : ' + singleSensor.get_sensorProtocol() + '\n';
+        info += 'Sensor company name : ' + singleSensor.get_sensorVendor() + '\n';
+        info += 'Sensor model number : ' + singleSensor.get_sensorModel() + '\n';
+        info += 'Sensor version : ' + singleSensor.get_sensorVersion() + '\n';
+        info += 'Sensor serial number : ' + singleSensor.get_sensorSerial() + '\n';
+
+        document.getElementById("msg").value = info;
+        var result = '';
+        var sensorVal = sdi12Port.readSensor(singleSensor.get_sensorAddress(), 'M',5000);
+        for (var i = 0; i < sensorVal.length; i++) 
+        {
+            if (singleSensor.get_measureCount()) 
+            {
+                result += singleSensor.get_measureSymbol(i) + ' : ' + sensorVal[i].toString() + ' ' + 
+                singleSensor.get_measureUnit(i) + ' ' + singleSensor.get_measureDescription(i) + '\n';
+            }
+            else
+            {
+                result += sensorVal[i] + '\n';
+            }
+        }
+        document.getElementById('val').value = result;
+
+     } else {
+         document.getElementById('msg').value = 'Module not connected';         
+     }
+     setTimeout('refresh()',500);
+ }
+ -->
+ </SCRIPT>
+</HEAD>  
+<BODY onload='refresh();'>
+Module to use:       <input id='serial'><br>
+<textarea id='msg' rows="7" cols="60"  style='color:black ;border:none;' readonly></textarea>
+
+<textarea id= 'val' rows="6" cols="60" style='color:black ;border:none;' readonly ></textarea>
+</BODY>
+</HTML> 

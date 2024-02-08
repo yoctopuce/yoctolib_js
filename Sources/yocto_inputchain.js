@@ -96,7 +96,7 @@ var YInputChain; // definition below
         this._bitChain7                      = Y_BITCHAIN7_INVALID;        // Text
         this._watchdogPeriod                 = Y_WATCHDOGPERIOD_INVALID;   // UInt31
         this._chainDiags                     = Y_CHAINDIAGS_INVALID;       // InputChainDiags
-        this._eventCallback                  = null;                       // YEventCallback
+        this._stateChangeCallback            = null;                       // YStateChangeCallback
         this._prevPos                        = 0;                          // int
         this._eventPos                       = 0;                          // int
         this._eventStamp                     = 0;                          // int
@@ -1034,7 +1034,7 @@ var YInputChain; // definition below
      *         the type of event and a character string with the event data.
      *         On failure, throws an exception or returns a negative error code.
      */
-    function YInputChain_registerEventCallback(callback)
+    function YInputChain_registerStateChangeCallback(callback)
     {
         if (callback != null) {
             this.registerValueCallback(yInternalEventCallback);
@@ -1043,7 +1043,7 @@ var YInputChain; // definition below
         }
         // register user callback AFTER the internal pseudo-event,
         // to make sure we start with future events only
-        this._eventCallback = callback;
+        this._stateChangeCallback = callback;
         return 0;
     }
 
@@ -1075,7 +1075,7 @@ var YInputChain; // definition below
         if (newPos < this._eventPos) {
             return YAPI_SUCCESS;
         }
-        if (!(this._eventCallback != null)) {
+        if (!(this._stateChangeCallback != null)) {
             // first simulated event, use it to initialize reference values
             this._eventPos = newPos;
             this._eventChains.length = 0;
@@ -1126,7 +1126,7 @@ var YInputChain; // definition below
                             this._eventChains[chainIdx] = evtData;
                         }
                     }
-                    this._eventCallback(this, evtStamp, evtType, evtData, evtChange);
+                    this._stateChangeCallback(this, evtStamp, evtType, evtData, evtChange);
                 }
             }
             arrPos = arrPos + 1;
@@ -1307,7 +1307,7 @@ var YInputChain; // definition below
         resetWatchdog               : YInputChain_resetWatchdog,
         get_lastEvents              : YInputChain_get_lastEvents,
         lastEvents                  : YInputChain_get_lastEvents,
-        registerEventCallback       : YInputChain_registerEventCallback,
+        registerStateChangeCallback : YInputChain_registerStateChangeCallback,
         _internalEventHandler       : YInputChain_internalEventHandler,
         _strXor                     : YInputChain_strXor,
         hex2array                   : YInputChain_hex2array,
