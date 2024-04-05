@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_relay.js 43619 2021-01-29 09:14:45Z mvuilleu $
+ *  $Id: yocto_relay.js 59977 2024-03-18 15:02:32Z mvuilleu $
  *
  *  Implements the high-level API for Relay functions
  *
@@ -691,13 +691,13 @@ var YRelay; // definition below
     /**
      * Retrieves a relay for a given identifier.
      * The identifier can be specified using several formats:
-     * <ul>
-     * <li>FunctionLogicalName</li>
-     * <li>ModuleSerialNumber.FunctionIdentifier</li>
-     * <li>ModuleSerialNumber.FunctionLogicalName</li>
-     * <li>ModuleLogicalName.FunctionIdentifier</li>
-     * <li>ModuleLogicalName.FunctionLogicalName</li>
-     * </ul>
+     *
+     * - FunctionLogicalName
+     * - ModuleSerialNumber.FunctionIdentifier
+     * - ModuleSerialNumber.FunctionLogicalName
+     * - ModuleLogicalName.FunctionIdentifier
+     * - ModuleLogicalName.FunctionLogicalName
+     *
      *
      * This function does not require that the relay is online at the time
      * it is invoked. The returned object is nevertheless valid.
@@ -882,13 +882,13 @@ var YRelay; // definition below
 /**
  * Retrieves a relay for a given identifier.
  * The identifier can be specified using several formats:
- * <ul>
- * <li>FunctionLogicalName</li>
- * <li>ModuleSerialNumber.FunctionIdentifier</li>
- * <li>ModuleSerialNumber.FunctionLogicalName</li>
- * <li>ModuleLogicalName.FunctionIdentifier</li>
- * <li>ModuleLogicalName.FunctionLogicalName</li>
- * </ul>
+ *
+ * - FunctionLogicalName
+ * - ModuleSerialNumber.FunctionIdentifier
+ * - ModuleSerialNumber.FunctionLogicalName
+ * - ModuleLogicalName.FunctionIdentifier
+ * - ModuleLogicalName.FunctionLogicalName
+ *
  *
  * This function does not require that the relay is online at the time
  * it is invoked. The returned object is nevertheless valid.

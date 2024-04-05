@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_serialport.js 58898 2024-01-11 14:07:07Z mvuilleu $
+ * $Id: yocto_serialport.js 59977 2024-03-18 15:02:32Z mvuilleu $
  *
  * Implements the high-level API for SerialPort functions
  *
@@ -1111,13 +1111,13 @@ var YSerialPort; // definition below
     /**
      * Retrieves a serial port for a given identifier.
      * The identifier can be specified using several formats:
-     * <ul>
-     * <li>FunctionLogicalName</li>
-     * <li>ModuleSerialNumber.FunctionIdentifier</li>
-     * <li>ModuleSerialNumber.FunctionLogicalName</li>
-     * <li>ModuleLogicalName.FunctionIdentifier</li>
-     * <li>ModuleLogicalName.FunctionLogicalName</li>
-     * </ul>
+     *
+     * - FunctionLogicalName
+     * - ModuleSerialNumber.FunctionIdentifier
+     * - ModuleSerialNumber.FunctionLogicalName
+     * - ModuleLogicalName.FunctionIdentifier
+     * - ModuleLogicalName.FunctionLogicalName
+     *
      *
      * This function does not require that the serial port is online at the time
      * it is invoked. The returned object is nevertheless valid.
@@ -1904,13 +1904,14 @@ var YSerialPort; // definition below
      *
      * @param maxWait : the maximum number of milliseconds to wait for a message if none is found
      *         in the receive buffer.
+     * @param maxMsg : the maximum number of messages to be returned by the function; up to 254.
      *
      * @return an array of YSnoopingRecord objects containing the messages found, if any.
      *         Binary messages are converted to hexadecimal representation.
      *
      * On failure, throws an exception or returns an empty array.
      */
-    function YSerialPort_snoopMessages(maxWait)
+    function YSerialPort_snoopMessagesEx(maxWait,maxMsg)
     {
         var url;                    // str;
         var msgbin;                 // bin;
@@ -1919,7 +1920,7 @@ var YSerialPort; // definition below
         var res = [];               // YSnoopingRecordArr;
         var idx;                    // int;
 
-        url = "rxmsg.json?pos="+String(Math.round(this._rxptr))+"&maxw="+String(Math.round(maxWait))+"&t=0";
+        url = "rxmsg.json?pos="+String(Math.round(this._rxptr))+"&maxw="+String(Math.round(maxWait))+"&t=0&len="+String(Math.round(maxMsg));
         msgbin = this._download(url);
         msgarr = this._json_get_array(msgbin);
         msglen = msgarr.length;
@@ -1935,6 +1936,27 @@ var YSerialPort; // definition below
             idx = idx + 1;
         }
         return res;
+    }
+
+    /**
+     * Retrieves messages (both direction) in the serial port buffer, starting at current position.
+     * This function will only compare and return printable characters in the message strings.
+     * Binary protocols are handled as hexadecimal strings.
+     *
+     * If no message is found, the search waits for one up to the specified maximum timeout
+     * (in milliseconds).
+     *
+     * @param maxWait : the maximum number of milliseconds to wait for a message if none is found
+     *         in the receive buffer.
+     *
+     * @return an array of YSnoopingRecord objects containing the messages found, if any.
+     *         Binary messages are converted to hexadecimal representation.
+     *
+     * On failure, throws an exception or returns an empty array.
+     */
+    function YSerialPort_snoopMessages(maxWait)
+    {
+        return this.snoopMessagesEx(maxWait, 255);
     }
 
     /**
@@ -2734,6 +2756,7 @@ var YSerialPort; // definition below
         setRTS                      : YSerialPort_set_RTS,
         get_CTS                     : YSerialPort_get_CTS,
         CTS                         : YSerialPort_get_CTS,
+        snoopMessagesEx             : YSerialPort_snoopMessagesEx,
         snoopMessages               : YSerialPort_snoopMessages,
         registerSnoopingCallback    : YSerialPort_registerSnoopingCallback,
         _internalEventHandler       : YSerialPort_internalEventHandler,
@@ -2760,13 +2783,13 @@ var YSerialPort; // definition below
 /**
  * Retrieves a serial port for a given identifier.
  * The identifier can be specified using several formats:
- * <ul>
- * <li>FunctionLogicalName</li>
- * <li>ModuleSerialNumber.FunctionIdentifier</li>
- * <li>ModuleSerialNumber.FunctionLogicalName</li>
- * <li>ModuleLogicalName.FunctionIdentifier</li>
- * <li>ModuleLogicalName.FunctionLogicalName</li>
- * </ul>
+ *
+ * - FunctionLogicalName
+ * - ModuleSerialNumber.FunctionIdentifier
+ * - ModuleSerialNumber.FunctionLogicalName
+ * - ModuleLogicalName.FunctionIdentifier
+ * - ModuleLogicalName.FunctionLogicalName
+ *
  *
  * This function does not require that the serial port is online at the time
  * it is invoked. The returned object is nevertheless valid.

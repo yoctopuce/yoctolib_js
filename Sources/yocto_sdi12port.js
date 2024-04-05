@@ -156,13 +156,14 @@ var YSdi12SnoopingRecord; // definition below
     //--- (end of generated code: YSdi12SnoopingRecord initialization)
 })();
 
-var YSdi12Sensor; // definition below
+var YSdi12SensorInfo; // definition below
 (function()
 {
-    function _YSdi12Sensor(sdi12Port,str_json)
+    function _YSdi12SensorInfo(sdi12Port,str_json)
     {
-        //--- (generated code: YSdi12Sensor constructor)
+        //--- (generated code: YSdi12SensorInfo constructor)
         this._sdi12Port                      = null;                       // YSdi12Port
+        this._isValid                        = 0;                          // bool
         this._addr                           = "";                         // str
         this._proto                          = "";                         // str
         this._mfg                            = "";                         // str
@@ -170,20 +171,35 @@ var YSdi12Sensor; // definition below
         this._ver                            = "";                         // str
         this._sn                             = "";                         // str
         this._valuesDesc                     = [];                         // strArrArr
-        //--- (end of generated code: YSdi12Sensor constructor)
+        //--- (end of generated code: YSdi12SensorInfo constructor)
 
         this._sdi12Port = sdi12Port;
         this._parseInfoStr(str_json);
     }
 
-    //--- (generated code: YSdi12Sensor implementation)
+    function YSdi12SensorInfo_throw(errcode,msg)
+    {
+        this._sdi12Port._throw(errcode,msg);
+    }
+
+    //--- (generated code: YSdi12SensorInfo implementation)
+
+    /**
+     * Returns the sensor state.
+     *
+     * @return the sensor state.
+     */
+    function YSdi12SensorInfo_isValid()
+    {
+        return this._isValid;
+    }
 
     /**
      * Returns the sensor address.
      *
      * @return the sensor address.
      */
-    function YSdi12Sensor_get_sensorAddress()
+    function YSdi12SensorInfo_get_sensorAddress()
     {
         return this._addr;
     }
@@ -193,7 +209,7 @@ var YSdi12Sensor; // definition below
      *
      * @return the compatible SDI-12 version of the sensor.
      */
-    function YSdi12Sensor_get_sensorProtocol()
+    function YSdi12SensorInfo_get_sensorProtocol()
     {
         return this._proto;
     }
@@ -203,7 +219,7 @@ var YSdi12Sensor; // definition below
      *
      * @return the sensor vendor identification.
      */
-    function YSdi12Sensor_get_sensorVendor()
+    function YSdi12SensorInfo_get_sensorVendor()
     {
         return this._mfg;
     }
@@ -213,7 +229,7 @@ var YSdi12Sensor; // definition below
      *
      * @return the sensor model number.
      */
-    function YSdi12Sensor_get_sensorModel()
+    function YSdi12SensorInfo_get_sensorModel()
     {
         return this._model;
     }
@@ -223,7 +239,7 @@ var YSdi12Sensor; // definition below
      *
      * @return the sensor version.
      */
-    function YSdi12Sensor_get_sensorVersion()
+    function YSdi12SensorInfo_get_sensorVersion()
     {
         return this._ver;
     }
@@ -233,87 +249,119 @@ var YSdi12Sensor; // definition below
      *
      * @return the sensor serial number.
      */
-    function YSdi12Sensor_get_sensorSerial()
+    function YSdi12SensorInfo_get_sensorSerial()
     {
         return this._sn;
     }
 
     /**
      * Returns the number of sensor measurements.
+     * This function only works if the sensor is in version 1.4 SDI-12
+     * and supports metadata commands.
      *
      * @return the number of sensor measurements.
      */
-    function YSdi12Sensor_get_measureCount()
+    function YSdi12SensorInfo_get_measureCount()
     {
         return this._valuesDesc.length;
     }
 
     /**
      * Returns the sensor measurement command.
+     * This function only works if the sensor is in version 1.4 SDI-12
+     * and supports metadata commands.
      *
      * @param measureIndex : measurement index
      *
      * @return the sensor measurement command.
+     *         On failure, throws an exception or returns an empty string.
      */
-    function YSdi12Sensor_get_measureCommand(measureIndex)
+    function YSdi12SensorInfo_get_measureCommand(measureIndex)
     {
+        if (!(measureIndex < this._valuesDesc.length)) {
+            return this._throw(YAPI_INVALID_ARGUMENT,"Invalid measure index","");
+        }
         return this._valuesDesc[measureIndex][0];
     }
 
     /**
      * Returns sensor measurement position.
+     * This function only works if the sensor is in version 1.4 SDI-12
+     * and supports metadata commands.
      *
      * @param measureIndex : measurement index
      *
      * @return the sensor measurement command.
+     *         On failure, throws an exception or returns 0.
      */
-    function YSdi12Sensor_get_measurePosition(measureIndex)
+    function YSdi12SensorInfo_get_measurePosition(measureIndex)
     {
+        if (!(measureIndex < this._valuesDesc.length)) {
+            return this._throw(YAPI_INVALID_ARGUMENT,"Invalid measure index",0);
+        }
         return YAPI._atoi(this._valuesDesc[measureIndex][2]);
     }
 
     /**
      * Returns the measured value symbol.
+     * This function only works if the sensor is in version 1.4 SDI-12
+     * and supports metadata commands.
      *
      * @param measureIndex : measurement index
      *
      * @return the sensor measurement command.
+     *         On failure, throws an exception or returns an empty string.
      */
-    function YSdi12Sensor_get_measureSymbol(measureIndex)
+    function YSdi12SensorInfo_get_measureSymbol(measureIndex)
     {
+        if (!(measureIndex < this._valuesDesc.length)) {
+            return this._throw(YAPI_INVALID_ARGUMENT,"Invalid measure index","");
+        }
         return this._valuesDesc[measureIndex][3];
     }
 
     /**
      * Returns the unit of the measured value.
+     * This function only works if the sensor is in version 1.4 SDI-12
+     * and supports metadata commands.
      *
      * @param measureIndex : measurement index
      *
      * @return the sensor measurement command.
+     *         On failure, throws an exception or returns an empty string.
      */
-    function YSdi12Sensor_get_measureUnit(measureIndex)
+    function YSdi12SensorInfo_get_measureUnit(measureIndex)
     {
+        if (!(measureIndex < this._valuesDesc.length)) {
+            return this._throw(YAPI_INVALID_ARGUMENT,"Invalid measure index","");
+        }
         return this._valuesDesc[measureIndex][4];
     }
 
     /**
      * Returns the description of the measured value.
+     * This function only works if the sensor is in version 1.4 SDI-12
+     * and supports metadata commands.
      *
      * @param measureIndex : measurement index
      *
      * @return the sensor measurement command.
+     *         On failure, throws an exception or returns an empty string.
      */
-    function YSdi12Sensor_get_measureDescription(measureIndex)
+    function YSdi12SensorInfo_get_measureDescription(measureIndex)
     {
+        if (!(measureIndex < this._valuesDesc.length)) {
+            return this._throw(YAPI_INVALID_ARGUMENT,"Invalid measure index","");
+        }
         return this._valuesDesc[measureIndex][5];
     }
 
-    function YSdi12Sensor_get_typeMeasure()
+    function YSdi12SensorInfo_get_typeMeasure()
     {
         return this._valuesDesc;
     }
 
-    function YSdi12Sensor_parseInfoStr(infoStr)
+    function YSdi12SensorInfo_parseInfoStr(infoStr)
     {
         var errmsg;                 // str;
 
@@ -326,6 +374,7 @@ var YSdi12Sensor; // definition below
                 this._model = errmsg;
                 this._ver = errmsg;
                 this._sn = errmsg;
+                this._isValid = false;
             } else {
                 this._addr = (infoStr).substr(0, 1);
                 this._proto = (infoStr).substr(1, 2);
@@ -333,11 +382,12 @@ var YSdi12Sensor; // definition below
                 this._model = (infoStr).substr(11, 6);
                 this._ver = (infoStr).substr(17, 3);
                 this._sn = (infoStr).substr(20, (infoStr).length-20);
+                this._isValid = true;
             }
         }
     }
 
-    function YSdi12Sensor_queryValueInfo()
+    function YSdi12SensorInfo_queryValueInfo()
     {
         var val = [];               // strArrArr;
         var data = [];              // strArr;
@@ -388,40 +438,42 @@ var YSdi12Sensor; // definition below
         this._valuesDesc = val;
     }
 
-    //--- (end of generated code: YSdi12Sensor implementation)
+    //--- (end of generated code: YSdi12SensorInfo implementation)
 
-    //--- (generated code: YSdi12Sensor initialization)
-    YSdi12Sensor = _YSdi12Sensor;
+    //--- (generated code: YSdi12SensorInfo initialization)
+    YSdi12SensorInfo = _YSdi12SensorInfo;
     // Methods
-    YSdi12Sensor.prototype.get_sensorAddress           = YSdi12Sensor_get_sensorAddress;
-    YSdi12Sensor.prototype.sensorAddress               = YSdi12Sensor_get_sensorAddress;
-    YSdi12Sensor.prototype.get_sensorProtocol          = YSdi12Sensor_get_sensorProtocol;
-    YSdi12Sensor.prototype.sensorProtocol              = YSdi12Sensor_get_sensorProtocol;
-    YSdi12Sensor.prototype.get_sensorVendor            = YSdi12Sensor_get_sensorVendor;
-    YSdi12Sensor.prototype.sensorVendor                = YSdi12Sensor_get_sensorVendor;
-    YSdi12Sensor.prototype.get_sensorModel             = YSdi12Sensor_get_sensorModel;
-    YSdi12Sensor.prototype.sensorModel                 = YSdi12Sensor_get_sensorModel;
-    YSdi12Sensor.prototype.get_sensorVersion           = YSdi12Sensor_get_sensorVersion;
-    YSdi12Sensor.prototype.sensorVersion               = YSdi12Sensor_get_sensorVersion;
-    YSdi12Sensor.prototype.get_sensorSerial            = YSdi12Sensor_get_sensorSerial;
-    YSdi12Sensor.prototype.sensorSerial                = YSdi12Sensor_get_sensorSerial;
-    YSdi12Sensor.prototype.get_measureCount            = YSdi12Sensor_get_measureCount;
-    YSdi12Sensor.prototype.measureCount                = YSdi12Sensor_get_measureCount;
-    YSdi12Sensor.prototype.get_measureCommand          = YSdi12Sensor_get_measureCommand;
-    YSdi12Sensor.prototype.measureCommand              = YSdi12Sensor_get_measureCommand;
-    YSdi12Sensor.prototype.get_measurePosition         = YSdi12Sensor_get_measurePosition;
-    YSdi12Sensor.prototype.measurePosition             = YSdi12Sensor_get_measurePosition;
-    YSdi12Sensor.prototype.get_measureSymbol           = YSdi12Sensor_get_measureSymbol;
-    YSdi12Sensor.prototype.measureSymbol               = YSdi12Sensor_get_measureSymbol;
-    YSdi12Sensor.prototype.get_measureUnit             = YSdi12Sensor_get_measureUnit;
-    YSdi12Sensor.prototype.measureUnit                 = YSdi12Sensor_get_measureUnit;
-    YSdi12Sensor.prototype.get_measureDescription      = YSdi12Sensor_get_measureDescription;
-    YSdi12Sensor.prototype.measureDescription          = YSdi12Sensor_get_measureDescription;
-    YSdi12Sensor.prototype.get_typeMeasure             = YSdi12Sensor_get_typeMeasure;
-    YSdi12Sensor.prototype.typeMeasure                 = YSdi12Sensor_get_typeMeasure;
-    YSdi12Sensor.prototype._parseInfoStr               = YSdi12Sensor_parseInfoStr;
-    YSdi12Sensor.prototype._queryValueInfo             = YSdi12Sensor_queryValueInfo;
-    //--- (end of generated code: YSdi12Sensor initialization)
+    YSdi12SensorInfo.prototype.isValid                     = YSdi12SensorInfo_isValid;
+    YSdi12SensorInfo.prototype.get_sensorAddress           = YSdi12SensorInfo_get_sensorAddress;
+    YSdi12SensorInfo.prototype.sensorAddress               = YSdi12SensorInfo_get_sensorAddress;
+    YSdi12SensorInfo.prototype.get_sensorProtocol          = YSdi12SensorInfo_get_sensorProtocol;
+    YSdi12SensorInfo.prototype.sensorProtocol              = YSdi12SensorInfo_get_sensorProtocol;
+    YSdi12SensorInfo.prototype.get_sensorVendor            = YSdi12SensorInfo_get_sensorVendor;
+    YSdi12SensorInfo.prototype.sensorVendor                = YSdi12SensorInfo_get_sensorVendor;
+    YSdi12SensorInfo.prototype.get_sensorModel             = YSdi12SensorInfo_get_sensorModel;
+    YSdi12SensorInfo.prototype.sensorModel                 = YSdi12SensorInfo_get_sensorModel;
+    YSdi12SensorInfo.prototype.get_sensorVersion           = YSdi12SensorInfo_get_sensorVersion;
+    YSdi12SensorInfo.prototype.sensorVersion               = YSdi12SensorInfo_get_sensorVersion;
+    YSdi12SensorInfo.prototype.get_sensorSerial            = YSdi12SensorInfo_get_sensorSerial;
+    YSdi12SensorInfo.prototype.sensorSerial                = YSdi12SensorInfo_get_sensorSerial;
+    YSdi12SensorInfo.prototype.get_measureCount            = YSdi12SensorInfo_get_measureCount;
+    YSdi12SensorInfo.prototype.measureCount                = YSdi12SensorInfo_get_measureCount;
+    YSdi12SensorInfo.prototype.get_measureCommand          = YSdi12SensorInfo_get_measureCommand;
+    YSdi12SensorInfo.prototype.measureCommand              = YSdi12SensorInfo_get_measureCommand;
+    YSdi12SensorInfo.prototype.get_measurePosition         = YSdi12SensorInfo_get_measurePosition;
+    YSdi12SensorInfo.prototype.measurePosition             = YSdi12SensorInfo_get_measurePosition;
+    YSdi12SensorInfo.prototype.get_measureSymbol           = YSdi12SensorInfo_get_measureSymbol;
+    YSdi12SensorInfo.prototype.measureSymbol               = YSdi12SensorInfo_get_measureSymbol;
+    YSdi12SensorInfo.prototype.get_measureUnit             = YSdi12SensorInfo_get_measureUnit;
+    YSdi12SensorInfo.prototype.measureUnit                 = YSdi12SensorInfo_get_measureUnit;
+    YSdi12SensorInfo.prototype.get_measureDescription      = YSdi12SensorInfo_get_measureDescription;
+    YSdi12SensorInfo.prototype.measureDescription          = YSdi12SensorInfo_get_measureDescription;
+    YSdi12SensorInfo.prototype.get_typeMeasure             = YSdi12SensorInfo_get_typeMeasure;
+    YSdi12SensorInfo.prototype.typeMeasure                 = YSdi12SensorInfo_get_typeMeasure;
+    YSdi12SensorInfo.prototype._parseInfoStr               = YSdi12SensorInfo_parseInfoStr;
+    YSdi12SensorInfo.prototype._queryValueInfo             = YSdi12SensorInfo_queryValueInfo;
+    //--- (end of generated code: YSdi12SensorInfo initialization)
+    YSdi12SensorInfo.prototype._throw                      = YSdi12SensorInfo_throw;
 })();
 
 //--- (generated code: YSdi12Port class start)
@@ -1355,21 +1407,21 @@ var YSdi12Port; // definition below
     }
 
     /**
-     * Retrieves a SDI12 port for a given identifier.
+     * Retrieves an SDI12 port for a given identifier.
      * The identifier can be specified using several formats:
-     * <ul>
-     * <li>FunctionLogicalName</li>
-     * <li>ModuleSerialNumber.FunctionIdentifier</li>
-     * <li>ModuleSerialNumber.FunctionLogicalName</li>
-     * <li>ModuleLogicalName.FunctionIdentifier</li>
-     * <li>ModuleLogicalName.FunctionLogicalName</li>
-     * </ul>
+     *
+     * - FunctionLogicalName
+     * - ModuleSerialNumber.FunctionIdentifier
+     * - ModuleSerialNumber.FunctionLogicalName
+     * - ModuleLogicalName.FunctionIdentifier
+     * - ModuleLogicalName.FunctionLogicalName
+     *
      *
      * This function does not require that the SDI12 port is online at the time
      * it is invoked. The returned object is nevertheless valid.
      * Use the method YSdi12Port.isOnline() to test if the SDI12 port is
      * indeed online at a given time. In case of ambiguity when looking for
-     * a SDI12 port by logical name, no error is notified: the first instance
+     * an SDI12 port by logical name, no error is notified: the first instance
      * found is returned. The search is performed first by hardware name,
      * then by logical name.
      *
@@ -2152,7 +2204,7 @@ var YSdi12Port; // definition below
      * This function is intended to be used when the serial port is configured for 'SDI-12' protocol.
      * This function work when only one sensor is connected.
      *
-     * @return the reply returned by the sensor, as a YSdi12Sensor object.
+     * @return the reply returned by the sensor, as a YSdi12SensorInfo object.
      *
      * On failure, throws an exception or returns an empty string.
      */
@@ -2162,7 +2214,7 @@ var YSdi12Port; // definition below
 
         resStr = this.querySdi12("?","",5000);
         if (resStr == "") {
-            return new YSdi12Sensor(this, "ERSensor Not Found");
+            return new YSdi12SensorInfo(this, "ERSensor Not Found");
         }
 
         return this.getSensorInformation(resStr);
@@ -2172,13 +2224,13 @@ var YSdi12Port; // definition below
      * Sends a discovery command to the bus, and reads all sensors information reply.
      * This function is intended to be used when the serial port is configured for 'SDI-12' protocol.
      *
-     * @return all the information from every connected sensor, as an array of YSdi12Sensor object.
+     * @return all the information from every connected sensor, as an array of YSdi12SensorInfo object.
      *
      * On failure, throws an exception or returns an empty string.
      */
     function YSdi12Port_discoverAllSensors()
     {
-        var sensors = [];           // YSdi12SensorArr;
+        var sensors = [];           // YSdi12SensorInfoArr;
         var idSens = [];            // strArr;
         var res;                    // str;
         var i;                      // int;
@@ -2271,13 +2323,13 @@ var YSdi12Port; // definition below
      * @param oldAddress : Actual sensor address, as a string
      * @param newAddress : New sensor address, as a string
      *
-     * @return the sensor address and information , as a YSdi12Sensor object.
+     * @return the sensor address and information , as a YSdi12SensorInfo object.
      *
      * On failure, throws an exception or returns an empty string.
      */
     function YSdi12Port_changeAddress(oldAddress,newAddress)
     {
-        var addr;                   // YSdi12Sensor;
+        var addr;                   // YSdi12SensorInfo;
 
         this.querySdi12(oldAddress, "A" + newAddress,1000);
         addr = this.getSensorInformation(newAddress);
@@ -2297,13 +2349,13 @@ var YSdi12Port; // definition below
     function YSdi12Port_getSensorInformation(sensorAddr)
     {
         var res;                    // str;
-        var sensor;                 // YSdi12Sensor;
+        var sensor;                 // YSdi12SensorInfo;
 
         res = this.querySdi12(sensorAddr,"I",1000);
         if (res == "") {
-            return new YSdi12Sensor(this, "ERSensor Not Found");
+            return new YSdi12SensorInfo(this, "ERSensor Not Found");
         }
-        sensor = new YSdi12Sensor(this, res);
+        sensor = new YSdi12SensorInfo(this, res);
         sensor._queryValueInfo();
         return sensor;
     }
@@ -2355,12 +2407,13 @@ var YSdi12Port; // definition below
      *
      * @param maxWait : the maximum number of milliseconds to wait for a message if none is found
      *         in the receive buffer.
+     * @param maxMsg : the maximum number of messages to be returned by the function; up to 254.
      *
      * @return an array of YSdi12SnoopingRecord objects containing the messages found, if any.
      *
      * On failure, throws an exception or returns an empty array.
      */
-    function YSdi12Port_snoopMessages(maxWait)
+    function YSdi12Port_snoopMessagesEx(maxWait,maxMsg)
     {
         var url;                    // str;
         var msgbin;                 // bin;
@@ -2369,7 +2422,7 @@ var YSdi12Port; // definition below
         var res = [];               // YSdi12SnoopingRecordArr;
         var idx;                    // int;
 
-        url = "rxmsg.json?pos="+String(Math.round(this._rxptr))+"&maxw="+String(Math.round(maxWait))+"&t=0";
+        url = "rxmsg.json?pos="+String(Math.round(this._rxptr))+"&maxw="+String(Math.round(maxWait))+"&t=0&len="+String(Math.round(maxMsg));
         msgbin = this._download(url);
         msgarr = this._json_get_array(msgbin);
         msglen = msgarr.length;
@@ -2388,13 +2441,31 @@ var YSdi12Port; // definition below
     }
 
     /**
+     * Retrieves messages (both direction) in the SDI12 port buffer, starting at current position.
+     *
+     * If no message is found, the search waits for one up to the specified maximum timeout
+     * (in milliseconds).
+     *
+     * @param maxWait : the maximum number of milliseconds to wait for a message if none is found
+     *         in the receive buffer.
+     *
+     * @return an array of YSdi12SnoopingRecord objects containing the messages found, if any.
+     *
+     * On failure, throws an exception or returns an empty array.
+     */
+    function YSdi12Port_snoopMessages(maxWait)
+    {
+        return this.snoopMessagesEx(maxWait, 255);
+    }
+
+    /**
      * Continues the enumeration of SDI12 ports started using yFirstSdi12Port().
      * Caution: You can't make any assumption about the returned SDI12 ports order.
-     * If you want to find a specific a SDI12 port, use Sdi12Port.findSdi12Port()
+     * If you want to find a specific an SDI12 port, use Sdi12Port.findSdi12Port()
      * and a hardwareID or a logical name.
      *
      * @return a pointer to a YSdi12Port object, corresponding to
-     *         a SDI12 port currently online, or a null pointer
+     *         an SDI12 port currently online, or a null pointer
      *         if there are no more SDI12 ports to enumerate.
      */
     function YSdi12Port_nextSdi12Port()
@@ -2554,6 +2625,7 @@ var YSdi12Port; // definition below
         getSensorInformation        : YSdi12Port_getSensorInformation,
         readConcurrentMeasurements  : YSdi12Port_readConcurrentMeasurements,
         requestConcurrentMeasurements : YSdi12Port_requestConcurrentMeasurements,
+        snoopMessagesEx             : YSdi12Port_snoopMessagesEx,
         snoopMessages               : YSdi12Port_snoopMessages,
         nextSdi12Port               : YSdi12Port_nextSdi12Port,
         _parseAttr                  : YSdi12Port_parseAttr
@@ -2564,21 +2636,21 @@ var YSdi12Port; // definition below
 //--- (generated code: YSdi12Port functions)
 
 /**
- * Retrieves a SDI12 port for a given identifier.
+ * Retrieves an SDI12 port for a given identifier.
  * The identifier can be specified using several formats:
- * <ul>
- * <li>FunctionLogicalName</li>
- * <li>ModuleSerialNumber.FunctionIdentifier</li>
- * <li>ModuleSerialNumber.FunctionLogicalName</li>
- * <li>ModuleLogicalName.FunctionIdentifier</li>
- * <li>ModuleLogicalName.FunctionLogicalName</li>
- * </ul>
+ *
+ * - FunctionLogicalName
+ * - ModuleSerialNumber.FunctionIdentifier
+ * - ModuleSerialNumber.FunctionLogicalName
+ * - ModuleLogicalName.FunctionIdentifier
+ * - ModuleLogicalName.FunctionLogicalName
+ *
  *
  * This function does not require that the SDI12 port is online at the time
  * it is invoked. The returned object is nevertheless valid.
  * Use the method YSdi12Port.isOnline() to test if the SDI12 port is
  * indeed online at a given time. In case of ambiguity when looking for
- * a SDI12 port by logical name, no error is notified: the first instance
+ * an SDI12 port by logical name, no error is notified: the first instance
  * found is returned. The search is performed first by hardware name,
  * then by logical name.
  *

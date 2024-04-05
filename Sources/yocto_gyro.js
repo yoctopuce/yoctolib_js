@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_gyro.js 54314 2023-05-01 14:21:11Z seb $
+ * $Id: yocto_gyro.js 59977 2024-03-18 15:02:32Z mvuilleu $
  *
  * Implements the high-level API for Gyro functions
  *
@@ -84,13 +84,13 @@ var YQt; // definition below
     /**
      * Retrieves a quaternion component for a given identifier.
      * The identifier can be specified using several formats:
-     * <ul>
-     * <li>FunctionLogicalName</li>
-     * <li>ModuleSerialNumber.FunctionIdentifier</li>
-     * <li>ModuleSerialNumber.FunctionLogicalName</li>
-     * <li>ModuleLogicalName.FunctionIdentifier</li>
-     * <li>ModuleLogicalName.FunctionLogicalName</li>
-     * </ul>
+     *
+     * - FunctionLogicalName
+     * - ModuleSerialNumber.FunctionIdentifier
+     * - ModuleSerialNumber.FunctionLogicalName
+     * - ModuleLogicalName.FunctionIdentifier
+     * - ModuleLogicalName.FunctionLogicalName
+     *
      *
      * This function does not require that the quaternion component is online at the time
      * it is invoked. The returned object is nevertheless valid.
@@ -174,13 +174,13 @@ var YQt; // definition below
 /**
  * Retrieves a quaternion component for a given identifier.
  * The identifier can be specified using several formats:
- * <ul>
- * <li>FunctionLogicalName</li>
- * <li>ModuleSerialNumber.FunctionIdentifier</li>
- * <li>ModuleSerialNumber.FunctionLogicalName</li>
- * <li>ModuleLogicalName.FunctionIdentifier</li>
- * <li>ModuleLogicalName.FunctionLogicalName</li>
- * </ul>
+ *
+ * - FunctionLogicalName
+ * - ModuleSerialNumber.FunctionIdentifier
+ * - ModuleSerialNumber.FunctionLogicalName
+ * - ModuleLogicalName.FunctionIdentifier
+ * - ModuleLogicalName.FunctionLogicalName
+ *
  *
  * This function does not require that the quaternion component is online at the time
  * it is invoked. The returned object is nevertheless valid.
@@ -525,13 +525,13 @@ var YGyro; // definition below
     /**
      * Retrieves a gyroscope for a given identifier.
      * The identifier can be specified using several formats:
-     * <ul>
-     * <li>FunctionLogicalName</li>
-     * <li>ModuleSerialNumber.FunctionIdentifier</li>
-     * <li>ModuleSerialNumber.FunctionLogicalName</li>
-     * <li>ModuleLogicalName.FunctionIdentifier</li>
-     * <li>ModuleLogicalName.FunctionLogicalName</li>
-     * </ul>
+     *
+     * - FunctionLogicalName
+     * - ModuleSerialNumber.FunctionIdentifier
+     * - ModuleSerialNumber.FunctionLogicalName
+     * - ModuleLogicalName.FunctionIdentifier
+     * - ModuleLogicalName.FunctionLogicalName
+     *
      *
      * This function does not require that the gyroscope is online at the time
      * it is invoked. The returned object is nevertheless valid.
@@ -960,13 +960,13 @@ var YGyro; // definition below
 /**
  * Retrieves a gyroscope for a given identifier.
  * The identifier can be specified using several formats:
- * <ul>
- * <li>FunctionLogicalName</li>
- * <li>ModuleSerialNumber.FunctionIdentifier</li>
- * <li>ModuleSerialNumber.FunctionLogicalName</li>
- * <li>ModuleLogicalName.FunctionIdentifier</li>
- * <li>ModuleLogicalName.FunctionLogicalName</li>
- * </ul>
+ *
+ * - FunctionLogicalName
+ * - ModuleSerialNumber.FunctionIdentifier
+ * - ModuleSerialNumber.FunctionLogicalName
+ * - ModuleLogicalName.FunctionIdentifier
+ * - ModuleLogicalName.FunctionLogicalName
+ *
  *
  * This function does not require that the gyroscope is online at the time
  * it is invoked. The returned object is nevertheless valid.

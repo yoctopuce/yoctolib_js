@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_genericsensor.js 51903 2022-11-29 17:25:59Z mvuilleu $
+ *  $Id: yocto_genericsensor.js 59977 2024-03-18 15:02:32Z mvuilleu $
  *
  *  Implements the high-level API for GenericSensor functions
  *
@@ -636,13 +636,13 @@ var YGenericSensor; // definition below
     /**
      * Retrieves a generic sensor for a given identifier.
      * The identifier can be specified using several formats:
-     * <ul>
-     * <li>FunctionLogicalName</li>
-     * <li>ModuleSerialNumber.FunctionIdentifier</li>
-     * <li>ModuleSerialNumber.FunctionLogicalName</li>
-     * <li>ModuleLogicalName.FunctionIdentifier</li>
-     * <li>ModuleLogicalName.FunctionLogicalName</li>
-     * </ul>
+     *
+     * - FunctionLogicalName
+     * - ModuleSerialNumber.FunctionIdentifier
+     * - ModuleSerialNumber.FunctionLogicalName
+     * - ModuleLogicalName.FunctionIdentifier
+     * - ModuleLogicalName.FunctionLogicalName
+     *
      *
      * This function does not require that the generic sensor is online at the time
      * it is invoked. The returned object is nevertheless valid.
@@ -802,13 +802,13 @@ var YGenericSensor; // definition below
 /**
  * Retrieves a generic sensor for a given identifier.
  * The identifier can be specified using several formats:
- * <ul>
- * <li>FunctionLogicalName</li>
- * <li>ModuleSerialNumber.FunctionIdentifier</li>
- * <li>ModuleSerialNumber.FunctionLogicalName</li>
- * <li>ModuleLogicalName.FunctionIdentifier</li>
- * <li>ModuleLogicalName.FunctionLogicalName</li>
- * </ul>
+ *
+ * - FunctionLogicalName
+ * - ModuleSerialNumber.FunctionIdentifier
+ * - ModuleSerialNumber.FunctionLogicalName
+ * - ModuleLogicalName.FunctionIdentifier
+ * - ModuleLogicalName.FunctionLogicalName
+ *
  *
  * This function does not require that the generic sensor is online at the time
  * it is invoked. The returned object is nevertheless valid.

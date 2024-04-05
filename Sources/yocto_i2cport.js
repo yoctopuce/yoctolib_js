@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_i2cport.js 58898 2024-01-11 14:07:07Z mvuilleu $
+ *  $Id: yocto_i2cport.js 59977 2024-03-18 15:02:32Z mvuilleu $
  *
  *  Implements the high-level API for I2cPort functions
  *
@@ -1069,13 +1069,13 @@ var YI2cPort; // definition below
     /**
      * Retrieves an I2C port for a given identifier.
      * The identifier can be specified using several formats:
-     * <ul>
-     * <li>FunctionLogicalName</li>
-     * <li>ModuleSerialNumber.FunctionIdentifier</li>
-     * <li>ModuleSerialNumber.FunctionLogicalName</li>
-     * <li>ModuleLogicalName.FunctionIdentifier</li>
-     * <li>ModuleLogicalName.FunctionLogicalName</li>
-     * </ul>
+     *
+     * - FunctionLogicalName
+     * - ModuleSerialNumber.FunctionIdentifier
+     * - ModuleSerialNumber.FunctionLogicalName
+     * - ModuleLogicalName.FunctionIdentifier
+     * - ModuleLogicalName.FunctionLogicalName
+     *
      *
      * This function does not require that the I2C port is online at the time
      * it is invoked. The returned object is nevertheless valid.
@@ -1807,12 +1807,13 @@ var YI2cPort; // definition below
      *
      * @param maxWait : the maximum number of milliseconds to wait for a message if none is found
      *         in the receive buffer.
+     * @param maxMsg : the maximum number of messages to be returned by the function; up to 254.
      *
      * @return an array of YI2cSnoopingRecord objects containing the messages found, if any.
      *
      * On failure, throws an exception or returns an empty array.
      */
-    function YI2cPort_snoopMessages(maxWait)
+    function YI2cPort_snoopMessagesEx(maxWait,maxMsg)
     {
         var url;                    // str;
         var msgbin;                 // bin;
@@ -1821,7 +1822,7 @@ var YI2cPort; // definition below
         var res = [];               // YI2cSnoopingRecordArr;
         var idx;                    // int;
 
-        url = "rxmsg.json?pos="+String(Math.round(this._rxptr))+"&maxw="+String(Math.round(maxWait))+"&t=0";
+        url = "rxmsg.json?pos="+String(Math.round(this._rxptr))+"&maxw="+String(Math.round(maxWait))+"&t=0&len="+String(Math.round(maxMsg));
         msgbin = this._download(url);
         msgarr = this._json_get_array(msgbin);
         msglen = msgarr.length;
@@ -1837,6 +1838,24 @@ var YI2cPort; // definition below
             idx = idx + 1;
         }
         return res;
+    }
+
+    /**
+     * Retrieves messages (both direction) in the I2C port buffer, starting at current position.
+     *
+     * If no message is found, the search waits for one up to the specified maximum timeout
+     * (in milliseconds).
+     *
+     * @param maxWait : the maximum number of milliseconds to wait for a message if none is found
+     *         in the receive buffer.
+     *
+     * @return an array of YI2cSnoopingRecord objects containing the messages found, if any.
+     *
+     * On failure, throws an exception or returns an empty array.
+     */
+    function YI2cPort_snoopMessages(maxWait)
+    {
+        return this.snoopMessagesEx(maxWait, 255);
     }
 
     /**
@@ -1991,6 +2010,7 @@ var YI2cPort; // definition below
         writeHex                    : YI2cPort_writeHex,
         writeBin                    : YI2cPort_writeBin,
         writeArray                  : YI2cPort_writeArray,
+        snoopMessagesEx             : YI2cPort_snoopMessagesEx,
         snoopMessages               : YI2cPort_snoopMessages,
         nextI2cPort                 : YI2cPort_nextI2cPort,
         _parseAttr                  : YI2cPort_parseAttr
@@ -2003,13 +2023,13 @@ var YI2cPort; // definition below
 /**
  * Retrieves an I2C port for a given identifier.
  * The identifier can be specified using several formats:
- * <ul>
- * <li>FunctionLogicalName</li>
- * <li>ModuleSerialNumber.FunctionIdentifier</li>
- * <li>ModuleSerialNumber.FunctionLogicalName</li>
- * <li>ModuleLogicalName.FunctionIdentifier</li>
- * <li>ModuleLogicalName.FunctionLogicalName</li>
- * </ul>
+ *
+ * - FunctionLogicalName
+ * - ModuleSerialNumber.FunctionIdentifier
+ * - ModuleSerialNumber.FunctionLogicalName
+ * - ModuleLogicalName.FunctionIdentifier
+ * - ModuleLogicalName.FunctionLogicalName
+ *
  *
  * This function does not require that the I2C port is online at the time
  * it is invoked. The returned object is nevertheless valid.

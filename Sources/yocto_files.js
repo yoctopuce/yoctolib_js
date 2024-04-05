@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_files.js 54221 2023-04-24 15:07:20Z seb $
+ * $Id: yocto_files.js 59977 2024-03-18 15:02:32Z mvuilleu $
  *
  * Implements yFindFiles(), the high-level API for Files functions
  *
@@ -266,13 +266,13 @@ var YFiles; // definition below
     /**
      * Retrieves a filesystem for a given identifier.
      * The identifier can be specified using several formats:
-     * <ul>
-     * <li>FunctionLogicalName</li>
-     * <li>ModuleSerialNumber.FunctionIdentifier</li>
-     * <li>ModuleSerialNumber.FunctionLogicalName</li>
-     * <li>ModuleLogicalName.FunctionIdentifier</li>
-     * <li>ModuleLogicalName.FunctionLogicalName</li>
-     * </ul>
+     *
+     * - FunctionLogicalName
+     * - ModuleSerialNumber.FunctionIdentifier
+     * - ModuleSerialNumber.FunctionLogicalName
+     * - ModuleLogicalName.FunctionIdentifier
+     * - ModuleLogicalName.FunctionLogicalName
+     *
      *
      * This function does not require that the filesystem is online at the time
      * it is invoked. The returned object is nevertheless valid.
@@ -534,13 +534,13 @@ var YFiles; // definition below
 /**
  * Retrieves a filesystem for a given identifier.
  * The identifier can be specified using several formats:
- * <ul>
- * <li>FunctionLogicalName</li>
- * <li>ModuleSerialNumber.FunctionIdentifier</li>
- * <li>ModuleSerialNumber.FunctionLogicalName</li>
- * <li>ModuleLogicalName.FunctionIdentifier</li>
- * <li>ModuleLogicalName.FunctionLogicalName</li>
- * </ul>
+ *
+ * - FunctionLogicalName
+ * - ModuleSerialNumber.FunctionIdentifier
+ * - ModuleSerialNumber.FunctionLogicalName
+ * - ModuleLogicalName.FunctionIdentifier
+ * - ModuleLogicalName.FunctionLogicalName
+ *
  *
  * This function does not require that the filesystem is online at the time
  * it is invoked. The returned object is nevertheless valid.

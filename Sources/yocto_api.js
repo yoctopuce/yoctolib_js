@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_api.js 59221 2024-02-05 15:46:32Z seb $
+ * $Id: yocto_api.js 59977 2024-03-18 15:02:32Z mvuilleu $
  *
  * High-level programming interface, common to all modules
  *
@@ -2682,7 +2682,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
      */
     function YAPI_GetAPIVersion()
     {
-        return "1.10.59271";
+        return "1.10.60394";
     }
 
     /**
@@ -3908,13 +3908,13 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
     /**
      * Retrieves a function for a given identifier.
      * The identifier can be specified using several formats:
-     * <ul>
-     * <li>FunctionLogicalName</li>
-     * <li>ModuleSerialNumber.FunctionIdentifier</li>
-     * <li>ModuleSerialNumber.FunctionLogicalName</li>
-     * <li>ModuleLogicalName.FunctionIdentifier</li>
-     * <li>ModuleLogicalName.FunctionLogicalName</li>
-     * </ul>
+     *
+     * - FunctionLogicalName
+     * - ModuleSerialNumber.FunctionIdentifier
+     * - ModuleSerialNumber.FunctionLogicalName
+     * - ModuleLogicalName.FunctionIdentifier
+     * - ModuleLogicalName.FunctionLogicalName
+     *
      *
      * This function does not require that the function is online at the time
      * it is invoked. The returned object is nevertheless valid.
@@ -7532,11 +7532,10 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
     }
 
     /**
-     * Returns the sensor health state code, which is zero when there is an up-to-date measure
+     * Returns the sensor state code, which is zero when there is an up-to-date measure
      * available or a positive code if the sensor is not able to provide a measure right now.
      *
-     * @return an integer corresponding to the sensor health state code, which is zero when there is an
-     * up-to-date measure
+     * @return an integer corresponding to the sensor state code, which is zero when there is an up-to-date measure
      *         available or a positive code if the sensor is not able to provide a measure right now
      *
      * On failure, throws an exception or returns YSensor.SENSORSTATE_INVALID.
@@ -7554,15 +7553,15 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
     }
 
     /**
-     * Gets the sensor health state code, which is zero when there is an up-to-date measure
+     * Gets the sensor state code, which is zero when there is an up-to-date measure
      * available or a positive code if the sensor is not able to provide a measure right now.
      *
      * @param callback : callback function that is invoked when the result is known.
      *         The callback function receives three arguments:
      *         - the user-specific context object
      *         - the YSensor object that invoked the callback
-     *         - the result:an integer corresponding to the sensor health state code, which is zero when there is
-     *         an up-to-date measure
+     *         - the result:an integer corresponding to the sensor state code, which is zero when there is an
+     *         up-to-date measure
      *         available or a positive code if the sensor is not able to provide a measure right now
      * @param context : user-specific object that is passed as-is to the callback function
      *
@@ -7591,13 +7590,13 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
     /**
      * Retrieves a sensor for a given identifier.
      * The identifier can be specified using several formats:
-     * <ul>
-     * <li>FunctionLogicalName</li>
-     * <li>ModuleSerialNumber.FunctionIdentifier</li>
-     * <li>ModuleSerialNumber.FunctionLogicalName</li>
-     * <li>ModuleLogicalName.FunctionIdentifier</li>
-     * <li>ModuleLogicalName.FunctionLogicalName</li>
-     * </ul>
+     *
+     * - FunctionLogicalName
+     * - ModuleSerialNumber.FunctionIdentifier
+     * - ModuleSerialNumber.FunctionLogicalName
+     * - ModuleLogicalName.FunctionIdentifier
+     * - ModuleLogicalName.FunctionLogicalName
+     *
      *
      * This function does not require that the sensor is online at the time
      * it is invoked. The returned object is nevertheless valid.
@@ -9014,13 +9013,13 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
     /**
      * Retrieves a data logger for a given identifier.
      * The identifier can be specified using several formats:
-     * <ul>
-     * <li>FunctionLogicalName</li>
-     * <li>ModuleSerialNumber.FunctionIdentifier</li>
-     * <li>ModuleSerialNumber.FunctionLogicalName</li>
-     * <li>ModuleLogicalName.FunctionIdentifier</li>
-     * <li>ModuleLogicalName.FunctionLogicalName</li>
-     * </ul>
+     *
+     * - FunctionLogicalName
+     * - ModuleSerialNumber.FunctionIdentifier
+     * - ModuleSerialNumber.FunctionLogicalName
+     * - ModuleLogicalName.FunctionIdentifier
+     * - ModuleLogicalName.FunctionLogicalName
+     *
      *
      * This function does not require that the data logger is online at the time
      * it is invoked. The returned object is nevertheless valid.
@@ -10381,8 +10380,10 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
      * Registers a device log callback function. This callback will be called each time
      * that a module sends a new log message. Mostly useful to debug a Yoctopuce module.
      *
-     * @param callback : the callback function to call, or a null pointer. The callback function should take two
-     *         arguments: the module object that emitted the log message, and the character string containing the log.
+     * @param callback : the callback function to call, or a null pointer.
+     *         The callback function should take two
+     *         arguments: the module object that emitted the log message,
+     *         and the character string containing the log.
      *         On failure, throws an exception or returns a negative error code.
      */
     function YModule_registerLogCallback(callback)
@@ -12036,13 +12037,13 @@ var yLinearCalibrationHandler = YAPI.LinearCalibrationHandler;
 /**
  * Retrieves a sensor for a given identifier.
  * The identifier can be specified using several formats:
- * <ul>
- * <li>FunctionLogicalName</li>
- * <li>ModuleSerialNumber.FunctionIdentifier</li>
- * <li>ModuleSerialNumber.FunctionLogicalName</li>
- * <li>ModuleLogicalName.FunctionIdentifier</li>
- * <li>ModuleLogicalName.FunctionLogicalName</li>
- * </ul>
+ *
+ * - FunctionLogicalName
+ * - ModuleSerialNumber.FunctionIdentifier
+ * - ModuleSerialNumber.FunctionLogicalName
+ * - ModuleLogicalName.FunctionIdentifier
+ * - ModuleLogicalName.FunctionLogicalName
+ *
  *
  * This function does not require that the sensor is online at the time
  * it is invoked. The returned object is nevertheless valid.
@@ -12134,13 +12135,13 @@ function yFirstModule()
 /**
  * Retrieves a data logger for a given identifier.
  * The identifier can be specified using several formats:
- * <ul>
- * <li>FunctionLogicalName</li>
- * <li>ModuleSerialNumber.FunctionIdentifier</li>
- * <li>ModuleSerialNumber.FunctionLogicalName</li>
- * <li>ModuleLogicalName.FunctionIdentifier</li>
- * <li>ModuleLogicalName.FunctionLogicalName</li>
- * </ul>
+ *
+ * - FunctionLogicalName
+ * - ModuleSerialNumber.FunctionIdentifier
+ * - ModuleSerialNumber.FunctionLogicalName
+ * - ModuleLogicalName.FunctionIdentifier
+ * - ModuleLogicalName.FunctionLogicalName
+ *
  *
  * This function does not require that the data logger is online at the time
  * it is invoked. The returned object is nevertheless valid.
