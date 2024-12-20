@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_digitalio.js 59977 2024-03-18 15:02:32Z mvuilleu $
+ *  $Id: yocto_digitalio.js 62273 2024-08-23 07:20:59Z seb $
  *
  *  Implements the high-level API for DigitalIO functions
  *
@@ -61,7 +61,7 @@ var Y_COMMAND_INVALID               = YAPI_INVALID_STRING;
  * Yocto-Maxi-IO-V2
  *
  * The YDigitalIO class allows you drive a Yoctopuce digital input/output port.
- * It can be used to setup the direction of each channel, to read the state of each channel
+ * It can be used to set up the direction of each channel, to read the state of each channel
  * and to switch the state of each channel configures as an output.
  * You can work on all channels at once, or one by one. Most functions
  * use a binary representation for channels where bit 0 matches channel #0 , bit 1 matches channel
@@ -433,11 +433,11 @@ var YDigitalIO; // definition below
     }
 
     /**
-     * Returns the port state diagnostics (Yocto-IO and Yocto-MaxiIO-V2 only). Bit 0 indicates a shortcut on
-     * output 0, etc. Bit 8 indicates a power failure, and bit 9 signals overheating (overcurrent).
+     * Returns the port state diagnostics. Bit 0 indicates a shortcut on output 0, etc.
+     * Bit 8 indicates a power failure, and bit 9 signals overheating (overcurrent).
      * During normal use, all diagnostic bits should stay clear.
      *
-     * @return an integer corresponding to the port state diagnostics (Yocto-IO and Yocto-MaxiIO-V2 only)
+     * @return an integer corresponding to the port state diagnostics
      *
      * On failure, throws an exception or returns YDigitalIO.PORTDIAGS_INVALID.
      */
@@ -454,15 +454,15 @@ var YDigitalIO; // definition below
     }
 
     /**
-     * Gets the port state diagnostics (Yocto-IO and Yocto-MaxiIO-V2 only). Bit 0 indicates a shortcut on
-     * output 0, etc. Bit 8 indicates a power failure, and bit 9 signals overheating (overcurrent).
+     * Gets the port state diagnostics. Bit 0 indicates a shortcut on output 0, etc.
+     * Bit 8 indicates a power failure, and bit 9 signals overheating (overcurrent).
      * During normal use, all diagnostic bits should stay clear.
      *
      * @param callback : callback function that is invoked when the result is known.
      *         The callback function receives three arguments:
      *         - the user-specific context object
      *         - the YDigitalIO object that invoked the callback
-     *         - the result:an integer corresponding to the port state diagnostics (Yocto-IO and Yocto-MaxiIO-V2 only)
+     *         - the result:an integer corresponding to the port state diagnostics
      * @param context : user-specific object that is passed as-is to the callback function
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
@@ -728,7 +728,7 @@ var YDigitalIO; // definition below
     {
         var portVal;                // int;
         portVal = this.get_portState();
-        return ((((portVal) >> (bitno))) & (1));
+        return ((portVal >> bitno) & 1);
     }
 
     /**
@@ -781,7 +781,7 @@ var YDigitalIO; // definition below
     {
         var portDir;                // int;
         portDir = this.get_portDirection();
-        return ((((portDir) >> (bitno))) & (1));
+        return ((portDir >> bitno) & 1);
     }
 
     /**
@@ -821,7 +821,7 @@ var YDigitalIO; // definition below
     {
         var portPol;                // int;
         portPol = this.get_portPolarity();
-        return ((((portPol) >> (bitno))) & (1));
+        return ((portPol >> bitno) & 1);
     }
 
     /**
@@ -862,7 +862,7 @@ var YDigitalIO; // definition below
     {
         var portOpenDrain;          // int;
         portOpenDrain = this.get_portOpenDrain();
-        return ((((portOpenDrain) >> (bitno))) & (1));
+        return ((portOpenDrain >> bitno) & 1);
     }
 
     /**

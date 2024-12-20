@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_serialport.js 59977 2024-03-18 15:02:32Z mvuilleu $
+ * $Id: yocto_serialport.js 62273 2024-08-23 07:20:59Z seb $
  *
  * Implements the high-level API for SerialPort functions
  *
@@ -1279,7 +1279,7 @@ var YSerialPort; // definition below
         databin = this._download("rxcnt.bin?pos="+String(Math.round(this._rxptr)));
         availPosStr = databin;
         atPos = (availPosStr).indexOf("@");
-        res = YAPI._atoi((availPosStr).substr(0, atPos));
+        res = YAPI._atoi(availPosStr.substr(0, atPos));
         return res;
     }
 
@@ -1293,7 +1293,7 @@ var YSerialPort; // definition below
         databin = this._download("rxcnt.bin?pos="+String(Math.round(this._rxptr)));
         availPosStr = databin;
         atPos = (availPosStr).indexOf("@");
-        res = YAPI._atoi((availPosStr).substr(atPos+1, (availPosStr).length-atPos-1));
+        res = YAPI._atoi(availPosStr.substr(atPos+1, (availPosStr).length-atPos-1));
         return res;
     }
 
@@ -1554,11 +1554,11 @@ var YSerialPort; // definition below
         if (bufflen < 100) {
             return this.sendCommand("$"+hexString);
         }
-        bufflen = ((bufflen) >> (1));
+        bufflen = (bufflen >> 1);
         buff = new Uint8Array(bufflen);
         idx = 0;
         while (idx < bufflen) {
-            hexb = parseInt((hexString).substr(2 * idx, 2), 16);
+            hexb = parseInt(hexString.substr(2 * idx, 2), 16);
             buff[idx] = hexb;
             idx = idx + 1;
         }
@@ -1705,7 +1705,7 @@ var YSerialPort; // definition below
             bufflen = bufflen - 1;
         }
         this._rxptr = endpos;
-        res = (buff).substr(0, bufflen);
+        res = buff.substr(0, bufflen);
         return res;
     }
 
@@ -2083,12 +2083,12 @@ var YSerialPort; // definition below
         var replen;                 // int;
         var hexb;                   // int;
         funCode = pduBytes[0];
-        nib = ((funCode) >> (4));
-        pat = ""+('00'+(slaveNo).toString(16)).slice(-2).toUpperCase()+"["+(nib).toString(16).toUpperCase()+""+((nib+8)).toString(16).toUpperCase()+"]"+(((funCode) & (15))).toString(16).toUpperCase()+".*";
+        nib = (funCode >> 4);
+        pat = ""+('00'+(slaveNo).toString(16)).slice(-2).toUpperCase()+"["+(nib).toString(16).toUpperCase()+""+((nib+8)).toString(16).toUpperCase()+"]"+((funCode & 15)).toString(16).toUpperCase()+".*";
         cmd = ""+('00'+(slaveNo).toString(16)).slice(-2).toUpperCase()+""+('00'+(funCode).toString(16)).slice(-2).toUpperCase();
         i = 1;
         while (i < pduBytes.length) {
-            cmd = ""+cmd+""+('00'+(((pduBytes[i]) & (0xff))).toString(16)).slice(-2).toUpperCase();
+            cmd = ""+cmd+""+('00'+((pduBytes[i] & 0xff)).toString(16)).slice(-2).toUpperCase();
             i = i + 1;
         }
         if ((cmd).length <= 80) {
@@ -2108,10 +2108,10 @@ var YSerialPort; // definition below
         }
         if (reps.length > 1) {
             rep = this._json_get_string(reps[0]);
-            replen = (((rep).length - 3) >> (1));
+            replen = (((rep).length - 3) >> 1);
             i = 0;
             while (i < replen) {
-                hexb = parseInt((rep).substr(2 * i + 3, 2), 16);
+                hexb = parseInt(rep.substr(2 * i + 3, 2), 16);
                 res.push(hexb);
                 i = i + 1;
             }
@@ -2156,10 +2156,10 @@ var YSerialPort; // definition below
         var val;                    // int;
         var mask;                   // int;
         pdu.push(0x01);
-        pdu.push(((pduAddr) >> (8)));
-        pdu.push(((pduAddr) & (0xff)));
-        pdu.push(((nBits) >> (8)));
-        pdu.push(((nBits) & (0xff)));
+        pdu.push((pduAddr >> 8));
+        pdu.push((pduAddr & 0xff));
+        pdu.push((nBits >> 8));
+        pdu.push((nBits & 0xff));
 
         reply = this.queryMODBUS(slaveNo, pdu);
         if (reply.length == 0) {
@@ -2173,7 +2173,7 @@ var YSerialPort; // definition below
         val = reply[idx];
         mask = 1;
         while (bitpos < nBits) {
-            if (((val) & (mask)) == 0) {
+            if ((val & mask) == 0) {
                 res.push(0);
             } else {
                 res.push(1);
@@ -2184,7 +2184,7 @@ var YSerialPort; // definition below
                 val = reply[idx];
                 mask = 1;
             } else {
-                mask = ((mask) << (1));
+                mask = (mask << 1);
             }
         }
         return res;
@@ -2212,10 +2212,10 @@ var YSerialPort; // definition below
         var val;                    // int;
         var mask;                   // int;
         pdu.push(0x02);
-        pdu.push(((pduAddr) >> (8)));
-        pdu.push(((pduAddr) & (0xff)));
-        pdu.push(((nBits) >> (8)));
-        pdu.push(((nBits) & (0xff)));
+        pdu.push((pduAddr >> 8));
+        pdu.push((pduAddr & 0xff));
+        pdu.push((nBits >> 8));
+        pdu.push((nBits & 0xff));
 
         reply = this.queryMODBUS(slaveNo, pdu);
         if (reply.length == 0) {
@@ -2229,7 +2229,7 @@ var YSerialPort; // definition below
         val = reply[idx];
         mask = 1;
         while (bitpos < nBits) {
-            if (((val) & (mask)) == 0) {
+            if ((val & mask) == 0) {
                 res.push(0);
             } else {
                 res.push(1);
@@ -2240,7 +2240,7 @@ var YSerialPort; // definition below
                 val = reply[idx];
                 mask = 1;
             } else {
-                mask = ((mask) << (1));
+                mask = (mask << 1);
             }
         }
         return res;
@@ -2270,10 +2270,10 @@ var YSerialPort; // definition below
             return this._throw(YAPI_INVALID_ARGUMENT,"Cannot read more than 256 words",res);
         }
         pdu.push(0x03);
-        pdu.push(((pduAddr) >> (8)));
-        pdu.push(((pduAddr) & (0xff)));
-        pdu.push(((nWords) >> (8)));
-        pdu.push(((nWords) & (0xff)));
+        pdu.push((pduAddr >> 8));
+        pdu.push((pduAddr & 0xff));
+        pdu.push((nWords >> 8));
+        pdu.push((nWords & 0xff));
 
         reply = this.queryMODBUS(slaveNo, pdu);
         if (reply.length == 0) {
@@ -2285,7 +2285,7 @@ var YSerialPort; // definition below
         regpos = 0;
         idx = 2;
         while (regpos < nWords) {
-            val = ((reply[idx]) << (8));
+            val = (reply[idx] << 8);
             idx = idx + 1;
             val = val + reply[idx];
             idx = idx + 1;
@@ -2316,10 +2316,10 @@ var YSerialPort; // definition below
         var idx;                    // int;
         var val;                    // int;
         pdu.push(0x04);
-        pdu.push(((pduAddr) >> (8)));
-        pdu.push(((pduAddr) & (0xff)));
-        pdu.push(((nWords) >> (8)));
-        pdu.push(((nWords) & (0xff)));
+        pdu.push((pduAddr >> 8));
+        pdu.push((pduAddr & 0xff));
+        pdu.push((nWords >> 8));
+        pdu.push((nWords & 0xff));
 
         reply = this.queryMODBUS(slaveNo, pdu);
         if (reply.length == 0) {
@@ -2331,7 +2331,7 @@ var YSerialPort; // definition below
         regpos = 0;
         idx = 2;
         while (regpos < nWords) {
-            val = ((reply[idx]) << (8));
+            val = (reply[idx] << 8);
             idx = idx + 1;
             val = val + reply[idx];
             idx = idx + 1;
@@ -2363,8 +2363,8 @@ var YSerialPort; // definition below
             value = 0xff;
         }
         pdu.push(0x05);
-        pdu.push(((pduAddr) >> (8)));
-        pdu.push(((pduAddr) & (0xff)));
+        pdu.push((pduAddr >> 8));
+        pdu.push((pduAddr & 0xff));
         pdu.push(value);
         pdu.push(0x00);
 
@@ -2403,19 +2403,19 @@ var YSerialPort; // definition below
         var res;                    // int;
         res = 0;
         nBits = bits.length;
-        nBytes = (((nBits + 7)) >> (3));
+        nBytes = ((nBits + 7) >> 3);
         pdu.push(0x0f);
-        pdu.push(((pduAddr) >> (8)));
-        pdu.push(((pduAddr) & (0xff)));
-        pdu.push(((nBits) >> (8)));
-        pdu.push(((nBits) & (0xff)));
+        pdu.push((pduAddr >> 8));
+        pdu.push((pduAddr & 0xff));
+        pdu.push((nBits >> 8));
+        pdu.push((nBits & 0xff));
         pdu.push(nBytes);
         bitpos = 0;
         val = 0;
         mask = 1;
         while (bitpos < nBits) {
             if (bits[bitpos] != 0) {
-                val = ((val) | (mask));
+                val = (val | mask);
             }
             bitpos = bitpos + 1;
             if (mask == 0x80) {
@@ -2423,7 +2423,7 @@ var YSerialPort; // definition below
                 val = 0;
                 mask = 1;
             } else {
-                mask = ((mask) << (1));
+                mask = (mask << 1);
             }
         }
         if (mask != 1) {
@@ -2437,7 +2437,7 @@ var YSerialPort; // definition below
         if (reply[0] != pdu[0]) {
             return res;
         }
-        res = ((reply[3]) << (8));
+        res = (reply[3] << 8);
         res = res + reply[4];
         return res;
     }
@@ -2461,10 +2461,10 @@ var YSerialPort; // definition below
         var res;                    // int;
         res = 0;
         pdu.push(0x06);
-        pdu.push(((pduAddr) >> (8)));
-        pdu.push(((pduAddr) & (0xff)));
-        pdu.push(((value) >> (8)));
-        pdu.push(((value) & (0xff)));
+        pdu.push((pduAddr >> 8));
+        pdu.push((pduAddr & 0xff));
+        pdu.push((value >> 8));
+        pdu.push((value & 0xff));
 
         reply = this.queryMODBUS(slaveNo, pdu);
         if (reply.length == 0) {
@@ -2502,16 +2502,16 @@ var YSerialPort; // definition below
         nWords = values.length;
         nBytes = 2 * nWords;
         pdu.push(0x10);
-        pdu.push(((pduAddr) >> (8)));
-        pdu.push(((pduAddr) & (0xff)));
-        pdu.push(((nWords) >> (8)));
-        pdu.push(((nWords) & (0xff)));
+        pdu.push((pduAddr >> 8));
+        pdu.push((pduAddr & 0xff));
+        pdu.push((nWords >> 8));
+        pdu.push((nWords & 0xff));
         pdu.push(nBytes);
         regpos = 0;
         while (regpos < nWords) {
             val = values[regpos];
-            pdu.push(((val) >> (8)));
-            pdu.push(((val) & (0xff)));
+            pdu.push((val >> 8));
+            pdu.push((val & 0xff));
             regpos = regpos + 1;
         }
 
@@ -2522,7 +2522,7 @@ var YSerialPort; // definition below
         if (reply[0] != pdu[0]) {
             return res;
         }
-        res = ((reply[3]) << (8));
+        res = (reply[3] << 8);
         res = res + reply[4];
         return res;
     }
@@ -2555,20 +2555,20 @@ var YSerialPort; // definition below
         nWriteWords = values.length;
         nBytes = 2 * nWriteWords;
         pdu.push(0x17);
-        pdu.push(((pduReadAddr) >> (8)));
-        pdu.push(((pduReadAddr) & (0xff)));
-        pdu.push(((nReadWords) >> (8)));
-        pdu.push(((nReadWords) & (0xff)));
-        pdu.push(((pduWriteAddr) >> (8)));
-        pdu.push(((pduWriteAddr) & (0xff)));
-        pdu.push(((nWriteWords) >> (8)));
-        pdu.push(((nWriteWords) & (0xff)));
+        pdu.push((pduReadAddr >> 8));
+        pdu.push((pduReadAddr & 0xff));
+        pdu.push((nReadWords >> 8));
+        pdu.push((nReadWords & 0xff));
+        pdu.push((pduWriteAddr >> 8));
+        pdu.push((pduWriteAddr & 0xff));
+        pdu.push((nWriteWords >> 8));
+        pdu.push((nWriteWords & 0xff));
         pdu.push(nBytes);
         regpos = 0;
         while (regpos < nWriteWords) {
             val = values[regpos];
-            pdu.push(((val) >> (8)));
-            pdu.push(((val) & (0xff)));
+            pdu.push((val >> 8));
+            pdu.push((val & 0xff));
             regpos = regpos + 1;
         }
 
@@ -2582,7 +2582,7 @@ var YSerialPort; // definition below
         regpos = 0;
         idx = 2;
         while (regpos < nReadWords) {
-            val = ((reply[idx]) << (8));
+            val = (reply[idx] << 8);
             idx = idx + 1;
             val = val + reply[idx];
             idx = idx + 1;

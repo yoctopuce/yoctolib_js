@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_i2cport.js 59977 2024-03-18 15:02:32Z mvuilleu $
+ *  $Id: yocto_i2cport.js 62273 2024-08-23 07:20:59Z seb $
  *
  *  Implements the high-level API for I2cPort functions
  *
@@ -1237,7 +1237,7 @@ var YI2cPort; // definition below
         databin = this._download("rxcnt.bin?pos="+String(Math.round(this._rxptr)));
         availPosStr = databin;
         atPos = (availPosStr).indexOf("@");
-        res = YAPI._atoi((availPosStr).substr(0, atPos));
+        res = YAPI._atoi(availPosStr.substr(0, atPos));
         return res;
     }
 
@@ -1251,7 +1251,7 @@ var YI2cPort; // definition below
         databin = this._download("rxcnt.bin?pos="+String(Math.round(this._rxptr)));
         availPosStr = databin;
         atPos = (availPosStr).indexOf("@");
-        res = YAPI._atoi((availPosStr).substr(atPos+1, (availPosStr).length-atPos-1));
+        res = YAPI._atoi(availPosStr.substr(atPos+1, (availPosStr).length-atPos-1));
         return res;
     }
 
@@ -1542,7 +1542,7 @@ var YI2cPort; // definition below
         if (!(idx < 0)) {
             return this._throw(YAPI_IO_ERROR,"I2C protocol error",rcvbytes);
         }
-        reply = (reply).substr((reply).length-2*rcvCount, 2*rcvCount);
+        reply = reply.substr((reply).length-2*rcvCount, 2*rcvCount);
         rcvbytes = YAPI._hexStrToBin(reply);
         return rcvbytes;
     }
@@ -1609,7 +1609,7 @@ var YI2cPort; // definition below
         if (!(idx < 0)) {
             return this._throw(YAPI_IO_ERROR,"I2C protocol error",res);
         }
-        reply = (reply).substr((reply).length-2*rcvCount, 2*rcvCount);
+        reply = reply.substr((reply).length-2*rcvCount, 2*rcvCount);
         rcvbytes = YAPI._hexStrToBin(reply);
         res.length = 0;
         idx = 0;

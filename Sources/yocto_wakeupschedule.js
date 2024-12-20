@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_wakeupschedule.js 59977 2024-03-18 15:02:32Z mvuilleu $
+ *  $Id: yocto_wakeupschedule.js 62273 2024-08-23 07:20:59Z seb $
  *
  *  Implements the high-level API for WakeUpSchedule functions
  *
@@ -697,7 +697,7 @@ var YWakeUpSchedule; // definition below
         var res;                    // long;
 
         res = this.get_minutesB();
-        res = ((res) << (30));
+        res = (res << 30);
         res = res + this.get_minutesA();
         return res;
     }
@@ -713,9 +713,9 @@ var YWakeUpSchedule; // definition below
      */
     function YWakeUpSchedule_set_minutes(bitmap)
     {
-        this.set_minutesA(((bitmap) & (0x3fffffff)));
-        bitmap = ((bitmap) >> (30));
-        return this.set_minutesB(((bitmap) & (0x3fffffff)));
+        this.set_minutesA((bitmap & 0x3fffffff));
+        bitmap = (bitmap >> 30);
+        return this.set_minutesB((bitmap & 0x3fffffff));
     }
 
     /**

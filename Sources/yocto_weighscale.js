@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_weighscale.js 59977 2024-03-18 15:02:32Z mvuilleu $
+ *  $Id: yocto_weighscale.js 62273 2024-08-23 07:20:59Z seb $
  *
  *  Implements the high-level API for WeighScale functions
  *
@@ -774,11 +774,11 @@ var YWeighScale; // definition below
         var comp;                   // float;
 
         id = this.get_functionId();
-        id = (id).substr(10, (id).length - 10);
+        id = id.substr(10, (id).length - 10);
         bin_json = this._download("extra.json?page="+String(Math.round((4*YAPI._atoi(id))+tableIndex)));
         paramlist = this._json_get_array(bin_json);
         // convert all values to float and append records
-        siz = ((paramlist.length) >> (1));
+        siz = (paramlist.length >> 1);
         tempValues.length = 0;
         compValues.length = 0;
         idx = 0;

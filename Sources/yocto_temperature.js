@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_temperature.js 59977 2024-03-18 15:02:32Z mvuilleu $
+ *  $Id: yocto_temperature.js 62273 2024-08-23 07:20:59Z seb $
  *
  *  Implements the high-level API for Temperature functions
  *
@@ -555,14 +555,14 @@ var YTemperature; // definition below
         resValues.length = 0;
 
         id = this.get_functionId();
-        id = (id).substr(11, (id).length - 11);
+        id = id.substr(11, (id).length - 11);
         if (id == "") {
             id = "1";
         }
         bin_json = this._download("extra.json?page="+id);
         paramlist = this._json_get_array(bin_json);
         // first convert all temperatures to float
-        siz = ((paramlist.length) >> (1));
+        siz = (paramlist.length >> 1);
         templist.length = 0;
         idx = 0;
         while (idx < siz) {

@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_rangefinder.js 59977 2024-03-18 15:02:32Z mvuilleu $
+ *  $Id: yocto_rangefinder.js 62273 2024-08-23 07:20:59Z seb $
  *
  *  Implements the high-level API for RangeFinder functions
  *
@@ -531,10 +531,10 @@ var YRangeFinder; // definition below
     {
         var hwcal;                  // string;
         hwcal = this.get_hardwareCalibration();
-        if (!((hwcal).substr(0, 1) == "@")) {
+        if (!(hwcal.substr(0, 1) == "@")) {
             return YAPI_INVALID_DOUBLE;
         }
-        return YAPI._atoi((hwcal).substr(1, (hwcal).length));
+        return YAPI._atoi(hwcal.substr(1, (hwcal).length));
     }
 
     /**

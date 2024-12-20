@@ -1046,16 +1046,16 @@ var YRfidOptions; // definition below
             opt = 0;
         }
         if (this.ForceMultiBlockAccess) {
-            opt = ((opt) | (2));
+            opt = (opt | 2);
         }
         if (this.EnableRawAccess) {
-            opt = ((opt) | (4));
+            opt = (opt | 4);
         }
         if (this.DisableBoundaryChecks) {
-            opt = ((opt) | (8));
+            opt = (opt | 8);
         }
         if (this.EnableDryRun) {
-            opt = ((opt) | (16));
+            opt = (opt | 16);
         }
         res = "&o="+String(Math.round(opt));
         if (this.KeyType != 0) {
@@ -1494,8 +1494,8 @@ var YRfidReader; // definition below
         binRes = YAPI._hexStrToBin(this._json_get_key(json, "bitmap"));
         idx = 0;
         while (idx < nBlocks) {
-            val = (binRes).charCodeAt(((idx) >> (3)));
-            isLocked = (((val) & (((1) << (((idx) & (7)))))) != 0);
+            val = (binRes).charCodeAt((idx >> 3));
+            isLocked = ((val & (1 << (idx & 7))) != 0);
             res.push(isLocked);
             idx = idx + 1;
         }
@@ -1542,8 +1542,8 @@ var YRfidReader; // definition below
         binRes = YAPI._hexStrToBin(this._json_get_key(json, "bitmap"));
         idx = 0;
         while (idx < nBlocks) {
-            val = (binRes).charCodeAt(((idx) >> (3)));
-            isLocked = (((val) & (((1) << (((idx) & (7)))))) != 0);
+            val = (binRes).charCodeAt((idx >> 3));
+            isLocked = ((val & (1 << (idx & 7))) != 0);
             res.push(isLocked);
             idx = idx + 1;
         }
@@ -1811,7 +1811,7 @@ var YRfidReader; // definition below
         var idx;                    // int;
         var hexb;                   // int;
         bufflen = (hexString).length;
-        bufflen = ((bufflen) >> (1));
+        bufflen = (bufflen >> 1);
         if (bufflen <= 16) {
             // short data, use an URL-based command
             optstr = options.imm_getParams();
@@ -1823,7 +1823,7 @@ var YRfidReader; // definition below
             buff = new Uint8Array(bufflen);
             idx = 0;
             while (idx < bufflen) {
-                hexb = parseInt((hexString).substr(2 * idx, 2), 16);
+                hexb = parseInt(hexString.substr(2 * idx, 2), 16);
                 buff[idx] = hexb;
                 idx = idx + 1;
             }
@@ -1838,13 +1838,19 @@ var YRfidReader; // definition below
      * Note that only the characters présent  in  the provided string
      * will be written, there is no notion of string length. If your
      * string data have variable length, you'll have to encode the
-     * string length yourself.
+     * string length yourself, with a terminal zero for instannce.
+     *
+     * This function only works with ISO-latin characters, if you wish to
+     * write strings encoded with alternate character sets, you'll have to
+     * use tagWriteBin() function.
+     *
      * By default firstBlock cannot be a special block, and any special block
      * encountered in the middle of the write operation will be skipped
      * automatically. The last data block affected by the operation will
      * be automatically padded with zeros if neccessary.
      * If you rather want to rewrite special blocks as well,
-     * use the EnableRawAccess field from the options parameter.
+     * use the EnableRawAccess field from the options parameter
+     * (definitely not recommanded).
      *
      * @param tagId : identifier of the tag to use
      * @param firstBlock : block number where write should start
@@ -2116,7 +2122,7 @@ var YRfidReader; // definition below
         // detect possible power cycle of the reader to clear event pointer
         cbPos = YAPI._atoi(cbVal);
         cbPos = parseInt((cbPos) / (1000));
-        cbDPos = ((cbPos - this._prevCbPos) & (0x7ffff));
+        cbDPos = ((cbPos - this._prevCbPos) & 0x7ffff);
         this._prevCbPos = cbPos;
         if (cbDPos > 16384) {
             this._eventPos = 0;
@@ -2139,7 +2145,7 @@ var YRfidReader; // definition below
             // first element of array is the new position preceeded by '@'
             arrPos = 1;
             lenStr = eventArr[0];
-            lenStr = (lenStr).substr(1, (lenStr).length-1);
+            lenStr = lenStr.substr(1, (lenStr).length-1);
             // update processed event position pointer
             this._eventPos = YAPI._atoi(lenStr);
         } else {
@@ -2156,7 +2162,7 @@ var YRfidReader; // definition below
             arrPos = 0;
             arrLen = arrLen - 1;
             lenStr = eventArr[arrLen];
-            lenStr = (lenStr).substr(1, (lenStr).length-1);
+            lenStr = lenStr.substr(1, (lenStr).length-1);
             // update processed event position pointer
             this._eventPos = YAPI._atoi(lenStr);
         }
@@ -2166,18 +2172,18 @@ var YRfidReader; // definition below
             eventLen = (eventStr).length;
             typePos = (eventStr).indexOf(":")+1;
             if ((eventLen >= 14) && (typePos > 10)) {
-                hexStamp = (eventStr).substr(0, 8);
+                hexStamp = eventStr.substr(0, 8);
                 intStamp = parseInt(hexStamp, 16);
                 if (intStamp >= this._eventStamp) {
                     this._eventStamp = intStamp;
-                    binMStamp = (eventStr).substr(8, 2);
+                    binMStamp = eventStr.substr(8, 2);
                     msStamp = ((binMStamp).charCodeAt(0)-64) * 32 + (binMStamp).charCodeAt(1);
                     evtStamp = intStamp + (0.001 * msStamp);
                     dataPos = (eventStr).indexOf("=")+1;
-                    evtType = (eventStr).substr(typePos, 1);
+                    evtType = eventStr.substr(typePos, 1);
                     evtData = "";
                     if (dataPos > 10) {
-                        evtData = (eventStr).substr(dataPos, eventLen-dataPos);
+                        evtData = eventStr.substr(dataPos, eventLen-dataPos);
                     }
                     if (this._eventCallback != null) {
                         this._eventCallback(this, evtStamp, evtType, evtData);

@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_network.js 59977 2024-03-18 15:02:32Z mvuilleu $
+ *  $Id: yocto_network.js 62273 2024-08-23 07:20:59Z seb $
  *
  *  Implements the high-level API for Network functions
  *
@@ -574,7 +574,7 @@ var YNetwork; // definition below
     /**
      * Returns the IP configuration of the network interface.
      *
-     * If the network interface is setup to use a static IP address, the string starts with "STATIC:" and
+     * If the network interface is set up to use a static IP address, the string starts with "STATIC:" and
      * is followed by three
      * parameters, separated by "/". The first is the device IP address, followed by the subnet mask
      * length, and finally the
@@ -605,7 +605,7 @@ var YNetwork; // definition below
     /**
      * Gets the IP configuration of the network interface.
      *
-     * If the network interface is setup to use a static IP address, the string starts with "STATIC:" and
+     * If the network interface is set up to use a static IP address, the string starts with "STATIC:" and
      * is followed by three
      * parameters, separated by "/". The first is the device IP address, followed by the subnet mask
      * length, and finally the
@@ -2161,7 +2161,7 @@ var YNetwork; // definition below
     }
 
     /**
-     * Setup periodic HTTP callbacks (simplified function).
+     * Set up periodic HTTP callbacks (simplified function).
      *
      * @param interval : a string representing the callback periodicity, expressed in
      *         seconds, minutes or hours, eg. "60s", "5m", "1h", "48h".

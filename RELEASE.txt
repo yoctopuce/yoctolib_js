@@ -1,15 +1,19 @@
-Javascript v1.10.60394
+Javascript v1.10.63797
 
-- Add support for Yocto-RFID
-- Add new secondsBefore attribute to wakeUpSchedule
-- Add support for multiplier in InputCapture
-- Add YThreshold class
-- Add position indicator in SnoopingRecords
-- Add snoopMessagesEx function to serial communication classes
-- Remove conflict between YEventCallback
-- Fix warning about malformed XML comment
-- Fix parsing of float on host where the decimal separator is not '.''
-- Fix cache latency on method YSensor.loadCalibrationPoints()
-- Fix handling of long strings in many parse situations (including json_get_key)
-- Fix crash in old js lib on unregisterhub for a doubly registered device (used in test protocol)
-- Fix a few typos
+(Libs)- commit newly generated HTML doc files (in particular cmdline improvements)
+(Libs)- commit newly generated files
+(Libs)- commit newly generated spectralsensor class
+(Libs)- remove reference to Yocto-MaxiIO-V2
+(Libs)- fix many typos, work on PurePython support
+(Misc)- pic24config:Fix LabView doc generation (broken in march)
+(Misc)- usbconfig:work on PurePython generator
+(Misc)- Update manpage
+(Misc)- hidden:simply further websocket bug
+(Misc)- virtualhub-for-web:fix handling of timed reports for specific devices where functionYdx does not match function index
+(Misc)- stdapi:reduce yocto-led luminosity when USB communication is not active
+(Misc)- analog.yc:fix yocto-spectral API
+(Misc)- stdtypes:add color val
+(Misc)- httpsupport:add color val
+(Misc)- stdtypes:fix ColorCoord
+(Misc)- stdtypes:fix typo
+(Misc)- yoctolib/embeddedui:improve handling of firmware update on YoctoHubs

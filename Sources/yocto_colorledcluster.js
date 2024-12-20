@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_colorledcluster.js 59977 2024-03-18 15:02:32Z mvuilleu $
+ *  $Id: yocto_colorledcluster.js 62273 2024-08-23 07:20:59Z seb $
  *
  *  Implements the high-level API for ColorLedCluster functions
  *
@@ -986,9 +986,9 @@ var YColorLedCluster; // definition below
         idx = 0;
         while (idx < listlen) {
             rgb = rgbList[idx];
-            buff[3*idx] = ((((rgb) >> (16))) & (255));
-            buff[3*idx+1] = ((((rgb) >> (8))) & (255));
-            buff[3*idx+2] = ((rgb) & (255));
+            buff[3*idx] = ((rgb >> 16) & 255);
+            buff[3*idx+1] = ((rgb >> 8) & 255);
+            buff[3*idx+2] = (rgb & 255);
             idx = idx + 1;
         }
 
@@ -1021,9 +1021,9 @@ var YColorLedCluster; // definition below
         idx = 0;
         while (idx < listlen) {
             rgb = rgbList[idx];
-            buff[3*idx] = ((((rgb) >> (16))) & (255));
-            buff[3*idx+1] = ((((rgb) >> (8))) & (255));
-            buff[3*idx+2] = ((rgb) & (255));
+            buff[3*idx] = ((rgb >> 16) & 255);
+            buff[3*idx+1] = ((rgb >> 8) & 255);
+            buff[3*idx+2] = (rgb & 255);
             idx = idx + 1;
         }
 
@@ -1092,9 +1092,9 @@ var YColorLedCluster; // definition below
         idx = 0;
         while (idx < listlen) {
             hsl = hslList[idx];
-            buff[3*idx] = ((((hsl) >> (16))) & (255));
-            buff[3*idx+1] = ((((hsl) >> (8))) & (255));
-            buff[3*idx+2] = ((hsl) & (255));
+            buff[3*idx] = ((hsl >> 16) & 255);
+            buff[3*idx+1] = ((hsl >> 8) & 255);
+            buff[3*idx+2] = (hsl & 255);
             idx = idx + 1;
         }
 
@@ -1147,9 +1147,9 @@ var YColorLedCluster; // definition below
         idx = 0;
         while (idx < listlen) {
             hsl = hslList[idx];
-            buff[3*idx] = ((((hsl) >> (16))) & (255));
-            buff[3*idx+1] = ((((hsl) >> (8))) & (255));
-            buff[3*idx+2] = ((hsl) & (255));
+            buff[3*idx] = ((hsl >> 16) & 255);
+            buff[3*idx+1] = ((hsl >> 8) & 255);
+            buff[3*idx+2] = (hsl & 255);
             idx = idx + 1;
         }
 
@@ -1302,7 +1302,7 @@ var YColorLedCluster; // definition below
             hl = (buff).charCodeAt(4*idx+1);
             lh = (buff).charCodeAt(4*idx+2);
             ll = (buff).charCodeAt(4*idx+3);
-            res.push(((hh) << (24))+((hl) << (16))+((lh) << (8))+ll);
+            res.push((hh << 24)+(hl << 16)+(lh << 8)+ll);
             idx = idx + 1;
         }
         return res;
@@ -1332,7 +1332,7 @@ var YColorLedCluster; // definition below
         while (idx < count) {
             lh = (buff).charCodeAt(2*idx);
             ll = (buff).charCodeAt(2*idx+1);
-            res.push(((lh) << (8))+ll);
+            res.push((lh << 8)+ll);
             idx = idx + 1;
         }
         return res;
@@ -1420,11 +1420,11 @@ var YColorLedCluster; // definition below
         var temp2;                  // int;
         var temp3;                  // int;
         var res;                    // int;
-        L = ((hslValue) & (0xff));
-        S = ((((hslValue) >> (8))) & (0xff));
-        H = ((((hslValue) >> (16))) & (0xff));
+        L = (hslValue & 0xff);
+        S = ((hslValue >> 8) & 0xff);
+        H = ((hslValue >> 16) & 0xff);
         if (S==0) {
-            res = ((L) << (16))+((L) << (8))+L;
+            res = (L << 16)+(L << 8)+L;
             return res;
         }
         if (L<=127) {
@@ -1462,7 +1462,7 @@ var YColorLedCluster; // definition below
         if (B>255) {
             B=255;
         }
-        res = ((R) << (16))+((G) << (8))+B;
+        res = (R << 16)+(G << 8)+B;
         return res;
     }
 

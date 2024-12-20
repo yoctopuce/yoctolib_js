@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_messagebox.js 59977 2024-03-18 15:02:32Z mvuilleu $
+ * $Id: yocto_messagebox.js 62273 2024-08-23 07:20:59Z seb $
  *
  * Implements the high-level API for MessageBox functions
  *
@@ -126,15 +126,15 @@ var YSms; // definition below
 
     function YSms_get_msgClass()
     {
-        if (((this._mclass) & (16)) == 0) {
+        if ((this._mclass & 16) == 0) {
             return -1;
         }
-        return ((this._mclass) & (3));
+        return (this._mclass & 3);
     }
 
     function YSms_get_dcs()
     {
-        return ((this._mclass) | ((((this._alphab) << (2)))));
+        return (this._mclass | ((this._alphab << 2)));
     }
 
     function YSms_get_timestamp()
@@ -168,7 +168,7 @@ var YSms; // definition below
         }
         if (this._alphab == 2) {
             // using UCS-2 alphabet
-            isosize = (((this._udata).length) >> (1));
+            isosize = (((this._udata).length) >> 1);
             isolatin = new Uint8Array(isosize);
             i = 0;
             while (i < isosize) {
@@ -193,7 +193,7 @@ var YSms; // definition below
         }
         if (this._alphab == 2) {
             // using UCS-2 alphabet
-            unisize = (((this._udata).length) >> (1));
+            unisize = (((this._udata).length) >> 1);
             res.length = 0;
             i = 0;
             while (i < unisize) {
@@ -329,8 +329,8 @@ var YSms; // definition below
 
     function YSms_set_dcs(val)
     {
-        this._alphab = (((((val) >> (2)))) & (3));
-        this._mclass = ((val) & (16+3));
+        this._alphab = (((val >> 2)) & 3);
+        this._mclass = (val & (16+3));
         this._npdu = 0;
         return YAPI_SUCCESS;
     }
@@ -495,14 +495,14 @@ var YSms; // definition below
             uni = val[i];
             if (uni >= 65536) {
                 surrogate = uni - 65536;
-                uni = (((((surrogate) >> (10))) & (1023))) + 55296;
-                udata[udatalen] = ((uni) >> (8));
-                udata[udatalen+1] = ((uni) & (255));
+                uni = (((surrogate >> 10) & 1023)) + 55296;
+                udata[udatalen] = (uni >> 8);
+                udata[udatalen+1] = (uni & 255);
                 udatalen = udatalen + 2;
-                uni = (((surrogate) & (1023))) + 56320;
+                uni = ((surrogate & 1023)) + 56320;
             }
-            udata[udatalen] = ((uni) >> (8));
-            udata[udatalen+1] = ((uni) & (255));
+            udata[udatalen] = (uni >> 8);
+            udata[udatalen+1] = (uni & 255);
             udatalen = udatalen + 2;
             i = i + 1;
         }
@@ -608,7 +608,7 @@ var YSms; // definition below
             res[0] = 0;
             return res;
         }
-        res = new Uint8Array(2+((numlen+1) >> (1)));
+        res = new Uint8Array(2+((numlen+1) >> 1));
         res[0] = numlen;
         if ((bytes).charCodeAt(0) == 43) {
             res[1] = 145;
@@ -621,18 +621,18 @@ var YSms; // definition below
         while (i < srclen) {
             val = (bytes).charCodeAt(i);
             if ((val >= 48) && (val < 58)) {
-                if (((numlen) & (1)) == 0) {
+                if ((numlen & 1) == 0) {
                     digit = val - 48;
                 } else {
-                    res[((numlen) >> (1))] = digit + 16*(val-48);
+                    res[(numlen >> 1)] = digit + 16*(val-48);
                 }
                 numlen = numlen + 1;
             }
             i = i + 1;
         }
         // pad with F if needed
-        if (((numlen) & (1)) != 0) {
-            res[((numlen) >> (1))] = digit + 240;
+        if ((numlen & 1) != 0) {
+            res[(numlen >> 1)] = digit + 240;
         }
         return res;
     }
@@ -651,7 +651,7 @@ var YSms; // definition below
             return "";
         }
         res = "";
-        addrType = (((addr).charCodeAt(ofs)) & (112));
+        addrType = ((addr).charCodeAt(ofs) & 112);
         if (addrType == 80) {
             // alphanumeric number
             siz = parseInt((4*siz) / (7));
@@ -668,8 +668,8 @@ var YSms; // definition below
                 } else {
                     byt = (addr).charCodeAt(ofs+rpos);
                     rpos = rpos + 1;
-                    gsm7[i] = ((carry) | ((((((byt) << (nbits)))) & (127))));
-                    carry = ((byt) >> ((7 - nbits)));
+                    gsm7[i] = (carry | (((byt << nbits)) & 127));
+                    carry = (byt >> (7 - nbits));
                     nbits = nbits + 1;
                 }
                 i = i + 1;
@@ -680,16 +680,16 @@ var YSms; // definition below
             if (addrType == 16) {
                 res = "+";
             }
-            siz = (((siz+1)) >> (1));
+            siz = ((siz+1) >> 1);
             i = 0;
             while (i < siz) {
                 byt = (addr).charCodeAt(ofs+i+1);
-                res = ""+res+""+(((byt) & (15))).toString(16).toLowerCase()+""+(((byt) >> (4))).toString(16).toLowerCase();
+                res = ""+res+""+((byt & 15)).toString(16).toLowerCase()+""+((byt >> 4)).toString(16).toLowerCase();
                 i = i + 1;
             }
             // remove padding digit if needed
-            if ((((addr).charCodeAt(ofs+siz)) >> (4)) == 15) {
-                res = (res).substr(0, (res).length-1);
+            if (((addr).charCodeAt(ofs+siz) >> 4) == 15) {
+                res = res.substr(0, (res).length-1);
             }
             return res;
         }
@@ -709,8 +709,8 @@ var YSms; // definition below
             res = new Uint8Array(0);
             return res;
         }
-        if ((exp).substr(0, 1) == "+") {
-            n = YAPI._atoi((exp).substr(1, explen-1));
+        if (exp.substr(0, 1) == "+") {
+            n = YAPI._atoi(exp.substr(1, explen-1));
             res = new Uint8Array(1);
             if (n > 30*86400) {
                 n = 192+parseInt(((n+6*86400)) / ((7*86400)));
@@ -731,9 +731,9 @@ var YSms; // definition below
             res[0] = n;
             return res;
         }
-        if ((exp).substr(4, 1) == "-" || (exp).substr(4, 1) == "/") {
+        if (exp.substr(4, 1) == "-" || exp.substr(4, 1) == "/") {
             // ignore century
-            exp = (exp).substr(2, explen-2);
+            exp = exp.substr(2, explen-2);
             explen = (exp).length;
         }
         expasc = exp;
@@ -747,7 +747,7 @@ var YSms; // definition below
                 if ((v2 >= 48) && (v2 < 58)) {
                     v1 = v1 - 48;
                     v2 = v2 - 48;
-                    res[n] = (((v2) << (4))) + v1;
+                    res[n] = ((v2 << 4)) + v1;
                     n = n + 1;
                     i = i + 1;
                 }
@@ -812,7 +812,7 @@ var YSms; // definition below
         i = 0;
         while ((i < siz) && (i < 6)) {
             byt = (exp).charCodeAt(ofs+i);
-            res = ""+res+""+(((byt) & (15))).toString(16).toLowerCase()+""+(((byt) >> (4))).toString(16).toLowerCase();
+            res = ""+res+""+((byt & 15)).toString(16).toLowerCase()+""+((byt >> 4)).toString(16).toLowerCase();
             if (i < 3) {
                 if (i < 2) {
                     res = ""+res+"-";
@@ -829,13 +829,13 @@ var YSms; // definition below
         if (siz == 7) {
             byt = (exp).charCodeAt(ofs+i);
             sign = "+";
-            if (((byt) & (8)) != 0) {
+            if ((byt & 8) != 0) {
                 byt = byt - 8;
                 sign = "-";
             }
-            byt = (10*(((byt) & (15)))) + (((byt) >> (4)));
-            hh = ""+String(Math.round(((byt) >> (2))));
-            ss = ""+String(Math.round(15*(((byt) & (3)))));
+            byt = (10*((byt & 15))) + ((byt >> 4));
+            hh = ""+String(Math.round((byt >> 2)));
+            ss = ""+String(Math.round(15*((byt & 3))));
             if ((hh).length<2) {
                 hh = "0"+hh;
             }
@@ -920,10 +920,10 @@ var YSms; // definition below
                     nbits = 7;
                 } else {
                     thi_b = (this._udata).charCodeAt(i);
-                    res[wpos] = ((carry) | ((((((thi_b) << (nbits)))) & (255))));
+                    res[wpos] = (carry | (((thi_b << nbits)) & 255));
                     wpos = wpos + 1;
                     nbits = nbits - 1;
-                    carry = ((thi_b) >> ((7 - nbits)));
+                    carry = (thi_b >> (7 - nbits));
                 }
                 i = i + 1;
             }
@@ -1148,7 +1148,7 @@ var YSms; // definition below
         rpos = 1+(pdu).charCodeAt(0);
         pdutyp = (pdu).charCodeAt(rpos);
         rpos = rpos + 1;
-        this._deliv = (((pdutyp) & (3)) == 0);
+        this._deliv = ((pdutyp & 3) == 0);
         if (this._deliv) {
             addrlen = (pdu).charCodeAt(rpos);
             rpos = rpos + 1;
@@ -1162,8 +1162,8 @@ var YSms; // definition below
             rpos = rpos + 1;
             this._dest = this.decodeAddress(pdu, rpos, addrlen);
             this._orig = "";
-            if ((((pdutyp) & (16))) != 0) {
-                if ((((pdutyp) & (8))) != 0) {
+            if (((pdutyp & 16)) != 0) {
+                if (((pdutyp & 8)) != 0) {
                     tslen = 7;
                 } else {
                     tslen= 1;
@@ -1172,13 +1172,13 @@ var YSms; // definition below
                 tslen = 0;
             }
         }
-        rpos = rpos + ((((addrlen+3)) >> (1)));
+        rpos = rpos + (((addrlen+3) >> 1));
         this._pid = (pdu).charCodeAt(rpos);
         rpos = rpos + 1;
         dcs = (pdu).charCodeAt(rpos);
         rpos = rpos + 1;
-        this._alphab = (((((dcs) >> (2)))) & (3));
-        this._mclass = ((dcs) & (16+3));
+        this._alphab = (((dcs >> 2)) & 3);
+        this._mclass = (dcs & (16+3));
         this._stamp = this.decodeTimeStamp(pdu, rpos, tslen);
         rpos = rpos + tslen;
         // parse user data (including udh)
@@ -1186,7 +1186,7 @@ var YSms; // definition below
         carry = 0;
         udlen = (pdu).charCodeAt(rpos);
         rpos = rpos + 1;
-        if (((pdutyp) & (64)) != 0) {
+        if ((pdutyp & 64) != 0) {
             udhsize = (pdu).charCodeAt(rpos);
             rpos = rpos + 1;
             this._udh = new Uint8Array(udhsize);
@@ -1203,7 +1203,7 @@ var YSms; // definition below
                 if (nbits > 0) {
                     thi_b = (pdu).charCodeAt(rpos);
                     rpos = rpos + 1;
-                    carry = ((thi_b) >> (nbits));
+                    carry = (thi_b >> nbits);
                     nbits = 8 - nbits;
                 }
             } else {
@@ -1227,8 +1227,8 @@ var YSms; // definition below
                 } else {
                     thi_b = (pdu).charCodeAt(rpos);
                     rpos = rpos + 1;
-                    this._udata[i] = ((carry) | ((((((thi_b) << (nbits)))) & (127))));
-                    carry = ((thi_b) >> ((7 - nbits)));
+                    this._udata[i] = (carry | (((thi_b << nbits)) & 127));
+                    carry = (thi_b >> (7 - nbits));
                     nbits = nbits + 1;
                 }
                 i = i + 1;
@@ -1939,10 +1939,10 @@ var YMessageBox; // definition below
             this.clearCache();
             bitmapStr = this.get_slotsBitmap();
             newBitmap = YAPI._hexStrToBin(bitmapStr);
-            idx = ((slot) >> (3));
+            idx = (slot >> 3);
             if (idx < (newBitmap).length) {
-                bitVal = ((1) << ((((slot) & (7)))));
-                if (((((newBitmap).charCodeAt(idx)) & (bitVal))) != 0) {
+                bitVal = (1 << ((slot & 7)));
+                if ((((newBitmap).charCodeAt(idx) & bitVal)) != 0) {
                     this._prevBitmapStr = "";
                     int_res = this.set_command("DS"+String(Math.round(slot)));
                     if (int_res < 0) {
@@ -1977,19 +1977,19 @@ var YMessageBox; // definition below
         cmdLen = (cmd).length;
         chrPos = (cmd).indexOf("#");
         while (chrPos >= 0) {
-            cmd = ""+(cmd).substr(0, chrPos)+""+String.fromCharCode(37)+"23"+(cmd).substr(chrPos+1, cmdLen-chrPos-1);
+            cmd = ""+cmd.substr(0, chrPos)+""+String.fromCharCode(37)+"23"+cmd.substr(chrPos+1, cmdLen-chrPos-1);
             cmdLen = cmdLen + 2;
             chrPos = (cmd).indexOf("#");
         }
         chrPos = (cmd).indexOf("+");
         while (chrPos >= 0) {
-            cmd = ""+(cmd).substr(0, chrPos)+""+String.fromCharCode(37)+"2B"+(cmd).substr(chrPos+1, cmdLen-chrPos-1);
+            cmd = ""+cmd.substr(0, chrPos)+""+String.fromCharCode(37)+"2B"+cmd.substr(chrPos+1, cmdLen-chrPos-1);
             cmdLen = cmdLen + 2;
             chrPos = (cmd).indexOf("+");
         }
         chrPos = (cmd).indexOf("=");
         while (chrPos >= 0) {
-            cmd = ""+(cmd).substr(0, chrPos)+""+String.fromCharCode(37)+"3D"+(cmd).substr(chrPos+1, cmdLen-chrPos-1);
+            cmd = ""+cmd.substr(0, chrPos)+""+String.fromCharCode(37)+"3D"+cmd.substr(chrPos+1, cmdLen-chrPos-1);
             cmdLen = cmdLen + 2;
             chrPos = (cmd).indexOf("=");
         }
@@ -2009,8 +2009,8 @@ var YMessageBox; // definition below
             if ((buff).charCodeAt(idx) == 64) {
                 // continuation detected
                 suffixlen = bufflen - idx;
-                cmd = "at.txt?cmd="+(buffstr).substr(buffstrlen - suffixlen, suffixlen);
-                buffstr = (buffstr).substr(0, buffstrlen - suffixlen);
+                cmd = "at.txt?cmd="+buffstr.substr(buffstrlen - suffixlen, suffixlen);
+                buffstr = buffstr.substr(0, buffstrlen - suffixlen);
                 waitMore = waitMore - 1;
             } else {
                 // request complete
@@ -2291,7 +2291,7 @@ var YMessageBox; // definition below
         }
         resstr = resbin;
         if ((resstr).length > reslen) {
-            resstr = (resstr).substr(0, reslen);
+            resstr = resstr.substr(0, reslen);
         }
         return resstr;
     }
@@ -2410,10 +2410,10 @@ var YMessageBox; // definition below
         while (pduIdx < this._pdus.length) {
             sms = this._pdus[pduIdx];
             slot = sms.get_slot();
-            idx = ((slot) >> (3));
+            idx = (slot >> 3);
             if (idx < (newBitmap).length) {
-                bitVal = ((1) << ((((slot) & (7)))));
-                if (((((newBitmap).charCodeAt(idx)) & (bitVal))) != 0) {
+                bitVal = (1 << ((slot & 7)));
+                if ((((newBitmap).charCodeAt(idx) & bitVal)) != 0) {
                     newArr.push(sms);
                     if (sms.get_concatCount() == 0) {
                         newMsg.push(sms);
@@ -2438,13 +2438,13 @@ var YMessageBox; // definition below
         // receive new messages
         slot = 0;
         while (slot < nslots) {
-            idx = ((slot) >> (3));
-            bitVal = ((1) << ((((slot) & (7)))));
+            idx = (slot >> 3);
+            bitVal = (1 << ((slot & 7)));
             prevBit = 0;
             if (idx < (prevBitmap).length) {
-                prevBit = (((prevBitmap).charCodeAt(idx)) & (bitVal));
+                prevBit = ((prevBitmap).charCodeAt(idx) & bitVal);
             }
-            if (((((newBitmap).charCodeAt(idx)) & (bitVal))) != 0) {
+            if ((((newBitmap).charCodeAt(idx) & bitVal)) != 0) {
                 if (prevBit == 0) {
                     sms = this.fetchPdu(slot);
                     newArr.push(sms);

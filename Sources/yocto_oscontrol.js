@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_oscontrol.js 59977 2024-03-18 15:02:32Z mvuilleu $
+ *  $Id: yocto_oscontrol.js 61337 2024-06-10 14:45:06Z seb $
  *
  *  Implements the high-level API for OsControl functions
  *
@@ -42,7 +42,7 @@ if(typeof YAPI == "undefined") { if(typeof yAPI != "undefined") window["YAPI"]=y
 //--- (YOsControl return codes)
 //--- (end of YOsControl return codes)
 //--- (YOsControl definitions)
-var Y_SHUTDOWNCOUNTDOWN_INVALID     = YAPI_INVALID_UINT;
+var Y_SHUTDOWNCOUNTDOWN_INVALID     = YAPI_INVALID_INT;
 //--- (end of YOsControl definitions)
 
 //--- (YOsControl class start)
@@ -65,7 +65,7 @@ var YOsControl; // definition below
         YFunction.call(this, str_func);
         this._className = 'OsControl';
 
-        this._shutdownCountdown              = Y_SHUTDOWNCOUNTDOWN_INVALID; // UInt31
+        this._shutdownCountdown              = Y_SHUTDOWNCOUNTDOWN_INVALID; // Int
         //--- (end of YOsControl constructor)
     }
 
@@ -196,6 +196,20 @@ var YOsControl; // definition below
     }
 
     /**
+     * Schedules an OS reboot after a given number of seconds.
+     *
+     * @param secBeforeReboot : number of seconds before reboot
+     *
+     * @return YAPI.SUCCESS when the call succeeds.
+     *
+     * On failure, throws an exception or returns a negative error code.
+     */
+    function YOsControl_reboot(secBeforeReboot)
+    {
+        return this.set_shutdownCountdown(0 - secBeforeReboot);
+    }
+
+    /**
      * Continues the enumeration of OS control started using yFirstOsControl().
      * Caution: You can't make any assumption about the returned OS control order.
      * If you want to find a specific OS control, use OsControl.findOsControl()
@@ -234,7 +248,7 @@ var YOsControl; // definition below
     //--- (YOsControl initialization)
     YOsControl = YFunction._Subclass(_YOsControl, {
         // Constants
-        SHUTDOWNCOUNTDOWN_INVALID   : YAPI_INVALID_UINT
+        SHUTDOWNCOUNTDOWN_INVALID   : YAPI_INVALID_INT
     }, {
         // Class methods
         FindOsControl               : YOsControl_FindOsControl,
@@ -248,6 +262,7 @@ var YOsControl; // definition below
         set_shutdownCountdown       : YOsControl_set_shutdownCountdown,
         setShutdownCountdown        : YOsControl_set_shutdownCountdown,
         shutdown                    : YOsControl_shutdown,
+        reboot                      : YOsControl_reboot,
         nextOsControl               : YOsControl_nextOsControl,
         _parseAttr                  : YOsControl_parseAttr
     });

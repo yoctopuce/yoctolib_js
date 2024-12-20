@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_steppermotor.js 59977 2024-03-18 15:02:32Z mvuilleu $
+ *  $Id: yocto_steppermotor.js 62273 2024-08-23 07:20:59Z seb $
  *
  *  Implements the high-level API for StepperMotor functions
  *
@@ -268,7 +268,7 @@ var YStepperMotor; // definition below
 
     /**
      * Changes the current logical motor position, measured in steps.
-     * This command does not cause any motor move, as its purpose is only to setup
+     * This command does not cause any motor move, as its purpose is only to set up
      * the origin of the position counter. The fractional part of the position,
      * that corresponds to the physical position of the rotor, is not changed.
      * To trigger a motor move, use methods moveTo() or moveRel()
@@ -1122,7 +1122,7 @@ var YStepperMotor; // definition below
         var retBin;                 // bin;
         var res;                    // int;
         id = this.get_functionId();
-        id = (id).substr(12, 1);
+        id = id.substr(12, 1);
         url = "cmd.txt?"+id+"="+command;
         //may throw an exception
         retBin = this._download(url);

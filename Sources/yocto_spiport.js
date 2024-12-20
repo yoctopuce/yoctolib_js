@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_spiport.js 59977 2024-03-18 15:02:32Z mvuilleu $
+ *  $Id: yocto_spiport.js 62273 2024-08-23 07:20:59Z seb $
  *
  *  Implements the high-level API for SpiPort functions
  *
@@ -1409,7 +1409,7 @@ var YSpiPort; // definition below
         databin = this._download("rxcnt.bin?pos="+String(Math.round(this._rxptr)));
         availPosStr = databin;
         atPos = (availPosStr).indexOf("@");
-        res = YAPI._atoi((availPosStr).substr(0, atPos));
+        res = YAPI._atoi(availPosStr.substr(0, atPos));
         return res;
     }
 
@@ -1423,7 +1423,7 @@ var YSpiPort; // definition below
         databin = this._download("rxcnt.bin?pos="+String(Math.round(this._rxptr)));
         availPosStr = databin;
         atPos = (availPosStr).indexOf("@");
-        res = YAPI._atoi((availPosStr).substr(atPos+1, (availPosStr).length-atPos-1));
+        res = YAPI._atoi(availPosStr.substr(atPos+1, (availPosStr).length-atPos-1));
         return res;
     }
 
@@ -1684,11 +1684,11 @@ var YSpiPort; // definition below
         if (bufflen < 100) {
             return this.sendCommand("$"+hexString);
         }
-        bufflen = ((bufflen) >> (1));
+        bufflen = (bufflen >> 1);
         buff = new Uint8Array(bufflen);
         idx = 0;
         while (idx < bufflen) {
-            hexb = parseInt((hexString).substr(2 * idx, 2), 16);
+            hexb = parseInt(hexString.substr(2 * idx, 2), 16);
             buff[idx] = hexb;
             idx = idx + 1;
         }
@@ -1835,7 +1835,7 @@ var YSpiPort; // definition below
             bufflen = bufflen - 1;
         }
         this._rxptr = endpos;
-        res = (buff).substr(0, bufflen);
+        res = buff.substr(0, bufflen);
         return res;
     }
 

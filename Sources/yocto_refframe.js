@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_refframe.js 59977 2024-03-18 15:02:32Z mvuilleu $
+ *  $Id: yocto_refframe.js 62273 2024-08-23 07:20:59Z seb $
  *
  *  Implements the high-level API for RefFrame functions
  *
@@ -73,7 +73,7 @@ var Y_CALIBRATIONPARAM_INVALID      = YAPI_INVALID_STRING;
  * YRefFrame Class: 3D reference frame configuration interface, available for instance in the
  * Yocto-3D-V2 or the Yocto-Inclinometer
  *
- * The YRefFrame class is used to setup the base orientation of the Yoctopuce inertial
+ * The YRefFrame class is used to set up the base orientation of the Yoctopuce inertial
  * sensors. Thanks to this, orientation functions relative to the earth surface plane
  * can use the proper reference frame. For some devices, the class also implements a
  * tridimensional sensor calibration process, which can compensate for local variations
@@ -192,7 +192,7 @@ var YRefFrame; // definition below
      * indicated by the compass is the difference between the measured magnetic
      * heading and the reference bearing indicated here.
      *
-     * For instance, if you setup as reference bearing the value of the earth
+     * For instance, if you set up as reference bearing the value of the earth
      * magnetic declination, the compass will provide the orientation relative
      * to the geographic North.
      *
@@ -452,7 +452,7 @@ var YRefFrame; // definition below
         if (position < 0) {
             return Y_MOUNTPOSITION_INVALID;
         }
-        return ((position) >> (2));
+        return (position >> 2);
     }
 
     /**
@@ -477,7 +477,7 @@ var YRefFrame; // definition below
         if (position < 0) {
             return Y_MOUNTORIENTATION_INVALID;
         }
-        return ((position) & (3));
+        return (position & 3);
     }
 
     /**
@@ -508,7 +508,7 @@ var YRefFrame; // definition below
     function YRefFrame_set_mountPosition(position,orientation)
     {
         var mixedPos;               // int;
-        mixedPos = ((position) << (2)) + orientation;
+        mixedPos = (position << 2) + orientation;
         return this.set_mountPos(mixedPos);
     }
 
@@ -647,7 +647,7 @@ var YRefFrame; // definition below
         this._calibStageProgress = 0;
         this._calibProgress = 1;
         this._calibInternalPos = 0;
-        this._calibPrevTick = ((YAPI.GetTickCount()) & (0x7FFFFFFF));
+        this._calibPrevTick = ((YAPI.GetTickCount()) & 0x7FFFFFFF);
         this._calibOrient.length = 0;
         this._calibDataAccX.length = 0;
         this._calibDataAccY.length = 0;
@@ -697,14 +697,14 @@ var YRefFrame; // definition below
             return YAPI_SUCCESS;
         }
         // make sure we leave at least 160 ms between samples
-        currTick =  ((YAPI.GetTickCount()) & (0x7FFFFFFF));
-        if (((currTick - this._calibPrevTick) & (0x7FFFFFFF)) < 160) {
+        currTick =  ((YAPI.GetTickCount()) & 0x7FFFFFFF);
+        if (((currTick - this._calibPrevTick) & 0x7FFFFFFF) < 160) {
             return YAPI_SUCCESS;
         }
         // load current accelerometer values, make sure we are on a straight angle
         // (default timeout to 0,5 sec without reading measure when out of range)
         this._calibStageHint = "Set down the device on a steady horizontal surface";
-        this._calibPrevTick = ((currTick + 500) & (0x7FFFFFFF));
+        this._calibPrevTick = ((currTick + 500) & 0x7FFFFFFF);
         jsonData = this._download("api/accelerometer.json");
         xVal = YAPI._atoi(this._json_get_key(jsonData, "xValue")) / 65536.0;
         yVal = YAPI._atoi(this._json_get_key(jsonData, "yValue")) / 65536.0;
@@ -802,7 +802,7 @@ var YRefFrame; // definition below
         this._calibStage = this._calibStage + 1;
         if (this._calibStage < 7) {
             this._calibStageHint = "Turn the device on another face";
-            this._calibPrevTick = ((currTick + 500) & (0x7FFFFFFF));
+            this._calibPrevTick = ((currTick + 500) & 0x7FFFFFFF);
             this._calibStageProgress = 0;
             this._calibInternalPos = 0;
             return YAPI_SUCCESS;
@@ -891,8 +891,8 @@ var YRefFrame; // definition below
         }
         // make sure we don't start before previous calibration is cleared
         if (this._calibStage == 1) {
-            currTick = ((YAPI.GetTickCount()) & (0x7FFFFFFF));
-            currTick = ((currTick - this._calibPrevTick) & (0x7FFFFFFF));
+            currTick = ((YAPI.GetTickCount()) & 0x7FFFFFFF);
+            currTick = ((currTick - this._calibPrevTick) & 0x7FFFFFFF);
             if (currTick < 1600) {
                 this._calibStageHint = "Set down the device on a steady horizontal surface";
                 this._calibStageProgress = parseInt((currTick) / (40));
@@ -1050,9 +1050,9 @@ var YRefFrame; // definition below
             }
         }
         if (scaleExp > 0) {
-            scaleX = ((scaleX) >> (scaleExp));
-            scaleY = ((scaleY) >> (scaleExp));
-            scaleZ = ((scaleZ) >> (scaleExp));
+            scaleX = (scaleX >> scaleExp);
+            scaleY = (scaleY >> scaleExp);
+            scaleZ = (scaleZ >> scaleExp);
         }
         if (scaleX < 0) {
             scaleX = scaleX + 1024;
@@ -1063,8 +1063,8 @@ var YRefFrame; // definition below
         if (scaleZ < 0) {
             scaleZ = scaleZ + 1024;
         }
-        scaleLo = ((((scaleY) & (15))) << (12)) + ((scaleX) << (2)) + scaleExp;
-        scaleHi = ((scaleZ) << (6)) + ((scaleY) >> (4));
+        scaleLo = ((scaleY & 15) << 12) + (scaleX << 2) + scaleExp;
+        scaleHi = (scaleZ << 6) + (scaleY >> 4);
         // Save calibration parameters
         newcalib = "5,"+String(Math.round(shiftX))+","+String(Math.round(shiftY))+","+String(Math.round(shiftZ))+","+String(Math.round(scaleLo))+","+String(Math.round(scaleHi));
         this._calibStage = 0;

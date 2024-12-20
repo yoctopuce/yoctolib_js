@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_api.js 59977 2024-03-18 15:02:32Z mvuilleu $
+ * $Id: yocto_api.js 62273 2024-08-23 07:20:59Z seb $
  *
  * High-level programming interface, common to all modules
  *
@@ -2682,7 +2682,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
      */
     function YAPI_GetAPIVersion()
     {
-        return "1.10.60394";
+        return "1.10.63797";
     }
 
     /**
@@ -2718,7 +2718,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
      *
      * From an operating system standpoint, it is generally not required to call
      * this function since the OS will automatically free allocated resources
-     * once your program is completed. However there are two situations when
+     * once your program is completed. However, there are two situations when
      * you may really want to use that function:
      *
      * - Free all dynamically allocated memory blocks in order to
@@ -2838,7 +2838,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
     }
 
     /**
-     * Setup the Yoctopuce library to use modules connected on a given machine. Idealy this
+     * Set up the Yoctopuce library to use modules connected on a given machine. Idealy this
      * call will be made once at the begining of your application.  The
      * parameter will determine how the API will work. Use the following values:
      *
@@ -2870,7 +2870,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
      * while trying to access the USB modules. In particular, this means
      * that you must stop the VirtualHub software before starting
      * an application that uses direct USB access. The workaround
-     * for this limitation is to setup the library to use the VirtualHub
+     * for this limitation is to set up the library to use the VirtualHub
      * rather than direct USB access.
      *
      * If access control has been activated on the hub, virtual or not, you want to
@@ -3084,7 +3084,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
 
 
     /**
-     * Setup the Yoctopuce library to no more use modules connected on a previously
+     * Set up the Yoctopuce library to no more use modules connected on a previously
      * registered machine with RegisterHub.
      *
      * @param url : a string containing either "usb" or the
@@ -3357,7 +3357,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
     /**
      * Checks if a given string is valid as logical name for a module or a function.
      * A valid logical name has a maximum of 19 characters, all among
-     * A..Z, a..z, 0..9, _, and -.
+     * A...Z, a...z, 0...9, _, and -.
      * If you try to configure a logical name with an incorrect string,
      * the invalid characters are ignored.
      *
@@ -5330,9 +5330,9 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
         var leng;                   // int;
         err = this._settings;
         leng = (err).length;
-        if ((leng >= 6) && ("error:" == (err).substr(0, 6))) {
+        if ((leng >= 6) && ("error:" == err.substr(0, 6))) {
             this._progress = -1;
-            this._progress_msg = (err).substr(6, leng - 6);
+            this._progress_msg = err.substr(6, leng - 6);
         } else {
             this._progress = 0;
             this._progress_c = 0;
@@ -5423,15 +5423,15 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
         var fRef;                   // float;
         var iCalib = [];            // intArr;
         // decode sequence header to extract data
-        this._runNo = encoded[0] + (((encoded[1]) << (16)));
-        this._utcStamp = encoded[2] + (((encoded[3]) << (16)));
+        this._runNo = encoded[0] + ((encoded[1] << 16));
+        this._utcStamp = encoded[2] + ((encoded[3] << 16));
         val = encoded[4];
-        this._isAvg = (((val) & (0x100)) == 0);
-        samplesPerHour = ((val) & (0xff));
-        if (((val) & (0x100)) != 0) {
+        this._isAvg = ((val & 0x100) == 0);
+        samplesPerHour = (val & 0xff);
+        if ((val & 0x100) != 0) {
             samplesPerHour = samplesPerHour * 3600;
         } else {
-            if (((val) & (0x200)) != 0) {
+            if ((val & 0x200) != 0) {
                 samplesPerHour = samplesPerHour * 60;
             }
         }
@@ -5503,9 +5503,9 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
         }
         // decode min/avg/max values for the sequence
         if (this._nRows > 0) {
-            this._avgVal = this._decodeAvg(encoded[8] + (((((encoded[9]) ^ (0x8000))) << (16))), 1);
-            this._minVal = this._decodeVal(encoded[10] + (((encoded[11]) << (16))));
-            this._maxVal = this._decodeVal(encoded[12] + (((encoded[13]) << (16))));
+            this._avgVal = this._decodeAvg(encoded[8] + (((encoded[9] ^ 0x8000) << 16)), 1);
+            this._minVal = this._decodeVal(encoded[10] + ((encoded[11] << 16)));
+            this._maxVal = this._decodeVal(encoded[12] + ((encoded[13] << 16)));
         }
         return 0;
     }
@@ -5534,9 +5534,9 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
                     dat.push(NaN);
                     dat.push(NaN);
                 } else {
-                    dat.push(this._decodeVal(udat[idx + 2] + (((udat[idx + 3]) << (16)))));
-                    dat.push(this._decodeAvg(udat[idx] + (((((udat[idx + 1]) ^ (0x8000))) << (16))), 1));
-                    dat.push(this._decodeVal(udat[idx + 4] + (((udat[idx + 5]) << (16)))));
+                    dat.push(this._decodeVal(udat[idx + 2] + (((udat[idx + 3]) << 16))));
+                    dat.push(this._decodeAvg(udat[idx] + ((((udat[idx + 1]) ^ 0x8000) << 16)), 1));
+                    dat.push(this._decodeVal(udat[idx + 4] + (((udat[idx + 5]) << 16))));
                 }
                 idx = idx + 6;
                 this._values.push(dat.slice());
@@ -5547,7 +5547,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
                 if ((udat[idx] == 65535) && (udat[idx + 1] == 65535)) {
                     dat.push(NaN);
                 } else {
-                    dat.push(this._decodeAvg(udat[idx] + (((((udat[idx + 1]) ^ (0x8000))) << (16))), 1));
+                    dat.push(this._decodeAvg(udat[idx] + ((((udat[idx + 1]) ^ 0x8000) << 16)), 1));
                 }
                 this._values.push(dat.slice());
                 idx = idx + 2;
@@ -6772,7 +6772,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
  * The YSensor class is the parent class for all Yoctopuce sensor types. It can be
  * used to read the current value and unit of any sensor, read the min/max
  * value, configure autonomous recording frequency and access recorded data.
- * It also provide a function to register a callback invoked each time the
+ * It also provides a function to register a callback invoked each time the
  * observed value changes, or at a predefined interval. Using this class rather
  * than a specific subclass makes it possible to create generic applications
  * that work with any Yoctopuce sensor, even those that do not yet exist.
@@ -8054,7 +8054,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
                 poww = poww * 0x100;
                 i = i + 1;
             }
-            if (((byteVal) & (0x80)) != 0) {
+            if ((byteVal & 0x80) != 0) {
                 avgRaw = avgRaw - poww;
             }
             avgVal = avgRaw / 1000.0;
@@ -8067,7 +8067,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
             maxVal = avgVal;
         } else {
             // averaged report: avg,avg-min,max-avg
-            sublen = 1 + ((report[1]) & (3));
+            sublen = 1 + (report[1] & 3);
             poww = 1;
             avgRaw = 0;
             byteVal = 0;
@@ -8079,10 +8079,10 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
                 i = i + 1;
                 sublen = sublen - 1;
             }
-            if (((byteVal) & (0x80)) != 0) {
+            if ((byteVal & 0x80) != 0) {
                 avgRaw = avgRaw - poww;
             }
-            sublen = 1 + ((((report[1]) >> (2))) & (3));
+            sublen = 1 + ((report[1] >> 2) & 3);
             poww = 1;
             difRaw = 0;
             while ((sublen > 0) && (i < report.length)) {
@@ -8093,7 +8093,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
                 sublen = sublen - 1;
             }
             minRaw = avgRaw - difRaw;
-            sublen = 1 + ((((report[1]) >> (4))) & (3));
+            sublen = 1 + ((report[1] >> 4) & 3);
             poww = 1;
             difRaw = 0;
             while ((sublen > 0) && (i < report.length)) {
@@ -10576,7 +10576,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
                 url = "api/"+ templist[ii_0]+"/sensorType";
                 t_type = this._download(url);
                 if (t_type == "RES_NTC" || t_type == "RES_LINEAR") {
-                    id = ( templist[ii_0]).substr(11, ( templist[ii_0]).length - 11);
+                    id =  templist[ii_0].substr(11, ( templist[ii_0]).length - 11);
                     if (id == "") {
                         id = "1";
                     }
@@ -10972,7 +10972,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
                 param = 30 + calibType;
                 i = 0;
                 while (i < calibData.length) {
-                    if (((i) & (1)) > 0) {
+                    if ((i & 1) > 0) {
                         param = param + ":";
                     } else {
                         param = param + " ";
@@ -11099,9 +11099,9 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
                 this._throw(YAPI_INVALID_ARGUMENT, "Invalid settings");
                 return YAPI_INVALID_ARGUMENT;
             }
-            jpath = (each_str).substr(0, eqpos);
+            jpath = each_str.substr(0, eqpos);
             eqpos = eqpos + 1;
-            value = (each_str).substr(eqpos, leng - eqpos);
+            value = each_str.substr(eqpos, leng - eqpos);
             old_jpath.push(jpath);
             old_jpath_len.push((jpath).length);
             old_val_arr.push(value);
@@ -11127,9 +11127,9 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
                 this._throw(YAPI_INVALID_ARGUMENT, "Invalid settings");
                 return YAPI_INVALID_ARGUMENT;
             }
-            jpath = (each_str).substr(0, eqpos);
+            jpath = each_str.substr(0, eqpos);
             eqpos = eqpos + 1;
-            value = (each_str).substr(eqpos, leng - eqpos);
+            value = each_str.substr(eqpos, leng - eqpos);
             new_jpath.push(jpath);
             new_jpath_len.push((jpath).length);
             new_val_arr.push(value);
@@ -11142,9 +11142,9 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
             if ((cpos < 0) || (leng == 0)) {
                 continue;
             }
-            fun = (njpath).substr(0, cpos);
+            fun = njpath.substr(0, cpos);
             cpos = cpos + 1;
-            attr = (njpath).substr(cpos, leng - cpos);
+            attr = njpath.substr(cpos, leng - cpos);
             do_update = true;
             if (fun == "services") {
                 do_update = false;
@@ -11711,7 +11711,7 @@ function yInitAPI(mode,errmsg)
  *
  * From an operating system standpoint, it is generally not required to call
  * this function since the OS will automatically free allocated resources
- * once your program is completed. However there are two situations when
+ * once your program is completed. However, there are two situations when
  * you may really want to use that function:
  *
  * - Free all dynamically allocated memory blocks in order to
@@ -11752,7 +11752,7 @@ function yEnableExceptions()
 }
 
 /**
- * Setup the Yoctopuce library to use modules connected on a given machine. Idealy this
+ * Set up the Yoctopuce library to use modules connected on a given machine. Idealy this
  * call will be made once at the begining of your application.  The
  * parameter will determine how the API will work. Use the following values:
  *
@@ -11784,7 +11784,7 @@ function yEnableExceptions()
  * while trying to access the USB modules. In particular, this means
  * that you must stop the VirtualHub software before starting
  * an application that uses direct USB access. The workaround
- * for this limitation is to setup the library to use the VirtualHub
+ * for this limitation is to set up the library to use the VirtualHub
  * rather than direct USB access.
  *
  * If access control has been activated on the hub, virtual or not, you want to
@@ -11831,7 +11831,7 @@ function yPreregisterHub(url,errmsg)
 }
 
 /**
- * Setup the Yoctopuce library to no more use modules connected on a previously
+ * Set up the Yoctopuce library to no more use modules connected on a previously
  * registered machine with RegisterHub.
  *
  * @param url : a string containing either "usb" or the
@@ -11977,7 +11977,7 @@ function yGetTickCount()
 /**
  * Checks if a given string is valid as logical name for a module or a function.
  * A valid logical name has a maximum of 19 characters, all among
- * A..Z, a..z, 0..9, _, and -.
+ * A...Z, a...z, 0...9, _, and -.
  * If you try to configure a logical name with an incorrect string,
  * the invalid characters are ignored.
  *

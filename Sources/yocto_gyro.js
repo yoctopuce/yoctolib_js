@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_gyro.js 59977 2024-03-18 15:02:32Z mvuilleu $
+ * $Id: yocto_gyro.js 62273 2024-08-23 07:20:59Z seb $
  *
  * Implements the high-level API for Gyro functions
  *
@@ -565,8 +565,8 @@ var YGyro; // definition below
     {
         var now_stamp;              // int;
         var age_ms;                 // int;
-        now_stamp = ((YAPI.GetTickCount()) & (0x7FFFFFFF));
-        age_ms = (((now_stamp - this._qt_stamp)) & (0x7FFFFFFF));
+        now_stamp = ((YAPI.GetTickCount()) & 0x7FFFFFFF);
+        age_ms = ((now_stamp - this._qt_stamp) & 0x7FFFFFFF);
         if ((age_ms >= 10) || (this._qt_stamp == 0)) {
             if (this.load(10) != YAPI_SUCCESS) {
                 return YAPI_DEVICE_NOT_FOUND;
@@ -852,7 +852,7 @@ var YGyro; // definition below
         if (qtIndex < 4) {
             return 0;
         }
-        this._qt_stamp = ((YAPI.GetTickCount()) & (0x7FFFFFFF));
+        this._qt_stamp = ((YAPI.GetTickCount()) & 0x7FFFFFFF);
         if (this._quatCallback != null) {
             this._quatCallback(this, this._w, this._x, this._y, this._z);
         }
