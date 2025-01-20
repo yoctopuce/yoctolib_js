@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_api.js 62273 2024-08-23 07:20:59Z seb $
+ * $Id: yocto_api.js 64093 2025-01-08 10:53:52Z seb $
  *
  * High-level programming interface, common to all modules
  *
@@ -2682,7 +2682,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
      */
     function YAPI_GetAPIVersion()
     {
-        return "1.10.63797";
+        return "1.10.64286";
     }
 
     /**
@@ -6057,34 +6057,34 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
         summaryStopMs = YAPI_MIN_DOUBLE;
 
         // Parse complete streams
-        for (ii_0 in  this._streams) {
+        for (ii_0 in this._streams) {
             if(ii_0 =='indexOf') continue; // IE8 Don'tEnum bug
-            streamStartTimeMs = Math.round( this._streams[ii_0].get_realStartTimeUTC() * 1000);
-            streamDuration =  this._streams[ii_0].get_realDuration();
+            streamStartTimeMs = Math.round(this._streams[ii_0].get_realStartTimeUTC() * 1000);
+            streamDuration = this._streams[ii_0].get_realDuration();
             streamEndTimeMs = streamStartTimeMs + Math.round(streamDuration * 1000);
             if ((streamStartTimeMs >= this._startTimeMs) && ((this._endTimeMs == 0) || (streamEndTimeMs <= this._endTimeMs))) {
                 // stream that are completely inside the dataset
-                previewMinVal =  this._streams[ii_0].get_minValue();
-                previewAvgVal =  this._streams[ii_0].get_averageValue();
-                previewMaxVal =  this._streams[ii_0].get_maxValue();
+                previewMinVal = this._streams[ii_0].get_minValue();
+                previewAvgVal = this._streams[ii_0].get_averageValue();
+                previewMaxVal = this._streams[ii_0].get_maxValue();
                 previewStartMs = streamStartTimeMs;
                 previewStopMs = streamEndTimeMs;
                 previewDuration = streamDuration;
             } else {
                 // stream that are partially in the dataset
                 // we need to parse data to filter value outside the dataset
-                if (!( this._streams[ii_0]._wasLoaded())) {
-                    url =  this._streams[ii_0]._get_url();
+                if (!(this._streams[ii_0]._wasLoaded())) {
+                    url = this._streams[ii_0]._get_url();
                     data = this._parent._download(url);
                     this._streams[ii_0]._parseStream(data);
                 }
-                dataRows =  this._streams[ii_0].get_dataRows();
+                dataRows = this._streams[ii_0].get_dataRows();
                 if (dataRows.length == 0) {
                     return this.get_progress();
                 }
                 tim = streamStartTimeMs;
-                fitv = Math.round( this._streams[ii_0].get_firstDataSamplesInterval() * 1000);
-                itv = Math.round( this._streams[ii_0].get_dataSamplesInterval() * 1000);
+                fitv = Math.round(this._streams[ii_0].get_firstDataSamplesInterval() * 1000);
+                itv = Math.round(this._streams[ii_0].get_dataSamplesInterval() * 1000);
                 nCols = dataRows[0].length;
                 minCol = 0;
                 if (nCols > 2) {
@@ -6404,7 +6404,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
         if (this._progress >= this._streams.length) {
             return 100;
         }
-        return parseInt((1 + (1 + this._progress) * 98 ) / ((1 + this._streams.length)));
+        return parseInt((1 + (1 + this._progress) * 98) / ((1 + this._streams.length)));
     }
 
     /**
@@ -10570,19 +10570,19 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
         ext_settings = ", \"extras\":[";
         templist = this.get_functionIds("Temperature");
         sep = "";
-        for (ii_0 in  templist) {
+        for (ii_0 in templist) {
             if(ii_0 =='indexOf') continue; // IE8 Don'tEnum bug
             if (YAPI._atoi(this.get_firmwareRelease()) > 9000) {
-                url = "api/"+ templist[ii_0]+"/sensorType";
+                url = "api/"+templist[ii_0]+"/sensorType";
                 t_type = this._download(url);
                 if (t_type == "RES_NTC" || t_type == "RES_LINEAR") {
-                    id =  templist[ii_0].substr(11, ( templist[ii_0]).length - 11);
+                    id = templist[ii_0].substr(11, (templist[ii_0]).length - 11);
                     if (id == "") {
                         id = "1";
                     }
                     temp_data_bin = this._download("extra.json?page="+id);
                     if ((temp_data_bin).length > 0) {
-                        item = ""+sep+"{\"fid\":\""+ templist[ii_0]+"\", \"json\":"+temp_data_bin+"}\n";
+                        item = ""+sep+"{\"fid\":\""+templist[ii_0]+"\", \"json\":"+temp_data_bin+"}\n";
                         ext_settings = ext_settings + item;
                         sep = ",";
                     }
@@ -10597,9 +10597,9 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
             }
             filelist = this._json_get_array(json);
             sep = "";
-            for (ii_1 in  filelist) {
+            for (ii_1 in filelist) {
                 if(ii_1 =='indexOf') continue; // IE8 Don'tEnum bug
-                name = this._json_get_key( filelist[ii_1], "name");
+                name = this._json_get_key(filelist[ii_1], "name");
                 if (((name).length > 0) && !(name == "startupConf.json")) {
                     file_data_bin = this._download(this._escapeAttr(name));
                     file_data = YAPI._bytesToHexStr(file_data_bin);
@@ -10645,11 +10645,11 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
         var functionId;             // str;
         var data;                   // str;
         extras = this._json_get_array(jsonExtra);
-        for (ii_0 in  extras) {
+        for (ii_0 in extras) {
             if(ii_0 =='indexOf') continue; // IE8 Don'tEnum bug
-            functionId = this._get_json_path( extras[ii_0], "fid");
+            functionId = this._get_json_path(extras[ii_0], "fid");
             functionId = this._decode_json_string(functionId);
-            data = this._get_json_path( extras[ii_0], "json");
+            data = this._get_json_path(extras[ii_0], "json");
             if (this.hasFunction(functionId)) {
                 this.loadThermistorExtra(functionId, data);
             }
@@ -10704,11 +10704,11 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
             }
             json_files = this._get_json_path(json, "files");
             files = this._json_get_array(json_files);
-            for (ii_0 in  files) {
+            for (ii_0 in files) {
                 if(ii_0 =='indexOf') continue; // IE8 Don'tEnum bug
-                name = this._get_json_path( files[ii_0], "name");
+                name = this._get_json_path(files[ii_0], "name");
                 name = this._decode_json_string(name);
-                data = this._get_json_path( files[ii_0], "data");
+                data = this._get_json_path(files[ii_0], "data");
                 data = this._decode_json_string(data);
                 if (name == "") {
                     fuperror = fuperror + 1;
@@ -11068,6 +11068,8 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
         var fun;                    // str;
         var attr;                   // str;
         var value;                  // str;
+        var old_serial;             // str;
+        var new_serial;             // str;
         var url;                    // str;
         var tmp;                    // str;
         var new_calib;              // str;
@@ -11085,6 +11087,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
         if (!(tmp == "")) {
             settings = tmp;
         }
+        old_serial = "";
         oldval = "";
         newval = "";
         old_json_flat = this._flattenJsonStruct(settings);
@@ -11105,6 +11108,9 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
             old_jpath.push(jpath);
             old_jpath_len.push((jpath).length);
             old_val_arr.push(value);
+            if (jpath == "module/serialNumber") {
+                old_serial = value;
+            }
         }
 
         try {
@@ -11113,6 +11119,10 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
             // retry silently after a short wait
             YAPI.Sleep(500);
             actualSettings = this._download("api.json");
+        }
+        new_serial = this.get_serialNumber();
+        if (old_serial == new_serial || old_serial == "") {
+            old_serial = "_NO_SERIAL_FILTER_";
         }
         actualSettings = this._flattenJsonStruct(actualSettings);
         new_dslist = this._json_get_array(actualSettings);
@@ -11268,14 +11278,14 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
             }
             if (do_update) {
                 do_update = false;
-                newval = new_val_arr[i];
                 j = 0;
                 found = false;
+                newval = new_val_arr[i];
                 while ((j < old_jpath.length) && !(found)) {
                     if ((new_jpath_len[i] == old_jpath_len[j]) && (new_jpath[i] == old_jpath[j])) {
                         found = true;
                         oldval = old_val_arr[j];
-                        if (!(newval == oldval)) {
+                        if (!(newval == oldval) && !(oldval == old_serial)) {
                             do_update = true;
                         }
                     }

@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_rangefinder.js 62273 2024-08-23 07:20:59Z seb $
+ *  $Id: yocto_rangefinder.js 64093 2025-01-08 10:53:52Z seb $
  *
  *  Implements the high-level API for RangeFinder functions
  *
@@ -541,7 +541,7 @@ var YRangeFinder; // definition below
      * Triggers a sensor calibration according to the current ambient temperature. That
      * calibration process needs no physical interaction with the sensor. It is performed
      * automatically at device startup, but it is recommended to start it again when the
-     * temperature delta since the latest calibration exceeds 8°C.
+     * temperature delta since the latest calibration exceeds 8 degrees Celsius.
      *
      * @return YAPI.SUCCESS if the call succeeds.
      *         On failure, throws an exception or returns a negative error code.

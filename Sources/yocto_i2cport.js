@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_i2cport.js 62273 2024-08-23 07:20:59Z seb $
+ *  $Id: yocto_i2cport.js 64093 2025-01-08 10:53:52Z seb $
  *
  *  Implements the high-level API for I2cPort functions
  *
@@ -1670,8 +1670,7 @@ var YI2cPort; // definition below
     }
 
     /**
-     * Sends a text-encoded I2C code stream to the I2C bus, and terminate
-     * the message en relâchant le bus.
+     * Sends a text-encoded I2C code stream to the I2C bus, and release the bus.
      * An I2C code stream is a string made of hexadecimal data bytes,
      * but that may also include the I2C state transitions code:
      * "{S}" to emit a start condition,

@@ -42,11 +42,23 @@ if(typeof YAPI == "undefined") { if(typeof yAPI != "undefined") window["YAPI"]=y
 //--- (YSpectralSensor return codes)
 //--- (end of YSpectralSensor return codes)
 //--- (YSpectralSensor definitions)
+var Y_ESTIMATIONMODEL_REFLECTION    = 0;
+var Y_ESTIMATIONMODEL_EMISSION      = 1;
+var Y_ESTIMATIONMODEL_INVALID       = -1;
 var Y_LEDCURRENT_INVALID            = YAPI_INVALID_INT;
 var Y_RESOLUTION_INVALID            = YAPI_INVALID_DOUBLE;
 var Y_INTEGRATIONTIME_INVALID       = YAPI_INVALID_INT;
 var Y_GAIN_INVALID                  = YAPI_INVALID_INT;
 var Y_SATURATION_INVALID            = YAPI_INVALID_UINT;
+var Y_ESTIMATEDRGB_INVALID          = YAPI_INVALID_UINT;
+var Y_ESTIMATEDHSL_INVALID          = YAPI_INVALID_UINT;
+var Y_ESTIMATEDXYZ_INVALID          = YAPI_INVALID_STRING;
+var Y_ESTIMATEDOKLAB_INVALID        = YAPI_INVALID_STRING;
+var Y_NEARRAL1_INVALID              = YAPI_INVALID_STRING;
+var Y_NEARRAL2_INVALID              = YAPI_INVALID_STRING;
+var Y_NEARRAL3_INVALID              = YAPI_INVALID_STRING;
+var Y_NEARHTMLCOLOR_INVALID         = YAPI_INVALID_STRING;
+var Y_NEARSIMPLECOLOR_INVALID       = YAPI_INVALID_STRING;
 var Y_LEDCURRENTATPOWERON_INVALID   = YAPI_INVALID_INT;
 var Y_INTEGRATIONTIMEATPOWERON_INVALID = YAPI_INVALID_INT;
 var Y_GAINATPOWERON_INVALID         = YAPI_INVALID_INT;
@@ -76,7 +88,17 @@ var YSpectralSensor; // definition below
         this._resolution                     = Y_RESOLUTION_INVALID;       // MeasureVal
         this._integrationTime                = Y_INTEGRATIONTIME_INVALID;  // Int
         this._gain                           = Y_GAIN_INVALID;             // Int
+        this._estimationModel                = Y_ESTIMATIONMODEL_INVALID;  // EstimationModel
         this._saturation                     = Y_SATURATION_INVALID;       // SaturationBits
+        this._estimatedRGB                   = Y_ESTIMATEDRGB_INVALID;     // U24Color
+        this._estimatedHSL                   = Y_ESTIMATEDHSL_INVALID;     // U24Color
+        this._estimatedXYZ                   = Y_ESTIMATEDXYZ_INVALID;     // ColorCoord
+        this._estimatedOkLab                 = Y_ESTIMATEDOKLAB_INVALID;   // ColorCoord
+        this._nearRAL1                       = Y_NEARRAL1_INVALID;         // Text
+        this._nearRAL2                       = Y_NEARRAL2_INVALID;         // Text
+        this._nearRAL3                       = Y_NEARRAL3_INVALID;         // Text
+        this._nearHTMLColor                  = Y_NEARHTMLCOLOR_INVALID;    // Text
+        this._nearSimpleColor                = Y_NEARSIMPLECOLOR_INVALID;  // Text
         this._ledCurrentAtPowerOn            = Y_LEDCURRENTATPOWERON_INVALID; // Int
         this._integrationTimeAtPowerOn       = Y_INTEGRATIONTIMEATPOWERON_INVALID; // Int
         this._gainAtPowerOn                  = Y_GAINATPOWERON_INVALID;    // Int
@@ -100,8 +122,38 @@ var YSpectralSensor; // definition below
         case "gain":
             this._gain = parseInt(val);
             return 1;
+        case "estimationModel":
+            this._estimationModel = parseInt(val);
+            return 1;
         case "saturation":
             this._saturation = parseInt(val);
+            return 1;
+        case "estimatedRGB":
+            this._estimatedRGB = parseInt(val);
+            return 1;
+        case "estimatedHSL":
+            this._estimatedHSL = parseInt(val);
+            return 1;
+        case "estimatedXYZ":
+            this._estimatedXYZ = val;
+            return 1;
+        case "estimatedOkLab":
+            this._estimatedOkLab = val;
+            return 1;
+        case "nearRAL1":
+            this._nearRAL1 = val;
+            return 1;
+        case "nearRAL2":
+            this._nearRAL2 = val;
+            return 1;
+        case "nearRAL3":
+            this._nearRAL3 = val;
+            return 1;
+        case "nearHTMLColor":
+            this._nearHTMLColor = val;
+            return 1;
+        case "nearSimpleColor":
+            this._nearSimpleColor = val;
             return 1;
         case "ledCurrentAtPowerOn":
             this._ledCurrentAtPowerOn = parseInt(val);
@@ -117,8 +169,11 @@ var YSpectralSensor; // definition below
     }
 
     /**
+     * Returns the current value of the LED.
+     * This method retrieves the current flowing through the LED
+     * and returns it as an integer or an object.
      *
-     * @return an integer
+     * @return an integer corresponding to the current value of the LED
      *
      * On failure, throws an exception or returns YSpectralSensor.LEDCURRENT_INVALID.
      */
@@ -135,12 +190,15 @@ var YSpectralSensor; // definition below
     }
 
     /**
+     * Gets the current value of the LED.
+     * This method retrieves the current flowing through the LED
+     * and returns it as an integer or an object.
      *
      * @param callback : callback function that is invoked when the result is known.
      *         The callback function receives three arguments:
      *         - the user-specific context object
      *         - the YSpectralSensor object that invoked the callback
-     *         - the result:an integer
+     *         - the result:an integer corresponding to the current value of the LED
      * @param context : user-specific object that is passed as-is to the callback function
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
@@ -167,9 +225,7 @@ var YSpectralSensor; // definition below
 
     /**
      * Changes the luminosity of the module leds. The parameter is a
-     * value between 0 and 100.
-     * Remember to call the saveToFlash() method of the module if the
-     * modification must be kept.
+     * value between 0 and 254.
      *
      * @param newval : an integer corresponding to the luminosity of the module leds
      *
@@ -200,15 +256,6 @@ var YSpectralSensor; // definition below
         return this._setAttr('resolution',rest_val);
     }
 
-    /**
-     * Returns the resolution of the measured values. The resolution corresponds to the numerical precision
-     * of the measures, which is not always the same as the actual precision of the sensor.
-     * Remember to call the saveToFlash() method of the module if the modification must be kept.
-     *
-     * @return a floating point number corresponding to the resolution of the measured values
-     *
-     * On failure, throws an exception or returns YSpectralSensor.RESOLUTION_INVALID.
-     */
     function YSpectralSensor_get_resolution()
     {
         var res;                    // double;
@@ -222,20 +269,15 @@ var YSpectralSensor; // definition below
     }
 
     /**
-     * Gets the resolution of the measured values. The resolution corresponds to the numerical precision
-     * of the measures, which is not always the same as the actual precision of the sensor.
-     * Remember to call the saveToFlash() method of the module if the modification must be kept.
      *
      * @param callback : callback function that is invoked when the result is known.
      *         The callback function receives three arguments:
      *         - the user-specific context object
      *         - the YSpectralSensor object that invoked the callback
-     *         - the result:a floating point number corresponding to the resolution of the measured values
+     *         - the result:
      * @param context : user-specific object that is passed as-is to the callback function
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
-     *
-     * On failure, throws an exception or returns YSpectralSensor.RESOLUTION_INVALID.
      */
     function YSpectralSensor_get_resolution_async(callback,context)
     {
@@ -256,8 +298,11 @@ var YSpectralSensor; // definition below
     }
 
     /**
+     * Returns the current integration time.
+     * This method retrieves the integration time value
+     * used for data processing and returns it as an integer or an object.
      *
-     * @return an integer
+     * @return an integer corresponding to the current integration time
      *
      * On failure, throws an exception or returns YSpectralSensor.INTEGRATIONTIME_INVALID.
      */
@@ -274,12 +319,15 @@ var YSpectralSensor; // definition below
     }
 
     /**
+     * Gets the current integration time.
+     * This method retrieves the integration time value
+     * used for data processing and returns it as an integer or an object.
      *
      * @param callback : callback function that is invoked when the result is known.
      *         The callback function receives three arguments:
      *         - the user-specific context object
      *         - the YSpectralSensor object that invoked the callback
-     *         - the result:an integer
+     *         - the result:an integer corresponding to the current integration time
      * @param context : user-specific object that is passed as-is to the callback function
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
@@ -305,10 +353,10 @@ var YSpectralSensor; // definition below
     }
 
     /**
-     * Change the integration time for a measure. The parameter is a
-     * value between 0 and 100.
-     * Remember to call the saveToFlash() method of the module if the
-     * modification must be kept.
+     * Sets the integration time for data processing.
+     * This method takes a parameter `val` and assigns it
+     * as the new integration time. This affects the duration
+     * for which data is integrated before being processed.
      *
      * @param newval : an integer
      *
@@ -323,6 +371,8 @@ var YSpectralSensor; // definition below
     }
 
     /**
+     * Retrieves the current gain.
+     * This method updates the gain value.
      *
      * @return an integer
      *
@@ -341,6 +391,8 @@ var YSpectralSensor; // definition below
     }
 
     /**
+     * Retrieves the current gain.
+     * This method updates the gain value.
      *
      * @param callback : callback function that is invoked when the result is known.
      *         The callback function receives three arguments:
@@ -372,8 +424,10 @@ var YSpectralSensor; // definition below
     }
 
     /**
-     * Remember to call the saveToFlash() method of the module if the
-     * modification must be kept.
+     * Sets the gain for signal processing.
+     * This method takes a parameter `val` and assigns it
+     * as the new gain. This affects the sensitivity and
+     * intensity of the processed signal.
      *
      * @param newval : an integer
      *
@@ -388,8 +442,80 @@ var YSpectralSensor; // definition below
     }
 
     /**
+     * Returns the model for color estimation.
      *
-     * @return an integer
+     * @return either YSpectralSensor.ESTIMATIONMODEL_REFLECTION or
+     * YSpectralSensor.ESTIMATIONMODEL_EMISSION, according to the model for color estimation
+     *
+     * On failure, throws an exception or returns YSpectralSensor.ESTIMATIONMODEL_INVALID.
+     */
+    function YSpectralSensor_get_estimationModel()
+    {
+        var res;                    // enumESTIMATIONMODEL;
+        if (this._cacheExpiration <= YAPI.GetTickCount()) {
+            if (this.load(YAPI.defaultCacheValidity) != YAPI_SUCCESS) {
+                return Y_ESTIMATIONMODEL_INVALID;
+            }
+        }
+        res = this._estimationModel;
+        return res;
+    }
+
+    /**
+     * Gets the model for color estimation.
+     *
+     * @param callback : callback function that is invoked when the result is known.
+     *         The callback function receives three arguments:
+     *         - the user-specific context object
+     *         - the YSpectralSensor object that invoked the callback
+     *         - the result:either YSpectralSensor.ESTIMATIONMODEL_REFLECTION or
+     *         YSpectralSensor.ESTIMATIONMODEL_EMISSION, according to the model for color estimation
+     * @param context : user-specific object that is passed as-is to the callback function
+     *
+     * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
+     *
+     * On failure, throws an exception or returns YSpectralSensor.ESTIMATIONMODEL_INVALID.
+     */
+    function YSpectralSensor_get_estimationModel_async(callback,context)
+    {
+        var res;                    // enumESTIMATIONMODEL;
+        var loadcb;                 // func;
+        loadcb = function(ctx,obj,res) {
+            if (res != YAPI_SUCCESS) {
+                callback(context, obj, Y_ESTIMATIONMODEL_INVALID);
+            } else {
+                callback(context, obj, obj._estimationModel);
+            }
+        };
+        if (this._cacheExpiration <= YAPI.GetTickCount()) {
+            this.load_async(YAPI.defaultCacheValidity,loadcb,null);
+        } else {
+            loadcb(null, this, YAPI_SUCCESS);
+        }
+    }
+
+    /**
+     * Changes the model for color estimation.
+     * Remember to call the saveToFlash() method of the module if the modification must be kept.
+     *
+     * @param newval : either YSpectralSensor.ESTIMATIONMODEL_REFLECTION or
+     * YSpectralSensor.ESTIMATIONMODEL_EMISSION, according to the model for color estimation
+     *
+     * @return YAPI.SUCCESS if the call succeeds.
+     *
+     * On failure, throws an exception or returns a negative error code.
+     */
+    function YSpectralSensor_set_estimationModel(newval)
+    {   var rest_val;
+        rest_val = String(newval);
+        return this._setAttr('estimationModel',rest_val);
+    }
+
+    /**
+     * Returns the current saturation of the sensor.
+     * This function updates the sensor's saturation value.
+     *
+     * @return an integer corresponding to the current saturation of the sensor
      *
      * On failure, throws an exception or returns YSpectralSensor.SATURATION_INVALID.
      */
@@ -406,12 +532,14 @@ var YSpectralSensor; // definition below
     }
 
     /**
+     * Gets the current saturation of the sensor.
+     * This function updates the sensor's saturation value.
      *
      * @param callback : callback function that is invoked when the result is known.
      *         The callback function receives three arguments:
      *         - the user-specific context object
      *         - the YSpectralSensor object that invoked the callback
-     *         - the result:an integer
+     *         - the result:an integer corresponding to the current saturation of the sensor
      * @param context : user-specific object that is passed as-is to the callback function
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
@@ -437,11 +565,444 @@ var YSpectralSensor; // definition below
     }
 
     /**
+     * Returns the estimated color in RGB format (0xRRGGBB).
+     * This method retrieves the estimated color values
+     * and returns them as an RGB object or structure.
      *
-     * @return an integer
+     * @return an integer corresponding to the estimated color in RGB format (0xRRGGBB)
      *
-     * On failure, throws an exception or returns YSpectralSensor.LEDCURRENTATPOWERON_INVALID.
+     * On failure, throws an exception or returns YSpectralSensor.ESTIMATEDRGB_INVALID.
      */
+    function YSpectralSensor_get_estimatedRGB()
+    {
+        var res;                    // int;
+        if (this._cacheExpiration <= YAPI.GetTickCount()) {
+            if (this.load(YAPI.defaultCacheValidity) != YAPI_SUCCESS) {
+                return Y_ESTIMATEDRGB_INVALID;
+            }
+        }
+        res = this._estimatedRGB;
+        return res;
+    }
+
+    /**
+     * Gets the estimated color in RGB format (0xRRGGBB).
+     * This method retrieves the estimated color values
+     * and returns them as an RGB object or structure.
+     *
+     * @param callback : callback function that is invoked when the result is known.
+     *         The callback function receives three arguments:
+     *         - the user-specific context object
+     *         - the YSpectralSensor object that invoked the callback
+     *         - the result:an integer corresponding to the estimated color in RGB format (0xRRGGBB)
+     * @param context : user-specific object that is passed as-is to the callback function
+     *
+     * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
+     *
+     * On failure, throws an exception or returns YSpectralSensor.ESTIMATEDRGB_INVALID.
+     */
+    function YSpectralSensor_get_estimatedRGB_async(callback,context)
+    {
+        var res;                    // int;
+        var loadcb;                 // func;
+        loadcb = function(ctx,obj,res) {
+            if (res != YAPI_SUCCESS) {
+                callback(context, obj, Y_ESTIMATEDRGB_INVALID);
+            } else {
+                callback(context, obj, obj._estimatedRGB);
+            }
+        };
+        if (this._cacheExpiration <= YAPI.GetTickCount()) {
+            this.load_async(YAPI.defaultCacheValidity,loadcb,null);
+        } else {
+            loadcb(null, this, YAPI_SUCCESS);
+        }
+    }
+
+    /**
+     * Returns the estimated color in HSL (Hue, Saturation, Lightness) format.
+     * This method retrieves the estimated color values
+     * and returns them as an HSL object or structure.
+     *
+     * @return an integer corresponding to the estimated color in HSL (Hue, Saturation, Lightness) format
+     *
+     * On failure, throws an exception or returns YSpectralSensor.ESTIMATEDHSL_INVALID.
+     */
+    function YSpectralSensor_get_estimatedHSL()
+    {
+        var res;                    // int;
+        if (this._cacheExpiration <= YAPI.GetTickCount()) {
+            if (this.load(YAPI.defaultCacheValidity) != YAPI_SUCCESS) {
+                return Y_ESTIMATEDHSL_INVALID;
+            }
+        }
+        res = this._estimatedHSL;
+        return res;
+    }
+
+    /**
+     * Gets the estimated color in HSL (Hue, Saturation, Lightness) format.
+     * This method retrieves the estimated color values
+     * and returns them as an HSL object or structure.
+     *
+     * @param callback : callback function that is invoked when the result is known.
+     *         The callback function receives three arguments:
+     *         - the user-specific context object
+     *         - the YSpectralSensor object that invoked the callback
+     *         - the result:an integer corresponding to the estimated color in HSL (Hue, Saturation, Lightness) format
+     * @param context : user-specific object that is passed as-is to the callback function
+     *
+     * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
+     *
+     * On failure, throws an exception or returns YSpectralSensor.ESTIMATEDHSL_INVALID.
+     */
+    function YSpectralSensor_get_estimatedHSL_async(callback,context)
+    {
+        var res;                    // int;
+        var loadcb;                 // func;
+        loadcb = function(ctx,obj,res) {
+            if (res != YAPI_SUCCESS) {
+                callback(context, obj, Y_ESTIMATEDHSL_INVALID);
+            } else {
+                callback(context, obj, obj._estimatedHSL);
+            }
+        };
+        if (this._cacheExpiration <= YAPI.GetTickCount()) {
+            this.load_async(YAPI.defaultCacheValidity,loadcb,null);
+        } else {
+            loadcb(null, this, YAPI_SUCCESS);
+        }
+    }
+
+    /**
+     * Returns the estimated color in XYZ format.
+     * This method retrieves the estimated color values
+     * and returns them as an XYZ object or structure.
+     *
+     * @return a string corresponding to the estimated color in XYZ format
+     *
+     * On failure, throws an exception or returns YSpectralSensor.ESTIMATEDXYZ_INVALID.
+     */
+    function YSpectralSensor_get_estimatedXYZ()
+    {
+        var res;                    // string;
+        if (this._cacheExpiration <= YAPI.GetTickCount()) {
+            if (this.load(YAPI.defaultCacheValidity) != YAPI_SUCCESS) {
+                return Y_ESTIMATEDXYZ_INVALID;
+            }
+        }
+        res = this._estimatedXYZ;
+        return res;
+    }
+
+    /**
+     * Gets the estimated color in XYZ format.
+     * This method retrieves the estimated color values
+     * and returns them as an XYZ object or structure.
+     *
+     * @param callback : callback function that is invoked when the result is known.
+     *         The callback function receives three arguments:
+     *         - the user-specific context object
+     *         - the YSpectralSensor object that invoked the callback
+     *         - the result:a string corresponding to the estimated color in XYZ format
+     * @param context : user-specific object that is passed as-is to the callback function
+     *
+     * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
+     *
+     * On failure, throws an exception or returns YSpectralSensor.ESTIMATEDXYZ_INVALID.
+     */
+    function YSpectralSensor_get_estimatedXYZ_async(callback,context)
+    {
+        var res;                    // string;
+        var loadcb;                 // func;
+        loadcb = function(ctx,obj,res) {
+            if (res != YAPI_SUCCESS) {
+                callback(context, obj, Y_ESTIMATEDXYZ_INVALID);
+            } else {
+                callback(context, obj, obj._estimatedXYZ);
+            }
+        };
+        if (this._cacheExpiration <= YAPI.GetTickCount()) {
+            this.load_async(YAPI.defaultCacheValidity,loadcb,null);
+        } else {
+            loadcb(null, this, YAPI_SUCCESS);
+        }
+    }
+
+    /**
+     * Returns the estimated color in OkLab format.
+     * This method retrieves the estimated color values
+     * and returns them as an OkLab object or structure.
+     *
+     * @return a string corresponding to the estimated color in OkLab format
+     *
+     * On failure, throws an exception or returns YSpectralSensor.ESTIMATEDOKLAB_INVALID.
+     */
+    function YSpectralSensor_get_estimatedOkLab()
+    {
+        var res;                    // string;
+        if (this._cacheExpiration <= YAPI.GetTickCount()) {
+            if (this.load(YAPI.defaultCacheValidity) != YAPI_SUCCESS) {
+                return Y_ESTIMATEDOKLAB_INVALID;
+            }
+        }
+        res = this._estimatedOkLab;
+        return res;
+    }
+
+    /**
+     * Gets the estimated color in OkLab format.
+     * This method retrieves the estimated color values
+     * and returns them as an OkLab object or structure.
+     *
+     * @param callback : callback function that is invoked when the result is known.
+     *         The callback function receives three arguments:
+     *         - the user-specific context object
+     *         - the YSpectralSensor object that invoked the callback
+     *         - the result:a string corresponding to the estimated color in OkLab format
+     * @param context : user-specific object that is passed as-is to the callback function
+     *
+     * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
+     *
+     * On failure, throws an exception or returns YSpectralSensor.ESTIMATEDOKLAB_INVALID.
+     */
+    function YSpectralSensor_get_estimatedOkLab_async(callback,context)
+    {
+        var res;                    // string;
+        var loadcb;                 // func;
+        loadcb = function(ctx,obj,res) {
+            if (res != YAPI_SUCCESS) {
+                callback(context, obj, Y_ESTIMATEDOKLAB_INVALID);
+            } else {
+                callback(context, obj, obj._estimatedOkLab);
+            }
+        };
+        if (this._cacheExpiration <= YAPI.GetTickCount()) {
+            this.load_async(YAPI.defaultCacheValidity,loadcb,null);
+        } else {
+            loadcb(null, this, YAPI_SUCCESS);
+        }
+    }
+
+    function YSpectralSensor_get_nearRAL1()
+    {
+        var res;                    // string;
+        if (this._cacheExpiration <= YAPI.GetTickCount()) {
+            if (this.load(YAPI.defaultCacheValidity) != YAPI_SUCCESS) {
+                return Y_NEARRAL1_INVALID;
+            }
+        }
+        res = this._nearRAL1;
+        return res;
+    }
+
+    /**
+     *
+     * @param callback : callback function that is invoked when the result is known.
+     *         The callback function receives three arguments:
+     *         - the user-specific context object
+     *         - the YSpectralSensor object that invoked the callback
+     *         - the result:
+     * @param context : user-specific object that is passed as-is to the callback function
+     *
+     * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
+     */
+    function YSpectralSensor_get_nearRAL1_async(callback,context)
+    {
+        var res;                    // string;
+        var loadcb;                 // func;
+        loadcb = function(ctx,obj,res) {
+            if (res != YAPI_SUCCESS) {
+                callback(context, obj, Y_NEARRAL1_INVALID);
+            } else {
+                callback(context, obj, obj._nearRAL1);
+            }
+        };
+        if (this._cacheExpiration <= YAPI.GetTickCount()) {
+            this.load_async(YAPI.defaultCacheValidity,loadcb,null);
+        } else {
+            loadcb(null, this, YAPI_SUCCESS);
+        }
+    }
+
+    function YSpectralSensor_get_nearRAL2()
+    {
+        var res;                    // string;
+        if (this._cacheExpiration <= YAPI.GetTickCount()) {
+            if (this.load(YAPI.defaultCacheValidity) != YAPI_SUCCESS) {
+                return Y_NEARRAL2_INVALID;
+            }
+        }
+        res = this._nearRAL2;
+        return res;
+    }
+
+    /**
+     *
+     * @param callback : callback function that is invoked when the result is known.
+     *         The callback function receives three arguments:
+     *         - the user-specific context object
+     *         - the YSpectralSensor object that invoked the callback
+     *         - the result:
+     * @param context : user-specific object that is passed as-is to the callback function
+     *
+     * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
+     */
+    function YSpectralSensor_get_nearRAL2_async(callback,context)
+    {
+        var res;                    // string;
+        var loadcb;                 // func;
+        loadcb = function(ctx,obj,res) {
+            if (res != YAPI_SUCCESS) {
+                callback(context, obj, Y_NEARRAL2_INVALID);
+            } else {
+                callback(context, obj, obj._nearRAL2);
+            }
+        };
+        if (this._cacheExpiration <= YAPI.GetTickCount()) {
+            this.load_async(YAPI.defaultCacheValidity,loadcb,null);
+        } else {
+            loadcb(null, this, YAPI_SUCCESS);
+        }
+    }
+
+    function YSpectralSensor_get_nearRAL3()
+    {
+        var res;                    // string;
+        if (this._cacheExpiration <= YAPI.GetTickCount()) {
+            if (this.load(YAPI.defaultCacheValidity) != YAPI_SUCCESS) {
+                return Y_NEARRAL3_INVALID;
+            }
+        }
+        res = this._nearRAL3;
+        return res;
+    }
+
+    /**
+     *
+     * @param callback : callback function that is invoked when the result is known.
+     *         The callback function receives three arguments:
+     *         - the user-specific context object
+     *         - the YSpectralSensor object that invoked the callback
+     *         - the result:
+     * @param context : user-specific object that is passed as-is to the callback function
+     *
+     * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
+     */
+    function YSpectralSensor_get_nearRAL3_async(callback,context)
+    {
+        var res;                    // string;
+        var loadcb;                 // func;
+        loadcb = function(ctx,obj,res) {
+            if (res != YAPI_SUCCESS) {
+                callback(context, obj, Y_NEARRAL3_INVALID);
+            } else {
+                callback(context, obj, obj._nearRAL3);
+            }
+        };
+        if (this._cacheExpiration <= YAPI.GetTickCount()) {
+            this.load_async(YAPI.defaultCacheValidity,loadcb,null);
+        } else {
+            loadcb(null, this, YAPI_SUCCESS);
+        }
+    }
+
+    function YSpectralSensor_get_nearHTMLColor()
+    {
+        var res;                    // string;
+        if (this._cacheExpiration <= YAPI.GetTickCount()) {
+            if (this.load(YAPI.defaultCacheValidity) != YAPI_SUCCESS) {
+                return Y_NEARHTMLCOLOR_INVALID;
+            }
+        }
+        res = this._nearHTMLColor;
+        return res;
+    }
+
+    /**
+     *
+     * @param callback : callback function that is invoked when the result is known.
+     *         The callback function receives three arguments:
+     *         - the user-specific context object
+     *         - the YSpectralSensor object that invoked the callback
+     *         - the result:
+     * @param context : user-specific object that is passed as-is to the callback function
+     *
+     * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
+     */
+    function YSpectralSensor_get_nearHTMLColor_async(callback,context)
+    {
+        var res;                    // string;
+        var loadcb;                 // func;
+        loadcb = function(ctx,obj,res) {
+            if (res != YAPI_SUCCESS) {
+                callback(context, obj, Y_NEARHTMLCOLOR_INVALID);
+            } else {
+                callback(context, obj, obj._nearHTMLColor);
+            }
+        };
+        if (this._cacheExpiration <= YAPI.GetTickCount()) {
+            this.load_async(YAPI.defaultCacheValidity,loadcb,null);
+        } else {
+            loadcb(null, this, YAPI_SUCCESS);
+        }
+    }
+
+    /**
+     * Returns the estimated color.
+     * This method retrieves the estimated color values
+     * and returns them as the color name.
+     *
+     * @return a string corresponding to the estimated color
+     *
+     * On failure, throws an exception or returns YSpectralSensor.NEARSIMPLECOLOR_INVALID.
+     */
+    function YSpectralSensor_get_nearSimpleColor()
+    {
+        var res;                    // string;
+        if (this._cacheExpiration <= YAPI.GetTickCount()) {
+            if (this.load(YAPI.defaultCacheValidity) != YAPI_SUCCESS) {
+                return Y_NEARSIMPLECOLOR_INVALID;
+            }
+        }
+        res = this._nearSimpleColor;
+        return res;
+    }
+
+    /**
+     * Gets the estimated color.
+     * This method retrieves the estimated color values
+     * and returns them as the color name.
+     *
+     * @param callback : callback function that is invoked when the result is known.
+     *         The callback function receives three arguments:
+     *         - the user-specific context object
+     *         - the YSpectralSensor object that invoked the callback
+     *         - the result:a string corresponding to the estimated color
+     * @param context : user-specific object that is passed as-is to the callback function
+     *
+     * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
+     *
+     * On failure, throws an exception or returns YSpectralSensor.NEARSIMPLECOLOR_INVALID.
+     */
+    function YSpectralSensor_get_nearSimpleColor_async(callback,context)
+    {
+        var res;                    // string;
+        var loadcb;                 // func;
+        loadcb = function(ctx,obj,res) {
+            if (res != YAPI_SUCCESS) {
+                callback(context, obj, Y_NEARSIMPLECOLOR_INVALID);
+            } else {
+                callback(context, obj, obj._nearSimpleColor);
+            }
+        };
+        if (this._cacheExpiration <= YAPI.GetTickCount()) {
+            this.load_async(YAPI.defaultCacheValidity,loadcb,null);
+        } else {
+            loadcb(null, this, YAPI_SUCCESS);
+        }
+    }
+
     function YSpectralSensor_get_ledCurrentAtPowerOn()
     {
         var res;                    // int;
@@ -460,12 +1021,10 @@ var YSpectralSensor; // definition below
      *         The callback function receives three arguments:
      *         - the user-specific context object
      *         - the YSpectralSensor object that invoked the callback
-     *         - the result:an integer
+     *         - the result:
      * @param context : user-specific object that is passed as-is to the callback function
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
-     *
-     * On failure, throws an exception or returns YSpectralSensor.LEDCURRENTATPOWERON_INVALID.
      */
     function YSpectralSensor_get_ledCurrentAtPowerOn_async(callback,context)
     {
@@ -486,6 +1045,10 @@ var YSpectralSensor; // definition below
     }
 
     /**
+     * Sets the LED current at power-on.
+     * This method takes a parameter `val` and assigns it to startupLumin, representing the LED current defined
+     * at startup.
+     * Remember to call the saveToFlash() method of the module if the modification must be kept.
      *
      * @param newval : an integer
      *
@@ -500,6 +1063,8 @@ var YSpectralSensor; // definition below
     }
 
     /**
+     * Retrieves the integration time at power-on.
+     * This method updates the power-on integration time value.
      *
      * @return an integer
      *
@@ -518,6 +1083,8 @@ var YSpectralSensor; // definition below
     }
 
     /**
+     * Retrieves the integration time at power-on.
+     * This method updates the power-on integration time value.
      *
      * @param callback : callback function that is invoked when the result is known.
      *         The callback function receives three arguments:
@@ -549,6 +1116,11 @@ var YSpectralSensor; // definition below
     }
 
     /**
+     * Sets the integration time at power-on.
+     * This method takes a parameter `val` and assigns it to integrationTimeAtPowerOn, representing the
+     * integration time
+     * defined at startup.
+     * Remember to call the saveToFlash() method of the module if the modification must be kept.
      *
      * @param newval : an integer
      *
@@ -562,12 +1134,6 @@ var YSpectralSensor; // definition below
         return this._setAttr('integrationTimeAtPowerOn',rest_val);
     }
 
-    /**
-     *
-     * @return an integer
-     *
-     * On failure, throws an exception or returns YSpectralSensor.GAINATPOWERON_INVALID.
-     */
     function YSpectralSensor_get_gainAtPowerOn()
     {
         var res;                    // int;
@@ -586,12 +1152,10 @@ var YSpectralSensor; // definition below
      *         The callback function receives three arguments:
      *         - the user-specific context object
      *         - the YSpectralSensor object that invoked the callback
-     *         - the result:an integer
+     *         - the result:
      * @param context : user-specific object that is passed as-is to the callback function
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
-     *
-     * On failure, throws an exception or returns YSpectralSensor.GAINATPOWERON_INVALID.
      */
     function YSpectralSensor_get_gainAtPowerOn_async(callback,context)
     {
@@ -612,6 +1176,9 @@ var YSpectralSensor; // definition below
     }
 
     /**
+     * Sets the gain at power-on.
+     * This method takes a parameter `val` and assigns it to startupGain, representing the gain defined at startup.
+     * Remember to call the saveToFlash() method of the module if the modification must be kept.
      *
      * @param newval : an integer
      *
@@ -707,7 +1274,19 @@ var YSpectralSensor; // definition below
         RESOLUTION_INVALID          : YAPI_INVALID_DOUBLE,
         INTEGRATIONTIME_INVALID     : YAPI_INVALID_INT,
         GAIN_INVALID                : YAPI_INVALID_INT,
+        ESTIMATIONMODEL_REFLECTION  : 0,
+        ESTIMATIONMODEL_EMISSION    : 1,
+        ESTIMATIONMODEL_INVALID     : -1,
         SATURATION_INVALID          : YAPI_INVALID_UINT,
+        ESTIMATEDRGB_INVALID        : YAPI_INVALID_UINT,
+        ESTIMATEDHSL_INVALID        : YAPI_INVALID_UINT,
+        ESTIMATEDXYZ_INVALID        : YAPI_INVALID_STRING,
+        ESTIMATEDOKLAB_INVALID      : YAPI_INVALID_STRING,
+        NEARRAL1_INVALID            : YAPI_INVALID_STRING,
+        NEARRAL2_INVALID            : YAPI_INVALID_STRING,
+        NEARRAL3_INVALID            : YAPI_INVALID_STRING,
+        NEARHTMLCOLOR_INVALID       : YAPI_INVALID_STRING,
+        NEARSIMPLECOLOR_INVALID     : YAPI_INVALID_STRING,
         LEDCURRENTATPOWERON_INVALID : YAPI_INVALID_INT,
         INTEGRATIONTIMEATPOWERON_INVALID : YAPI_INVALID_INT,
         GAINATPOWERON_INVALID       : YAPI_INVALID_INT
@@ -741,10 +1320,52 @@ var YSpectralSensor; // definition below
         gain_async                  : YSpectralSensor_get_gain_async,
         set_gain                    : YSpectralSensor_set_gain,
         setGain                     : YSpectralSensor_set_gain,
+        get_estimationModel         : YSpectralSensor_get_estimationModel,
+        estimationModel             : YSpectralSensor_get_estimationModel,
+        get_estimationModel_async   : YSpectralSensor_get_estimationModel_async,
+        estimationModel_async       : YSpectralSensor_get_estimationModel_async,
+        set_estimationModel         : YSpectralSensor_set_estimationModel,
+        setEstimationModel          : YSpectralSensor_set_estimationModel,
         get_saturation              : YSpectralSensor_get_saturation,
         saturation                  : YSpectralSensor_get_saturation,
         get_saturation_async        : YSpectralSensor_get_saturation_async,
         saturation_async            : YSpectralSensor_get_saturation_async,
+        get_estimatedRGB            : YSpectralSensor_get_estimatedRGB,
+        estimatedRGB                : YSpectralSensor_get_estimatedRGB,
+        get_estimatedRGB_async      : YSpectralSensor_get_estimatedRGB_async,
+        estimatedRGB_async          : YSpectralSensor_get_estimatedRGB_async,
+        get_estimatedHSL            : YSpectralSensor_get_estimatedHSL,
+        estimatedHSL                : YSpectralSensor_get_estimatedHSL,
+        get_estimatedHSL_async      : YSpectralSensor_get_estimatedHSL_async,
+        estimatedHSL_async          : YSpectralSensor_get_estimatedHSL_async,
+        get_estimatedXYZ            : YSpectralSensor_get_estimatedXYZ,
+        estimatedXYZ                : YSpectralSensor_get_estimatedXYZ,
+        get_estimatedXYZ_async      : YSpectralSensor_get_estimatedXYZ_async,
+        estimatedXYZ_async          : YSpectralSensor_get_estimatedXYZ_async,
+        get_estimatedOkLab          : YSpectralSensor_get_estimatedOkLab,
+        estimatedOkLab              : YSpectralSensor_get_estimatedOkLab,
+        get_estimatedOkLab_async    : YSpectralSensor_get_estimatedOkLab_async,
+        estimatedOkLab_async        : YSpectralSensor_get_estimatedOkLab_async,
+        get_nearRAL1                : YSpectralSensor_get_nearRAL1,
+        nearRAL1                    : YSpectralSensor_get_nearRAL1,
+        get_nearRAL1_async          : YSpectralSensor_get_nearRAL1_async,
+        nearRAL1_async              : YSpectralSensor_get_nearRAL1_async,
+        get_nearRAL2                : YSpectralSensor_get_nearRAL2,
+        nearRAL2                    : YSpectralSensor_get_nearRAL2,
+        get_nearRAL2_async          : YSpectralSensor_get_nearRAL2_async,
+        nearRAL2_async              : YSpectralSensor_get_nearRAL2_async,
+        get_nearRAL3                : YSpectralSensor_get_nearRAL3,
+        nearRAL3                    : YSpectralSensor_get_nearRAL3,
+        get_nearRAL3_async          : YSpectralSensor_get_nearRAL3_async,
+        nearRAL3_async              : YSpectralSensor_get_nearRAL3_async,
+        get_nearHTMLColor           : YSpectralSensor_get_nearHTMLColor,
+        nearHTMLColor               : YSpectralSensor_get_nearHTMLColor,
+        get_nearHTMLColor_async     : YSpectralSensor_get_nearHTMLColor_async,
+        nearHTMLColor_async         : YSpectralSensor_get_nearHTMLColor_async,
+        get_nearSimpleColor         : YSpectralSensor_get_nearSimpleColor,
+        nearSimpleColor             : YSpectralSensor_get_nearSimpleColor,
+        get_nearSimpleColor_async   : YSpectralSensor_get_nearSimpleColor_async,
+        nearSimpleColor_async       : YSpectralSensor_get_nearSimpleColor_async,
         get_ledCurrentAtPowerOn     : YSpectralSensor_get_ledCurrentAtPowerOn,
         ledCurrentAtPowerOn         : YSpectralSensor_get_ledCurrentAtPowerOn,
         get_ledCurrentAtPowerOn_async : YSpectralSensor_get_ledCurrentAtPowerOn_async,

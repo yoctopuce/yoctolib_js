@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_colorled.js 59977 2024-03-18 15:02:32Z mvuilleu $
+ *  $Id: yocto_colorled.js 64093 2025-01-08 10:53:52Z seb $
  *
  *  Implements the high-level API for ColorLed functions
  *
@@ -436,8 +436,9 @@ var YColorLed; // definition below
 
     /**
      * Changes the color that the LED displays by default when the module is turned on.
-     * Remember to call the saveToFlash()
-     * method of the module if the modification must be kept.
+     * Remember to call the saveLedsConfigAtPowerOn() method of the module if the modification must be kept.
+     * Note: for the original modules Yocto-Color (version 1) et Yocto-PowerColor, the  saveToFlash()
+     * method must be used instead.
      *
      * @param newval : an integer corresponding to the color that the LED displays by default when the
      * module is turned on
@@ -768,6 +769,18 @@ var YColorLed; // definition below
     }
 
     /**
+     * Saves the LEDs power-on configuration.  Warning: this method is not supported by
+     * Yocto-Color (version 1) and Yocto-PowerColor modules. For these devices, the saveToFlash()
+     * method of the module must be used instead.
+     *
+     * On failure, throws an exception or returns a negative error code.
+     */
+    function YColorLed_saveLedsConfigAtPowerOn()
+    {
+        return this.sendCommand("W");
+    }
+
+    /**
      * Continues the enumeration of RGB LEDs started using yFirstColorLed().
      * Caution: You can't make any assumption about the returned RGB LEDs order.
      * If you want to find a specific an RGB LED, use ColorLed.findColorLed()
@@ -873,6 +886,7 @@ var YColorLed; // definition below
         startBlinkSeq               : YColorLed_startBlinkSeq,
         stopBlinkSeq                : YColorLed_stopBlinkSeq,
         resetBlinkSeq               : YColorLed_resetBlinkSeq,
+        saveLedsConfigAtPowerOn     : YColorLed_saveLedsConfigAtPowerOn,
         nextColorLed                : YColorLed_nextColorLed,
         _parseAttr                  : YColorLed_parseAttr
     });
