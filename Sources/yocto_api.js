@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_api.js 64093 2025-01-08 10:53:52Z seb $
+ * $Id: yocto_api.js 65618 2025-04-08 07:55:42Z seb $
  *
  * High-level programming interface, common to all modules
  *
@@ -2682,7 +2682,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
      */
     function YAPI_GetAPIVersion()
     {
-        return "1.10.64286";
+        return "1.11.654";
     }
 
     /**

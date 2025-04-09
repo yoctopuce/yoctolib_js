@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_pwminput.js 59977 2024-03-18 15:02:32Z mvuilleu $
+ *  $Id: svn_id $
  *
  *  Implements the high-level API for PwmInput functions
  *
@@ -61,6 +61,7 @@ var Y_PERIOD_INVALID                = YAPI_INVALID_DOUBLE;
 var Y_PULSECOUNTER_INVALID          = YAPI_INVALID_LONG;
 var Y_PULSETIMER_INVALID            = YAPI_INVALID_LONG;
 var Y_DEBOUNCEPERIOD_INVALID        = YAPI_INVALID_UINT;
+var Y_MINFREQUENCY_INVALID          = YAPI_INVALID_DOUBLE;
 var Y_BANDWIDTH_INVALID             = YAPI_INVALID_UINT;
 var Y_EDGESPERPERIOD_INVALID        = YAPI_INVALID_UINT;
 //--- (end of YPwmInput definitions)
@@ -95,6 +96,7 @@ var YPwmInput; // definition below
         this._pulseTimer                     = Y_PULSETIMER_INVALID;       // Time
         this._pwmReportMode                  = Y_PWMREPORTMODE_INVALID;    // PwmReportModeType
         this._debouncePeriod                 = Y_DEBOUNCEPERIOD_INVALID;   // UInt31
+        this._minFrequency                   = Y_MINFREQUENCY_INVALID;     // MeasureVal
         this._bandwidth                      = Y_BANDWIDTH_INVALID;        // UInt31
         this._edgesPerPeriod                 = Y_EDGESPERPERIOD_INVALID;   // UInt31
         //--- (end of YPwmInput constructor)
@@ -128,6 +130,9 @@ var YPwmInput; // definition below
             return 1;
         case "debouncePeriod":
             this._debouncePeriod = parseInt(val);
+            return 1;
+        case "minFrequency":
+            this._minFrequency = Math.round(val / 65.536) / 1000.0;
             return 1;
         case "bandwidth":
             this._bandwidth = parseInt(val);
@@ -636,6 +641,73 @@ var YPwmInput; // definition below
     }
 
     /**
+     * Changes the minimum detected frequency, in Hz. Slower signals will be consider as zero frequency.
+     * Remember to call the saveToFlash() method of the module if the modification must be kept.
+     *
+     * @param newval : a floating point number corresponding to the minimum detected frequency, in Hz
+     *
+     * @return YAPI.SUCCESS if the call succeeds.
+     *
+     * On failure, throws an exception or returns a negative error code.
+     */
+    function YPwmInput_set_minFrequency(newval)
+    {   var rest_val;
+        rest_val = String(Math.round(newval * 65536.0));
+        return this._setAttr('minFrequency',rest_val);
+    }
+
+    /**
+     * Returns the minimum detected frequency, in Hz. Slower signals will be consider as zero frequency.
+     *
+     * @return a floating point number corresponding to the minimum detected frequency, in Hz
+     *
+     * On failure, throws an exception or returns YPwmInput.MINFREQUENCY_INVALID.
+     */
+    function YPwmInput_get_minFrequency()
+    {
+        var res;                    // double;
+        if (this._cacheExpiration <= YAPI.GetTickCount()) {
+            if (this.load(YAPI.defaultCacheValidity) != YAPI_SUCCESS) {
+                return Y_MINFREQUENCY_INVALID;
+            }
+        }
+        res = this._minFrequency;
+        return res;
+    }
+
+    /**
+     * Gets the minimum detected frequency, in Hz. Slower signals will be consider as zero frequency.
+     *
+     * @param callback : callback function that is invoked when the result is known.
+     *         The callback function receives three arguments:
+     *         - the user-specific context object
+     *         - the YPwmInput object that invoked the callback
+     *         - the result:a floating point number corresponding to the minimum detected frequency, in Hz
+     * @param context : user-specific object that is passed as-is to the callback function
+     *
+     * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
+     *
+     * On failure, throws an exception or returns YPwmInput.MINFREQUENCY_INVALID.
+     */
+    function YPwmInput_get_minFrequency_async(callback,context)
+    {
+        var res;                    // double;
+        var loadcb;                 // func;
+        loadcb = function(ctx,obj,res) {
+            if (res != YAPI_SUCCESS) {
+                callback(context, obj, Y_MINFREQUENCY_INVALID);
+            } else {
+                callback(context, obj, obj._minFrequency);
+            }
+        };
+        if (this._cacheExpiration <= YAPI.GetTickCount()) {
+            this.load_async(YAPI.defaultCacheValidity,loadcb,null);
+        } else {
+            loadcb(null, this, YAPI_SUCCESS);
+        }
+    }
+
+    /**
      * Returns the input signal sampling rate, in kHz.
      *
      * @return an integer corresponding to the input signal sampling rate, in kHz
@@ -798,7 +870,19 @@ var YPwmInput; // definition below
     }
 
     /**
-     * Returns the pulse counter value as well as its timer.
+     * Resets the periodicity detection algorithm.
+     *
+     * @return YAPI.SUCCESS if the call succeeds.
+     *
+     * On failure, throws an exception or returns a negative error code.
+     */
+    function YPwmInput_resetPeriodDetection()
+    {
+        return this.set_bandwidth(this.get_bandwidth());
+    }
+
+    /**
+     * Resets the pulse counter value as well as its timer.
      *
      * @return YAPI.SUCCESS if the call succeeds.
      *
@@ -867,6 +951,7 @@ var YPwmInput; // definition below
         PWMREPORTMODE_PWM_PERIODCOUNT : 10,
         PWMREPORTMODE_INVALID       : -1,
         DEBOUNCEPERIOD_INVALID      : YAPI_INVALID_UINT,
+        MINFREQUENCY_INVALID        : YAPI_INVALID_DOUBLE,
         BANDWIDTH_INVALID           : YAPI_INVALID_UINT,
         EDGESPERPERIOD_INVALID      : YAPI_INVALID_UINT
     }, {
@@ -915,6 +1000,12 @@ var YPwmInput; // definition below
         debouncePeriod_async        : YPwmInput_get_debouncePeriod_async,
         set_debouncePeriod          : YPwmInput_set_debouncePeriod,
         setDebouncePeriod           : YPwmInput_set_debouncePeriod,
+        set_minFrequency            : YPwmInput_set_minFrequency,
+        setMinFrequency             : YPwmInput_set_minFrequency,
+        get_minFrequency            : YPwmInput_get_minFrequency,
+        minFrequency                : YPwmInput_get_minFrequency,
+        get_minFrequency_async      : YPwmInput_get_minFrequency_async,
+        minFrequency_async          : YPwmInput_get_minFrequency_async,
         get_bandwidth               : YPwmInput_get_bandwidth,
         bandwidth                   : YPwmInput_get_bandwidth,
         get_bandwidth_async         : YPwmInput_get_bandwidth_async,
@@ -925,6 +1016,7 @@ var YPwmInput; // definition below
         edgesPerPeriod              : YPwmInput_get_edgesPerPeriod,
         get_edgesPerPeriod_async    : YPwmInput_get_edgesPerPeriod_async,
         edgesPerPeriod_async        : YPwmInput_get_edgesPerPeriod_async,
+        resetPeriodDetection        : YPwmInput_resetPeriodDetection,
         resetCounter                : YPwmInput_resetCounter,
         nextPwmInput                : YPwmInput_nextPwmInput,
         _parseAttr                  : YPwmInput_parseAttr

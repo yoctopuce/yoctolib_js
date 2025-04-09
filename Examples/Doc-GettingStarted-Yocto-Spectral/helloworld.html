@@ -1,0 +1,49 @@
+<HTML>
+<HEAD>
+ <TITLE> Hello World</TITLE>
+ <SCRIPT type="text/javascript" src="../../Sources/yocto_api.js"></SCRIPT>
+ <SCRIPT type="text/javascript" src="../../Sources/yocto_colorsensor.js"></SCRIPT>
+ <SCRIPT language='javascript1.5'  type='text/JavaScript'>
+ <!--
+
+ // Setup the API to use the VirtualHub on local machine
+ if(yRegisterHub('http://127.0.0.1:4444/') != YAPI_SUCCESS) {
+     alert("Cannot contact VirtualHub on 127.0.0.1");
+ }
+
+ function refresh()
+ { 
+     var serial = document.getElementById('serial').value;
+
+     if(serial == '') {
+         // or use any conected module suitable for the demo
+         colorSensor = yFirstColorSensor();
+         if(colorSensor) {
+             serial = colorSensor.module().get_serialNumber();
+             document.getElementById('serial').value = serial;
+         }
+     }
+
+     colorSensor  = yFindColorSensor(serial+".colorSensor");
+     if (colorSensor.isOnline()) {
+        var info = '';
+        
+        info = '';
+        info += 'Near color : ' + colorSensor.get_nearSimpleColor() + '\n';
+        info += 'Color HEX : #' + colorSensor.get_estimatedRGB().toString(16);
+        document.getElementById("color").value = info;
+        
+
+     } else {
+         document.getElementById('msg').value = 'Module not connected';         
+     }
+     setTimeout('refresh()',500);
+ }
+ -->
+ </SCRIPT>
+</HEAD>  
+<BODY onload='refresh();'>
+Module to use:       <input id='serial'><br>
+<textarea id='color' rows="7" cols="60"  style='color:black ;border:none;' readonly></textarea>
+</BODY>
+</HTML> 

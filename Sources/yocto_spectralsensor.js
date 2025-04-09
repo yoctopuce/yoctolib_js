@@ -45,6 +45,18 @@ if(typeof YAPI == "undefined") { if(typeof yAPI != "undefined") window["YAPI"]=y
 var Y_ESTIMATIONMODEL_REFLECTION    = 0;
 var Y_ESTIMATIONMODEL_EMISSION      = 1;
 var Y_ESTIMATIONMODEL_INVALID       = -1;
+var Y_NEARSIMPLECOLORINDEX_BROWN    = 0;
+var Y_NEARSIMPLECOLORINDEX_RED      = 1;
+var Y_NEARSIMPLECOLORINDEX_ORANGE   = 2;
+var Y_NEARSIMPLECOLORINDEX_YELLOW   = 3;
+var Y_NEARSIMPLECOLORINDEX_WHITE    = 4;
+var Y_NEARSIMPLECOLORINDEX_GRAY     = 5;
+var Y_NEARSIMPLECOLORINDEX_BLACK    = 6;
+var Y_NEARSIMPLECOLORINDEX_GREEN    = 7;
+var Y_NEARSIMPLECOLORINDEX_BLUE     = 8;
+var Y_NEARSIMPLECOLORINDEX_PURPLE   = 9;
+var Y_NEARSIMPLECOLORINDEX_PINK     = 10;
+var Y_NEARSIMPLECOLORINDEX_INVALID  = -1;
 var Y_LEDCURRENT_INVALID            = YAPI_INVALID_INT;
 var Y_RESOLUTION_INVALID            = YAPI_INVALID_DOUBLE;
 var Y_INTEGRATIONTIME_INVALID       = YAPI_INVALID_INT;
@@ -99,6 +111,7 @@ var YSpectralSensor; // definition below
         this._nearRAL3                       = Y_NEARRAL3_INVALID;         // Text
         this._nearHTMLColor                  = Y_NEARHTMLCOLOR_INVALID;    // Text
         this._nearSimpleColor                = Y_NEARSIMPLECOLOR_INVALID;  // Text
+        this._nearSimpleColorIndex           = Y_NEARSIMPLECOLORINDEX_INVALID; // SimpleColor
         this._ledCurrentAtPowerOn            = Y_LEDCURRENTATPOWERON_INVALID; // Int
         this._integrationTimeAtPowerOn       = Y_INTEGRATIONTIMEATPOWERON_INVALID; // Int
         this._gainAtPowerOn                  = Y_GAINATPOWERON_INVALID;    // Int
@@ -154,6 +167,9 @@ var YSpectralSensor; // definition below
             return 1;
         case "nearSimpleColor":
             this._nearSimpleColor = val;
+            return 1;
+        case "nearSimpleColorIndex":
+            this._nearSimpleColorIndex = parseInt(val);
             return 1;
         case "ledCurrentAtPowerOn":
             this._ledCurrentAtPowerOn = parseInt(val);
@@ -256,6 +272,14 @@ var YSpectralSensor; // definition below
         return this._setAttr('resolution',rest_val);
     }
 
+    /**
+     * Returns the resolution of the measured values. The resolution corresponds to the numerical precision
+     * of the measures, which is not always the same as the actual precision of the sensor.
+     *
+     * @return a floating point number corresponding to the resolution of the measured values
+     *
+     * On failure, throws an exception or returns YSpectralSensor.RESOLUTION_INVALID.
+     */
     function YSpectralSensor_get_resolution()
     {
         var res;                    // double;
@@ -269,15 +293,19 @@ var YSpectralSensor; // definition below
     }
 
     /**
+     * Gets the resolution of the measured values. The resolution corresponds to the numerical precision
+     * of the measures, which is not always the same as the actual precision of the sensor.
      *
      * @param callback : callback function that is invoked when the result is known.
      *         The callback function receives three arguments:
      *         - the user-specific context object
      *         - the YSpectralSensor object that invoked the callback
-     *         - the result:
+     *         - the result:a floating point number corresponding to the resolution of the measured values
      * @param context : user-specific object that is passed as-is to the callback function
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
+     *
+     * On failure, throws an exception or returns YSpectralSensor.RESOLUTION_INVALID.
      */
     function YSpectralSensor_get_resolution_async(callback,context)
     {
@@ -948,15 +976,6 @@ var YSpectralSensor; // definition below
         }
     }
 
-    /**
-     * Returns the estimated color.
-     * This method retrieves the estimated color values
-     * and returns them as the color name.
-     *
-     * @return a string corresponding to the estimated color
-     *
-     * On failure, throws an exception or returns YSpectralSensor.NEARSIMPLECOLOR_INVALID.
-     */
     function YSpectralSensor_get_nearSimpleColor()
     {
         var res;                    // string;
@@ -970,20 +989,15 @@ var YSpectralSensor; // definition below
     }
 
     /**
-     * Gets the estimated color.
-     * This method retrieves the estimated color values
-     * and returns them as the color name.
      *
      * @param callback : callback function that is invoked when the result is known.
      *         The callback function receives three arguments:
      *         - the user-specific context object
      *         - the YSpectralSensor object that invoked the callback
-     *         - the result:a string corresponding to the estimated color
+     *         - the result:
      * @param context : user-specific object that is passed as-is to the callback function
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
-     *
-     * On failure, throws an exception or returns YSpectralSensor.NEARSIMPLECOLOR_INVALID.
      */
     function YSpectralSensor_get_nearSimpleColor_async(callback,context)
     {
@@ -994,6 +1008,77 @@ var YSpectralSensor; // definition below
                 callback(context, obj, Y_NEARSIMPLECOLOR_INVALID);
             } else {
                 callback(context, obj, obj._nearSimpleColor);
+            }
+        };
+        if (this._cacheExpiration <= YAPI.GetTickCount()) {
+            this.load_async(YAPI.defaultCacheValidity,loadcb,null);
+        } else {
+            loadcb(null, this, YAPI_SUCCESS);
+        }
+    }
+
+    /**
+     * Returns the estimated color as an index.
+     *
+     * This method retrieves the estimated color values
+     * and returns the index corresponding to the closest
+     * base color.
+     *
+     * @return a value among YSpectralSensor.NEARSIMPLECOLORINDEX_BROWN,
+     * YSpectralSensor.NEARSIMPLECOLORINDEX_RED, YSpectralSensor.NEARSIMPLECOLORINDEX_ORANGE,
+     * YSpectralSensor.NEARSIMPLECOLORINDEX_YELLOW, YSpectralSensor.NEARSIMPLECOLORINDEX_WHITE,
+     * YSpectralSensor.NEARSIMPLECOLORINDEX_GRAY, YSpectralSensor.NEARSIMPLECOLORINDEX_BLACK,
+     * YSpectralSensor.NEARSIMPLECOLORINDEX_GREEN, YSpectralSensor.NEARSIMPLECOLORINDEX_BLUE,
+     * YSpectralSensor.NEARSIMPLECOLORINDEX_PURPLE and YSpectralSensor.NEARSIMPLECOLORINDEX_PINK
+     * corresponding to the estimated color as an index
+     *
+     * On failure, throws an exception or returns YSpectralSensor.NEARSIMPLECOLORINDEX_INVALID.
+     */
+    function YSpectralSensor_get_nearSimpleColorIndex()
+    {
+        var res;                    // enumSIMPLECOLOR;
+        if (this._cacheExpiration <= YAPI.GetTickCount()) {
+            if (this.load(YAPI.defaultCacheValidity) != YAPI_SUCCESS) {
+                return Y_NEARSIMPLECOLORINDEX_INVALID;
+            }
+        }
+        res = this._nearSimpleColorIndex;
+        return res;
+    }
+
+    /**
+     * Gets the estimated color as an index.
+     *
+     * This method retrieves the estimated color values
+     * and returns the index corresponding to the closest
+     * base color.
+     *
+     * @param callback : callback function that is invoked when the result is known.
+     *         The callback function receives three arguments:
+     *         - the user-specific context object
+     *         - the YSpectralSensor object that invoked the callback
+     *         - the result:a value among YSpectralSensor.NEARSIMPLECOLORINDEX_BROWN,
+     *         YSpectralSensor.NEARSIMPLECOLORINDEX_RED, YSpectralSensor.NEARSIMPLECOLORINDEX_ORANGE,
+     *         YSpectralSensor.NEARSIMPLECOLORINDEX_YELLOW, YSpectralSensor.NEARSIMPLECOLORINDEX_WHITE,
+     *         YSpectralSensor.NEARSIMPLECOLORINDEX_GRAY, YSpectralSensor.NEARSIMPLECOLORINDEX_BLACK,
+     *         YSpectralSensor.NEARSIMPLECOLORINDEX_GREEN, YSpectralSensor.NEARSIMPLECOLORINDEX_BLUE,
+     *         YSpectralSensor.NEARSIMPLECOLORINDEX_PURPLE and YSpectralSensor.NEARSIMPLECOLORINDEX_PINK
+     *         corresponding to the estimated color as an index
+     * @param context : user-specific object that is passed as-is to the callback function
+     *
+     * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
+     *
+     * On failure, throws an exception or returns YSpectralSensor.NEARSIMPLECOLORINDEX_INVALID.
+     */
+    function YSpectralSensor_get_nearSimpleColorIndex_async(callback,context)
+    {
+        var res;                    // enumSIMPLECOLOR;
+        var loadcb;                 // func;
+        loadcb = function(ctx,obj,res) {
+            if (res != YAPI_SUCCESS) {
+                callback(context, obj, Y_NEARSIMPLECOLORINDEX_INVALID);
+            } else {
+                callback(context, obj, obj._nearSimpleColorIndex);
             }
         };
         if (this._cacheExpiration <= YAPI.GetTickCount()) {
@@ -1287,6 +1372,18 @@ var YSpectralSensor; // definition below
         NEARRAL3_INVALID            : YAPI_INVALID_STRING,
         NEARHTMLCOLOR_INVALID       : YAPI_INVALID_STRING,
         NEARSIMPLECOLOR_INVALID     : YAPI_INVALID_STRING,
+        NEARSIMPLECOLORINDEX_BROWN  : 0,
+        NEARSIMPLECOLORINDEX_RED    : 1,
+        NEARSIMPLECOLORINDEX_ORANGE : 2,
+        NEARSIMPLECOLORINDEX_YELLOW : 3,
+        NEARSIMPLECOLORINDEX_WHITE  : 4,
+        NEARSIMPLECOLORINDEX_GRAY   : 5,
+        NEARSIMPLECOLORINDEX_BLACK  : 6,
+        NEARSIMPLECOLORINDEX_GREEN  : 7,
+        NEARSIMPLECOLORINDEX_BLUE   : 8,
+        NEARSIMPLECOLORINDEX_PURPLE : 9,
+        NEARSIMPLECOLORINDEX_PINK   : 10,
+        NEARSIMPLECOLORINDEX_INVALID : -1,
         LEDCURRENTATPOWERON_INVALID : YAPI_INVALID_INT,
         INTEGRATIONTIMEATPOWERON_INVALID : YAPI_INVALID_INT,
         GAINATPOWERON_INVALID       : YAPI_INVALID_INT
@@ -1366,6 +1463,10 @@ var YSpectralSensor; // definition below
         nearSimpleColor             : YSpectralSensor_get_nearSimpleColor,
         get_nearSimpleColor_async   : YSpectralSensor_get_nearSimpleColor_async,
         nearSimpleColor_async       : YSpectralSensor_get_nearSimpleColor_async,
+        get_nearSimpleColorIndex    : YSpectralSensor_get_nearSimpleColorIndex,
+        nearSimpleColorIndex        : YSpectralSensor_get_nearSimpleColorIndex,
+        get_nearSimpleColorIndex_async : YSpectralSensor_get_nearSimpleColorIndex_async,
+        nearSimpleColorIndex_async  : YSpectralSensor_get_nearSimpleColorIndex_async,
         get_ledCurrentAtPowerOn     : YSpectralSensor_get_ledCurrentAtPowerOn,
         ledCurrentAtPowerOn         : YSpectralSensor_get_ledCurrentAtPowerOn,
         get_ledCurrentAtPowerOn_async : YSpectralSensor_get_ledCurrentAtPowerOn_async,

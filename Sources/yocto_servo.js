@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_servo.js 59977 2024-03-18 15:02:32Z mvuilleu $
+ *  $Id: svn_id $
  *
  *  Implements the high-level API for Servo functions
  *

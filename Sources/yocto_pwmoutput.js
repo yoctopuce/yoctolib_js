@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_pwmoutput.js 62273 2024-08-23 07:20:59Z seb $
+ *  $Id: svn_id $
  *
  *  Implements the high-level API for PwmOutput functions
  *

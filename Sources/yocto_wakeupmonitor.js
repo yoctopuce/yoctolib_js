@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_wakeupmonitor.js 59977 2024-03-18 15:02:32Z mvuilleu $
+ *  $Id: svn_id $
  *
  *  Implements the high-level API for WakeUpMonitor functions
  *
@@ -48,6 +48,7 @@ var Y_WAKEUPREASON_ENDOFSLEEP       = 2;
 var Y_WAKEUPREASON_EXTSIG1          = 3;
 var Y_WAKEUPREASON_SCHEDULE1        = 4;
 var Y_WAKEUPREASON_SCHEDULE2        = 5;
+var Y_WAKEUPREASON_SCHEDULE3        = 6;
 var Y_WAKEUPREASON_INVALID          = -1;
 var Y_WAKEUPSTATE_SLEEPING          = 0;
 var Y_WAKEUPSTATE_AWAKE             = 1;
@@ -322,8 +323,8 @@ var YWakeUpMonitor; // definition below
      *
      * @return a value among YWakeUpMonitor.WAKEUPREASON_USBPOWER, YWakeUpMonitor.WAKEUPREASON_EXTPOWER,
      * YWakeUpMonitor.WAKEUPREASON_ENDOFSLEEP, YWakeUpMonitor.WAKEUPREASON_EXTSIG1,
-     * YWakeUpMonitor.WAKEUPREASON_SCHEDULE1 and YWakeUpMonitor.WAKEUPREASON_SCHEDULE2 corresponding to
-     * the latest wake up reason
+     * YWakeUpMonitor.WAKEUPREASON_SCHEDULE1, YWakeUpMonitor.WAKEUPREASON_SCHEDULE2 and
+     * YWakeUpMonitor.WAKEUPREASON_SCHEDULE3 corresponding to the latest wake up reason
      *
      * On failure, throws an exception or returns YWakeUpMonitor.WAKEUPREASON_INVALID.
      */
@@ -348,8 +349,9 @@ var YWakeUpMonitor; // definition below
      *         - the YWakeUpMonitor object that invoked the callback
      *         - the result:a value among YWakeUpMonitor.WAKEUPREASON_USBPOWER,
      *         YWakeUpMonitor.WAKEUPREASON_EXTPOWER, YWakeUpMonitor.WAKEUPREASON_ENDOFSLEEP,
-     *         YWakeUpMonitor.WAKEUPREASON_EXTSIG1, YWakeUpMonitor.WAKEUPREASON_SCHEDULE1 and
-     *         YWakeUpMonitor.WAKEUPREASON_SCHEDULE2 corresponding to the latest wake up reason
+     *         YWakeUpMonitor.WAKEUPREASON_EXTSIG1, YWakeUpMonitor.WAKEUPREASON_SCHEDULE1,
+     *         YWakeUpMonitor.WAKEUPREASON_SCHEDULE2 and YWakeUpMonitor.WAKEUPREASON_SCHEDULE3 corresponding to
+     *         the latest wake up reason
      * @param context : user-specific object that is passed as-is to the callback function
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
@@ -652,6 +654,7 @@ var YWakeUpMonitor; // definition below
         WAKEUPREASON_EXTSIG1        : 3,
         WAKEUPREASON_SCHEDULE1      : 4,
         WAKEUPREASON_SCHEDULE2      : 5,
+        WAKEUPREASON_SCHEDULE3      : 6,
         WAKEUPREASON_INVALID        : -1,
         WAKEUPSTATE_SLEEPING        : 0,
         WAKEUPSTATE_AWAKE           : 1,
