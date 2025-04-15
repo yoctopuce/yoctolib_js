@@ -60,11 +60,11 @@ var Y_NEARSIMPLECOLORINDEX_BLUE     = 8;
 var Y_NEARSIMPLECOLORINDEX_PURPLE   = 9;
 var Y_NEARSIMPLECOLORINDEX_PINK     = 10;
 var Y_NEARSIMPLECOLORINDEX_INVALID  = -1;
-var Y_SATURATION_INVALID            = YAPI_INVALID_UINT;
 var Y_LEDCURRENT_INVALID            = YAPI_INVALID_UINT;
 var Y_LEDCALIBRATION_INVALID        = YAPI_INVALID_UINT;
 var Y_INTEGRATIONTIME_INVALID       = YAPI_INVALID_UINT;
 var Y_GAIN_INVALID                  = YAPI_INVALID_UINT;
+var Y_SATURATION_INVALID            = YAPI_INVALID_UINT;
 var Y_ESTIMATEDRGB_INVALID          = YAPI_INVALID_UINT;
 var Y_ESTIMATEDHSL_INVALID          = YAPI_INVALID_UINT;
 var Y_ESTIMATEDXYZ_INVALID          = YAPI_INVALID_STRING;
@@ -81,8 +81,6 @@ var Y_NEARSIMPLECOLOR_INVALID       = YAPI_INVALID_STRING;
  * YColorSensor Class: color sensor control interface
  *
  * The YColorSensor class allows you to read and configure Yoctopuce color sensors.
- * It inherits from YSensor class the core functions to read measurements,
- * to register callback functions, and to access the autonomous datalogger.
  */
 //--- (end of YColorSensor class start)
 
@@ -98,11 +96,11 @@ var YColorSensor; // definition below
 
         this._estimationModel                = Y_ESTIMATIONMODEL_INVALID;  // EstimationModel
         this._workingMode                    = Y_WORKINGMODE_INVALID;      // WorkingMode
-        this._saturation                     = Y_SATURATION_INVALID;       // SaturationBits
         this._ledCurrent                     = Y_LEDCURRENT_INVALID;       // UInt31
         this._ledCalibration                 = Y_LEDCALIBRATION_INVALID;   // UInt31
         this._integrationTime                = Y_INTEGRATIONTIME_INVALID;  // UInt31
         this._gain                           = Y_GAIN_INVALID;             // UInt31
+        this._saturation                     = Y_SATURATION_INVALID;       // SaturationBits
         this._estimatedRGB                   = Y_ESTIMATEDRGB_INVALID;     // U24Color
         this._estimatedHSL                   = Y_ESTIMATEDHSL_INVALID;     // U24Color
         this._estimatedXYZ                   = Y_ESTIMATEDXYZ_INVALID;     // ColorCoord
@@ -111,8 +109,8 @@ var YColorSensor; // definition below
         this._nearRAL2                       = Y_NEARRAL2_INVALID;         // Text
         this._nearRAL3                       = Y_NEARRAL3_INVALID;         // Text
         this._nearHTMLColor                  = Y_NEARHTMLCOLOR_INVALID;    // Text
-        this._nearSimpleColor                = Y_NEARSIMPLECOLOR_INVALID;  // Text
         this._nearSimpleColorIndex           = Y_NEARSIMPLECOLORINDEX_INVALID; // SimpleColor
+        this._nearSimpleColor                = Y_NEARSIMPLECOLOR_INVALID;  // Text
         //--- (end of YColorSensor constructor)
     }
 
@@ -127,9 +125,6 @@ var YColorSensor; // definition below
         case "workingMode":
             this._workingMode = parseInt(val);
             return 1;
-        case "saturation":
-            this._saturation = parseInt(val);
-            return 1;
         case "ledCurrent":
             this._ledCurrent = parseInt(val);
             return 1;
@@ -141,6 +136,9 @@ var YColorSensor; // definition below
             return 1;
         case "gain":
             this._gain = parseInt(val);
+            return 1;
+        case "saturation":
+            this._saturation = parseInt(val);
             return 1;
         case "estimatedRGB":
             this._estimatedRGB = parseInt(val);
@@ -166,21 +164,21 @@ var YColorSensor; // definition below
         case "nearHTMLColor":
             this._nearHTMLColor = val;
             return 1;
-        case "nearSimpleColor":
-            this._nearSimpleColor = val;
-            return 1;
         case "nearSimpleColorIndex":
             this._nearSimpleColorIndex = parseInt(val);
+            return 1;
+        case "nearSimpleColor":
+            this._nearSimpleColor = val;
             return 1;
         }
         return _super._parseAttr.call(this, name, val, _super._super);
     }
 
     /**
-     * Returns the model for color estimation.
+     * Returns the predictive model used for color estimation (reflective or emissive).
      *
      * @return either YColorSensor.ESTIMATIONMODEL_REFLECTION or YColorSensor.ESTIMATIONMODEL_EMISSION,
-     * according to the model for color estimation
+     * according to the predictive model used for color estimation (reflective or emissive)
      *
      * On failure, throws an exception or returns YColorSensor.ESTIMATIONMODEL_INVALID.
      */
@@ -197,14 +195,15 @@ var YColorSensor; // definition below
     }
 
     /**
-     * Gets the model for color estimation.
+     * Gets the predictive model used for color estimation (reflective or emissive).
      *
      * @param callback : callback function that is invoked when the result is known.
      *         The callback function receives three arguments:
      *         - the user-specific context object
      *         - the YColorSensor object that invoked the callback
      *         - the result:either YColorSensor.ESTIMATIONMODEL_REFLECTION or
-     *         YColorSensor.ESTIMATIONMODEL_EMISSION, according to the model for color estimation
+     *         YColorSensor.ESTIMATIONMODEL_EMISSION, according to the predictive model used for color estimation
+     *         (reflective or emissive)
      * @param context : user-specific object that is passed as-is to the callback function
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
@@ -230,11 +229,12 @@ var YColorSensor; // definition below
     }
 
     /**
-     * Changes the model for color estimation.
+     * Changes the mpredictive model to be used for color estimation (reflective or emissive).
      * Remember to call the saveToFlash() method of the module if the modification must be kept.
      *
      * @param newval : either YColorSensor.ESTIMATIONMODEL_REFLECTION or
-     * YColorSensor.ESTIMATIONMODEL_EMISSION, according to the model for color estimation
+     * YColorSensor.ESTIMATIONMODEL_EMISSION, according to the mpredictive model to be used for color
+     * estimation (reflective or emissive)
      *
      * @return YAPI.SUCCESS if the call succeeds.
      *
@@ -247,10 +247,12 @@ var YColorSensor; // definition below
     }
 
     /**
-     * Returns the active working mode.
+     * Returns the sensor working mode.
+     * In Auto mode, sensor parameters are automatically set based on the selected estimation model.
+     * In Expert mode, sensor parameters such as gain and integration time are configured manually.
      *
      * @return either YColorSensor.WORKINGMODE_AUTO or YColorSensor.WORKINGMODE_EXPERT, according to the
-     * active working mode
+     * sensor working mode
      *
      * On failure, throws an exception or returns YColorSensor.WORKINGMODE_INVALID.
      */
@@ -267,14 +269,16 @@ var YColorSensor; // definition below
     }
 
     /**
-     * Gets the active working mode.
+     * Gets the sensor working mode.
+     * In Auto mode, sensor parameters are automatically set based on the selected estimation model.
+     * In Expert mode, sensor parameters such as gain and integration time are configured manually.
      *
      * @param callback : callback function that is invoked when the result is known.
      *         The callback function receives three arguments:
      *         - the user-specific context object
      *         - the YColorSensor object that invoked the callback
      *         - the result:either YColorSensor.WORKINGMODE_AUTO or YColorSensor.WORKINGMODE_EXPERT, according to
-     *         the active working mode
+     *         the sensor working mode
      * @param context : user-specific object that is passed as-is to the callback function
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
@@ -300,11 +304,13 @@ var YColorSensor; // definition below
     }
 
     /**
-     * Changes the operating mode.
+     * Changes the sensor working mode.
+     * In Auto mode, sensor parameters are automatically set based on the selected estimation model.
+     * In Expert mode, sensor parameters such as gain and integration time are configured manually.
      * Remember to call the saveToFlash() method of the module if the modification must be kept.
      *
      * @param newval : either YColorSensor.WORKINGMODE_AUTO or YColorSensor.WORKINGMODE_EXPERT, according
-     * to the operating mode
+     * to the sensor working mode
      *
      * @return YAPI.SUCCESS if the call succeeds.
      *
@@ -317,62 +323,11 @@ var YColorSensor; // definition below
     }
 
     /**
-     * Returns the current saturation of the sensor.
-     * This function updates the sensor's saturation value.
+     * Returns the amount of current sent to the illumination LEDs, for reflection measurements.
+     * The value is an integer ranging from 0 (LEDs off) to 254 (LEDs at maximum intensity).
      *
-     * @return an integer corresponding to the current saturation of the sensor
-     *
-     * On failure, throws an exception or returns YColorSensor.SATURATION_INVALID.
-     */
-    function YColorSensor_get_saturation()
-    {
-        var res;                    // int;
-        if (this._cacheExpiration <= YAPI.GetTickCount()) {
-            if (this.load(YAPI.defaultCacheValidity) != YAPI_SUCCESS) {
-                return Y_SATURATION_INVALID;
-            }
-        }
-        res = this._saturation;
-        return res;
-    }
-
-    /**
-     * Gets the current saturation of the sensor.
-     * This function updates the sensor's saturation value.
-     *
-     * @param callback : callback function that is invoked when the result is known.
-     *         The callback function receives three arguments:
-     *         - the user-specific context object
-     *         - the YColorSensor object that invoked the callback
-     *         - the result:an integer corresponding to the current saturation of the sensor
-     * @param context : user-specific object that is passed as-is to the callback function
-     *
-     * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
-     *
-     * On failure, throws an exception or returns YColorSensor.SATURATION_INVALID.
-     */
-    function YColorSensor_get_saturation_async(callback,context)
-    {
-        var res;                    // int;
-        var loadcb;                 // func;
-        loadcb = function(ctx,obj,res) {
-            if (res != YAPI_SUCCESS) {
-                callback(context, obj, Y_SATURATION_INVALID);
-            } else {
-                callback(context, obj, obj._saturation);
-            }
-        };
-        if (this._cacheExpiration <= YAPI.GetTickCount()) {
-            this.load_async(YAPI.defaultCacheValidity,loadcb,null);
-        } else {
-            loadcb(null, this, YAPI_SUCCESS);
-        }
-    }
-
-    /**
-     * Returns the current value of the LED.
-     *
-     * @return an integer corresponding to the current value of the LED
+     * @return an integer corresponding to the amount of current sent to the illumination LEDs, for
+     * reflection measurements
      *
      * On failure, throws an exception or returns YColorSensor.LEDCURRENT_INVALID.
      */
@@ -389,13 +344,15 @@ var YColorSensor; // definition below
     }
 
     /**
-     * Gets the current value of the LED.
+     * Gets the amount of current sent to the illumination LEDs, for reflection measurements.
+     * The value is an integer ranging from 0 (LEDs off) to 254 (LEDs at maximum intensity).
      *
      * @param callback : callback function that is invoked when the result is known.
      *         The callback function receives three arguments:
      *         - the user-specific context object
      *         - the YColorSensor object that invoked the callback
-     *         - the result:an integer corresponding to the current value of the LED
+     *         - the result:an integer corresponding to the amount of current sent to the illumination LEDs, for
+     *         reflection measurements
      * @param context : user-specific object that is passed as-is to the callback function
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
@@ -421,10 +378,11 @@ var YColorSensor; // definition below
     }
 
     /**
-     * Changes the luminosity of the module leds. The parameter is a
-     * value between 0 and 254.
+     * Changes the amount of current sent to the illumination LEDs, for reflection measurements.
+     * The value is an integer ranging from 0 (LEDs off) to 254 (LEDs at maximum intensity).
      *
-     * @param newval : an integer corresponding to the luminosity of the module leds
+     * @param newval : an integer corresponding to the amount of current sent to the illumination LEDs,
+     * for reflection measurements
      *
      * @return YAPI.SUCCESS if the call succeeds.
      *
@@ -437,9 +395,9 @@ var YColorSensor; // definition below
     }
 
     /**
-     * Returns the LED current at calibration.
+     * Returns the current sent to the illumination LEDs during the last calibration.
      *
-     * @return an integer corresponding to the LED current at calibration
+     * @return an integer corresponding to the current sent to the illumination LEDs during the last calibration
      *
      * On failure, throws an exception or returns YColorSensor.LEDCALIBRATION_INVALID.
      */
@@ -456,13 +414,13 @@ var YColorSensor; // definition below
     }
 
     /**
-     * Gets the LED current at calibration.
+     * Gets the current sent to the illumination LEDs during the last calibration.
      *
      * @param callback : callback function that is invoked when the result is known.
      *         The callback function receives three arguments:
      *         - the user-specific context object
      *         - the YColorSensor object that invoked the callback
-     *         - the result:an integer corresponding to the LED current at calibration
+     *         - the result:an integer corresponding to the current sent to the illumination LEDs during the last calibration
      * @param context : user-specific object that is passed as-is to the callback function
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
@@ -488,7 +446,8 @@ var YColorSensor; // definition below
     }
 
     /**
-     * Sets the LED current for calibration.
+     * Remember the LED current sent to the illumination LEDs during a calibration.
+     * Thanks to this, the device will be able to use the same current during measurements.
      * Remember to call the saveToFlash() method of the module if the modification must be kept.
      *
      * @param newval : an integer
@@ -504,11 +463,11 @@ var YColorSensor; // definition below
     }
 
     /**
-     * Returns the current integration time.
-     * This method retrieves the integration time value
-     * used for data processing and returns it as an integer or an object.
+     * Returns the current integration time for spectral measurement, in milliseconds.
+     * A longer integration time increase the sensitivity for low light conditions,
+     * but reduces the measurement rate and may lead to saturation for lighter colors.
      *
-     * @return an integer corresponding to the current integration time
+     * @return an integer corresponding to the current integration time for spectral measurement, in milliseconds
      *
      * On failure, throws an exception or returns YColorSensor.INTEGRATIONTIME_INVALID.
      */
@@ -525,15 +484,15 @@ var YColorSensor; // definition below
     }
 
     /**
-     * Gets the current integration time.
-     * This method retrieves the integration time value
-     * used for data processing and returns it as an integer or an object.
+     * Gets the current integration time for spectral measurement, in milliseconds.
+     * A longer integration time increase the sensitivity for low light conditions,
+     * but reduces the measurement rate and may lead to saturation for lighter colors.
      *
      * @param callback : callback function that is invoked when the result is known.
      *         The callback function receives three arguments:
      *         - the user-specific context object
      *         - the YColorSensor object that invoked the callback
-     *         - the result:an integer corresponding to the current integration time
+     *         - the result:an integer corresponding to the current integration time for spectral measurement, in milliseconds
      * @param context : user-specific object that is passed as-is to the callback function
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
@@ -559,13 +518,14 @@ var YColorSensor; // definition below
     }
 
     /**
-     * Changes the integration time for data processing.
-     * This method takes a parameter and assigns it
-     * as the new integration time. This affects the duration
-     * for which data is integrated before being processed.
+     * Changes the integration time for spectral measurement, in milliseconds.
+     * A longer integration time increase the sensitivity for low light conditions,
+     * but reduces the measurement rate and may lead to saturation for lighter colors.
+     * This method can only be used when the sensor is configured in expert mode;
+     * when running in auto mode, the change will be ignored.
      * Remember to call the saveToFlash() method of the module if the modification must be kept.
      *
-     * @param newval : an integer corresponding to the integration time for data processing
+     * @param newval : an integer corresponding to the integration time for spectral measurement, in milliseconds
      *
      * @return YAPI.SUCCESS if the call succeeds.
      *
@@ -578,10 +538,11 @@ var YColorSensor; // definition below
     }
 
     /**
-     * Returns the current gain.
-     * This method updates the gain value.
+     * Returns the current spectral channel detector gain exponent.
+     * For a value n ranging from 0 to 12, the applied gain is 2^(n-1).
+     * 0 corresponds to a gain of 0.5, and 12 corresponds to a gain of 2048.
      *
-     * @return an integer corresponding to the current gain
+     * @return an integer corresponding to the current spectral channel detector gain exponent
      *
      * On failure, throws an exception or returns YColorSensor.GAIN_INVALID.
      */
@@ -598,14 +559,15 @@ var YColorSensor; // definition below
     }
 
     /**
-     * Gets the current gain.
-     * This method updates the gain value.
+     * Gets the current spectral channel detector gain exponent.
+     * For a value n ranging from 0 to 12, the applied gain is 2^(n-1).
+     * 0 corresponds to a gain of 0.5, and 12 corresponds to a gain of 2048.
      *
      * @param callback : callback function that is invoked when the result is known.
      *         The callback function receives three arguments:
      *         - the user-specific context object
      *         - the YColorSensor object that invoked the callback
-     *         - the result:an integer corresponding to the current gain
+     *         - the result:an integer corresponding to the current spectral channel detector gain exponent
      * @param context : user-specific object that is passed as-is to the callback function
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
@@ -631,13 +593,14 @@ var YColorSensor; // definition below
     }
 
     /**
-     * Changes the gain for signal processing.
-     * This method takes a parameter and assigns it
-     * as the new gain. This affects the sensitivity and
-     * intensity of the processed signal.
+     * Changes the spectral channel detector gain exponent.
+     * For a value n ranging from 0 to 12, the applied gain is 2^(n-1).
+     * 0 corresponds to a gain of 0.5, and 12 corresponds to a gain of 2048.
+     * This method can only be used when the sensor is configured in expert mode;
+     * when running in auto mode, the change will be ignored.
      * Remember to call the saveToFlash() method of the module if the modification must be kept.
      *
-     * @param newval : an integer corresponding to the gain for signal processing
+     * @param newval : an integer corresponding to the spectral channel detector gain exponent
      *
      * @return YAPI.SUCCESS if the call succeeds.
      *
@@ -650,9 +613,72 @@ var YColorSensor; // definition below
     }
 
     /**
-     * Returns the estimated color in RGB format (0xRRGGBB).
+     * Returns the current saturation state of the sensor, as an integer.
+     * Bit 0 indicates saturation of the analog sensor, which can only
+     * be corrected by reducing the gain parameters or the luminosity.
+     * Bit 1 indicates saturation of the digital interface, which can
+     * be corrected by reducing the integration time or the gain.
      *
-     * @return an integer corresponding to the estimated color in RGB format (0xRRGGBB)
+     * @return an integer corresponding to the current saturation state of the sensor, as an integer
+     *
+     * On failure, throws an exception or returns YColorSensor.SATURATION_INVALID.
+     */
+    function YColorSensor_get_saturation()
+    {
+        var res;                    // int;
+        if (this._cacheExpiration <= YAPI.GetTickCount()) {
+            if (this.load(YAPI.defaultCacheValidity) != YAPI_SUCCESS) {
+                return Y_SATURATION_INVALID;
+            }
+        }
+        res = this._saturation;
+        return res;
+    }
+
+    /**
+     * Gets the current saturation state of the sensor, as an integer.
+     * Bit 0 indicates saturation of the analog sensor, which can only
+     * be corrected by reducing the gain parameters or the luminosity.
+     * Bit 1 indicates saturation of the digital interface, which can
+     * be corrected by reducing the integration time or the gain.
+     *
+     * @param callback : callback function that is invoked when the result is known.
+     *         The callback function receives three arguments:
+     *         - the user-specific context object
+     *         - the YColorSensor object that invoked the callback
+     *         - the result:an integer corresponding to the current saturation state of the sensor, as an integer
+     * @param context : user-specific object that is passed as-is to the callback function
+     *
+     * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
+     *
+     * On failure, throws an exception or returns YColorSensor.SATURATION_INVALID.
+     */
+    function YColorSensor_get_saturation_async(callback,context)
+    {
+        var res;                    // int;
+        var loadcb;                 // func;
+        loadcb = function(ctx,obj,res) {
+            if (res != YAPI_SUCCESS) {
+                callback(context, obj, Y_SATURATION_INVALID);
+            } else {
+                callback(context, obj, obj._saturation);
+            }
+        };
+        if (this._cacheExpiration <= YAPI.GetTickCount()) {
+            this.load_async(YAPI.defaultCacheValidity,loadcb,null);
+        } else {
+            loadcb(null, this, YAPI_SUCCESS);
+        }
+    }
+
+    /**
+     * Returns the estimated color in RGB color model (0xRRGGBB).
+     * The RGB color model describes each color using a combination of 3 components:
+     * - Red (R): the intensity of red, in thee range 0...255
+     * - Green (G): the intensity of green, in thee range 0...255
+     * - Blue (B): the intensity of blue, in thee range 0...255
+     *
+     * @return an integer corresponding to the estimated color in RGB color model (0xRRGGBB)
      *
      * On failure, throws an exception or returns YColorSensor.ESTIMATEDRGB_INVALID.
      */
@@ -669,13 +695,17 @@ var YColorSensor; // definition below
     }
 
     /**
-     * Gets the estimated color in RGB format (0xRRGGBB).
+     * Gets the estimated color in RGB color model (0xRRGGBB).
+     * The RGB color model describes each color using a combination of 3 components:
+     * - Red (R): the intensity of red, in thee range 0...255
+     * - Green (G): the intensity of green, in thee range 0...255
+     * - Blue (B): the intensity of blue, in thee range 0...255
      *
      * @param callback : callback function that is invoked when the result is known.
      *         The callback function receives three arguments:
      *         - the user-specific context object
      *         - the YColorSensor object that invoked the callback
-     *         - the result:an integer corresponding to the estimated color in RGB format (0xRRGGBB)
+     *         - the result:an integer corresponding to the estimated color in RGB color model (0xRRGGBB)
      * @param context : user-specific object that is passed as-is to the callback function
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
@@ -701,9 +731,13 @@ var YColorSensor; // definition below
     }
 
     /**
-     * Returns the estimated color in HSL (Hue, Saturation, Lightness) format.
+     * Returns the estimated color in HSL color model (0xHHSSLL).
+     * The HSL color model describes each color using a combination of 3 components:
+     * - Hue (H): the angle on the color wheel (0-360 degrees), mapped to 0...255
+     * - Saturation (S): the intensity of the color (0-100%), mapped to 0...255
+     * - Lightness (L): the brightness of the color (0-100%), mapped to 0...255
      *
-     * @return an integer corresponding to the estimated color in HSL (Hue, Saturation, Lightness) format
+     * @return an integer corresponding to the estimated color in HSL color model (0xHHSSLL)
      *
      * On failure, throws an exception or returns YColorSensor.ESTIMATEDHSL_INVALID.
      */
@@ -720,13 +754,17 @@ var YColorSensor; // definition below
     }
 
     /**
-     * Gets the estimated color in HSL (Hue, Saturation, Lightness) format.
+     * Gets the estimated color in HSL color model (0xHHSSLL).
+     * The HSL color model describes each color using a combination of 3 components:
+     * - Hue (H): the angle on the color wheel (0-360 degrees), mapped to 0...255
+     * - Saturation (S): the intensity of the color (0-100%), mapped to 0...255
+     * - Lightness (L): the brightness of the color (0-100%), mapped to 0...255
      *
      * @param callback : callback function that is invoked when the result is known.
      *         The callback function receives three arguments:
      *         - the user-specific context object
      *         - the YColorSensor object that invoked the callback
-     *         - the result:an integer corresponding to the estimated color in HSL (Hue, Saturation, Lightness) format
+     *         - the result:an integer corresponding to the estimated color in HSL color model (0xHHSSLL)
      * @param context : user-specific object that is passed as-is to the callback function
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
@@ -752,9 +790,14 @@ var YColorSensor; // definition below
     }
 
     /**
-     * Returns the estimated color in XYZ format.
+     * Returns the estimated color according to the CIE XYZ color model.
+     * This color model is based on human vision and light perception, with three components
+     * represented by real numbers between 0 and 1:
+     * - X: corresponds to a component mixing sensitivity to red and green
+     * - Y: represents luminance (perceived brightness)
+     * - Z: corresponds to sensitivity to blue
      *
-     * @return a string corresponding to the estimated color in XYZ format
+     * @return a string corresponding to the estimated color according to the CIE XYZ color model
      *
      * On failure, throws an exception or returns YColorSensor.ESTIMATEDXYZ_INVALID.
      */
@@ -771,13 +814,18 @@ var YColorSensor; // definition below
     }
 
     /**
-     * Gets the estimated color in XYZ format.
+     * Gets the estimated color according to the CIE XYZ color model.
+     * This color model is based on human vision and light perception, with three components
+     * represented by real numbers between 0 and 1:
+     * - X: corresponds to a component mixing sensitivity to red and green
+     * - Y: represents luminance (perceived brightness)
+     * - Z: corresponds to sensitivity to blue
      *
      * @param callback : callback function that is invoked when the result is known.
      *         The callback function receives three arguments:
      *         - the user-specific context object
      *         - the YColorSensor object that invoked the callback
-     *         - the result:a string corresponding to the estimated color in XYZ format
+     *         - the result:a string corresponding to the estimated color according to the CIE XYZ color model
      * @param context : user-specific object that is passed as-is to the callback function
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
@@ -803,9 +851,14 @@ var YColorSensor; // definition below
     }
 
     /**
-     * Returns the estimated color in OkLab format.
+     * Returns the estimated color according to the OkLab color model.
+     * OkLab is a perceptual color model that aims to align human color perception with numerical
+     * values, so that visually near colors are also numerically near. Colors are represented using three components:
+     * - L: lightness, a real number between 0 and 1-
+     * - a: color variations between green and red, between -0.5 and 0.5-
+     * - b: color variations between blue and yellow, between -0.5 and 0.5.
      *
-     * @return a string corresponding to the estimated color in OkLab format
+     * @return a string corresponding to the estimated color according to the OkLab color model
      *
      * On failure, throws an exception or returns YColorSensor.ESTIMATEDOKLAB_INVALID.
      */
@@ -822,13 +875,18 @@ var YColorSensor; // definition below
     }
 
     /**
-     * Gets the estimated color in OkLab format.
+     * Gets the estimated color according to the OkLab color model.
+     * OkLab is a perceptual color model that aims to align human color perception with numerical
+     * values, so that visually near colors are also numerically near. Colors are represented using three components:
+     * - L: lightness, a real number between 0 and 1-
+     * - a: color variations between green and red, between -0.5 and 0.5-
+     * - b: color variations between blue and yellow, between -0.5 and 0.5.
      *
      * @param callback : callback function that is invoked when the result is known.
      *         The callback function receives three arguments:
      *         - the user-specific context object
      *         - the YColorSensor object that invoked the callback
-     *         - the result:a string corresponding to the estimated color in OkLab format
+     *         - the result:a string corresponding to the estimated color according to the OkLab color model
      * @param context : user-specific object that is passed as-is to the callback function
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
@@ -854,9 +912,9 @@ var YColorSensor; // definition below
     }
 
     /**
-     * Returns the estimated color in RAL format.
+     * Returns the RAL Classic color closest to the estimated color, with a similarity ratio.
      *
-     * @return a string corresponding to the estimated color in RAL format
+     * @return a string corresponding to the RAL Classic color closest to the estimated color, with a similarity ratio
      *
      * On failure, throws an exception or returns YColorSensor.NEARRAL1_INVALID.
      */
@@ -873,13 +931,14 @@ var YColorSensor; // definition below
     }
 
     /**
-     * Gets the estimated color in RAL format.
+     * Gets the RAL Classic color closest to the estimated color, with a similarity ratio.
      *
      * @param callback : callback function that is invoked when the result is known.
      *         The callback function receives three arguments:
      *         - the user-specific context object
      *         - the YColorSensor object that invoked the callback
-     *         - the result:a string corresponding to the estimated color in RAL format
+     *         - the result:a string corresponding to the RAL Classic color closest to the estimated color, with a
+     *         similarity ratio
      * @param context : user-specific object that is passed as-is to the callback function
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
@@ -905,9 +964,10 @@ var YColorSensor; // definition below
     }
 
     /**
-     * Returns the estimated color in RAL format.
+     * Returns the second closest RAL Classic color to the estimated color, with a similarity ratio.
      *
-     * @return a string corresponding to the estimated color in RAL format
+     * @return a string corresponding to the second closest RAL Classic color to the estimated color, with
+     * a similarity ratio
      *
      * On failure, throws an exception or returns YColorSensor.NEARRAL2_INVALID.
      */
@@ -924,13 +984,14 @@ var YColorSensor; // definition below
     }
 
     /**
-     * Gets the estimated color in RAL format.
+     * Gets the second closest RAL Classic color to the estimated color, with a similarity ratio.
      *
      * @param callback : callback function that is invoked when the result is known.
      *         The callback function receives three arguments:
      *         - the user-specific context object
      *         - the YColorSensor object that invoked the callback
-     *         - the result:a string corresponding to the estimated color in RAL format
+     *         - the result:a string corresponding to the second closest RAL Classic color to the estimated color,
+     *         with a similarity ratio
      * @param context : user-specific object that is passed as-is to the callback function
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
@@ -956,9 +1017,10 @@ var YColorSensor; // definition below
     }
 
     /**
-     * Returns the estimated color in RAL format.
+     * Returns the third closest RAL Classic color to the estimated color, with a similarity ratio.
      *
-     * @return a string corresponding to the estimated color in RAL format
+     * @return a string corresponding to the third closest RAL Classic color to the estimated color, with
+     * a similarity ratio
      *
      * On failure, throws an exception or returns YColorSensor.NEARRAL3_INVALID.
      */
@@ -975,13 +1037,14 @@ var YColorSensor; // definition below
     }
 
     /**
-     * Gets the estimated color in RAL format.
+     * Gets the third closest RAL Classic color to the estimated color, with a similarity ratio.
      *
      * @param callback : callback function that is invoked when the result is known.
      *         The callback function receives three arguments:
      *         - the user-specific context object
      *         - the YColorSensor object that invoked the callback
-     *         - the result:a string corresponding to the estimated color in RAL format
+     *         - the result:a string corresponding to the third closest RAL Classic color to the estimated color,
+     *         with a similarity ratio
      * @param context : user-specific object that is passed as-is to the callback function
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
@@ -1007,9 +1070,9 @@ var YColorSensor; // definition below
     }
 
     /**
-     * Returns the estimated HTML color .
+     * Returns the name of the HTML color closest to the estimated color.
      *
-     * @return a string corresponding to the estimated HTML color
+     * @return a string corresponding to the name of the HTML color closest to the estimated color
      *
      * On failure, throws an exception or returns YColorSensor.NEARHTMLCOLOR_INVALID.
      */
@@ -1026,13 +1089,13 @@ var YColorSensor; // definition below
     }
 
     /**
-     * Gets the estimated HTML color .
+     * Gets the name of the HTML color closest to the estimated color.
      *
      * @param callback : callback function that is invoked when the result is known.
      *         The callback function receives three arguments:
      *         - the user-specific context object
      *         - the YColorSensor object that invoked the callback
-     *         - the result:a string corresponding to the estimated HTML color
+     *         - the result:a string corresponding to the name of the HTML color closest to the estimated color
      * @param context : user-specific object that is passed as-is to the callback function
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
@@ -1058,58 +1121,19 @@ var YColorSensor; // definition below
     }
 
     /**
-     * Returns the estimated color .
-     *
-     * @return a string corresponding to the estimated color
-     *
-     * On failure, throws an exception or returns YColorSensor.NEARSIMPLECOLOR_INVALID.
-     */
-    function YColorSensor_get_nearSimpleColor()
-    {
-        var res;                    // string;
-        if (this._cacheExpiration <= YAPI.GetTickCount()) {
-            if (this.load(YAPI.defaultCacheValidity) != YAPI_SUCCESS) {
-                return Y_NEARSIMPLECOLOR_INVALID;
-            }
-        }
-        res = this._nearSimpleColor;
-        return res;
-    }
-
-    /**
-     * Gets the estimated color .
-     *
-     * @param callback : callback function that is invoked when the result is known.
-     *         The callback function receives three arguments:
-     *         - the user-specific context object
-     *         - the YColorSensor object that invoked the callback
-     *         - the result:a string corresponding to the estimated color
-     * @param context : user-specific object that is passed as-is to the callback function
-     *
-     * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
-     *
-     * On failure, throws an exception or returns YColorSensor.NEARSIMPLECOLOR_INVALID.
-     */
-    function YColorSensor_get_nearSimpleColor_async(callback,context)
-    {
-        var res;                    // string;
-        var loadcb;                 // func;
-        loadcb = function(ctx,obj,res) {
-            if (res != YAPI_SUCCESS) {
-                callback(context, obj, Y_NEARSIMPLECOLOR_INVALID);
-            } else {
-                callback(context, obj, obj._nearSimpleColor);
-            }
-        };
-        if (this._cacheExpiration <= YAPI.GetTickCount()) {
-            this.load_async(YAPI.defaultCacheValidity,loadcb,null);
-        } else {
-            loadcb(null, this, YAPI_SUCCESS);
-        }
-    }
-
-    /**
-     * Returns the estimated color as an index.
+     * Returns the index of the basic color typically used to refer to the estimated color (enumerated value).
+     * The list of basic colors recognized is:
+     * - 0 - Brown
+     * - 1 - Red
+     * - 2 - Orange
+     * - 3 - Yellow
+     * - 4 - White
+     * - 5 - Gray
+     * - 6 - Black
+     * - 7 - Green
+     * - 8 - Blue
+     * - 9 - Purple
+     * - 10 - Pink
      *
      * @return a value among YColorSensor.NEARSIMPLECOLORINDEX_BROWN,
      * YColorSensor.NEARSIMPLECOLORINDEX_RED, YColorSensor.NEARSIMPLECOLORINDEX_ORANGE,
@@ -1117,7 +1141,7 @@ var YColorSensor; // definition below
      * YColorSensor.NEARSIMPLECOLORINDEX_GRAY, YColorSensor.NEARSIMPLECOLORINDEX_BLACK,
      * YColorSensor.NEARSIMPLECOLORINDEX_GREEN, YColorSensor.NEARSIMPLECOLORINDEX_BLUE,
      * YColorSensor.NEARSIMPLECOLORINDEX_PURPLE and YColorSensor.NEARSIMPLECOLORINDEX_PINK corresponding
-     * to the estimated color as an index
+     * to the index of the basic color typically used to refer to the estimated color (enumerated value)
      *
      * On failure, throws an exception or returns YColorSensor.NEARSIMPLECOLORINDEX_INVALID.
      */
@@ -1134,7 +1158,19 @@ var YColorSensor; // definition below
     }
 
     /**
-     * Gets the estimated color as an index.
+     * Gets the index of the basic color typically used to refer to the estimated color (enumerated value).
+     * The list of basic colors recognized is:
+     * - 0 - Brown
+     * - 1 - Red
+     * - 2 - Orange
+     * - 3 - Yellow
+     * - 4 - White
+     * - 5 - Gray
+     * - 6 - Black
+     * - 7 - Green
+     * - 8 - Blue
+     * - 9 - Purple
+     * - 10 - Pink
      *
      * @param callback : callback function that is invoked when the result is known.
      *         The callback function receives three arguments:
@@ -1146,7 +1182,7 @@ var YColorSensor; // definition below
      *         YColorSensor.NEARSIMPLECOLORINDEX_GRAY, YColorSensor.NEARSIMPLECOLORINDEX_BLACK,
      *         YColorSensor.NEARSIMPLECOLORINDEX_GREEN, YColorSensor.NEARSIMPLECOLORINDEX_BLUE,
      *         YColorSensor.NEARSIMPLECOLORINDEX_PURPLE and YColorSensor.NEARSIMPLECOLORINDEX_PINK corresponding
-     *         to the estimated color as an index
+     *         to the index of the basic color typically used to refer to the estimated color (enumerated value)
      * @param context : user-specific object that is passed as-is to the callback function
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
@@ -1162,6 +1198,58 @@ var YColorSensor; // definition below
                 callback(context, obj, Y_NEARSIMPLECOLORINDEX_INVALID);
             } else {
                 callback(context, obj, obj._nearSimpleColorIndex);
+            }
+        };
+        if (this._cacheExpiration <= YAPI.GetTickCount()) {
+            this.load_async(YAPI.defaultCacheValidity,loadcb,null);
+        } else {
+            loadcb(null, this, YAPI_SUCCESS);
+        }
+    }
+
+    /**
+     * Returns the name of the basic color typically used to refer to the estimated color.
+     *
+     * @return a string corresponding to the name of the basic color typically used to refer to the estimated color
+     *
+     * On failure, throws an exception or returns YColorSensor.NEARSIMPLECOLOR_INVALID.
+     */
+    function YColorSensor_get_nearSimpleColor()
+    {
+        var res;                    // string;
+        if (this._cacheExpiration <= YAPI.GetTickCount()) {
+            if (this.load(YAPI.defaultCacheValidity) != YAPI_SUCCESS) {
+                return Y_NEARSIMPLECOLOR_INVALID;
+            }
+        }
+        res = this._nearSimpleColor;
+        return res;
+    }
+
+    /**
+     * Gets the name of the basic color typically used to refer to the estimated color.
+     *
+     * @param callback : callback function that is invoked when the result is known.
+     *         The callback function receives three arguments:
+     *         - the user-specific context object
+     *         - the YColorSensor object that invoked the callback
+     *         - the result:a string corresponding to the name of the basic color typically used to refer to the
+     *         estimated color
+     * @param context : user-specific object that is passed as-is to the callback function
+     *
+     * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
+     *
+     * On failure, throws an exception or returns YColorSensor.NEARSIMPLECOLOR_INVALID.
+     */
+    function YColorSensor_get_nearSimpleColor_async(callback,context)
+    {
+        var res;                    // string;
+        var loadcb;                 // func;
+        loadcb = function(ctx,obj,res) {
+            if (res != YAPI_SUCCESS) {
+                callback(context, obj, Y_NEARSIMPLECOLOR_INVALID);
+            } else {
+                callback(context, obj, obj._nearSimpleColor);
             }
         };
         if (this._cacheExpiration <= YAPI.GetTickCount()) {
@@ -1211,8 +1299,8 @@ var YColorSensor; // definition below
     }
 
     /**
-     * Turns on the LEDs at the current used during calibration.
-     * On failure, throws an exception or returns Y_DATA_INVALID.
+     * Turns on the built-in illumination LEDs using the same current as used during last calibration.
+     * On failure, throws an exception or returns a negative error code.
      */
     function YColorSensor_turnLedOn()
     {
@@ -1220,8 +1308,8 @@ var YColorSensor; // definition below
     }
 
     /**
-     * Turns off the LEDs.
-     * On failure, throws an exception or returns Y_DATA_INVALID.
+     * Turns off the built-in illumination LEDs.
+     * On failure, throws an exception or returns a negative error code.
      */
     function YColorSensor_turnLedOff()
     {
@@ -1273,11 +1361,11 @@ var YColorSensor; // definition below
         WORKINGMODE_AUTO            : 0,
         WORKINGMODE_EXPERT          : 1,
         WORKINGMODE_INVALID         : -1,
-        SATURATION_INVALID          : YAPI_INVALID_UINT,
         LEDCURRENT_INVALID          : YAPI_INVALID_UINT,
         LEDCALIBRATION_INVALID      : YAPI_INVALID_UINT,
         INTEGRATIONTIME_INVALID     : YAPI_INVALID_UINT,
         GAIN_INVALID                : YAPI_INVALID_UINT,
+        SATURATION_INVALID          : YAPI_INVALID_UINT,
         ESTIMATEDRGB_INVALID        : YAPI_INVALID_UINT,
         ESTIMATEDHSL_INVALID        : YAPI_INVALID_UINT,
         ESTIMATEDXYZ_INVALID        : YAPI_INVALID_STRING,
@@ -1286,7 +1374,6 @@ var YColorSensor; // definition below
         NEARRAL2_INVALID            : YAPI_INVALID_STRING,
         NEARRAL3_INVALID            : YAPI_INVALID_STRING,
         NEARHTMLCOLOR_INVALID       : YAPI_INVALID_STRING,
-        NEARSIMPLECOLOR_INVALID     : YAPI_INVALID_STRING,
         NEARSIMPLECOLORINDEX_BROWN  : 0,
         NEARSIMPLECOLORINDEX_RED    : 1,
         NEARSIMPLECOLORINDEX_ORANGE : 2,
@@ -1298,7 +1385,8 @@ var YColorSensor; // definition below
         NEARSIMPLECOLORINDEX_BLUE   : 8,
         NEARSIMPLECOLORINDEX_PURPLE : 9,
         NEARSIMPLECOLORINDEX_PINK   : 10,
-        NEARSIMPLECOLORINDEX_INVALID : -1
+        NEARSIMPLECOLORINDEX_INVALID : -1,
+        NEARSIMPLECOLOR_INVALID     : YAPI_INVALID_STRING
     }, {
         // Class methods
         FindColorSensor             : YColorSensor_FindColorSensor,
@@ -1317,10 +1405,6 @@ var YColorSensor; // definition below
         workingMode_async           : YColorSensor_get_workingMode_async,
         set_workingMode             : YColorSensor_set_workingMode,
         setWorkingMode              : YColorSensor_set_workingMode,
-        get_saturation              : YColorSensor_get_saturation,
-        saturation                  : YColorSensor_get_saturation,
-        get_saturation_async        : YColorSensor_get_saturation_async,
-        saturation_async            : YColorSensor_get_saturation_async,
         get_ledCurrent              : YColorSensor_get_ledCurrent,
         ledCurrent                  : YColorSensor_get_ledCurrent,
         get_ledCurrent_async        : YColorSensor_get_ledCurrent_async,
@@ -1345,6 +1429,10 @@ var YColorSensor; // definition below
         gain_async                  : YColorSensor_get_gain_async,
         set_gain                    : YColorSensor_set_gain,
         setGain                     : YColorSensor_set_gain,
+        get_saturation              : YColorSensor_get_saturation,
+        saturation                  : YColorSensor_get_saturation,
+        get_saturation_async        : YColorSensor_get_saturation_async,
+        saturation_async            : YColorSensor_get_saturation_async,
         get_estimatedRGB            : YColorSensor_get_estimatedRGB,
         estimatedRGB                : YColorSensor_get_estimatedRGB,
         get_estimatedRGB_async      : YColorSensor_get_estimatedRGB_async,
@@ -1377,14 +1465,14 @@ var YColorSensor; // definition below
         nearHTMLColor               : YColorSensor_get_nearHTMLColor,
         get_nearHTMLColor_async     : YColorSensor_get_nearHTMLColor_async,
         nearHTMLColor_async         : YColorSensor_get_nearHTMLColor_async,
-        get_nearSimpleColor         : YColorSensor_get_nearSimpleColor,
-        nearSimpleColor             : YColorSensor_get_nearSimpleColor,
-        get_nearSimpleColor_async   : YColorSensor_get_nearSimpleColor_async,
-        nearSimpleColor_async       : YColorSensor_get_nearSimpleColor_async,
         get_nearSimpleColorIndex    : YColorSensor_get_nearSimpleColorIndex,
         nearSimpleColorIndex        : YColorSensor_get_nearSimpleColorIndex,
         get_nearSimpleColorIndex_async : YColorSensor_get_nearSimpleColorIndex_async,
         nearSimpleColorIndex_async  : YColorSensor_get_nearSimpleColorIndex_async,
+        get_nearSimpleColor         : YColorSensor_get_nearSimpleColor,
+        nearSimpleColor             : YColorSensor_get_nearSimpleColor,
+        get_nearSimpleColor_async   : YColorSensor_get_nearSimpleColor_async,
+        nearSimpleColor_async       : YColorSensor_get_nearSimpleColor_async,
         turnLedOn                   : YColorSensor_turnLedOn,
         turnLedOff                  : YColorSensor_turnLedOff,
         nextColorSensor             : YColorSensor_nextColorSensor,

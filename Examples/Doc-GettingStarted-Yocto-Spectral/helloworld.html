@@ -28,9 +28,12 @@
      if (colorSensor.isOnline()) {
         var info = '';
         
+        colorSensor.set_workingMode(Y_WORKINGMODE_AUTO);
+        colorSensor.set_estimationModel(Y_ESTIMATIONMODEL_REFLECTION);
+
         info = '';
         info += 'Near color : ' + colorSensor.get_nearSimpleColor() + '\n';
-        info += 'Color HEX : #' + colorSensor.get_estimatedRGB().toString(16);
+        info += 'RGB HEX : #' + colorSensor.get_estimatedRGB().toString(16);
         document.getElementById("color").value = info;
         
 
