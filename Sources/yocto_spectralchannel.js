@@ -43,6 +43,8 @@ if(typeof YAPI == "undefined") { if(typeof yAPI != "undefined") window["YAPI"]=y
 //--- (end of YSpectralChannel return codes)
 //--- (YSpectralChannel definitions)
 var Y_RAWCOUNT_INVALID              = YAPI_INVALID_INT;
+var Y_CHANNELNAME_INVALID           = YAPI_INVALID_STRING;
+var Y_PEAKWAVELENGTH_INVALID        = YAPI_INVALID_INT;
 //--- (end of YSpectralChannel definitions)
 
 //--- (YSpectralChannel class start)
@@ -66,6 +68,8 @@ var YSpectralChannel; // definition below
         this._className = 'SpectralChannel';
 
         this._rawCount                       = Y_RAWCOUNT_INVALID;         // Int
+        this._channelName                    = Y_CHANNELNAME_INVALID;      // Text
+        this._peakWavelength                 = Y_PEAKWAVELENGTH_INVALID;   // Int
         //--- (end of YSpectralChannel constructor)
     }
 
@@ -77,12 +81,18 @@ var YSpectralChannel; // definition below
         case "rawCount":
             this._rawCount = parseInt(val);
             return 1;
+        case "channelName":
+            this._channelName = val;
+            return 1;
+        case "peakWavelength":
+            this._peakWavelength = parseInt(val);
+            return 1;
         }
         return _super._parseAttr.call(this, name, val, _super._super);
     }
 
     /**
-     * Retrieves the raw cspectral intensity value as measured by the sensor, without any scaling or calibration.
+     * Retrieves the raw spectral intensity value as measured by the sensor, without any scaling or calibration.
      *
      * @return an integer
      *
@@ -101,7 +111,7 @@ var YSpectralChannel; // definition below
     }
 
     /**
-     * Retrieves the raw cspectral intensity value as measured by the sensor, without any scaling or calibration.
+     * Retrieves the raw spectral intensity value as measured by the sensor, without any scaling or calibration.
      *
      * @param callback : callback function that is invoked when the result is known.
      *         The callback function receives three arguments:
@@ -123,6 +133,108 @@ var YSpectralChannel; // definition below
                 callback(context, obj, Y_RAWCOUNT_INVALID);
             } else {
                 callback(context, obj, obj._rawCount);
+            }
+        };
+        if (this._cacheExpiration <= YAPI.GetTickCount()) {
+            this.load_async(YAPI.defaultCacheValidity,loadcb,null);
+        } else {
+            loadcb(null, this, YAPI_SUCCESS);
+        }
+    }
+
+    /**
+     * Returns the target spectral band name.
+     *
+     * @return a string corresponding to the target spectral band name
+     *
+     * On failure, throws an exception or returns YSpectralChannel.CHANNELNAME_INVALID.
+     */
+    function YSpectralChannel_get_channelName()
+    {
+        var res;                    // string;
+        if (this._cacheExpiration <= YAPI.GetTickCount()) {
+            if (this.load(YAPI.defaultCacheValidity) != YAPI_SUCCESS) {
+                return Y_CHANNELNAME_INVALID;
+            }
+        }
+        res = this._channelName;
+        return res;
+    }
+
+    /**
+     * Gets the target spectral band name.
+     *
+     * @param callback : callback function that is invoked when the result is known.
+     *         The callback function receives three arguments:
+     *         - the user-specific context object
+     *         - the YSpectralChannel object that invoked the callback
+     *         - the result:a string corresponding to the target spectral band name
+     * @param context : user-specific object that is passed as-is to the callback function
+     *
+     * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
+     *
+     * On failure, throws an exception or returns YSpectralChannel.CHANNELNAME_INVALID.
+     */
+    function YSpectralChannel_get_channelName_async(callback,context)
+    {
+        var res;                    // string;
+        var loadcb;                 // func;
+        loadcb = function(ctx,obj,res) {
+            if (res != YAPI_SUCCESS) {
+                callback(context, obj, Y_CHANNELNAME_INVALID);
+            } else {
+                callback(context, obj, obj._channelName);
+            }
+        };
+        if (this._cacheExpiration <= YAPI.GetTickCount()) {
+            this.load_async(YAPI.defaultCacheValidity,loadcb,null);
+        } else {
+            loadcb(null, this, YAPI_SUCCESS);
+        }
+    }
+
+    /**
+     * Returns the target spectral band peak wavelenght, in nm.
+     *
+     * @return an integer corresponding to the target spectral band peak wavelenght, in nm
+     *
+     * On failure, throws an exception or returns YSpectralChannel.PEAKWAVELENGTH_INVALID.
+     */
+    function YSpectralChannel_get_peakWavelength()
+    {
+        var res;                    // int;
+        if (this._cacheExpiration <= YAPI.GetTickCount()) {
+            if (this.load(YAPI.defaultCacheValidity) != YAPI_SUCCESS) {
+                return Y_PEAKWAVELENGTH_INVALID;
+            }
+        }
+        res = this._peakWavelength;
+        return res;
+    }
+
+    /**
+     * Gets the target spectral band peak wavelenght, in nm.
+     *
+     * @param callback : callback function that is invoked when the result is known.
+     *         The callback function receives three arguments:
+     *         - the user-specific context object
+     *         - the YSpectralChannel object that invoked the callback
+     *         - the result:an integer corresponding to the target spectral band peak wavelenght, in nm
+     * @param context : user-specific object that is passed as-is to the callback function
+     *
+     * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
+     *
+     * On failure, throws an exception or returns YSpectralChannel.PEAKWAVELENGTH_INVALID.
+     */
+    function YSpectralChannel_get_peakWavelength_async(callback,context)
+    {
+        var res;                    // int;
+        var loadcb;                 // func;
+        loadcb = function(ctx,obj,res) {
+            if (res != YAPI_SUCCESS) {
+                callback(context, obj, Y_PEAKWAVELENGTH_INVALID);
+            } else {
+                callback(context, obj, obj._peakWavelength);
             }
         };
         if (this._cacheExpiration <= YAPI.GetTickCount()) {
@@ -210,7 +322,9 @@ var YSpectralChannel; // definition below
     //--- (YSpectralChannel initialization)
     YSpectralChannel = YSensor._Subclass(_YSpectralChannel, {
         // Constants
-        RAWCOUNT_INVALID            : YAPI_INVALID_INT
+        RAWCOUNT_INVALID            : YAPI_INVALID_INT,
+        CHANNELNAME_INVALID         : YAPI_INVALID_STRING,
+        PEAKWAVELENGTH_INVALID      : YAPI_INVALID_INT
     }, {
         // Class methods
         FindSpectralChannel         : YSpectralChannel_FindSpectralChannel,
@@ -221,6 +335,14 @@ var YSpectralChannel; // definition below
         rawCount                    : YSpectralChannel_get_rawCount,
         get_rawCount_async          : YSpectralChannel_get_rawCount_async,
         rawCount_async              : YSpectralChannel_get_rawCount_async,
+        get_channelName             : YSpectralChannel_get_channelName,
+        channelName                 : YSpectralChannel_get_channelName,
+        get_channelName_async       : YSpectralChannel_get_channelName_async,
+        channelName_async           : YSpectralChannel_get_channelName_async,
+        get_peakWavelength          : YSpectralChannel_get_peakWavelength,
+        peakWavelength              : YSpectralChannel_get_peakWavelength,
+        get_peakWavelength_async    : YSpectralChannel_get_peakWavelength_async,
+        peakWavelength_async        : YSpectralChannel_get_peakWavelength_async,
         nextSpectralChannel         : YSpectralChannel_nextSpectralChannel,
         _parseAttr                  : YSpectralChannel_parseAttr
     });
