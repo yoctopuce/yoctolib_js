@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_api.js 65618 2025-04-08 07:55:42Z seb $
+ * $Id: yocto_api.js 66103 2025-05-02 06:55:47Z seb $
  *
  * High-level programming interface, common to all modules
  *
@@ -58,6 +58,8 @@ var YAPI_SSL_ERROR                  = -15;     // Error reported by mbedSSL
 var YAPI_RFID_SOFT_ERROR            = -16;     // Recoverable error with RFID tag (eg. tag out of reach), check YRfidStatus for details
 var YAPI_RFID_HARD_ERROR            = -17;     // Serious RFID error (eg. write-protected, out-of-boundary), check YRfidStatus for details
 var YAPI_BUFFER_TOO_SMALL           = -18;     // The buffer provided is too small
+var YAPI_DNS_ERROR                  = -19;     // Error during name resolutions (invalid hostname or dns communication error)
+var YAPI_SSL_UNK_CERT               = -20;     // The certificate is not correctly signed by the trusted CA
 
 var YAPI_INVALID_INT                = 0x7fffffff;
 var YAPI_INVALID_UINT               = -1;
@@ -2682,7 +2684,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
      */
     function YAPI_GetAPIVersion()
     {
-        return "1.11.5971";
+        return "1.11.6320";
     }
 
     /**
@@ -3667,6 +3669,8 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
     _YAPI.prototype.RFID_SOFT_ERROR       = -16;     // Recoverable error with RFID tag (eg. tag out of reach), check YRfidStatus for details
     _YAPI.prototype.RFID_HARD_ERROR       = -17;     // Serious RFID error (eg. write-protected, out-of-boundary), check YRfidStatus for details
     _YAPI.prototype.BUFFER_TOO_SMALL      = -18;     // The buffer provided is too small
+    _YAPI.prototype.DNS_ERROR             = -19;     // Error during name resolutions (invalid hostname or dns communication error)
+    _YAPI.prototype.SSL_UNK_CERT          = -20;     // The certificate is not correctly signed by the trusted CA
 //--- (end of generated code: YFunction return codes)
 
     _YAPI.prototype.INVALID_INT           = YAPI_INVALID_INT;
