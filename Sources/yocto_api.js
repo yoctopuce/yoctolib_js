@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_api.js 66103 2025-05-02 06:55:47Z seb $
+ * $Id: yocto_api.js 68485 2025-08-21 11:33:52Z mvuilleu $
  *
  * High-level programming interface, common to all modules
  *
@@ -2684,7 +2684,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
      */
     function YAPI_GetAPIVersion()
     {
-        return "1.11.6320";
+        return "1.11.9018";
     }
 
     /**
@@ -6061,34 +6061,33 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
         summaryStopMs = YAPI_MIN_DOUBLE;
 
         // Parse complete streams
-        for (ii_0 in this._streams) {
-            if(ii_0 =='indexOf') continue; // IE8 Don'tEnum bug
-            streamStartTimeMs = Math.round(this._streams[ii_0].get_realStartTimeUTC() * 1000);
-            streamDuration = this._streams[ii_0].get_realDuration();
+        for (ii_0 of this._streams) {
+            streamStartTimeMs = Math.round(ii_0.get_realStartTimeUTC() * 1000);
+            streamDuration = ii_0.get_realDuration();
             streamEndTimeMs = streamStartTimeMs + Math.round(streamDuration * 1000);
             if ((streamStartTimeMs >= this._startTimeMs) && ((this._endTimeMs == 0) || (streamEndTimeMs <= this._endTimeMs))) {
                 // stream that are completely inside the dataset
-                previewMinVal = this._streams[ii_0].get_minValue();
-                previewAvgVal = this._streams[ii_0].get_averageValue();
-                previewMaxVal = this._streams[ii_0].get_maxValue();
+                previewMinVal = ii_0.get_minValue();
+                previewAvgVal = ii_0.get_averageValue();
+                previewMaxVal = ii_0.get_maxValue();
                 previewStartMs = streamStartTimeMs;
                 previewStopMs = streamEndTimeMs;
                 previewDuration = streamDuration;
             } else {
                 // stream that are partially in the dataset
                 // we need to parse data to filter value outside the dataset
-                if (!(this._streams[ii_0]._wasLoaded())) {
-                    url = this._streams[ii_0]._get_url();
+                if (!(ii_0._wasLoaded())) {
+                    url = ii_0._get_url();
                     data = this._parent._download(url);
-                    this._streams[ii_0]._parseStream(data);
+                    ii_0._parseStream(data);
                 }
-                dataRows = this._streams[ii_0].get_dataRows();
+                dataRows = ii_0.get_dataRows();
                 if (dataRows.length == 0) {
                     return this.get_progress();
                 }
                 tim = streamStartTimeMs;
-                fitv = Math.round(this._streams[ii_0].get_firstDataSamplesInterval() * 1000);
-                itv = Math.round(this._streams[ii_0].get_dataSamplesInterval() * 1000);
+                fitv = Math.round(ii_0.get_firstDataSamplesInterval() * 1000);
+                itv = Math.round(ii_0.get_dataSamplesInterval() * 1000);
                 nCols = dataRows[0].length;
                 minCol = 0;
                 if (nCols > 2) {
@@ -6241,17 +6240,16 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
         }
 
         firstMeasure = true;
-        for (ii_0 in dataRows) {
-            if(ii_0 =='indexOf') continue; // IE8 Don'tEnum bug
+        for (ii_0 of dataRows) {
             if (firstMeasure) {
                 end_ = tim + fitv;
                 firstMeasure = false;
             } else {
                 end_ = tim + itv;
             }
-            avgv = dataRows[ii_0][avgCol];
+            avgv = ii_0[avgCol];
             if ((end_ > this._startTimeMs) && ((this._endTimeMs == 0) || (tim < this._endTimeMs)) && !(isNaN(avgv))) {
-                this._measures.push(new YMeasure(tim / 1000, end_ / 1000, dataRows[ii_0][minCol], avgv, dataRows[ii_0][maxCol]));
+                this._measures.push(new YMeasure(tim / 1000, end_ / 1000, ii_0[minCol], avgv, ii_0[maxCol]));
             }
             tim = end_;
         }
@@ -6408,7 +6406,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
         if (this._progress >= this._streams.length) {
             return 100;
         }
-        return parseInt((1 + (1 + this._progress) * 98) / ((1 + this._streams.length)));
+        return parseInt((1 + (1 + this._progress) * 98) / (1 + this._streams.length));
     }
 
     /**
@@ -6523,10 +6521,9 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
 
         startUtcMs = measure.get_startTimeUTC() * 1000;
         stream = null;
-        for (ii_0 in this._streams) {
-            if(ii_0 =='indexOf') continue; // IE8 Don'tEnum bug
-            if (Math.round(this._streams[ii_0].get_realStartTimeUTC() *1000) == startUtcMs) {
-                stream = this._streams[ii_0];
+        for (ii_0 of this._streams) {
+            if (Math.round(ii_0.get_realStartTimeUTC() *1000) == startUtcMs) {
+                stream = ii_0;
             }
         }
         if (stream == null) {
@@ -6554,11 +6551,10 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
             maxCol = 0;
         }
 
-        for (ii_1 in dataRows) {
-            if(ii_1 =='indexOf') continue; // IE8 Don'tEnum bug
+        for (ii_1 of dataRows) {
             end_ = tim + itv;
             if ((end_ > this._startTimeMs) && ((this._endTimeMs == 0) || (tim < this._endTimeMs))) {
-                measures.push(new YMeasure(tim / 1000.0, end_ / 1000.0, dataRows[ii_1][minCol], dataRows[ii_1][avgCol], dataRows[ii_1][maxCol]));
+                measures.push(new YMeasure(tim / 1000.0, end_ / 1000.0, ii_1[minCol], ii_1[avgCol], ii_1[maxCol]));
             }
             tim = end_;
         }
@@ -7659,7 +7655,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
         if ((this._calibrationParam).indexOf(",") >= 0) {
             // Plain text format
             iCalib = YAPI._decodeFloats(this._calibrationParam);
-            this._caltyp = parseInt((iCalib[0]) / (1000));
+            this._caltyp = parseInt(iCalib[0] / 1000);
             if (this._caltyp > 0) {
                 if (this._caltyp < YOCTO_CALIB_TYPE_OFS) {
                     // Unknown calibration type: calibrated value will be provided by the device
@@ -7957,13 +7953,11 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
         }
         rawValues.length = 0;
         refValues.length = 0;
-        for (ii_0 in this._calraw) {
-            if(ii_0 =='indexOf') continue; // IE8 Don'tEnum bug
-            rawValues.push(this._calraw[ii_0]);
+        for (ii_0 of this._calraw) {
+            rawValues.push(ii_0);
         }
-        for (ii_1 in this._calref) {
-            if(ii_1 =='indexOf') continue; // IE8 Don'tEnum bug
-            refValues.push(this._calref[ii_1]);
+        for (ii_1 of this._calref) {
+            refValues.push(ii_1);
         }
         return YAPI_SUCCESS;
     }
@@ -9092,10 +9086,9 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
 
         dslist = this._json_get_array(json);
         res.length = 0;
-        for (ii_0 in dslist) {
-            if(ii_0 =='indexOf') continue; // IE8 Don'tEnum bug
+        for (ii_0 of dslist) {
             dataset = new YDataSet(this);
-            dataset._parse(dslist[ii_0]);
+            dataset._parse(ii_0);
             res.push(dataset);
         }
         return res;
@@ -10574,19 +10567,18 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
         ext_settings = ", \"extras\":[";
         templist = this.get_functionIds("Temperature");
         sep = "";
-        for (ii_0 in templist) {
-            if(ii_0 =='indexOf') continue; // IE8 Don'tEnum bug
+        for (ii_0 of templist) {
             if (YAPI._atoi(this.get_firmwareRelease()) > 9000) {
-                url = "api/"+templist[ii_0]+"/sensorType";
+                url = "api/"+ii_0+"/sensorType";
                 t_type = this._download(url);
                 if (t_type == "RES_NTC" || t_type == "RES_LINEAR") {
-                    id = templist[ii_0].substr(11, (templist[ii_0]).length - 11);
+                    id = ii_0.substr(11, (ii_0).length - 11);
                     if (id == "") {
                         id = "1";
                     }
                     temp_data_bin = this._download("extra.json?page="+id);
                     if ((temp_data_bin).length > 0) {
-                        item = ""+sep+"{\"fid\":\""+templist[ii_0]+"\", \"json\":"+temp_data_bin+"}\n";
+                        item = ""+sep+"{\"fid\":\""+ii_0+"\", \"json\":"+temp_data_bin+"}\n";
                         ext_settings = ext_settings + item;
                         sep = ",";
                     }
@@ -10601,9 +10593,8 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
             }
             filelist = this._json_get_array(json);
             sep = "";
-            for (ii_1 in filelist) {
-                if(ii_1 =='indexOf') continue; // IE8 Don'tEnum bug
-                name = this._json_get_key(filelist[ii_1], "name");
+            for (ii_1 of filelist) {
+                name = this._json_get_key(ii_1, "name");
                 if (((name).length > 0) && !(name == "startupConf.json")) {
                     file_data_bin = this._download(this._escapeAttr(name));
                     file_data = YAPI._bytesToHexStr(file_data_bin);
@@ -10649,11 +10640,10 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
         var functionId;             // str;
         var data;                   // str;
         extras = this._json_get_array(jsonExtra);
-        for (ii_0 in extras) {
-            if(ii_0 =='indexOf') continue; // IE8 Don'tEnum bug
-            functionId = this._get_json_path(extras[ii_0], "fid");
+        for (ii_0 of extras) {
+            functionId = this._get_json_path(ii_0, "fid");
             functionId = this._decode_json_string(functionId);
-            data = this._get_json_path(extras[ii_0], "json");
+            data = this._get_json_path(ii_0, "json");
             if (this.hasFunction(functionId)) {
                 this.loadThermistorExtra(functionId, data);
             }
@@ -10708,11 +10698,10 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
             }
             json_files = this._get_json_path(json, "files");
             files = this._json_get_array(json_files);
-            for (ii_0 in files) {
-                if(ii_0 =='indexOf') continue; // IE8 Don'tEnum bug
-                name = this._get_json_path(files[ii_0], "name");
+            for (ii_0 of files) {
+                name = this._get_json_path(ii_0, "name");
                 name = this._decode_json_string(name);
-                data = this._get_json_path(files[ii_0], "data");
+                data = this._get_json_path(ii_0, "data");
                 data = this._decode_json_string(data);
                 if (name == "") {
                     fuperror = fuperror + 1;
@@ -10914,9 +10903,8 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
             } else {
                 if (paramVer == 1) {
                     words_str = (param).split(',');
-                    for (ii_0 in words_str) {
-                        if(ii_0 =='indexOf') continue; // IE8 Don'tEnum bug
-                        words.push(YAPI._atoi(words_str[ii_0]));
+                    for (ii_0 of words_str) {
+                        words.push(YAPI._atoi(ii_0));
                     }
                     if (param == "" || (words[0] > 10)) {
                         paramScale = 0;
@@ -10989,7 +10977,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
         } else {
             if (funVer >= 1) {
                 // Encode parameters for older devices
-                nPoints = parseInt((calibData.length) / (2));
+                nPoints = parseInt(calibData.length / 2);
                 param = nPoints;
                 i = 0;
                 while (i < 2 * nPoints) {
@@ -11096,9 +11084,8 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
         newval = "";
         old_json_flat = this._flattenJsonStruct(settings);
         old_dslist = this._json_get_array(old_json_flat);
-        for (ii_0 in old_dslist) {
-            if(ii_0 =='indexOf') continue; // IE8 Don'tEnum bug
-            each_str = this._json_get_string(old_dslist[ii_0]);
+        for (ii_0 of old_dslist) {
+            each_str = this._json_get_string(ii_0);
             // split json path and attr
             leng = (each_str).length;
             eqpos = (each_str).indexOf("=");
@@ -11130,10 +11117,9 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
         }
         actualSettings = this._flattenJsonStruct(actualSettings);
         new_dslist = this._json_get_array(actualSettings);
-        for (ii_1 in new_dslist) {
-            if(ii_1 =='indexOf') continue; // IE8 Don'tEnum bug
+        for (ii_1 of new_dslist) {
             // remove quotes
-            each_str = this._json_get_string(new_dslist[ii_1]);
+            each_str = this._json_get_string(ii_1);
             // split json path and attr
             leng = (each_str).length;
             eqpos = (each_str).indexOf("=");
@@ -11351,9 +11337,8 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
             }
             i = i + 1;
         }
-        for (ii_2 in restoreLast) {
-            if(ii_2 =='indexOf') continue; // IE8 Don'tEnum bug
-            subres = this._tryExec(restoreLast[ii_2]);
+        for (ii_2 of restoreLast) {
+            subres = this._tryExec(ii_2);
             if ((res == YAPI_SUCCESS) && (subres != YAPI_SUCCESS)) {
                 res = subres;
             }
@@ -11404,7 +11389,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
      *
      * @return a binary buffer with the file content
      *
-     * On failure, throws an exception or returns  YAPI_INVALID_STRING.
+     * On failure, throws an exception or returns an empty content.
      */
     function YModule_download(pathname)
     {
@@ -11416,7 +11401,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
      * exceeds 1536 bytes.
      *
      * @return a binary buffer with module icon, in png format.
-     *         On failure, throws an exception or returns  YAPI_INVALID_STRING.
+     *         On failure, throws an exception or returns an empty content.
      */
     function YModule_get_icon2d()
     {
@@ -11435,6 +11420,9 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
         var content;                // bin;
 
         content = this._download("logs.txt");
+        if ((content).length == 0) {
+            return YAPI_INVALID_STRING;
+        }
         return content;
     }
 

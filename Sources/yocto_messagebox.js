@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_messagebox.js 62273 2024-08-23 07:20:59Z seb $
+ * $Id: yocto_messagebox.js 67411 2025-06-12 08:58:19Z seb $
  *
  * Implements the high-level API for MessageBox functions
  *
@@ -654,7 +654,7 @@ var YSms; // definition below
         addrType = ((addr).charCodeAt(ofs) & 112);
         if (addrType == 80) {
             // alphanumeric number
-            siz = parseInt((4*siz) / (7));
+            siz = parseInt((4*siz) / 7);
             gsm7 = new Uint8Array(siz);
             rpos = 1;
             carry = 0;
@@ -713,15 +713,15 @@ var YSms; // definition below
             n = YAPI._atoi(exp.substr(1, explen-1));
             res = new Uint8Array(1);
             if (n > 30*86400) {
-                n = 192+parseInt(((n+6*86400)) / ((7*86400)));
+                n = 192+parseInt((n+6*86400) / (7*86400));
             } else {
                 if (n > 86400) {
-                    n = 166+parseInt(((n+86399)) / (86400));
+                    n = 166+parseInt((n+86399) / 86400);
                 } else {
                     if (n > 43200) {
-                        n = 143+parseInt(((n-43200+1799)) / (1800));
+                        n = 143+parseInt((n-43200+1799) / 1800);
                     } else {
-                        n = -1+parseInt(((n+299)) / (300));
+                        n = -1+parseInt((n+299) / 300);
                     }
                 }
             }
@@ -766,7 +766,7 @@ var YSms; // definition below
                 v1 = (expasc).charCodeAt(i+1);
                 v2 = (expasc).charCodeAt(i+2);
                 if ((v1 >= 48) && (v1 < 58) && (v1 >= 48) && (v1 < 58)) {
-                    v1 = parseInt(((10*(v1 - 48)+(v2 - 48))) / (15));
+                    v1 = parseInt((10*(v1 - 48)+(v2 - 48)) / 15);
                     n = n - 1;
                     v2 = 4 * (res).charCodeAt(n) + v1;
                     if ((expasc).charCodeAt(i-3) == 45) {
@@ -855,9 +855,9 @@ var YSms; // definition below
         res = (this._udata).length;
         if (this._alphab == 0) {
             if (udhsize > 0) {
-                res = res + parseInt(((8 + 8*udhsize + 6)) / (7));
+                res = res + parseInt((8 + 8*udhsize + 6) / 7);
             }
-            res = parseInt(((res * 7 + 7)) / (8));
+            res = parseInt((res * 7 + 7) / 8);
         } else {
             if (udhsize > 0) {
                 res = res + 1 + udhsize;
@@ -890,7 +890,7 @@ var YSms; // definition below
         if (this._alphab == 0) {
             // 7-bit encoding
             if (udhsize > 0) {
-                udhlen = parseInt(((8 + 8*udhsize + 6)) / (7));
+                udhlen = parseInt((8 + 8*udhsize + 6) / 7);
                 nbits = 7*udhlen - 8 - 8*udhsize;
             }
             res[0] = udhlen+udlen;
@@ -958,9 +958,9 @@ var YSms; // definition below
         udlen = (this._udata).length;
         mss = 140 - 1 - 5 - udhsize;
         if (this._alphab == 0) {
-            mss = parseInt(((mss * 8 - 6)) / (7));
+            mss = parseInt((mss * 8 - 6) / 7);
         }
-        this._npdu = parseInt(((udlen+mss-1)) / (mss));
+        this._npdu = parseInt((udlen+mss-1) / mss);
         this._parts.length = 0;
         partno = 0;
         wpos = 0;
@@ -1198,7 +1198,7 @@ var YSms; // definition below
             }
             if (this._alphab == 0) {
                 // 7-bit encoding
-                udhlen = parseInt(((8 + 8*udhsize + 6)) / (7));
+                udhlen = parseInt((8 + 8*udhsize + 6) / 7);
                 nbits = 7*udhlen - 8 - 8*udhsize;
                 if (nbits > 0) {
                     thi_b = (pdu).charCodeAt(rpos);

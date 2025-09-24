@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_files.js 59977 2024-03-18 15:02:32Z mvuilleu $
+ * $Id: yocto_files.js 68485 2025-08-21 11:33:52Z mvuilleu $
  *
  * Implements yFindFiles(), the high-level API for Files functions
  *
@@ -352,9 +352,8 @@ var YFiles; // definition below
         json = this.sendCommand("dir&f="+pattern);
         filelist = this._json_get_array(json);
         res.length = 0;
-        for (ii_0 in filelist) {
-            if(ii_0 =='indexOf') continue; // IE8 Don'tEnum bug
-            res.push(new YFileRecord(filelist[ii_0]));
+        for (ii_0 of filelist) {
+            res.push(new YFileRecord(ii_0));
         }
         return res;
     }

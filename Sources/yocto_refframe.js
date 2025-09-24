@@ -535,11 +535,11 @@ var YRefFrame; // definition below
 
         calibParam = this.get_calibrationParam();
         iCalib = YAPI._decodeFloats(calibParam);
-        caltyp = parseInt((iCalib[0]) / (1000));
+        caltyp = parseInt(iCalib[0] / 1000);
         if (caltyp != 33) {
             return YAPI_NOT_SUPPORTED;
         }
-        res = parseInt((iCalib[1]) / (1000));
+        res = parseInt(iCalib[1] / 1000);
         return res;
     }
 
@@ -565,11 +565,11 @@ var YRefFrame; // definition below
 
         calibParam = this.get_calibrationParam();
         iCalib = YAPI._decodeFloats(calibParam);
-        caltyp = parseInt((iCalib[0]) / (1000));
+        caltyp = parseInt(iCalib[0] / 1000);
         if (caltyp != 33) {
             return YAPI_NOT_SUPPORTED;
         }
-        res = parseInt((iCalib[2]) / (1000));
+        res = parseInt(iCalib[2] / 1000);
         return res;
     }
 
@@ -647,7 +647,7 @@ var YRefFrame; // definition below
         this._calibStageProgress = 0;
         this._calibProgress = 1;
         this._calibInternalPos = 0;
-        this._calibPrevTick = ((YAPI.GetTickCount()) & 0x7FFFFFFF);
+        this._calibPrevTick = (YAPI.GetTickCount() & 0x7FFFFFFF);
         this._calibOrient.length = 0;
         this._calibDataAccX.length = 0;
         this._calibDataAccY.length = 0;
@@ -697,7 +697,7 @@ var YRefFrame; // definition below
             return YAPI_SUCCESS;
         }
         // make sure we leave at least 160 ms between samples
-        currTick =  ((YAPI.GetTickCount()) & 0x7FFFFFFF);
+        currTick =  (YAPI.GetTickCount() & 0x7FFFFFFF);
         if (((currTick - this._calibPrevTick) & 0x7FFFFFFF) < 160) {
             return YAPI_SUCCESS;
         }
@@ -788,15 +788,15 @@ var YRefFrame; // definition below
         this._calibDataAccZ.push(zVal);
         this._calibDataAcc.push(norm);
         this._calibInternalPos = this._calibInternalPos + 1;
-        this._calibProgress = 1 + 16 * (this._calibStage - 1) + parseInt((16 * this._calibInternalPos) / (this._calibCount));
+        this._calibProgress = 1 + 16 * (this._calibStage - 1) + parseInt((16 * this._calibInternalPos) / this._calibCount);
         if (this._calibInternalPos < this._calibCount) {
-            this._calibStageProgress = 1 + parseInt((99 * this._calibInternalPos) / (this._calibCount));
+            this._calibStageProgress = 1 + parseInt((99 * this._calibInternalPos) / this._calibCount);
             return YAPI_SUCCESS;
         }
         // Stage done, compute preliminary result
         intpos = (this._calibStage - 1) * this._calibCount;
         this._calibSort(intpos, intpos + this._calibCount);
-        intpos = intpos + parseInt((this._calibCount) / (2));
+        intpos = intpos + parseInt(this._calibCount / 2);
         this._calibLogMsg = "Stage "+String(Math.round(this._calibStage))+": median is "+String(Math.round(Math.round(1000*this._calibDataAccX[intpos])))+","+String(Math.round(Math.round(1000*this._calibDataAccY[intpos])))+","+String(Math.round(Math.round(1000*this._calibDataAccZ[intpos])));
         // move to next stage
         this._calibStage = this._calibStage + 1;
@@ -813,7 +813,7 @@ var YRefFrame; // definition below
         zVal = 0;
         idx = 0;
         while (idx < 6) {
-            intpos = idx * this._calibCount + parseInt((this._calibCount) / (2));
+            intpos = idx * this._calibCount + parseInt(this._calibCount / 2);
             orient = this._calibOrient[idx];
             if (orient == 0 || orient == 1) {
                 zVal = zVal + this._calibDataAccZ[intpos];
@@ -851,7 +851,7 @@ var YRefFrame; // definition below
         zVal = 0;
         idx = 0;
         while (idx < 6) {
-            intpos = idx * this._calibCount + parseInt((this._calibCount) / (2));
+            intpos = idx * this._calibCount + parseInt(this._calibCount / 2);
             orient = this._calibOrient[idx];
             if (orient == 0 || orient == 1) {
                 zVal = zVal + this._calibDataAcc[intpos];
@@ -891,11 +891,11 @@ var YRefFrame; // definition below
         }
         // make sure we don't start before previous calibration is cleared
         if (this._calibStage == 1) {
-            currTick = ((YAPI.GetTickCount()) & 0x7FFFFFFF);
+            currTick = (YAPI.GetTickCount() & 0x7FFFFFFF);
             currTick = ((currTick - this._calibPrevTick) & 0x7FFFFFFF);
             if (currTick < 1600) {
                 this._calibStageHint = "Set down the device on a steady horizontal surface";
-                this._calibStageProgress = parseInt((currTick) / (40));
+                this._calibStageProgress = parseInt(currTick / 40);
                 this._calibProgress = 1;
                 return YAPI_SUCCESS;
             }
@@ -903,9 +903,9 @@ var YRefFrame; // definition below
 
         calibParam = this._download("api/refFrame/calibrationParam.txt");
         iCalib = YAPI._decodeFloats(calibParam);
-        cal3 = parseInt((iCalib[1]) / (1000));
-        calAcc = parseInt((cal3) / (100));
-        calMag = parseInt((cal3) / (10)) - 10*calAcc;
+        cal3 = parseInt(iCalib[1] / 1000);
+        calAcc = parseInt(cal3 / 100);
+        calMag = parseInt(cal3 / 10) - 10*calAcc;
         calGyr = ((cal3) % (10));
         if (calGyr < 3) {
             this._calibStageHint = "Set down the device on a steady horizontal surface";

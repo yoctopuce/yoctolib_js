@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_cellular.js 64093 2025-01-08 10:53:52Z seb $
+ * $Id: yocto_cellular.js 68485 2025-08-21 11:33:52Z mvuilleu $
  *
  * Implements the high-level API for Cellular functions
  *
@@ -1672,25 +1672,24 @@ var YCellular; // definition below
         recs = (moni).split('#');
         // process each line in turn
         res.length = 0;
-        for (ii_0 in recs) {
-            if(ii_0 =='indexOf') continue; // IE8 Don'tEnum bug
-            llen = (recs[ii_0]).length - 2;
+        for (ii_0 of recs) {
+            llen = (ii_0).length - 2;
             if (llen >= 44) {
-                if (recs[ii_0].substr(41, 3) == "dbm") {
-                    lac = parseInt(recs[ii_0].substr(16, 4), 16);
-                    cellId = parseInt(recs[ii_0].substr(23, 4), 16);
-                    dbms = recs[ii_0].substr(37, 4);
+                if (ii_0.substr(41, 3) == "dbm") {
+                    lac = parseInt(ii_0.substr(16, 4), 16);
+                    cellId = parseInt(ii_0.substr(23, 4), 16);
+                    dbms = ii_0.substr(37, 4);
                     if (dbms.substr(0, 1) == " ") {
                         dbms = dbms.substr(1, 3);
                     }
                     dbm = YAPI._atoi(dbms);
                     if (llen > 66) {
-                        tads = recs[ii_0].substr(54, 2);
+                        tads = ii_0.substr(54, 2);
                         if (tads.substr(0, 1) == " ") {
                             tads = tads.substr(1, 3);
                         }
                         tad = YAPI._atoi(tads);
-                        oper = recs[ii_0].substr(66, llen-66);
+                        oper = ii_0.substr(66, llen-66);
                     } else {
                         tad = -1;
                         oper = "";

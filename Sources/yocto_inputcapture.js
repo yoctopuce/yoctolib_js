@@ -1243,7 +1243,7 @@ var YInputCapture; // definition below
         if (msDuration > 1000) {
             msDuration = 1000;
         }
-        snapStart = parseInt((-msDuration) / (2));
+        snapStart = parseInt(-msDuration / 2);
         snapUrl = "snap.bin?t="+String(Math.round(snapStart))+"&d="+String(Math.round(msDuration));
 
         snapData = this._download(snapUrl);

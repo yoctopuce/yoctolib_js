@@ -652,7 +652,7 @@ var YBuzzer; // definition below
             }
             if (ch == 46) {
                 // . (duration modifier)
-                num = parseInt((num * 2) / (3));
+                num = parseInt((num * 2) / 3);
             }
             if (((ch == 32) || (i+1 == notesLen)) && ((note > -99) || (typ != 3))) {
                 if (num == 0) {

@@ -194,9 +194,9 @@ var YSpectralChannel; // definition below
     }
 
     /**
-     * Returns the target spectral band peak wavelenght, in nm.
+     * Returns the target spectral band peak wavelength, in nm.
      *
-     * @return an integer corresponding to the target spectral band peak wavelenght, in nm
+     * @return an integer corresponding to the target spectral band peak wavelength, in nm
      *
      * On failure, throws an exception or returns YSpectralChannel.PEAKWAVELENGTH_INVALID.
      */
@@ -213,13 +213,13 @@ var YSpectralChannel; // definition below
     }
 
     /**
-     * Gets the target spectral band peak wavelenght, in nm.
+     * Gets the target spectral band peak wavelength, in nm.
      *
      * @param callback : callback function that is invoked when the result is known.
      *         The callback function receives three arguments:
      *         - the user-specific context object
      *         - the YSpectralChannel object that invoked the callback
-     *         - the result:an integer corresponding to the target spectral band peak wavelenght, in nm
+     *         - the result:an integer corresponding to the target spectral band peak wavelength, in nm
      * @param context : user-specific object that is passed as-is to the callback function
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value

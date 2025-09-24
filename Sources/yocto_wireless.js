@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_wireless.js 59977 2024-03-18 15:02:32Z mvuilleu $
+ * $Id: yocto_wireless.js 68485 2025-08-21 11:33:52Z mvuilleu $
  *
  * Implements yFindWireless(), the high-level API for Wireless functions
  *
@@ -748,9 +748,8 @@ var YWireless; // definition below
         json = this._download("wlan.json?by=name");
         wlanlist = this._json_get_array(json);
         res.length = 0;
-        for (ii_0 in wlanlist) {
-            if(ii_0 =='indexOf') continue; // IE8 Don'tEnum bug
-            res.push(new YWlanRecord(wlanlist[ii_0]));
+        for (ii_0 of wlanlist) {
+            res.push(new YWlanRecord(ii_0));
         }
         return res;
     }

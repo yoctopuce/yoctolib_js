@@ -1374,9 +1374,8 @@ var YRfidReader; // definition below
         taglist.length = 0;
         if ((json).length > 3) {
             jsonList = this._json_get_array(json);
-            for (ii_0 in jsonList) {
-                if(ii_0 =='indexOf') continue; // IE8 Don'tEnum bug
-                taglist.push(this._json_get_string(jsonList[ii_0]));
+            for (ii_0 of jsonList) {
+                taglist.push(this._json_get_string(ii_0));
             }
         }
         return taglist;
@@ -2121,7 +2120,7 @@ var YRfidReader; // definition below
         var evtData;                // str;
         // detect possible power cycle of the reader to clear event pointer
         cbPos = YAPI._atoi(cbVal);
-        cbPos = parseInt((cbPos) / (1000));
+        cbPos = parseInt(cbPos / 1000);
         cbDPos = ((cbPos - this._prevCbPos) & 0x7ffff);
         this._prevCbPos = cbPos;
         if (cbDPos > 16384) {
