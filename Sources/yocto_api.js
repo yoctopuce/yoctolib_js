@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_api.js 68485 2025-08-21 11:33:52Z mvuilleu $
+ * $Id: yocto_api.js 70664 2025-12-09 10:19:48Z seb $
  *
  * High-level programming interface, common to all modules
  *
@@ -2684,7 +2684,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
      */
     function YAPI_GetAPIVersion()
     {
-        return "1.11.9018";
+        return "1.11.10736";
     }
 
     /**
@@ -4059,6 +4059,25 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
         return 0;
     }
 
+    function YFunction_is_valid_pass(passwd)
+    {
+        var tmp;                    // str;
+        if ((passwd).length > YAPI_HASH_BUF_SIZE) {
+            tmp = "Password too long (max "+String(Math.round(YAPI_HASH_BUF_SIZE))+" chars) :"+passwd;
+            this._throw(YAPI_INVALID_ARGUMENT, tmp);
+            return false;
+        }
+        if ((passwd).indexOf("@") >=0) {
+            this._throw(YAPI_INVALID_ARGUMENT, "Character @ is not allowed in password");
+            return false;
+        }
+        if ((passwd).indexOf("/") >=0) {
+            this._throw(YAPI_INVALID_ARGUMENT, "Character / is not allowed in password");
+            return false;
+        }
+        return true;
+    }
+
     /**
      * comment from .yc definition
      */
@@ -5021,6 +5040,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
     YFunction.prototype.get_serialNumber            = YFunction_get_serialNumber;
     YFunction.prototype.serialNumber                = YFunction_get_serialNumber;
     YFunction.prototype._parserHelper               = YFunction_parserHelper;
+    YFunction.prototype._is_valid_pass              = YFunction_is_valid_pass;
     YFunction.prototype.nextFunction                = YFunction_nextFunction;
     YFunction.prototype._parseAttr                  = YFunction_parseAttr;
     //--- (end of generated code: YFunction initialization)
@@ -6933,8 +6953,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
         if (res == Y_CURRENTVALUE_INVALID) {
             res = this._currentValue;
         }
-        res = res * this._iresol;
-        res = Math.round(res) / this._iresol;
+        res = Math.round(res * this._iresol) / this._iresol;
         return res;
     }
 
@@ -6972,8 +6991,7 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
                 if (res == Y_CURRENTVALUE_INVALID) {
                     res = obj._currentValue;
                 }
-                res = res * obj._iresol;
-                callback(context, obj, Math.round(res) / obj._iresol);
+                callback(context, obj, Math.round(res * obj._iresol) / obj._iresol);
             }
         };
         if (this._cacheExpiration <= YAPI.GetTickCount()) {
@@ -7010,14 +7028,13 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
      */
     function YSensor_get_lowestValue()
     {
-        var res;                    // float;
+        var res;                    // double;
         if (this._cacheExpiration <= YAPI.GetTickCount()) {
             if (this.load(YAPI.defaultCacheValidity) != YAPI_SUCCESS) {
                 return Y_LOWESTVALUE_INVALID;
             }
         }
-        res = this._lowestValue * this._iresol;
-        res = Math.round(res) / this._iresol;
+        res = Math.round(this._lowestValue * this._iresol) / this._iresol;
         return res;
     }
 
@@ -7039,14 +7056,13 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
      */
     function YSensor_get_lowestValue_async(callback,context)
     {
-        var res;                    // float;
+        var res;                    // double;
         var loadcb;                 // func;
         loadcb = function(ctx,obj,res) {
             if (res != YAPI_SUCCESS) {
                 callback(context, obj, Y_LOWESTVALUE_INVALID);
             } else {
-                res = obj._lowestValue * obj._iresol;
-                callback(context, obj, Math.round(res) / obj._iresol);
+                callback(context, obj, Math.round(obj._lowestValue * obj._iresol) / obj._iresol);
             }
         };
         if (this._cacheExpiration <= YAPI.GetTickCount()) {
@@ -7083,14 +7099,13 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
      */
     function YSensor_get_highestValue()
     {
-        var res;                    // float;
+        var res;                    // double;
         if (this._cacheExpiration <= YAPI.GetTickCount()) {
             if (this.load(YAPI.defaultCacheValidity) != YAPI_SUCCESS) {
                 return Y_HIGHESTVALUE_INVALID;
             }
         }
-        res = this._highestValue * this._iresol;
-        res = Math.round(res) / this._iresol;
+        res = Math.round(this._highestValue * this._iresol) / this._iresol;
         return res;
     }
 
@@ -7112,14 +7127,13 @@ var Y_BASETYPES = { Function:0, Sensor:1 };
      */
     function YSensor_get_highestValue_async(callback,context)
     {
-        var res;                    // float;
+        var res;                    // double;
         var loadcb;                 // func;
         loadcb = function(ctx,obj,res) {
             if (res != YAPI_SUCCESS) {
                 callback(context, obj, Y_HIGHESTVALUE_INVALID);
             } else {
-                res = obj._highestValue * obj._iresol;
-                callback(context, obj, Math.round(res) / obj._iresol);
+                callback(context, obj, Math.round(obj._highestValue * obj._iresol) / obj._iresol);
             }
         };
         if (this._cacheExpiration <= YAPI.GetTickCount()) {

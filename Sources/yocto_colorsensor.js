@@ -47,6 +47,7 @@ var Y_ESTIMATIONMODEL_EMISSION      = 1;
 var Y_ESTIMATIONMODEL_INVALID       = -1;
 var Y_WORKINGMODE_AUTO              = 0;
 var Y_WORKINGMODE_EXPERT            = 1;
+var Y_WORKINGMODE_AUTOGAIN          = 2;
 var Y_WORKINGMODE_INVALID           = -1;
 var Y_NEARSIMPLECOLORINDEX_BROWN    = 0;
 var Y_NEARSIMPLECOLORINDEX_RED      = 1;
@@ -64,6 +65,7 @@ var Y_LEDCURRENT_INVALID            = YAPI_INVALID_UINT;
 var Y_LEDCALIBRATION_INVALID        = YAPI_INVALID_UINT;
 var Y_INTEGRATIONTIME_INVALID       = YAPI_INVALID_UINT;
 var Y_GAIN_INVALID                  = YAPI_INVALID_UINT;
+var Y_AUTOGAIN_INVALID              = YAPI_INVALID_STRING;
 var Y_SATURATION_INVALID            = YAPI_INVALID_UINT;
 var Y_ESTIMATEDRGB_INVALID          = YAPI_INVALID_UINT;
 var Y_ESTIMATEDHSL_INVALID          = YAPI_INVALID_UINT;
@@ -100,6 +102,7 @@ var YColorSensor; // definition below
         this._ledCalibration                 = Y_LEDCALIBRATION_INVALID;   // UInt31
         this._integrationTime                = Y_INTEGRATIONTIME_INVALID;  // UInt31
         this._gain                           = Y_GAIN_INVALID;             // UInt31
+        this._autoGain                       = Y_AUTOGAIN_INVALID;         // AutoGainConfig
         this._saturation                     = Y_SATURATION_INVALID;       // SaturationBits
         this._estimatedRGB                   = Y_ESTIMATEDRGB_INVALID;     // U24Color
         this._estimatedHSL                   = Y_ESTIMATEDHSL_INVALID;     // U24Color
@@ -136,6 +139,9 @@ var YColorSensor; // definition below
             return 1;
         case "gain":
             this._gain = parseInt(val);
+            return 1;
+        case "autoGain":
+            this._autoGain = val;
             return 1;
         case "saturation":
             this._saturation = parseInt(val);
@@ -251,8 +257,8 @@ var YColorSensor; // definition below
      * In Auto mode, sensor parameters are automatically set based on the selected estimation model.
      * In Expert mode, sensor parameters such as gain and integration time are configured manually.
      *
-     * @return either YColorSensor.WORKINGMODE_AUTO or YColorSensor.WORKINGMODE_EXPERT, according to the
-     * sensor working mode
+     * @return a value among YColorSensor.WORKINGMODE_AUTO, YColorSensor.WORKINGMODE_EXPERT and
+     * YColorSensor.WORKINGMODE_AUTOGAIN corresponding to the sensor working mode
      *
      * On failure, throws an exception or returns YColorSensor.WORKINGMODE_INVALID.
      */
@@ -277,8 +283,8 @@ var YColorSensor; // definition below
      *         The callback function receives three arguments:
      *         - the user-specific context object
      *         - the YColorSensor object that invoked the callback
-     *         - the result:either YColorSensor.WORKINGMODE_AUTO or YColorSensor.WORKINGMODE_EXPERT, according to
-     *         the sensor working mode
+     *         - the result:a value among YColorSensor.WORKINGMODE_AUTO, YColorSensor.WORKINGMODE_EXPERT and
+     *         YColorSensor.WORKINGMODE_AUTOGAIN corresponding to the sensor working mode
      * @param context : user-specific object that is passed as-is to the callback function
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
@@ -309,8 +315,8 @@ var YColorSensor; // definition below
      * In Expert mode, sensor parameters such as gain and integration time are configured manually.
      * Remember to call the saveToFlash() method of the module if the modification must be kept.
      *
-     * @param newval : either YColorSensor.WORKINGMODE_AUTO or YColorSensor.WORKINGMODE_EXPERT, according
-     * to the sensor working mode
+     * @param newval : a value among YColorSensor.WORKINGMODE_AUTO, YColorSensor.WORKINGMODE_EXPERT and
+     * YColorSensor.WORKINGMODE_AUTOGAIN corresponding to the sensor working mode
      *
      * @return YAPI.SUCCESS if the call succeeds.
      *
@@ -609,6 +615,74 @@ var YColorSensor; // definition below
     {   var rest_val;
         rest_val = String(newval);
         return this._setAttr('gain',rest_val);
+    }
+
+    /**
+     * Returns the current autogain parameters of the sensor as a character string.
+     * The returned parameter format is: "Min &lt; Channel &lt; Max:Saturation".
+     *
+     * @return a string corresponding to the current autogain parameters of the sensor as a character string
+     *
+     * On failure, throws an exception or returns YColorSensor.AUTOGAIN_INVALID.
+     */
+    function YColorSensor_get_autoGain()
+    {
+        var res;                    // string;
+        if (this._cacheExpiration <= YAPI.GetTickCount()) {
+            if (this.load(YAPI.defaultCacheValidity) != YAPI_SUCCESS) {
+                return Y_AUTOGAIN_INVALID;
+            }
+        }
+        res = this._autoGain;
+        return res;
+    }
+
+    /**
+     * Gets the current autogain parameters of the sensor as a character string.
+     * The returned parameter format is: "Min &lt; Channel &lt; Max:Saturation".
+     *
+     * @param callback : callback function that is invoked when the result is known.
+     *         The callback function receives three arguments:
+     *         - the user-specific context object
+     *         - the YColorSensor object that invoked the callback
+     *         - the result:a string corresponding to the current autogain parameters of the sensor as a character string
+     * @param context : user-specific object that is passed as-is to the callback function
+     *
+     * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
+     *
+     * On failure, throws an exception or returns YColorSensor.AUTOGAIN_INVALID.
+     */
+    function YColorSensor_get_autoGain_async(callback,context)
+    {
+        var res;                    // string;
+        var loadcb;                 // func;
+        loadcb = function(ctx,obj,res) {
+            if (res != YAPI_SUCCESS) {
+                callback(context, obj, Y_AUTOGAIN_INVALID);
+            } else {
+                callback(context, obj, obj._autoGain);
+            }
+        };
+        if (this._cacheExpiration <= YAPI.GetTickCount()) {
+            this.load_async(YAPI.defaultCacheValidity,loadcb,null);
+        } else {
+            loadcb(null, this, YAPI_SUCCESS);
+        }
+    }
+
+    /**
+     * Remember to call the saveToFlash() method of the module if the modification must be kept.
+     *
+     * @param newval : a string
+     *
+     * @return YAPI.SUCCESS if the call succeeds.
+     *
+     * On failure, throws an exception or returns a negative error code.
+     */
+    function YColorSensor_set_autoGain(newval)
+    {   var rest_val;
+        rest_val = newval;
+        return this._setAttr('autoGain',rest_val);
     }
 
     /**
@@ -1300,6 +1374,32 @@ var YColorSensor; // definition below
     }
 
     /**
+     * Changes the sensor automatic gain control settings.
+     * Remember to call the saveToFlash() method of the module if the modification must be kept.
+     *
+     * @param channel : reference channel to use for automated gain control.
+     * @param minRaw : lower threshold for the measured raw value, below which the gain is
+     *         automatically increased as long as possible.
+     * @param maxRaw : high threshold for the measured raw value, over which the gain is
+     *         automatically decreased as long as possible.
+     * @param noSatur : enables gain reduction in case of sensor saturation.
+     *
+     * @return YAPI.SUCCESS if the operation completes successfully.
+     *         On failure, throws an exception or returns a negative error code.
+     */
+    function YColorSensor_configureAutoGain(channel,minRaw,maxRaw,noSatur)
+    {
+        var opt;                    // string;
+        if (noSatur) {
+            opt = "nosat";
+        } else {
+            opt = "";
+        }
+
+        return this.set_autoGain(""+String(Math.round(minRaw))+" < "+channel+" < "+String(Math.round(maxRaw))+":"+opt);
+    }
+
+    /**
      * Turns on the built-in illumination LEDs using the same current as used during the latest calibration.
      * On failure, throws an exception or returns a negative error code.
      */
@@ -1361,11 +1461,13 @@ var YColorSensor; // definition below
         ESTIMATIONMODEL_INVALID     : -1,
         WORKINGMODE_AUTO            : 0,
         WORKINGMODE_EXPERT          : 1,
+        WORKINGMODE_AUTOGAIN        : 2,
         WORKINGMODE_INVALID         : -1,
         LEDCURRENT_INVALID          : YAPI_INVALID_UINT,
         LEDCALIBRATION_INVALID      : YAPI_INVALID_UINT,
         INTEGRATIONTIME_INVALID     : YAPI_INVALID_UINT,
         GAIN_INVALID                : YAPI_INVALID_UINT,
+        AUTOGAIN_INVALID            : YAPI_INVALID_STRING,
         SATURATION_INVALID          : YAPI_INVALID_UINT,
         ESTIMATEDRGB_INVALID        : YAPI_INVALID_UINT,
         ESTIMATEDHSL_INVALID        : YAPI_INVALID_UINT,
@@ -1430,6 +1532,12 @@ var YColorSensor; // definition below
         gain_async                  : YColorSensor_get_gain_async,
         set_gain                    : YColorSensor_set_gain,
         setGain                     : YColorSensor_set_gain,
+        get_autoGain                : YColorSensor_get_autoGain,
+        autoGain                    : YColorSensor_get_autoGain,
+        get_autoGain_async          : YColorSensor_get_autoGain_async,
+        autoGain_async              : YColorSensor_get_autoGain_async,
+        set_autoGain                : YColorSensor_set_autoGain,
+        setAutoGain                 : YColorSensor_set_autoGain,
         get_saturation              : YColorSensor_get_saturation,
         saturation                  : YColorSensor_get_saturation,
         get_saturation_async        : YColorSensor_get_saturation_async,
@@ -1474,6 +1582,7 @@ var YColorSensor; // definition below
         nearSimpleColor             : YColorSensor_get_nearSimpleColor,
         get_nearSimpleColor_async   : YColorSensor_get_nearSimpleColor_async,
         nearSimpleColor_async       : YColorSensor_get_nearSimpleColor_async,
+        configureAutoGain           : YColorSensor_configureAutoGain,
         turnLedOn                   : YColorSensor_turnLedOn,
         turnLedOff                  : YColorSensor_turnLedOff,
         nextColorSensor             : YColorSensor_nextColorSensor,

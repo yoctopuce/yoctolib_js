@@ -1,3 +1,4 @@
-Javascript v1.11.9018
+Javascript v1.11.10736
 
-- Internal test release
+- Prevent setting passwords with unsupported characters (@ and /)
+- Fix search in HTML documentation
