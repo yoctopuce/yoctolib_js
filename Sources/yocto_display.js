@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_display.js 71629 2026-01-29 15:08:26Z mvuilleu $
+ * $Id: yocto_display.js 74506 2026-06-01 15:57:01Z seb $
  *
  * Implements yFindDisplay(), the high-level API for Display functions
  *
@@ -49,10 +49,15 @@ var Y_ORIENTATION_RIGHT             = 2;
 var Y_ORIENTATION_DOWN              = 3;
 var Y_ORIENTATION_INVALID           = -1;
 var Y_DISPLAYTYPE_MONO              = 0;
-var Y_DISPLAYTYPE_GRAY              = 1;
-var Y_DISPLAYTYPE_RGB               = 2;
-var Y_DISPLAYTYPE_EPAPER            = 3;
+var Y_DISPLAYTYPE_EPAPER_BW         = 1;
+var Y_DISPLAYTYPE_EPAPER_BWR        = 2;
+var Y_DISPLAYTYPE_EPAPER_BWRY       = 3;
 var Y_DISPLAYTYPE_INVALID           = -1;
+var Y_DISPLAYSTATE_FAILURE          = 0;
+var Y_DISPLAYSTATE_OFF              = 1;
+var Y_DISPLAYSTATE_POWERING         = 2;
+var Y_DISPLAYSTATE_IDLE             = 3;
+var Y_DISPLAYSTATE_REFRESHING       = 4;
 var Y_STARTUPSEQ_INVALID            = YAPI_INVALID_STRING;
 var Y_BRIGHTNESS_INVALID            = YAPI_INVALID_UINT;
 var Y_AUTOINVERTDELAY_INVALID       = YAPI_INVALID_UINT;
@@ -102,53 +107,67 @@ var YDisplayLayer; // definition below
     {
         this._display      = obj_parent;
         this._id           = str_id;
-        this._cmdbuff      = '';
-        this._hidden       = false;
         //--- (generated code: YDisplayLayer constructor)
+        this._cmdbuff                        = "";                         // str
+        this._hidden                         = false;                      // bool
         this._polyPrevX                      = 0;                          // int
         this._polyPrevY                      = 0;                          // int
         //--- (end of generated code: YDisplayLayer constructor)
     }
 
-    // internal function to flush any pending command for this layer
+    //--- (generated code: YDisplayLayer implementation)
+
+    function YDisplayLayer_must_be_flushed()
+    {
+        return (this._cmdbuff).length > 0;
+    }
+
+    function YDisplayLayer_resetHiddenFlag()
+    {
+        this._hidden = false;
+        return YAPI_SUCCESS;
+    }
+
     function YDisplayLayer_flush_now()
     {
-        var res = YAPI_SUCCESS;
-        if(this._cmdbuff != '') {
+        var res;                    // int;
+        res = YAPI_SUCCESS;
+        if ((this._cmdbuff).length > 0) {
             res = this._display.sendCommand(this._cmdbuff);
-            this._cmdbuff = '';
+            this._cmdbuff = "";
         }
         return res;
     }
 
-    // internal function to buffer a command for this layer
-    function YDisplayLayer_command_push(str_cmd)
+    function YDisplayLayer_command_push(cmd)
     {
-        var res = YAPI_SUCCESS;
-
-        if(this._cmdbuff.length + str_cmd.length >= 100) {
+        var res;                    // int;
+        res = YAPI_SUCCESS;
+        if ((this._cmdbuff).length + (cmd).length >= 100) {
             // force flush before, to prevent overflow
-            res = this.flush_now();
+            this.flush_now();
         }
-        if(this._cmdbuff == '') {
+        if ((this._cmdbuff).length == 0) {
             // always prepend layer ID first
             this._cmdbuff = this._id;
         }
-        this._cmdbuff += str_cmd;
+        this._cmdbuff = this._cmdbuff + cmd;
         return res;
     }
 
-    // internal function to send a command for this layer
-    function YDisplayLayer_command_flush(str_cmd)
+    function YDisplayLayer_command_flush(cmd)
     {
-        var res = this.command_push(str_cmd);
-        if(this._hidden) {
+        var res;                    // int;
+
+        res = this.command_push(cmd);
+        if (this._hidden) {
+            return res;
+        }
+        if (this._display.isFrozen()) {
             return res;
         }
         return this.flush_now();
     }
-
-    //--- (generated code: YDisplayLayer implementation)
 
     /**
      * Reverts the layer to its initial state (fully transparent, default settings).
@@ -796,12 +815,6 @@ var YDisplayLayer; // definition below
         return this._display.get_layerHeight();
     }
 
-    function YDisplayLayer_resetHiddenFlag()
-    {
-        this._hidden = false;
-        return YAPI_SUCCESS;
-    }
-
     //--- (end of generated code: YDisplayLayer implementation)
 
     //--- (generated code: YDisplayLayer initialization)
@@ -846,6 +859,11 @@ var YDisplayLayer; // definition below
     YDisplayLayer.ALIGN_BOTTOM_RIGHT                    = 15;
     YDisplayLayer.prototype.ALIGN_BOTTOM_RIGHT          = 15;
     // Methods
+    YDisplayLayer.prototype.must_be_flushed             = YDisplayLayer_must_be_flushed;
+    YDisplayLayer.prototype.resetHiddenFlag             = YDisplayLayer_resetHiddenFlag;
+    YDisplayLayer.prototype.flush_now                   = YDisplayLayer_flush_now;
+    YDisplayLayer.prototype.command_push                = YDisplayLayer_command_push;
+    YDisplayLayer.prototype.command_flush               = YDisplayLayer_command_flush;
     YDisplayLayer.prototype.reset                       = YDisplayLayer_reset;
     YDisplayLayer.prototype.clear                       = YDisplayLayer_clear;
     YDisplayLayer.prototype.selectColorPen              = YDisplayLayer_selectColorPen;
@@ -888,11 +906,7 @@ var YDisplayLayer; // definition below
     YDisplayLayer.prototype.layerWidth                  = YDisplayLayer_get_layerWidth;
     YDisplayLayer.prototype.get_layerHeight             = YDisplayLayer_get_layerHeight;
     YDisplayLayer.prototype.layerHeight                 = YDisplayLayer_get_layerHeight;
-    YDisplayLayer.prototype.resetHiddenFlag             = YDisplayLayer_resetHiddenFlag;
     //--- (end of generated code: YDisplayLayer initialization)
-    YDisplayLayer.prototype.flush_now                   = YDisplayLayer_flush_now;
-    YDisplayLayer.prototype.command_push                = YDisplayLayer_command_push;
-    YDisplayLayer.prototype.command_flush               = YDisplayLayer_command_flush;
 })();
 
 
@@ -939,10 +953,10 @@ var YDisplay; // definition below
         this._layerCount                     = Y_LAYERCOUNT_INVALID;       // UInt31
         this._command                        = Y_COMMAND_INVALID;          // Text
         this._allDisplayLayers               = [];                         // YDisplayLayerArr
+        this._frozenUntil                    = 0;                          // u64
+        this._recording                      = 0;                          // bool
+        this._sequence                       = "";                         // str
         //--- (end of generated code: YDisplay constructor)
-
-        this._sequence         = '';
-        this._recording        = false;
     }
 
     //--- (generated code: YDisplay implementation)
@@ -1522,11 +1536,11 @@ var YDisplay; // definition below
     }
 
     /**
-     * Returns the display type: monochrome, gray levels or full color.
+     * Returns the display type: monochrome OLED, black and white ePaper, color ePaper, etc.
      *
-     * @return a value among YDisplay.DISPLAYTYPE_MONO, YDisplay.DISPLAYTYPE_GRAY,
-     * YDisplay.DISPLAYTYPE_RGB and YDisplay.DISPLAYTYPE_EPAPER corresponding to the display type:
-     * monochrome, gray levels or full color
+     * @return a value among YDisplay.DISPLAYTYPE_MONO, YDisplay.DISPLAYTYPE_EPAPER_BW,
+     * YDisplay.DISPLAYTYPE_EPAPER_BWR and YDisplay.DISPLAYTYPE_EPAPER_BWRY corresponding to the display
+     * type: monochrome OLED, black and white ePaper, color ePaper, etc
      *
      * On failure, throws an exception or returns YDisplay.DISPLAYTYPE_INVALID.
      */
@@ -1543,15 +1557,15 @@ var YDisplay; // definition below
     }
 
     /**
-     * Gets the display type: monochrome, gray levels or full color.
+     * Gets the display type: monochrome OLED, black and white ePaper, color ePaper, etc.
      *
      * @param callback : callback function that is invoked when the result is known.
      *         The callback function receives three arguments:
      *         - the user-specific context object
      *         - the YDisplay object that invoked the callback
-     *         - the result:a value among YDisplay.DISPLAYTYPE_MONO, YDisplay.DISPLAYTYPE_GRAY,
-     *         YDisplay.DISPLAYTYPE_RGB and YDisplay.DISPLAYTYPE_EPAPER corresponding to the display type:
-     *         monochrome, gray levels or full color
+     *         - the result:a value among YDisplay.DISPLAYTYPE_MONO, YDisplay.DISPLAYTYPE_EPAPER_BW,
+     *         YDisplay.DISPLAYTYPE_EPAPER_BWR and YDisplay.DISPLAYTYPE_EPAPER_BWRY corresponding to the display
+     *         type: monochrome OLED, black and white ePaper, color ePaper, etc
      * @param context : user-specific object that is passed as-is to the callback function
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
@@ -1815,6 +1829,47 @@ var YDisplay; // definition below
         return obj;
     }
 
+    function YDisplay_sendCommand(cmd)
+    {
+        if (!(this._recording)) {
+            return this.set_command(cmd);
+        }
+        this._sequence = ""+this._sequence+""+cmd+"\n";
+        return YAPI_SUCCESS;
+    }
+
+    function YDisplay_flushLayers()
+    {
+        var ii; // iterator
+        for (ii_0 of this._allDisplayLayers) {
+            if (ii_0.must_be_flushed()) {
+                ii_0.flush_now();
+            }
+        }
+        return YAPI_SUCCESS;
+    }
+
+    function YDisplay_resetHiddenLayerFlags()
+    {
+        var ii; // iterator
+        for (ii_0 of this._allDisplayLayers) {
+            ii_0.resetHiddenFlag();
+        }
+        return YAPI_SUCCESS;
+    }
+
+    function YDisplay_isFrozen()
+    {
+        if (this._frozenUntil == 0) {
+            return false;
+        }
+        if (this._frozenUntil <= YAPI.GetTickCount()) {
+            this._frozenUntil = 0;
+            return false;
+        }
+        return true;
+    }
+
     /**
      * Clears the display screen and resets all display layers to their default state.
      * Using this function in a sequence will kill the sequence play-back. Don't use that
@@ -1846,6 +1901,56 @@ var YDisplay; // definition below
     }
 
     /**
+     * Returns the current state of an ePaper display, specifically to
+     * determine whether an update is in progress or whether a
+     * configuration issue has been detected. If a display configuration
+     * error has been detected, the error message can be retrieved.
+     *
+     * @param errmsg : a string passed by reference to receive the error message.
+     *
+     * @return a value among the enumeration YDisplay.DISPLAYSTATE
+     *         (YDisplay.DISPLAYSTATE_FAILURE, YDisplay.DISPLAYSTATE_OFF,
+     *         YDisplay.DISPLAYSTATE_POWERING, YDisplay.DISPLAYSTATE_IDLE,
+     *         YDisplay.DISPLAYSTATE_REFRESHING)
+     *         corresponding to the current display state.
+     */
+    function YDisplay_get_ePaperState(errmsg)
+    {
+        var json;                   // bin;
+        var jsonStr;                // str;
+        var dispError;              // str;
+        var dispState;              // int;
+
+        if (this.get_displayType() == Y_DISPLAYTYPE_MONO) {
+            errmsg = "Not an ePaper display";
+            return 0;
+        }
+        json = this._download("disp.json");
+        if ((json).length == 0) {
+            errmsg = this.get_errorMessage();
+            return 0;
+        } else {
+            jsonStr = json;
+            dispError = this._decode_json_string(this._get_json_path(jsonStr, "err"));
+            errmsg = dispError;
+            if ((dispError).length > 0) {
+                return 0;
+            }
+            dispState = YAPI._atoi(this._json_get_key(json, "state"));
+            if (dispState > 10) {
+                return 4;
+            }
+            if (dispState == 10) {
+                return 3;
+            }
+            if (dispState > 0) {
+                return 2;
+            }
+        }
+        return 1;
+    }
+
+    /**
      * Disables screen refresh for a short period of time. The combination of
      * postponeRefresh and triggerRefresh can be used as an
      * alternative to double-buffering to avoid flickering during display updates.
@@ -1858,6 +1963,7 @@ var YDisplay; // definition below
      */
     function YDisplay_postponeRefresh(duration)
     {
+        this._frozenUntil = YAPI.GetTickCount() + duration;
         return this.sendCommand("H"+String(Math.round(duration)));
     }
 
@@ -1872,6 +1978,8 @@ var YDisplay; // definition below
      */
     function YDisplay_triggerRefresh()
     {
+        this._frozenUntil = 0;
+        this.flushLayers();
         return this.sendCommand("H0");
     }
 
@@ -1994,6 +2102,7 @@ var YDisplay; // definition below
      */
     function YDisplay_upload(pathname,content)
     {
+        this.flushLayers();
         return this._upload(pathname, content);
     }
 
@@ -2101,7 +2210,6 @@ var YDisplay; // definition below
         var srcx;                   // int;
         var srcy;                   // int;
         var srci;                   // int;
-        var incx;                   // int;
         var pixmap;                 // bin;
         var pixcount;               // int;
         var pixval;                 // int;
@@ -2195,7 +2303,6 @@ var YDisplay; // definition below
         pixmap = new Uint8Array(pixcount);
         srcx = 0;
         srcy = 0;
-        incx = parseInt(8 / zipbits);
         srcval = 0;
         while (srcpos < zipsize) {
             // load next compression pattern byte
@@ -2207,11 +2314,15 @@ var YDisplay; // definition below
                 if ((srcpat & 128) != 0) {
                     srcval = (zipmap).charCodeAt(srcpos);
                     srcpos = srcpos + 1;
+                    if (zipbits > 1) {
+                        srcval = (srcval << 8) + (zipmap).charCodeAt(srcpos);
+                        srcpos = srcpos + 1;
+                    }
                 }
                 srcpat = (srcpat << 1);
                 pixpos = srcy * zipwidth + srcx;
-                // produce 8 pixels (or 4, if bitmap uses 2 bits per pixel)
-                srci = 8 - zipbits;
+                // produce 8 pixels
+                srci = 7 * zipbits;
                 while (srci >= 0) {
                     pixval = ((srcval >> srci) & zipmask);
                     pixmap[pixpos] = pixval;
@@ -2221,7 +2332,7 @@ var YDisplay; // definition below
                 srcy = srcy + 1;
                 if (srcy >= zipheight) {
                     srcy = 0;
-                    srcx = srcx + incx;
+                    srcx = srcx + 8;
                     // drop last bytes if image is not a multiple of 8
                     if (srcx >= zipwidth) {
                         srcbit = 0;
@@ -2304,35 +2415,6 @@ var YDisplay; // definition below
 
     //--- (end of generated code: YDisplay implementation)
 
-    function YDisplay_flushLayers()
-    {
-        if(this._allDisplayLayers) {
-            for(var i = 0; i < this._allDisplayLayers.length; i++) {
-                this._allDisplayLayers[i].flush_now();
-            }
-        }
-        return YAPI_SUCCESS;
-    }
-
-    function YDisplay_resetHiddenLayerFlags()
-    {
-        if(this._allDisplayLayers) {
-            for(var i = 0; i < this._allDisplayLayers.length; i++) {
-                this._allDisplayLayers[i].resetHiddenFlag();
-            }
-        }
-    }
-
-    function YDisplay_sendCommand(cmd)
-    {
-        if(!this._recording) {
-            // ignore call when there is no ongoing sequence
-            return this.set_command(cmd);
-        }
-        this._sequence += cmd+"\n";
-        return YAPI_SUCCESS;
-    }
-
     //--- (generated code: YDisplay initialization)
     YDisplay = YFunction._Subclass(_YDisplay, {
         // Constants
@@ -2351,14 +2433,19 @@ var YDisplay; // definition below
         DISPLAYWIDTH_INVALID        : YAPI_INVALID_UINT,
         DISPLAYHEIGHT_INVALID       : YAPI_INVALID_UINT,
         DISPLAYTYPE_MONO            : 0,
-        DISPLAYTYPE_GRAY            : 1,
-        DISPLAYTYPE_RGB             : 2,
-        DISPLAYTYPE_EPAPER          : 3,
+        DISPLAYTYPE_EPAPER_BW       : 1,
+        DISPLAYTYPE_EPAPER_BWR      : 2,
+        DISPLAYTYPE_EPAPER_BWRY     : 3,
         DISPLAYTYPE_INVALID         : -1,
         LAYERWIDTH_INVALID          : YAPI_INVALID_UINT,
         LAYERHEIGHT_INVALID         : YAPI_INVALID_UINT,
         LAYERCOUNT_INVALID          : YAPI_INVALID_UINT,
-        COMMAND_INVALID             : YAPI_INVALID_STRING
+        COMMAND_INVALID             : YAPI_INVALID_STRING,
+        DISPLAYSTATE_FAILURE        : 0,
+        DISPLAYSTATE_OFF            : 1,
+        DISPLAYSTATE_POWERING       : 2,
+        DISPLAYSTATE_IDLE           : 3,
+        DISPLAYSTATE_REFRESHING     : 4
     }, {
         // Class methods
         FindDisplay                 : YDisplay_FindDisplay,
@@ -2431,8 +2518,14 @@ var YDisplay; // definition below
         command_async               : YDisplay_get_command_async,
         set_command                 : YDisplay_set_command,
         setCommand                  : YDisplay_set_command,
+        sendCommand                 : YDisplay_sendCommand,
+        flushLayers                 : YDisplay_flushLayers,
+        resetHiddenLayerFlags       : YDisplay_resetHiddenLayerFlags,
+        isFrozen                    : YDisplay_isFrozen,
         resetAll                    : YDisplay_resetAll,
         regenerateDisplay           : YDisplay_regenerateDisplay,
+        get_ePaperState             : YDisplay_get_ePaperState,
+        ePaperState                 : YDisplay_get_ePaperState,
         postponeRefresh             : YDisplay_postponeRefresh,
         triggerRefresh              : YDisplay_triggerRefresh,
         fade                        : YDisplay_fade,
@@ -2451,9 +2544,6 @@ var YDisplay; // definition below
         _parseAttr                  : YDisplay_parseAttr
     });
     //--- (end of generated code: YDisplay initialization)
-    YDisplay.prototype.flushLayers             = YDisplay_flushLayers;
-    YDisplay.prototype.resetHiddenLayerFlags   = YDisplay_resetHiddenLayerFlags;
-    YDisplay.prototype.sendCommand             = YDisplay_sendCommand;
 })();
 
 //--- (generated code: YDisplay functions)

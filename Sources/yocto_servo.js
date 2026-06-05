@@ -118,9 +118,9 @@ var YServo; // definition below
     }
 
     /**
-     * Returns the current servo position.
+     * Returns the current servo position, usually a value between -1000 and 1000.
      *
-     * @return an integer corresponding to the current servo position
+     * @return an integer corresponding to the current servo position, usually a value between -1000 and 1000
      *
      * On failure, throws an exception or returns YServo.POSITION_INVALID.
      */
@@ -137,13 +137,13 @@ var YServo; // definition below
     }
 
     /**
-     * Gets the current servo position.
+     * Gets the current servo position, usually a value between -1000 and 1000.
      *
      * @param callback : callback function that is invoked when the result is known.
      *         The callback function receives three arguments:
      *         - the user-specific context object
      *         - the YServo object that invoked the callback
-     *         - the result:an integer corresponding to the current servo position
+     *         - the result:an integer corresponding to the current servo position, usually a value between -1000 and 1000
      * @param context : user-specific object that is passed as-is to the callback function
      *
      * @return nothing: this is the asynchronous version, that uses a callback instead of a return value
@@ -169,9 +169,10 @@ var YServo; // definition below
     }
 
     /**
-     * Changes immediately the servo driving position.
+     * Changes immediately the servo  position, the parameter is  a value between -1000 and +1000.
      *
-     * @param newval : an integer corresponding to immediately the servo driving position
+     * @param newval : an integer corresponding to immediately the servo  position, the parameter is  a
+     * value between -1000 and +1000
      *
      * @return YAPI.SUCCESS if the call succeeds.
      *

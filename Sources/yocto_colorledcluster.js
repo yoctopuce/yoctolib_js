@@ -669,6 +669,66 @@ var YColorLedCluster; // definition below
     }
 
     /**
+     * Changes the color displayed by the last LED and shifts all currently displayed colors
+     * toward the beginning of the RGB LED string. The new color is encoded as follows: 0xRRGGBB.
+     *
+     * @param rgbValue :  new color.
+     *
+     * @return YAPI.SUCCESS when the call succeeds.
+     *
+     * On failure, throws an exception or returns a negative error code.
+     */
+    function YColorLedCluster_shl_rgb(rgbValue)
+    {
+        return this.sendCommand("<R"+(rgbValue).toString(16).toLowerCase());
+    }
+
+    /**
+     * Changes the color displayed by the first LED and shifts all currently displayed colors
+     * toward the end of the RGB LED string. The new color is encoded as follows: 0xRRGGBB.
+     *
+     * @param rgbValue :  new color.
+     *
+     * @return YAPI.SUCCESS when the call succeeds.
+     *
+     * On failure, throws an exception or returns a negative error code.
+     */
+    function YColorLedCluster_shr_rgb(rgbValue)
+    {
+        return this.sendCommand(">R"+(rgbValue).toString(16).toLowerCase());
+    }
+
+    /**
+     * Changes the color displayed by the last LED and shifts all currently displayed colors
+     * toward the beginning of the RGB LED string. The new color is encoded as follows: 0xHHSSLL.
+     *
+     * @param hslValue :  new color.
+     *
+     * @return YAPI.SUCCESS when the call succeeds.
+     *
+     * On failure, throws an exception or returns a negative error code.
+     */
+    function YColorLedCluster_shl_hsl(hslValue)
+    {
+        return this.sendCommand("<H"+(hslValue).toString(16).toLowerCase());
+    }
+
+    /**
+     * Changes the color displayed by the first LED and shifts all currently displayed colors
+     * toward the end of the RGB LED string. The new color is encoded as follows: 0xHHSSLL.
+     *
+     * @param hslValue :  new color.
+     *
+     * @return YAPI.SUCCESS when the call succeeds.
+     *
+     * On failure, throws an exception or returns a negative error code.
+     */
+    function YColorLedCluster_shr_hsl(hslValue)
+    {
+        return this.sendCommand(">H"+(hslValue).toString(16).toLowerCase());
+    }
+
+    /**
      * Adds an RGB transition to a sequence. A sequence is a transition list, which can
      * be executed in loop by a group of LEDs.  Sequences are persistent and are saved
      * in the device flash memory as soon as the saveBlinkSeq() method is called.
@@ -1566,6 +1626,10 @@ var YColorLedCluster; // definition below
         setHslColor                 : YColorLedCluster_set_hslColor,
         rgb_move                    : YColorLedCluster_rgb_move,
         hsl_move                    : YColorLedCluster_hsl_move,
+        shl_rgb                     : YColorLedCluster_shl_rgb,
+        shr_rgb                     : YColorLedCluster_shr_rgb,
+        shl_hsl                     : YColorLedCluster_shl_hsl,
+        shr_hsl                     : YColorLedCluster_shr_hsl,
         addRgbMoveToBlinkSeq        : YColorLedCluster_addRgbMoveToBlinkSeq,
         addHslMoveToBlinkSeq        : YColorLedCluster_addHslMoveToBlinkSeq,
         addMirrorToBlinkSeq         : YColorLedCluster_addMirrorToBlinkSeq,

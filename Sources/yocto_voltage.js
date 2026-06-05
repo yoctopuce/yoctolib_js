@@ -293,7 +293,7 @@ var YVoltage; // definition below
         var bias;                   // float;
         currSignal = this.get_currentRawValue();
         bias = this.get_signalBias() + currSignal;
-        if (!(bias > -0.5 && bias < 0.5)) {
+        if (!((bias > -0.5) && (bias < 0.5))) {
             return this._throw(YAPI_INVALID_ARGUMENT,"suspicious zeroAdjust, please ensure that the power source inputs are shorted",YAPI_INVALID_ARGUMENT);
         }
         return this.set_signalBias(bias);
